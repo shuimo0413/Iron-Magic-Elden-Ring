@@ -1,0 +1,79 @@
+---
+description: Elden Ring Spells / 铁魔法扩展 — 始终生效的 AI 开发约定
+alwaysApply: true
+---
+
+# Elden Ring Spells 约定
+
+本仓库是 **MC 1.21.1 + NeoForge** 的 **Iron's Spells** 扩展（`elden_ring_spells`），主题为艾尔登法环，但还有部分其它游戏的魔法元素。完整说明见根目录 `AGENTS.md`。
+
+## 硬约束
+
+- JDK **21**；用 `.\gradlew.bat`，勿用 JDK 24 / 系统全局 Gradle
+- 版本以 `gradle.properties` 为准；勿擅自升 MC / NeoForge / 铁魔法大版本
+- 施法扩展走铁魔法 API（`io.redspace.ironsspellbooks.api.*`），不要自研平行魔法系统
+- 包名 `com.eldenring.spells`，Mod ID `elden_ring_spells`
+
+## 加新内容清单
+
+### 法术
+1. `spell/XxxSpell.java` 继承 `AbstractSpell`
+2. `ModSpells` 注册
+3. `lang`：`spell.elden_ring_spells.<path>`
+4. 图标：`textures/gui/spell_icons/<path>.png`
+5. `onCast` 服务端逻辑后调用 `super.onCast`
+
+### 物品
+1. `ModItems` 注册
+2. `models/item/<id>.json` + `textures/item/<id>.png`
+3. `lang`：`item.elden_ring_spells.<id>`
+
+### 粒子
+1. `ModParticles` 注册 `ParticleType`
+2. 客户端 `RegisterParticleProvidersEvent` 注册 Provider
+3. `particles/<id>.json` + `textures/particle/<id>.png`
+
+## 工具链（强制）
+
+- **所有离线工具 / 生成脚本 / 像素画源数据统一放 `工具链/`**
+- **禁止**再往 `tools/`、`像素画/` 等旧目录写新文件
+- 画布固定 **32×32或64*64**（JSON 的 `width` / `height` 均为 `32或64`）
+- 格式：`name`、`width`、`height`、`pixels`（每项含 `x`/`y`/`rgba`）
+- 用 `工具链/render_pixel_art.py` 导出 PNG，再拷到 `assets/elden_ring_spells/textures/...`
+- 不要默认用 16×16 或 64×64，除非用户明确要求其他尺寸
+- 现有脚本示例：
+  - `工具链/gen_glintstone_pebble.py`
+  - `工具链/gen_glintstone_comet_textures.py`
+  - `工具链/gen_glintstone_line.py`（迅魔砾 / 大魔砾 / 流星 / 帚星）
+
+## 改动风格
+
+- 最小必要改动；不顺手大重构
+- 用户未要求不 commit / 不推远程
+- 依赖与 Maven 仓库改动要能解释原因（网络镜像除外）
+
+## 代码风格（强制）
+
+### 注释
+- **写完整注释**：类、公开/重要方法、可调常量、非显而易见的设计取舍都要有中文或中英说明
+- 常量注释须写清单位（方块、度/tick、秒等）与调大/调小的手感影响
+- 禁止无意义注释（如 `// 设置速度` 这种复述代码的句子）
+
+### 命名
+- **变量名写完整、可读**：优先 `nearestTrackableTarget`、`maxTurnAngleRadians`，禁止 `t`/`tmp`/`v` 等除非极短作用域的循环下标
+- 常量用 `SCREAMING_SNAKE`，且名称含含义 + 单位语义（如 `PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK`）
+
+### 可调常量集中存放
+- 法术/弹道的平衡与手感数字 **不要散落在逻辑代码里**
+- 每个法术（或一族法术）建 `tuning/XxxTuning.java`，逻辑类只引用 Tuning 常量
+- 例：辉石魔砾 → `com.eldenring.spells.tuning.GlintstonePebbleTuning`
+  - 转向角：`PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK`
+  - 飞行速度：`PROJECTILE_FLIGHT_SPEED`
+  - 索敌半径：`PROJECTILE_TRACKING_RANGE_BLOCKS`
+  - 彗星头视觉：`COMET_HEAD_*`
+
+### 辉石弹道渲染复用
+- 立体彗星头：`client/render/glintstone/GlintstoneCometHeadDrawer` + `GlintstoneCometModels`
+- 朝向工具：`client/render/ProjectileOrientation`
+- 贴图生成：`工具链/gen_glintstone_comet_textures.py`
+- 新辉石弹道优先复用 Drawer，不要再写一份 NoopRenderer + 纯粒子
