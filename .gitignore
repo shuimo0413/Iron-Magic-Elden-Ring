@@ -44,4 +44,4 @@ __pycache__/
 *.pyc
 
 ### Local Iron's Spellbooks reference (do not publish) ###
-工具链/iss-reference/
+工具链/*
