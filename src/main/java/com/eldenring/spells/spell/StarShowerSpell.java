@@ -3,6 +3,7 @@ package com.eldenring.spells.spell;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.tuning.StarShowerTuning;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -25,10 +26,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 流星雨：六发辉石流星依次飞出并强追踪。
+ * 流星雨：辉石流星的六发升级版，仍是瞬时施法。
+ * <p>
+ * 实现与 {@link GlintstoneStarsSpell} 同构：本类只生成
+ * {@link GlintstoneStarVolleyEntity}（{@code VolleyKind.STAR_SHOWER}），
+ * 由齐射实体按正六边形阵面错峰出弹。发数、间隔、圆半径在 {@link StarShowerTuning}。
+ * <p>
+ * 单发伤害通常低于辉石流星，靠发数换总伤；同样必须清零 i-frame，否则后几发会被无敌吞掉。
  */
 public class StarShowerSpell extends AbstractSpell {
 
+    /** 注册 ID：{@code elden_ring_spells:star_shower}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "star_shower");
 
@@ -47,6 +55,7 @@ public class StarShowerSpell extends AbstractSpell {
         this.baseManaCost = StarShowerTuning.SPELL_BASE_MANA_COST;
     }
 
+    /** 法术书：单发伤害 + {@code ×6}。 */
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
@@ -95,6 +104,7 @@ public class StarShowerSpell extends AbstractSpell {
             MagicData playerMagicData
     ) {
         if (!level.isClientSide) {
+            AcademySigilFx.spawnAboveHead(level, castingEntity);
             GlintstoneStarVolleyEntity volleyEntity = new GlintstoneStarVolleyEntity(
                     level,
                     castingEntity,

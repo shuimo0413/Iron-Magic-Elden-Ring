@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.eldenring.spells.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ScrollModelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

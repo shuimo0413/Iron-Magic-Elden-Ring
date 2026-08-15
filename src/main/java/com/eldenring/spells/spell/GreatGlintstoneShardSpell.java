@@ -3,6 +3,7 @@ package com.eldenring.spells.spell;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.GreatGlintstoneShardProjectile;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.tuning.GreatGlintstoneShardTuning;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -23,10 +24,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 辉石大魔砾：瞬时释放的大体积辉石弹道，命中带小范围爆炸。
+ * 辉石大魔砾：瞬时放出的大体积辉石弹。
+ * <p>
+ * 比魔砾更慢、更肉，命中后在 {@link GreatGlintstoneShardTuning#EXPLOSION_RADIUS_BLOCKS} 内爆炸
+ * （范围伤害写在弹道实体里，本类只负责把半径显示到法术书上）。
+ * 定位介于魔砾与辉石彗星之间：非稀有、冷却仍短，适合清小群。
  */
 public class GreatGlintstoneShardSpell extends AbstractSpell {
 
+    /** 注册 ID：{@code elden_ring_spells:great_glintstone_shard}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "great_glintstone_shard");
 
@@ -45,6 +51,9 @@ public class GreatGlintstoneShardSpell extends AbstractSpell {
         this.castTime = GreatGlintstoneShardTuning.SPELL_CAST_TIME_TICKS;
     }
 
+    /**
+     * 法术书显示单发伤害 + 爆炸半径（方块）。半径不随等级变，直接读 Tuning。
+     */
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
@@ -79,6 +88,7 @@ public class GreatGlintstoneShardSpell extends AbstractSpell {
         return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
     }
 
+    /** 服务端生成大魔砾弹道；爆炸逻辑在 {@link GreatGlintstoneShardProjectile} 命中时触发。 */
     @Override
     public void onCast(
             Level level,
@@ -88,6 +98,7 @@ public class GreatGlintstoneShardSpell extends AbstractSpell {
             MagicData playerMagicData
     ) {
         if (!level.isClientSide) {
+            AcademySigilFx.spawnAboveHead(level, castingEntity);
             GlintstoneCastHelper.spawnAlongLook(
                     level,
                     castingEntity,

@@ -10,9 +10,7 @@ import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.CastType;
-import io.redspace.ironsspellbooks.api.spells.SpellAnimations;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
-import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.SpellDamageSource;
 import net.minecraft.network.chat.Component;
@@ -23,16 +21,21 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * 毁灭流星：蓄力铺开星河，随后八发亮蓝 / 深蓝交织的追踪流星依次飞出。
+ * 毁灭流星（Stars of Ruin）：辉石连发线的顶点，瞬时施法。
+ * <p>
+ * 与辉石流星 / 流星雨同构：{@code onCast} 先在右手前方铺一团星云，再生成
+ * {@link GlintstoneStarVolleyEntity}（{@code VolleyKind.STARS_OF_RUIN}）。
+ * 不出头顶学院法阵：星云已经占满右侧头部空间，再叠法阵会糊成一团。
+ * 发数改 {@link StarsOfRuinTuning}，星云布局改 {@link com.eldenring.spells.tuning.StarRiverTuning}。
  */
 public class StarsOfRuinSpell extends AbstractSpell {
 
+    /** 注册 ID：{@code elden_ring_spells:stars_of_ruin}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "stars_of_ruin");
 
@@ -51,6 +54,7 @@ public class StarsOfRuinSpell extends AbstractSpell {
         this.baseManaCost = StarsOfRuinTuning.SPELL_BASE_MANA_COST;
     }
 
+    /** 法术书：单发伤害 + {@code ×12}。 */
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
@@ -62,24 +66,23 @@ public class StarsOfRuinSpell extends AbstractSpell {
         );
     }
 
+//    获取默认配置：法术书、法术等级上限、冷却时间
     @Override
     public DefaultConfig getDefaultConfig() {
         return defaultConfig;
     }
 
+
+//    返回 INSTANT。铁魔法看到这个就不会蓄力，也不会走 onServerCastTick。点一下马上进 onCast。
     @Override
     public CastType getCastType() {
-        return CastType.LONG;
+        return CastType.INSTANT;
     }
 
+//    获取法术资源
     @Override
     public ResourceLocation getSpellResource() {
         return spellResourceLocation;
-    }
-
-    @Override
-    public Optional<SoundEvent> getCastStartSound() {
-        return Optional.of(SoundEvents.BEACON_AMBIENT);
     }
 
     @Override
@@ -87,13 +90,8 @@ public class StarsOfRuinSpell extends AbstractSpell {
         return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
     }
 
-    @Override
-    public AnimationHolder getCastStartAnimation() {
-        return SpellAnimations.CHARGE_RAISED_HAND;
-    }
-
     /**
-     * 八连发间隔短于原版受伤无敌帧，必须把 i-frame 清零，否则后几发会被吞成骗伤。
+     * 12连发间隔短于原版受伤无敌帧，必须把 i-frame 清零，否则后几发会被吞成骗伤。
      */
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
@@ -101,25 +99,9 @@ public class StarsOfRuinSpell extends AbstractSpell {
     }
 
     /**
-     * 蓄力期间每 tick 在施法者周围铺一层旋转星河（亮蓝 / 深蓝粉尘 + 闪星）。
+     * 出手瞬间：先在右手前方铺一团星云，再挂上十二发齐射实体。
+     * 不出 {@code AcademySigilFx}——星云已经占满右侧头部，再叠法阵会互相遮挡。
      */
-    @Override
-    public void onServerCastTick(
-            Level level,
-            int spellLevel,
-            LivingEntity entity,
-            @Nullable MagicData playerMagicData
-    ) {
-        if (!level.isClientSide) {
-            GlintstoneFx.starRiverOrbit(
-                    level,
-                    entity,
-                    StarsOfRuinTuning.STAR_RIVER_CAST_INTENSITY,
-                    true
-            );
-        }
-    }
-
     @Override
     public void onCast(
             Level level,
@@ -131,11 +113,8 @@ public class StarsOfRuinSpell extends AbstractSpell {
         if (!level.isClientSide) {
             GlintstoneFx.starRiver(
                     level,
-                    castingEntity.getEyePosition(),
-                    castingEntity.getLookAngle(),
+                    castingEntity,
                     StarsOfRuinTuning.CAST_BURST_PARTICLE_INTENSITY,
-                    StarsOfRuinTuning.STAR_RIVER_LENGTH_BLOCKS,
-                    StarsOfRuinTuning.STAR_RIVER_RADIUS_BLOCKS,
                     true
             );
             GlintstoneStarVolleyEntity volleyEntity = new GlintstoneStarVolleyEntity(

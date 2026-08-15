@@ -3,8 +3,8 @@ package com.eldenring.spells.tuning;
 /**
  * 毁灭流星（Stars of Ruin）可调数值。
  * <p>
- * 蓄力期间在施法者周围铺星河；吟唱结束后八发深蓝/亮蓝交织的追踪流星
- * 依次出现在视线前方圆阵顶点（正八边形）。
+ * 出手瞬间在右手前方铺一团星云，随后十二发深蓝 / 紫色交织的追踪流星
+ * 沿视线平射、依次出现在前方圆阵顶点。星云布局见 {@link StarRiverTuning}。
  */
 public final class StarsOfRuinTuning {
 
@@ -12,7 +12,7 @@ public final class StarsOfRuinTuning {
     }
 
     /** 单次施法流星数量。 */
-    public static final int PROJECTILE_COUNT = 8;
+    public static final int PROJECTILE_COUNT = 12;
 
     /**
      * 相邻两发出现的间隔（tick）。
@@ -33,10 +33,10 @@ public final class StarsOfRuinTuning {
     public static final int SPAWN_CIRCLE_START_ANGLE_DEGREES = 90;
 
     /**
-     * 初始飞行方向在视线基础上叠加的上扬分量（无量纲）。
-     * 调大 → 更明显往上抛后再折向目标。
+     * 初始飞行方向在视线基础上叠加的世界上扬分量（无量纲，与视线相加后再归一化）。
+     * {@code 0} = 完全平行于视线平射；调大 → 出手瞬间往上抛再折向目标。
      */
-    public static final double PROJECTILE_INITIAL_UPWARD_LIFT = 0.34;
+    public static final double PROJECTILE_INITIAL_UPWARD_LIFT = 0.0;
 
     /** 追踪飞行速度（方块/tick 量级）。 */
     public static final float PROJECTILE_FLIGHT_SPEED = 1.22f;
@@ -63,51 +63,59 @@ public final class StarsOfRuinTuning {
     public static final float COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK = 26.0f;
 
     /**
-     * 亮蓝色晶核 RGB（0–1）。偶数发使用，与深蓝色交替形成交织。
+     * 紫色晶核 RGB（0–1）。偶数发使用，与深蓝色交替形成蓝紫交织。
+     * 绿通道压低，避免洗成辉石青；红略抬高才像紫晶而不是品红。
      */
-    public static final float BRIGHT_CORE_RED = 0.28f;
-    public static final float BRIGHT_CORE_GREEN = 0.52f;
-    public static final float BRIGHT_CORE_BLUE = 1.0f;
-    public static final float BRIGHT_GLOW_RED = 0.22f;
-    public static final float BRIGHT_GLOW_GREEN = 0.48f;
-    public static final float BRIGHT_GLOW_BLUE = 1.0f;
-    public static final float BRIGHT_GLOW_ALPHA = 1.0f;
+    public static final float PURPLE_CORE_RED = 0.48f;
+    public static final float PURPLE_CORE_GREEN = 0.14f;
+    public static final float PURPLE_CORE_BLUE = 0.86f;
+    public static final float PURPLE_GLOW_RED = 0.58f;
+    public static final float PURPLE_GLOW_GREEN = 0.22f;
+    public static final float PURPLE_GLOW_BLUE = 0.94f;
+    public static final float PURPLE_GLOW_ALPHA = 1.0f;
 
     /**
-     * 深蓝色晶核 RGB（0–1）。奇数发使用。调绿更低、蓝更沉，避免回到辉石青。
+     * 深蓝色晶核 RGB（0–1）。奇数发使用。绿更低、蓝更沉，贴近虚空核外圈。
      */
-    public static final float DEEP_CORE_RED = 0.08f;
-    public static final float DEEP_CORE_GREEN = 0.14f;
-    public static final float DEEP_CORE_BLUE = 0.58f;
+    public static final float DEEP_CORE_RED = 0.07f;
+    public static final float DEEP_CORE_GREEN = 0.16f;
+    public static final float DEEP_CORE_BLUE = 0.62f;
     public static final float DEEP_GLOW_RED = 0.10f;
-    public static final float DEEP_GLOW_GREEN = 0.18f;
-    public static final float DEEP_GLOW_BLUE = 0.72f;
+    public static final float DEEP_GLOW_GREEN = 0.22f;
+    public static final float DEEP_GLOW_BLUE = 0.78f;
     public static final float DEEP_GLOW_ALPHA = 1.0f;
 
     /**
-     * 毁灭流星曲线光轨：更长、略宽，强调星河拖尾。
+     * 毁灭流星曲线光轨：几何光束负责连续轨迹，粒子只做弹头点缀。
+     * spark / mote 低于单发彗星——12 连发会线性叠加，调大会糊成雾。
      */
     public static final GlintstoneTrailTuning.TrailStyle TRAIL_STYLE =
-            new GlintstoneTrailTuning.TrailStyle(24.0, 0.050f, 0.011f, 0.20f, 0.12f, 48);
+            new GlintstoneTrailTuning.TrailStyle(24.0, 0.050f, 0.011f, 0.10f, 0.05f, 48);
 
-    /** 拖尾点缀强度倍率；不影响几何光束长宽。 */
-    public static final float TRAIL_PARTICLE_INTENSITY = 0.85f;
+    /**
+     * 拖尾点缀强度倍率。只影响弹头附近光晕/星尘概率，不影响几何光束长宽。
+     * 调大 → 每发更密；调小 → 十二条轨迹更干净。
+     */
+    public static final float TRAIL_PARTICLE_INTENSITY = 0.48f;
+
+    /**
+     * 弹头点缀相对通用辉石拖尾的概率倍率（光晕、星尘、残影、碎晶、星团）。
+     * 几何光束已勾出轨迹；12 连发只需稀疏剥落。调大 → 点缀更密。
+     */
+    public static final float TRAIL_ACCENT_CHANCE_SCALE = 0.55f;
     public static final float IMPACT_PARTICLE_INTENSITY = 1.35f;
     public static final float CAST_BURST_PARTICLE_INTENSITY = 1.8f;
 
     /**
-     * 蓄力星河每 tick 的强度倍率。调大 → 施法者周围星尘更密。
+     * @deprecated 星云不再沿视线拉长，半径改 {@link StarRiverTuning#NEBULA_RADIUS_BLOCKS}。
      */
-    public static final float STAR_RIVER_CAST_INTENSITY = 1.15f;
-
-    /**
-     * 星河螺旋沿视线铺开的长度（方块）。调大 → 河面更长。
-     */
+    @Deprecated
     public static final double STAR_RIVER_LENGTH_BLOCKS = 5.5;
 
     /**
-     * 星河螺旋半径（方块）。调大 → 环绕施法者/视线的圆环更宽。
+     * @deprecated 改 {@link StarRiverTuning#NEBULA_RADIUS_BLOCKS}。
      */
+    @Deprecated
     public static final double STAR_RIVER_RADIUS_BLOCKS = 0.85;
 
     public static final int SPELL_BASE_MANA_COST = 55;
@@ -116,12 +124,13 @@ public final class StarsOfRuinTuning {
     public static final int SPELL_SPELL_POWER_PER_LEVEL = 1;
 
     /**
-     * 蓄力吟唱时长（tick）。调大 → 星河特效铺得更久，也更容易被打断。
+     * 吟唱时长（tick）。瞬时施法固定为 0。
      */
-    public static final int SPELL_CAST_TIME_TICKS = 24;
+    public static final int SPELL_CAST_TIME_TICKS = 0;
 
     public static final double SPELL_COOLDOWN_SECONDS = 6.0;
-    public static final int SPELL_MAX_LEVEL = 8;
+    /** 最大等级。法环辉石咒固定 1 级。 */
+    public static final int SPELL_MAX_LEVEL = 1;
 
     /** 单发伤害系数；总输出约 = 系数 × 法强 × 8。 */
     public static final float SPELL_DAMAGE_PER_SPELL_POWER = 0.36f;

@@ -3,6 +3,7 @@ package com.eldenring.spells.spell;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.tuning.GlintstonePebbleTuning;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -23,27 +24,47 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 辉石魔砾法术（艾尔登法环基础辉石咒术）。
+ * 辉石魔砾（Glintstone Pebble）——本模组最基础的辉石咒，也是读其它法术类的样板。
  * <p>
- * 施法模式：瞬时（{@link CastType#INSTANT}），对应原作「可移动、可连发」的短吟唱弹道。
- * 效果：从施法者眼部沿视线射出 {@link GlintstonePebbleProjectile}，带限角追踪。
+ * 对应法环「可移动、可连发」的短吟唱弹道：{@link CastType#INSTANT}，吟唱 tick 为 0。
+ * 效果：从眼睛沿视线射出一发 {@link GlintstonePebbleProjectile}，带<strong>限角</strong>追踪
+ * （不是强锁：侧移仍能躲开）。
  * <p>
- * 蓝耗、冷却、伤害系数等平衡数值改 {@link GlintstonePebbleTuning}；
- * 弹道速度 / 转向角也在同一 Tuning 类中。
+ * 蓝耗、冷却、伤害系数、弹速、转向角全部在 {@link GlintstonePebbleTuning}。
+ * 出手生成走 {@link GlintstoneCastHelper}，不要在本类里直接 {@code addFreshEntity}。
+ * <p>
+ * 铁魔法 AbstractSpell 的字段 / 回调约定见本包 {@code package-info.java}。
  */
 public class GlintstonePebbleSpell extends AbstractSpell {
 
+    /**
+     * 法术注册 ID：{@code elden_ring_spells:glintstone_pebble}。
+     * path 必须同时对上语言键 {@code spell.elden_ring_spells.glintstone_pebble}
+     * 和图标 {@code textures/gui/spell_icons/glintstone_pebble.png}。
+     */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_pebble");
 
+    /**
+     * 铁魔法默认配置（可被服务端 irons 配置文件覆盖）。
+     * 稀有度 / 学派 / 最高等级 / 冷却秒数都从这里进游戏。
+     */
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.COMMON)
-            // 辉石学派（elden_ring_spells:glintstone）
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(GlintstonePebbleTuning.SPELL_MAX_LEVEL)
             .setCooldownSeconds(GlintstonePebbleTuning.SPELL_COOLDOWN_SECONDS)
             .build();
 
+    /**
+     * 构造时写入 AbstractSpell 的平衡字段。铁魔法用它们算蓝耗和 {@link #getSpellPower}。
+     * <ul>
+     *   <li>{@code baseManaCost}：1 级蓝耗</li>
+     *   <li>{@code manaCostPerLevel}：每升 1 级额外蓝耗</li>
+     *   <li>{@code baseSpellPower} / {@code spellPowerPerLevel}：法术强度，再乘 Tuning 伤害系数才是实际伤害</li>
+     *   <li>{@code castTime}：蓄力 tick；瞬时法术为 0</li>
+     * </ul>
+     */
     public GlintstonePebbleSpell() {
         this.manaCostPerLevel = GlintstonePebbleTuning.SPELL_MANA_COST_PER_LEVEL;
         this.baseSpellPower = GlintstonePebbleTuning.SPELL_BASE_SPELL_POWER;
@@ -52,6 +73,9 @@ public class GlintstonePebbleSpell extends AbstractSpell {
         this.baseManaCost = GlintstonePebbleTuning.SPELL_BASE_MANA_COST;
     }
 
+    /**
+     * 法术书 / HUD 额外行。这里只显示估算伤害；铁魔法会自己拼蓝耗、冷却。
+     */
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
@@ -67,6 +91,10 @@ public class GlintstonePebbleSpell extends AbstractSpell {
         return defaultConfig;
     }
 
+    /**
+     * {@link CastType#INSTANT}：按下施法即完成，不进入蓄力条。
+     * 需要蓄力的法术（毁灭流星、魔法之境）改用 {@link CastType#LONG}。
+     */
     @Override
     public CastType getCastType() {
         return CastType.INSTANT;
@@ -77,13 +105,18 @@ public class GlintstonePebbleSpell extends AbstractSpell {
         return spellResourceLocation;
     }
 
+    /**
+     * 出手完成音。辉石系统一用水晶铃，和学院法阵视觉配套。
+     */
     @Override
     public Optional<SoundEvent> getCastFinishSound() {
         return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
     }
 
     /**
-     * 服务端生成弹道并播放施法爆发粒子；末尾必须 {@code super.onCast} 以走铁魔法收尾音效等逻辑。
+     * 施法完成回调（双端都会进）。
+     * 服务端：头顶学院法阵 + 沿视线生成魔砾弹道。
+     * 末尾 {@code super.onCast} 不能省，铁魔法靠它收尾音效和内部状态。
      */
     @Override
     public void onCast(
@@ -94,6 +127,7 @@ public class GlintstonePebbleSpell extends AbstractSpell {
             MagicData playerMagicData
     ) {
         if (!level.isClientSide) {
+            AcademySigilFx.spawnAboveHead(level, castingEntity);
             GlintstoneCastHelper.spawnAlongLook(
                     level,
                     castingEntity,
@@ -109,6 +143,10 @@ public class GlintstonePebbleSpell extends AbstractSpell {
         super.onCast(level, spellLevel, castingEntity, castSource, playerMagicData);
     }
 
+    /**
+     * 实际命中伤害 = 铁魔法法术强度 × Tuning 系数。
+     * {@link #getSpellPower} 已含等级、装备、魔法之境等全局加成。
+     */
     private float getDamageAmount(int spellLevel, LivingEntity castingEntity) {
         return getSpellPower(spellLevel, castingEntity) * GlintstonePebbleTuning.SPELL_DAMAGE_PER_SPELL_POWER;
     }

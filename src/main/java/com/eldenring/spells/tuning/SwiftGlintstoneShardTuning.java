@@ -74,7 +74,8 @@ public final class SwiftGlintstoneShardTuning {
     public static final int SPELL_SPELL_POWER_PER_LEVEL = 1;
     public static final int SPELL_CAST_TIME_TICKS = 0;
     public static final double SPELL_COOLDOWN_SECONDS = 0.25;
-    public static final int SPELL_MAX_LEVEL = 10;
+    /** 最大等级。法环辉石咒固定 1 级。 */
+    public static final int SPELL_MAX_LEVEL = 1;
     public static final float SPELL_DAMAGE_PER_SPELL_POWER = 0.42f;
     public static final double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.55;
 }

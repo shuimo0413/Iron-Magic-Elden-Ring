@@ -32,10 +32,10 @@ public final class StarShowerTuning {
     public static final int SPAWN_CIRCLE_START_ANGLE_DEGREES = 90;
 
     /**
-     * 初始飞行方向在视线基础上叠加的上扬分量（无量纲，与视线向量相加后再归一化）。
-     * 调大 → 更明显往上抛；调小 → 更贴视线平射。
+     * 初始飞行方向在视线基础上叠加的世界上扬分量（无量纲，与视线相加后再归一化）。
+     * {@code 0} = 完全平行于视线平射；调大 → 出手瞬间往上抛再折向目标。
      */
-    public static final double PROJECTILE_INITIAL_UPWARD_LIFT = 0.22;
+    public static final double PROJECTILE_INITIAL_UPWARD_LIFT = 0.0;
 
     /** 追踪飞行速度（方块/tick 量级）。 */
     public static final float PROJECTILE_FLIGHT_SPEED = 1.12f;
@@ -87,7 +87,8 @@ public final class StarShowerTuning {
     public static final int SPELL_SPELL_POWER_PER_LEVEL = 1;
     public static final int SPELL_CAST_TIME_TICKS = 0;
     public static final double SPELL_COOLDOWN_SECONDS = 2.5;
-    public static final int SPELL_MAX_LEVEL = 10;
+    /** 最大等级。法环辉石咒固定 1 级。 */
+    public static final int SPELL_MAX_LEVEL = 1;
 
     /** 单发伤害系数；总输出约 = 系数 × 法强 × 6。 */
     public static final float SPELL_DAMAGE_PER_SPELL_POWER = 0.30f;

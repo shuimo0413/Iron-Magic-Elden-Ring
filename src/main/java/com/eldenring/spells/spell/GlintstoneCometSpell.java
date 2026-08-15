@@ -3,6 +3,7 @@ package com.eldenring.spells.spell;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.GlintstoneCometProjectile;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.tuning.GlintstoneCometTuning;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -23,10 +24,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 辉石彗星：强度介于辉石大魔砾与帚星之间的瞬时彗星弹道。
+ * 辉石彗星（Glintstone Comet）：强度卡在大魔砾与帚星之间的瞬时彗星弹。
+ * <p>
+ * 不要和 {@link CometSpell}（帚星 / Comet Azur 那一档的巨型彗星）搞混：
+ * 本类是学院常规彗星，稀有度为 RARE，爆炸半径与伤害都小于帚星。
+ * 命中爆炸仍由 {@link GlintstoneCometProjectile} 处理。
  */
 public class GlintstoneCometSpell extends AbstractSpell {
 
+    /** 注册 ID：{@code elden_ring_spells:glintstone_comet}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_comet");
 
@@ -45,6 +51,7 @@ public class GlintstoneCometSpell extends AbstractSpell {
         this.castTime = GlintstoneCometTuning.SPELL_CAST_TIME_TICKS;
     }
 
+    /** 法术书：单发伤害 + 爆炸半径。 */
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
@@ -88,6 +95,7 @@ public class GlintstoneCometSpell extends AbstractSpell {
             MagicData playerMagicData
     ) {
         if (!level.isClientSide) {
+            AcademySigilFx.spawnAboveHead(level, castingEntity);
             GlintstoneCastHelper.spawnAlongLook(
                     level,
                     castingEntity,

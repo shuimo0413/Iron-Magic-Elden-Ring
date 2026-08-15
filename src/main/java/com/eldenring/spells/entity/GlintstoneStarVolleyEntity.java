@@ -111,8 +111,10 @@ public class GlintstoneStarVolleyEntity extends Projectile {
     }
 
     /**
-     * 按当前发序在视线前方圆阵顶点生成一发，再沿「视线 + 上扬」立刻射出。
-     * 顶点按顺时针等分，3 发呈三角形、6 发六边形、8 发八边形。
+     * 按当前发序在视线前方圆阵顶点生成一发，再沿视线立刻射出。
+     * 顶点按顺时针等分，3 发呈三角形、6 发六边形、12 发十二边形。
+     * 上扬由各 Tuning 的 {@code PROJECTILE_INITIAL_UPWARD_LIFT} 控制，当前均为 0（平射）。
+     * 毁灭流星出手闪光改走星河粒子，不再叠青蓝 castBurst。
      */
     private void spawnNextProjectile(LivingEntity caster) {
         int projectileIndex = spawnedProjectileCount;
@@ -124,9 +126,11 @@ public class GlintstoneStarVolleyEntity extends Projectile {
                 spawnCircleRadiusBlocks(),
                 spawnCircleStartAngleDegrees()
         );
-        Vec3 shootDirection = lookDirection
-                .add(0.0, initialUpwardLift(), 0.0)
-                .normalize();
+        double upwardLift = initialUpwardLift();
+        Vec3 shootDirection = upwardLift == 0.0
+                ? lookDirection
+                : lookDirection.add(0.0, upwardLift, 0.0).normalize();
+        boolean playCyanCastBurst = volleyKind != VolleyKind.STARS_OF_RUIN;
 
         GlintstoneCastHelper.spawnAlongLook(
                 level(),
@@ -138,7 +142,7 @@ public class GlintstoneStarVolleyEntity extends Projectile {
                 damagePerProjectile,
                 shootDirection,
                 lookPlaneOffset,
-                true
+                playCyanCastBurst
         );
 
         level().playSound(
@@ -153,15 +157,10 @@ public class GlintstoneStarVolleyEntity extends Projectile {
         );
 
         if (volleyKind == VolleyKind.STARS_OF_RUIN) {
-            Vec3 riverOrigin = caster.getEyePosition().add(lookDirection.scale(0.35));
-            GlintstoneFx.starRiver(
+            GlintstoneFx.starRiverLaunch(
                     level(),
-                    riverOrigin,
-                    lookDirection,
-                    StarsOfRuinTuning.CAST_BURST_PARTICLE_INTENSITY * 0.55f,
-                    StarsOfRuinTuning.STAR_RIVER_LENGTH_BLOCKS * 0.55,
-                    StarsOfRuinTuning.STAR_RIVER_RADIUS_BLOCKS * 0.75,
-                    true
+                    caster,
+                    StarsOfRuinTuning.CAST_BURST_PARTICLE_INTENSITY * 0.55f
             );
         }
     }

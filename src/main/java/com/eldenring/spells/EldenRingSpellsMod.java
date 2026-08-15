@@ -2,6 +2,7 @@ package com.eldenring.spells;
 
 import com.eldenring.spells.registry.ModAttributes;
 import com.eldenring.spells.registry.ModCreativeTabs;
+import com.eldenring.spells.registry.ModEffects;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModItems;
 import com.eldenring.spells.registry.ModParticles;
@@ -21,6 +22,7 @@ public class EldenRingSpellsMod {
     public EldenRingSpellsMod(IEventBus modEventBus) {
         ModAttributes.register(modEventBus);
         ModSchools.register(modEventBus);
+        ModEffects.register(modEventBus);
         ModItems.register(modEventBus);
         ModParticles.register(modEventBus);
         ModEntities.register(modEventBus);

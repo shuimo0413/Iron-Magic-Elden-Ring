@@ -108,8 +108,8 @@ public final class GlintstonePebbleTuning {
     /** 冷却时间（秒）。 */
     public static final double SPELL_COOLDOWN_SECONDS = 0.5;
 
-    /** 最大等级。 */
-    public static final int SPELL_MAX_LEVEL = 10;
+    /** 最大等级。法环辉石咒固定 1 级。 */
+    public static final int SPELL_MAX_LEVEL = 1;
     
 
     /**

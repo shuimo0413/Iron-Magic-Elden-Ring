@@ -3,6 +3,7 @@ package com.eldenring.spells.spell;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.CometProjectile;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.tuning.CometTuning;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -23,10 +24,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 帚星：瞬时释放的巨型辉石彗星；命中后在半径内爆炸。
+ * 帚星（Comet）：辉石单发线的顶点，瞬时放出巨型彗星，命中后大半径爆炸。
+ * <p>
+ * 类名是 {@code CometSpell}、注册 path 是 {@code comet}，对应法环「帚星」而非「辉石彗星」。
+ * 辉石彗星见 {@link GlintstoneCometSpell}。本咒蓝耗 / 冷却 / 爆炸半径都明显更大，
+ * 适合作为高压单体 / 小范围清场，而不是连射填充。
  */
 public class CometSpell extends AbstractSpell {
 
+    /** 注册 ID：{@code elden_ring_spells:comet}。语言键 / 图标 path 也是 {@code comet}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "comet");
 
@@ -45,6 +51,7 @@ public class CometSpell extends AbstractSpell {
         this.castTime = CometTuning.SPELL_CAST_TIME_TICKS;
     }
 
+    /** 法术书：伤害 + 爆炸半径（方块）。 */
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
@@ -79,6 +86,10 @@ public class CometSpell extends AbstractSpell {
         return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
     }
 
+    /**
+     * 服务端生成 {@link CometProjectile}。弹体更大，CastHelper 里的嵌块回退对它尤其重要，
+     * 否则贴墙出手会整颗彗星直接撞没。
+     */
     @Override
     public void onCast(
             Level level,
@@ -88,6 +99,7 @@ public class CometSpell extends AbstractSpell {
             MagicData playerMagicData
     ) {
         if (!level.isClientSide) {
+            AcademySigilFx.spawnAboveHead(level, castingEntity);
             GlintstoneCastHelper.spawnAlongLook(
                     level,
                     castingEntity,

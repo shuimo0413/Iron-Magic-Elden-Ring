@@ -116,7 +116,8 @@ public final class SpiralShardTuning {
     public static final int SPELL_SPELL_POWER_PER_LEVEL = 1;
     public static final int SPELL_CAST_TIME_TICKS = 0;
     public static final double SPELL_COOLDOWN_SECONDS = 0.75;
-    public static final int SPELL_MAX_LEVEL = 10;
+    /** 最大等级。法环辉石咒固定 1 级。 */
+    public static final int SPELL_MAX_LEVEL = 1;
 
     /**
      * 命中伤害系数（任一彗星命中即结算并销毁整对）。

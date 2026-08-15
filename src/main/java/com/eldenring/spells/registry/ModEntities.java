@@ -2,6 +2,7 @@ package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.CometProjectile;
+import com.eldenring.spells.entity.FoundingRainOfStarsEntity;
 import com.eldenring.spells.entity.GlintstoneCometProjectile;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
 import com.eldenring.spells.entity.GlintstoneStarProjectile;
@@ -11,6 +12,7 @@ import com.eldenring.spells.entity.SpiralShardProjectile;
 import com.eldenring.spells.entity.StarShowerProjectile;
 import com.eldenring.spells.entity.StarsOfRuinProjectile;
 import com.eldenring.spells.entity.SwiftGlintstoneShardProjectile;
+import com.eldenring.spells.entity.TerraMagicaZoneEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -87,6 +89,18 @@ public final class ModEntities {
             );
 
     /**
+     * 创星雨时序实体：不可见，先等星云淡出再抽光点升空；落星雨下一步挂在同一实体上。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<FoundingRainOfStarsEntity>> FOUNDING_RAIN_OF_STARS =
+            ENTITIES.register("founding_rain_of_stars", () ->
+                    EntityType.Builder.<FoundingRainOfStarsEntity>of(FoundingRainOfStarsEntity::new, MobCategory.MISC)
+                            .sized(0.1f, 0.1f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("founding_rain_of_stars"))
+            );
+
+    /**
      * 辉石连发控制器：不可见，只按 tick 依次生成流星，避免 TickTask 把延迟发挤进同一帧。
      */
     public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneStarVolleyEntity>> GLINTSTONE_STAR_VOLLEY =
@@ -118,6 +132,19 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("spiral_shard"))
+            );
+
+    /**
+     * 魔法之境法阵：静止圆形区域，尺寸由运行时 {@code setRadius} 刷新；
+     * 此处初始碰撞箱仅作占位，实际以同步半径为准。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<TerraMagicaZoneEntity>> TERRA_MAGICA_ZONE =
+            ENTITIES.register("terra_magica_zone", () ->
+                    EntityType.Builder.<TerraMagicaZoneEntity>of(TerraMagicaZoneEntity::new, MobCategory.MISC)
+                            .sized(9.0f, 1.2f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("terra_magica_zone"))
             );
 
     private ModEntities() {

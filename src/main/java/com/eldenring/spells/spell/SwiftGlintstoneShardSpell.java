@@ -2,8 +2,9 @@ package com.eldenring.spells.spell;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.SwiftGlintstoneShardProjectile;
-import com.eldenring.spells.tuning.SwiftGlintstoneShardTuning;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.sigil.AcademySigilFx;
+import com.eldenring.spells.tuning.SwiftGlintstoneShardTuning;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -23,10 +24,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 辉石迅魔砾：比魔砾更快、更便宜、单发更弱，适合走位连射。
+ * 辉石迅魔砾：魔砾的「走位连射」变体。
+ * <p>
+ * 同样是瞬时单发 + 限角追踪，但弹更快、蓝更便宜、单发伤害更低。
+ * 结构与 {@link GlintstonePebbleSpell} 几乎相同，只换弹道类和 {@link SwiftGlintstoneShardTuning}。
+ * 爆发粒子用 Tuning 里的强度，比魔砾略淡，避免连射时屏幕被闪光糊满。
  */
 public class SwiftGlintstoneShardSpell extends AbstractSpell {
 
+    /** 注册 ID：{@code elden_ring_spells:swift_glintstone_shard}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "swift_glintstone_shard");
 
@@ -45,6 +51,7 @@ public class SwiftGlintstoneShardSpell extends AbstractSpell {
         this.baseManaCost = SwiftGlintstoneShardTuning.SPELL_BASE_MANA_COST;
     }
 
+    /** 法术书额外行：估算单发伤害。 */
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
@@ -75,6 +82,9 @@ public class SwiftGlintstoneShardSpell extends AbstractSpell {
         return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
     }
 
+    /**
+     * 服务端生成迅魔砾弹道。{@code CAST_BURST_PARTICLE_INTENSITY} 小于 1，连射时闪光更克制。
+     */
     @Override
     public void onCast(
             Level level,
@@ -84,6 +94,7 @@ public class SwiftGlintstoneShardSpell extends AbstractSpell {
             MagicData playerMagicData
     ) {
         if (!level.isClientSide) {
+            AcademySigilFx.spawnAboveHead(level, castingEntity);
             GlintstoneCastHelper.spawnAlongLook(
                     level,
                     castingEntity,
@@ -99,6 +110,7 @@ public class SwiftGlintstoneShardSpell extends AbstractSpell {
         super.onCast(level, spellLevel, castingEntity, castSource, playerMagicData);
     }
 
+    /** 命中伤害 = 法术强度 × {@link SwiftGlintstoneShardTuning#SPELL_DAMAGE_PER_SPELL_POWER}。 */
     private float getDamageAmount(int spellLevel, LivingEntity castingEntity) {
         return getSpellPower(spellLevel, castingEntity)
                 * SwiftGlintstoneShardTuning.SPELL_DAMAGE_PER_SPELL_POWER;

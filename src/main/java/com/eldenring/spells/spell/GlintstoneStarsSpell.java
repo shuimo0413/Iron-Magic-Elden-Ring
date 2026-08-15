@@ -3,6 +3,7 @@ package com.eldenring.spells.spell;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.tuning.GlintstoneStarsTuning;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -25,12 +26,19 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 辉石流星：三发依次飞出，每发一出现即以「前冲 + 上扬」立刻强追踪。
+ * 辉石流星：瞬时放出三发依次飞出的强追踪小彗星。
  * <p>
- * 连发由 {@link GlintstoneStarVolleyEntity} 按 tick 错峰，避免三发叠在同一帧造成骗伤。
+ * 本类<strong>不直接生成弹道</strong>。{@code onCast} 只刷一个
+ * {@link GlintstoneStarVolleyEntity}（{@code VolleyKind.GLINTSTONE_STARS}），
+ * 由它按 tick 错峰调用 {@link GlintstoneCastHelper} 出弹。
+ * 若三发在同一帧生成，会叠在同一像素上，体感像一发骗伤。
+ * <p>
+ * 每发一出现就沿视线前冲并立刻强追踪，手感接近法环辉石流星而不是魔砾那种限角轻追。
+ * 发数 / 间隔 / 圆阵半径改 {@link GlintstoneStarsTuning}。
  */
 public class GlintstoneStarsSpell extends AbstractSpell {
 
+    /** 注册 ID：{@code elden_ring_spells:glintstone_stars}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_stars");
 
@@ -49,6 +57,9 @@ public class GlintstoneStarsSpell extends AbstractSpell {
         this.baseManaCost = GlintstoneStarsTuning.SPELL_BASE_MANA_COST;
     }
 
+    /**
+     * 法术书：单发伤害 + {@code ×3}。总伤约等于单发 × 发数，但目标可能躲开后几发。
+     */
     @Override
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
@@ -81,13 +92,19 @@ public class GlintstoneStarsSpell extends AbstractSpell {
     }
 
     /**
-     * 连发命中间隔短于原版受伤无敌帧，必须把 i-frame 清零，否则后两发会被吞成骗伤。
+     * 原版生物受伤后有约 10 tick 无敌帧（i-frame）。三连发间隔短于这个窗口，
+     * 若不把 i-frame 清零，后两发会打在无敌上变成骗伤。
+     * 流星雨 / 毁灭流星同样覆盖此方法。
      */
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
         return super.getDamageSource(projectile, attacker).setIFrames(0);
     }
 
+    /**
+     * 服务端只生成齐射实体并传入「每一发」的伤害。
+     * 齐射实体会自己排正三角形阵面、按间隔出弹，Spell 不再循环 {@code spawnAlongLook}。
+     */
     @Override
     public void onCast(
             Level level,
@@ -97,6 +114,7 @@ public class GlintstoneStarsSpell extends AbstractSpell {
             MagicData playerMagicData
     ) {
         if (!level.isClientSide) {
+            AcademySigilFx.spawnAboveHead(level, castingEntity);
             GlintstoneStarVolleyEntity volleyEntity = new GlintstoneStarVolleyEntity(
                     level,
                     castingEntity,
@@ -108,6 +126,7 @@ public class GlintstoneStarsSpell extends AbstractSpell {
         super.onCast(level, spellLevel, castingEntity, castSource, playerMagicData);
     }
 
+    /** 单发伤害。总伤需再乘 {@link GlintstoneStarsTuning#PROJECTILE_COUNT}。 */
     private float getDamageAmountPerProjectile(int spellLevel, LivingEntity castingEntity) {
         return getSpellPower(spellLevel, castingEntity)
                 * GlintstoneStarsTuning.SPELL_DAMAGE_PER_SPELL_POWER;

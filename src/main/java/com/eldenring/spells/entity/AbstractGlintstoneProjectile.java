@@ -125,6 +125,13 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
                 trailStyle.maximumHistoryPointCount()
         );
         // 几何光束由 Renderer 绘制；这里只在弹头补极少火花/闪星
+        spawnTrailAccentParticles(deltaMovement, trailStyle);
+    }
+
+    /**
+     * 弹头点缀粒子。普通辉石走青蓝库；毁灭流星等可覆盖成蓝紫星河粒子。
+     */
+    protected void spawnTrailAccentParticles(Vec3 deltaMovement, GlintstoneTrailTuning.TrailStyle trailStyle) {
         GlintstoneFx.trailAccents(
                 level(),
                 getX(),
@@ -138,6 +145,13 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
 
     @Override
     public void impactParticles(double impactX, double impactY, double impactZ) {
+        spawnImpactParticles(impactX, impactY, impactZ);
+    }
+
+    /**
+     * 命中爆裂粒子。覆盖本方法即可换调色板，不必重写光轨历史记录。
+     */
+    protected void spawnImpactParticles(double impactX, double impactY, double impactZ) {
         GlintstoneFx.impact(level(), impactX, impactY, impactZ, impactParticleIntensity());
     }
 
