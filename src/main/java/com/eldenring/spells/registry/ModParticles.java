@@ -1,6 +1,8 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.particle.cometazur.CometAzurJetOptions;
+import com.eldenring.spells.particle.cometazur.CometAzurVortexOptions;
 import com.eldenring.spells.particle.foundingrain.OverheadNebulaAccentOptions;
 import com.eldenring.spells.particle.glintstone.AcademyGlintstoneSigilParticleOptions;
 import com.mojang.serialization.MapCodec;
@@ -179,6 +181,18 @@ public final class ModParticles {
             registerAlwaysShown("nebula_veil_wisp");
 
     /**
+     * 创星雨落地涟漪：贴地水平展开，三帧从小环胀到淡圈。
+     */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STAR_RIVER_RIPPLE =
+            registerAlwaysShown("star_river_ripple");
+
+    /**
+     * 创星雨落地飞沫：扇形水珠，只在撞击点刷一颗，不沿雨点轨迹铺。
+     */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STAR_RIVER_SPRAY =
+            registerAlwaysShown("star_river_spray");
+
+    /**
      * 头顶星云的星河点缀：一张表里塞 mist / mote / filament 等，用 {@code Accent} 选贴图。
      * 寿命 3 秒，和云朵主体一起淡入淡出。
      */
@@ -209,6 +223,75 @@ public final class ModParticles {
                 @Override
                 public StreamCodec<? super RegistryFriendlyByteBuf, AcademyGlintstoneSigilParticleOptions> streamCodec() {
                     return AcademyGlintstoneSigilParticleOptions.STREAM_CODEC;
+                }
+            });
+
+    /**
+     * 彗星亚兹勒起手漩涡中心：{@code comet_azur_shrink_1} / {@code shrink_2} 两帧，由粒子自己平面旋转。
+     * 带朝向数据，供客户端在垂直视线的平面上铺对数螺线。
+     */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<CometAzurVortexOptions>> COMET_AZUR_SHRINK =
+            PARTICLE_TYPES.register("comet_azur_shrink", () -> new ParticleType<>(true) {
+                @Override
+                public MapCodec<CometAzurVortexOptions> codec() {
+                    return CometAzurVortexOptions.CODEC;
+                }
+
+                @Override
+                public StreamCodec<? super RegistryFriendlyByteBuf, CometAzurVortexOptions> streamCodec() {
+                    return CometAzurVortexOptions.STREAM_CODEC;
+                }
+            });
+
+    /** 亚兹勒起手汇聚：mote_1 / mote_2 十字闪星。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COMET_AZUR_MOTE =
+            registerAlwaysShown("comet_azur_mote");
+
+    /** 亚兹勒起手汇聚：八芒冲击星。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COMET_AZUR_IMPACT =
+            registerAlwaysShown("comet_azur_impact");
+
+    /** 亚兹勒起手汇聚：碎星团。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COMET_AZUR_HEAD =
+            registerAlwaysShown("comet_azur_head");
+
+    /** 亚兹勒起手汇聚：星尘。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COMET_AZUR_DUST =
+            registerAlwaysShown("comet_azur_dust");
+
+    /** 蓄力结束涟漪：vortex_field 软边圆盘。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COMET_AZUR_VORTEX_FIELD =
+            registerAlwaysShown("comet_azur_vortex_field");
+
+    /** 蓄力结束涟漪：vortex 双臂螺旋圆盘。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COMET_AZUR_VORTEX =
+            registerAlwaysShown("comet_azur_vortex");
+
+    /**
+     * 星辰涟漪外沿点缀：闪星 / 星团 / 暗核 / 火花。
+     */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COMET_AZUR_SHOCKWAVE_ACCENT =
+            registerAlwaysShown("comet_azur_shockwave_accent");
+
+    /**
+     * 星辰涟漪光圈：pulse_ring / eclipse_ring / lens，加法混合的空心环。
+     */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> COMET_AZUR_SHOCKWAVE_RING =
+            registerAlwaysShown("comet_azur_shockwave_ring");
+
+    /**
+     * 喷流周围粒子发射器。服务端只同步这一颗；客户端再铺 glow / spark / mote / impact / filament。
+     */
+    public static final DeferredHolder<ParticleType<?>, ParticleType<CometAzurJetOptions>> COMET_AZUR_JET_SURROUND =
+            PARTICLE_TYPES.register("comet_azur_jet_surround", () -> new ParticleType<>(true) {
+                @Override
+                public MapCodec<CometAzurJetOptions> codec() {
+                    return CometAzurJetOptions.CODEC;
+                }
+
+                @Override
+                public StreamCodec<? super RegistryFriendlyByteBuf, CometAzurJetOptions> streamCodec() {
+                    return CometAzurJetOptions.STREAM_CODEC;
                 }
             });
 

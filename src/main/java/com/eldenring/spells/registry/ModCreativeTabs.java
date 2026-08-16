@@ -44,6 +44,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.createFilledScroll(ModSpells.COMET, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.SPIRAL_SHARD, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.TERRA_MAGICA, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.COMET_AZUR, 1));
                     })
                     .build());
 

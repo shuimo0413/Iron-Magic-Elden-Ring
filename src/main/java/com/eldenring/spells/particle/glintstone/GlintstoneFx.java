@@ -718,17 +718,29 @@ public final class GlintstoneFx {
     }
 
     /**
-     * 创星雨升空：从右手星云体内抽样，把光点射向身前上空的星云圆心。
-     * <p>
-     * {@code moteCountThisTick} 由时序实体按 tick 分批传入，避免一帧刷完失去「从云里抽走」的过程感。
-     * 粒子收到的 {@code xd/yd/zd} 是终点相对出生点的位移，不是速度；见 {@code StarAscentParticle}。
+     * 创星雨升空：从右手星云体内抽样，把光点射向出手瞬间钉死的雨云圆心。
      */
     public static void starRiverAscent(Level level, LivingEntity caster, int moteCountThisTick) {
+        starRiverAscent(level, caster, moteCountThisTick, FoundingRainFx.cloudCenterInFrontOf(caster));
+    }
+
+    /**
+     * 创星雨升空：从右手星云体内抽样，把光点射向已经钉死的雨云圆心。
+     * <p>
+     * {@code gatheringCenter} 必须是出手瞬间算好的世界坐标，不能每 tick 跟玩家重算。
+     * {@code moteCountThisTick} 由时序实体按 tick 分批传入。
+     * 粒子收到的 {@code xd/yd/zd} 是终点相对出生点的位移，不是速度；见 {@code StarAscentParticle}。
+     */
+    public static void starRiverAscent(
+            Level level,
+            LivingEntity caster,
+            int moteCountThisTick,
+            Vec3 gatheringCenter
+    ) {
         if (moteCountThisTick <= 0) {
             return;
         }
         NebulaFrame frame = nebulaFrame(caster.getEyePosition(), caster.getLookAngle());
-        Vec3 gatheringCenter = FoundingRainFx.cloudCenterInFrontOf(caster);
         double scatterRadiusBlocks = FoundingRainOfStarsTuning.ASCENT_TARGET_SCATTER_RADIUS_BLOCKS;
         double heightJitterBlocks = FoundingRainOfStarsTuning.ASCENT_TARGET_HEIGHT_JITTER_BLOCKS;
         double sampleRadiusBlocks = StarRiverTuning.NEBULA_RADIUS_BLOCKS;

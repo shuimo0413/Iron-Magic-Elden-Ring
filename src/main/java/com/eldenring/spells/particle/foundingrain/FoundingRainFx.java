@@ -1,8 +1,10 @@
 package com.eldenring.spells.particle.foundingrain;
 
 import com.eldenring.spells.particle.foundingrain.OverheadNebulaAccentOptions.Accent;
+import com.eldenring.spells.registry.ModParticles;
 import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -10,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * 创星雨粒子助手。手里星云仍走 {@code GlintstoneFx.starRiver}；
- * 身前气团改由软光面片渲染，这里只负责白色小星星。
+ * 身前气团改由软光面片渲染，这里负责白色小星星和雨针落地涟漪。
  */
 public final class FoundingRainFx {
 
@@ -18,8 +20,9 @@ public final class FoundingRainFx {
     }
 
     /**
-     * 星云圆心：视线水平前方 {@link FoundingRainOfStarsTuning#OVERHEAD_CLOUD_FORWARD_OFFSET_BLOCKS} 格，
-     * 高度仍是眼高 + {@link FoundingRainOfStarsTuning#ASCENT_TARGET_HEIGHT_ABOVE_EYES_BLOCKS}。
+     * 星云圆心：施法者当时眼睛的水平前方 {@link FoundingRainOfStarsTuning#OVERHEAD_CLOUD_FORWARD_OFFSET_BLOCKS} 格，
+     * 高度是眼高 + {@link FoundingRainOfStarsTuning#ASCENT_TARGET_HEIGHT_ABOVE_EYES_BLOCKS}。
+     * 只应在出手瞬间调用一次，把结果存进时序实体。
      */
     public static Vec3 cloudCenterInFrontOf(LivingEntity caster) {
         Vec3 lookDirection = caster.getLookAngle();
@@ -66,6 +69,67 @@ public final class FoundingRainFx {
                     .add(0.0, alongUp, 0.0);
             spawnAccent(level, Accent.MOTE, starPosition, drift(level));
         }
+    }
+
+    /**
+     * 雨针命中时的反馈。地面刷贴地涟漪 + 飞沫；只碰到实体时只喷飞沫，避免人身上长出水圈。
+     *
+     * @param hitGround {@code true} 时才生成水平涟漪
+     */
+    public static void spawnRainImpact(Level level, double impactX, double impactY, double impactZ, boolean hitGround) {
+        if (hitGround) {
+            spawnForced(
+                    level,
+                    ModParticles.STAR_RIVER_RIPPLE.get(),
+                    impactX,
+                    impactY + 0.04,
+                    impactZ,
+                    1,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0
+            );
+        }
+        spawnForced(
+                level,
+                ModParticles.STAR_RIVER_SPRAY.get(),
+                impactX,
+                impactY + 0.08,
+                impactZ,
+                1,
+                0.04,
+                0.10,
+                0.04,
+                0.08
+        );
+    }
+
+    private static void spawnForced(
+            Level level,
+            ParticleOptions particle,
+            double x,
+            double y,
+            double z,
+            int count,
+            double xSpread,
+            double ySpread,
+            double zSpread,
+            double speed
+    ) {
+        MagicManager.spawnParticles(
+                level,
+                particle,
+                x,
+                y,
+                z,
+                count,
+                xSpread,
+                ySpread,
+                zSpread,
+                speed,
+                true
+        );
     }
 
     private static Vec3 drift(Level level) {

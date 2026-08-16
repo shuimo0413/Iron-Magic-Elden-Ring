@@ -2,6 +2,8 @@ package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.CometProjectile;
+import com.eldenring.spells.entity.CometAzurJetEntity;
+import com.eldenring.spells.entity.FoundingRainDropEntity;
 import com.eldenring.spells.entity.FoundingRainOfStarsEntity;
 import com.eldenring.spells.entity.GlintstoneCometProjectile;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
@@ -89,7 +91,7 @@ public final class ModEntities {
             );
 
     /**
-     * 创星雨时序实体：不可见，先等星云淡出再抽光点升空；落星雨下一步挂在同一实体上。
+     * 创星雨时序实体：不可见，升空节拍 + 钉雨云 + 从云层抽雨针。
      */
     public static final DeferredHolder<EntityType<?>, EntityType<FoundingRainOfStarsEntity>> FOUNDING_RAIN_OF_STARS =
             ENTITIES.register("founding_rain_of_stars", () ->
@@ -98,6 +100,18 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("founding_rain_of_stars"))
+            );
+
+    /**
+     * 创星雨雨针：细碰撞箱，视觉完全靠曲线光带。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<FoundingRainDropEntity>> FOUNDING_RAIN_DROP =
+            ENTITIES.register("founding_rain_drop", () ->
+                    EntityType.Builder.<FoundingRainDropEntity>of(FoundingRainDropEntity::new, MobCategory.MISC)
+                            .sized(0.12f, 0.12f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("founding_rain_drop"))
             );
 
     /**
@@ -145,6 +159,18 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("terra_magica_zone"))
+            );
+
+    /**
+     * 彗星亚兹勒星河喷流：钉在施法者面前，视觉靠多层 ribbon，碰撞箱仅作追踪占位。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<CometAzurJetEntity>> COMET_AZUR_JET =
+            ENTITIES.register("comet_azur_jet", () ->
+                    EntityType.Builder.<CometAzurJetEntity>of(CometAzurJetEntity::new, MobCategory.MISC)
+                            .sized(0.6f, 0.6f)
+                            .clientTrackingRange(96)
+                            .updateInterval(1)
+                            .build(id("comet_azur_jet"))
             );
 
     private ModEntities() {

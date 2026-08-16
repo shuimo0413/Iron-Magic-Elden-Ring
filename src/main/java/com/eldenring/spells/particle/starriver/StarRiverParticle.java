@@ -54,7 +54,11 @@ public class StarRiverParticle extends TextureSheetParticle {
          * 创星雨升空拖尾：短命残影，钉在光点刚走过的位置上淡出。
          * 寿命短才能看成「小拖尾」而不是一团雾。
          */
-        ASCENT_TRAIL(5, 2, 0.09f, 0.05f, 0.0f, 0.55f, 0.88f, Fade.LINEAR, false, 0.0f);
+        ASCENT_TRAIL(5, 2, 0.09f, 0.05f, 0.0f, 0.55f, 0.88f, Fade.LINEAR, false, 0.0f),
+        /**
+         * 创星雨落地飞沫：短命扇形水珠，略带重力，不构成雨点本体。
+         */
+        SPRAY(8, 3, 0.22f, 0.12f, 0.08f, 0.62f, 0.90f, Fade.LINEAR, false, 0.0f);
 
         /** 基础寿命（tick）。 */
         final int lifetimeBaseTicks;

@@ -1,6 +1,7 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.spell.CometAzurSpell;
 import com.eldenring.spells.spell.CometSpell;
 import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
 import com.eldenring.spells.spell.GlintstoneCometSpell;
@@ -58,7 +59,7 @@ public final class ModSpells {
     public static final Supplier<AbstractSpell> STARS_OF_RUIN =
             registerSpell(new StarsOfRuinSpell());
 
-    /** 创星雨：星云出手后抽光点升空（本阶段尚无落星雨伤害）。 */
+    /** 创星雨：星云出手后抽光点升空，雨云里落下白紫雨针。 */
     public static final Supplier<AbstractSpell> FOUNDING_RAIN_OF_STARS =
             registerSpell(new FoundingRainOfStarsSpell());
 
@@ -73,6 +74,10 @@ public final class ModSpells {
     /** 魔法之境：脚下法阵，站内全局法术强度 +30%。 */
     public static final Supplier<AbstractSpell> TERRA_MAGICA =
             registerSpell(new TerraMagicaSpell());
+
+    /** 彗星亚兹勒：2 秒蓄力后按住喷流，不能叠多发。 */
+    public static final Supplier<AbstractSpell> COMET_AZUR =
+            registerSpell(new CometAzurSpell());
 
     private ModSpells() {
     }

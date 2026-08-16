@@ -1,10 +1,17 @@
 package com.eldenring.spells;
 
+import com.eldenring.spells.client.render.CometAzurJetRenderer;
+import com.eldenring.spells.client.render.FoundingRainDropRenderer;
 import com.eldenring.spells.client.render.FoundingRainNebulaRenderer;
 import com.eldenring.spells.client.render.TerraMagicaZoneRenderer;
 import com.eldenring.spells.client.render.glintstone.GlintstoneCometModels;
 import com.eldenring.spells.client.render.glintstone.GlintstoneProjectileRenderer;
 import com.eldenring.spells.client.render.glintstone.SpiralShardRenderer;
+import com.eldenring.spells.particle.cometazur.CometAzurInboundParticle;
+import com.eldenring.spells.particle.cometazur.CometAzurJetEmitterParticle;
+import com.eldenring.spells.particle.cometazur.CometAzurShockwaveAccentParticle;
+import com.eldenring.spells.particle.cometazur.CometAzurShockwaveDiscParticle;
+import com.eldenring.spells.particle.cometazur.CometAzurVortexParticle;
 import com.eldenring.spells.particle.glintstone.AcademyGlintstoneSigilParticle;
 import com.eldenring.spells.particle.glintstone.GlintstoneFlareParticle;
 import com.eldenring.spells.particle.glintstone.GlintstoneGlowParticle;
@@ -15,6 +22,7 @@ import com.eldenring.spells.particle.glintstone.GlintstoneSparkParticle;
 import com.eldenring.spells.particle.foundingrain.NebulaCloudParticle;
 import com.eldenring.spells.particle.foundingrain.OverheadNebulaAccentParticle;
 import com.eldenring.spells.particle.foundingrain.StarAscentParticle;
+import com.eldenring.spells.particle.foundingrain.StarRiverRippleParticle;
 import com.eldenring.spells.particle.starriver.StarRiverParticle;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModParticles;
@@ -87,6 +95,28 @@ public class EldenRingSpellsClient {
         event.registerSpriteSet(ModParticles.NEBULA_BLOOM.get(), sprites -> new NebulaCloudParticle.Provider(sprites, NebulaCloudParticle.Kind.BLOOM));
         event.registerSpriteSet(ModParticles.NEBULA_VEIL_WISP.get(), sprites -> new NebulaCloudParticle.Provider(sprites, NebulaCloudParticle.Kind.VEIL_WISP));
         event.registerSpriteSet(ModParticles.OVERHEAD_NEBULA_ACCENT.get(), OverheadNebulaAccentParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.STAR_RIVER_RIPPLE.get(), StarRiverRippleParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.STAR_RIVER_SPRAY.get(), sprites -> new StarRiverParticle.Provider(sprites, StarRiverParticle.Kind.SPRAY));
+        event.registerSpriteSet(ModParticles.COMET_AZUR_SHRINK.get(), CometAzurVortexParticle.Provider::new);
+        event.registerSpriteSet(
+                ModParticles.COMET_AZUR_MOTE.get(),
+                sprites -> new CometAzurInboundParticle.Provider(sprites, CometAzurInboundParticle.Kind.MOTE)
+        );
+        event.registerSpriteSet(
+                ModParticles.COMET_AZUR_IMPACT.get(),
+                sprites -> new CometAzurInboundParticle.Provider(sprites, CometAzurInboundParticle.Kind.IMPACT)
+        );
+        event.registerSpriteSet(
+                ModParticles.COMET_AZUR_HEAD.get(),
+                sprites -> new CometAzurInboundParticle.Provider(sprites, CometAzurInboundParticle.Kind.HEAD)
+        );
+        event.registerSpriteSet(
+                ModParticles.COMET_AZUR_DUST.get(),
+                sprites -> new CometAzurInboundParticle.Provider(sprites, CometAzurInboundParticle.Kind.DUST)
+        );
+        event.registerSpriteSet(ModParticles.COMET_AZUR_SHOCKWAVE_RING.get(), CometAzurShockwaveDiscParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.COMET_AZUR_SHOCKWAVE_ACCENT.get(), CometAzurShockwaveAccentParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.COMET_AZUR_JET_SURROUND.get(), CometAzurJetEmitterParticle.Provider::new);
     }
 
     /**
@@ -124,8 +154,10 @@ public class EldenRingSpellsClient {
         event.registerEntityRenderer(ModEntities.STARS_OF_RUIN.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GLINTSTONE_STAR_VOLLEY.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.FOUNDING_RAIN_OF_STARS.get(), FoundingRainNebulaRenderer::new);
+        event.registerEntityRenderer(ModEntities.FOUNDING_RAIN_DROP.get(), FoundingRainDropRenderer::new);
         event.registerEntityRenderer(ModEntities.COMET.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.SPIRAL_SHARD.get(), SpiralShardRenderer::new);
         event.registerEntityRenderer(ModEntities.TERRA_MAGICA_ZONE.get(), TerraMagicaZoneRenderer::new);
+        event.registerEntityRenderer(ModEntities.COMET_AZUR_JET.get(), CometAzurJetRenderer::new);
     }
 }

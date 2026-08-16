@@ -53,6 +53,34 @@ public final class GlintstoneTrailRenderer {
             GlintstoneTrailTuning.TrailStyle trailStyle,
             GlintstoneCometHeadDrawer.VisualStyle visualStyle
     ) {
+        renderHistoryRibbon(
+                poseStack,
+                bufferSource,
+                renderOriginWorld,
+                currentHeadWorld,
+                cameraWorld,
+                historyWorldPositions,
+                trailStyle,
+                visualStyle.glowColorArgb(),
+                visualStyle.coreColorArgb()
+        );
+    }
+
+    /**
+     * 与 {@link #renderHistoryRibbon} 相同的曲线光带，颜色由调用方直接给 ARGB。
+     * 创星雨雨点走白紫，不经过彗星头 {@code VisualStyle}。
+     */
+    public static void renderHistoryRibbon(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            Vec3 renderOriginWorld,
+            Vec3 currentHeadWorld,
+            Vec3 cameraWorld,
+            List<Vec3> historyWorldPositions,
+            GlintstoneTrailTuning.TrailStyle trailStyle,
+            int glowColorArgb,
+            int coreColorArgb
+    ) {
         List<Vec3> renderPoints = smoothPolylineOnce(
                 buildRenderPoints(historyWorldPositions, currentHeadWorld)
         );
@@ -70,9 +98,6 @@ public final class GlintstoneTrailRenderer {
         VertexConsumer consumer = bufferSource.getBuffer(TRAIL_RENDER_TYPE);
         Matrix4f poseMatrix = poseStack.last().pose();
 
-        int glowColor = visualStyle.glowColorArgb();
-        int coreColor = visualStyle.coreColorArgb();
-
         // 外层先画：宽、淡、柔边。
         putRibbonLayer(
                 consumer,
@@ -84,12 +109,12 @@ public final class GlintstoneTrailRenderer {
                 totalLengthBlocks,
                 trailStyle.tailHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_OUTER_WIDTH_SCALE,
                 trailStyle.headHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_OUTER_WIDTH_SCALE,
-                unpackRed(glowColor),
-                unpackGreen(glowColor),
-                unpackBlue(glowColor),
-                (int) (unpackAlpha(glowColor) * GlintstoneTrailTuning.BEAM_OUTER_ALPHA_SCALE)
+                unpackRed(glowColorArgb),
+                unpackGreen(glowColorArgb),
+                unpackBlue(glowColorArgb),
+                (int) (unpackAlpha(glowColorArgb) * GlintstoneTrailTuning.BEAM_OUTER_ALPHA_SCALE)
         );
-        // 内层后画：窄、亮，形成连续蓝绿光芯。
+        // 内层后画：窄、亮光芯。
         putRibbonLayer(
                 consumer,
                 poseMatrix,
@@ -100,10 +125,65 @@ public final class GlintstoneTrailRenderer {
                 totalLengthBlocks,
                 trailStyle.tailHalfWidthBlocks() * 0.48f,
                 trailStyle.headHalfWidthBlocks() * 0.48f,
-                unpackRed(coreColor),
-                unpackGreen(coreColor),
-                unpackBlue(coreColor),
+                unpackRed(coreColorArgb),
+                unpackGreen(coreColorArgb),
+                unpackBlue(coreColorArgb),
                 235
+        );
+    }
+
+    /**
+     * 绘制任意世界坐标折线的单层 billboard ribbon。
+     * <p>
+     * 给彗星亚兹勒这类「瞬时整段射线」用：调用方自己铺采样点，不必走历史缓冲。
+     * {@code startHalfWidth} 对应折线首点，{@code endHalfWidth} 对应末点。
+     *
+     * @param applyChaikinSmooth true 时做一次 Chaikin 圆角，折线更柔
+     */
+    public static void renderPolylineRibbonLayer(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            Vec3 renderOriginWorld,
+            Vec3 cameraWorld,
+            List<Vec3> worldPoints,
+            float startHalfWidthBlocks,
+            float endHalfWidthBlocks,
+            int colorArgb,
+            boolean applyChaikinSmooth
+    ) {
+        if (worldPoints == null || worldPoints.size() < 2) {
+            return;
+        }
+        List<Vec3> renderPoints = applyChaikinSmooth
+                ? smoothPolylineOnce(new ArrayList<>(worldPoints))
+                : new ArrayList<>(worldPoints);
+        if (renderPoints.size() < 2) {
+            return;
+        }
+
+        double[] cumulativeDistances = cumulativeDistances(renderPoints);
+        double totalLengthBlocks = cumulativeDistances[cumulativeDistances.length - 1];
+        if (totalLengthBlocks < MIN_RENDER_SEGMENT_LENGTH_BLOCKS) {
+            return;
+        }
+
+        List<Vec3> sideDirections = buildStableSideDirections(renderPoints, cameraWorld);
+        VertexConsumer consumer = bufferSource.getBuffer(TRAIL_RENDER_TYPE);
+        Matrix4f poseMatrix = poseStack.last().pose();
+        putRibbonLayer(
+                consumer,
+                poseMatrix,
+                renderOriginWorld,
+                renderPoints,
+                sideDirections,
+                cumulativeDistances,
+                totalLengthBlocks,
+                startHalfWidthBlocks,
+                endHalfWidthBlocks,
+                unpackRed(colorArgb),
+                unpackGreen(colorArgb),
+                unpackBlue(colorArgb),
+                unpackAlpha(colorArgb)
         );
     }
 

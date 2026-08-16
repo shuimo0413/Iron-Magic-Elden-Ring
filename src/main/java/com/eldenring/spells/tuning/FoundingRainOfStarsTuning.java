@@ -1,10 +1,12 @@
 package com.eldenring.spells.tuning;
 
+import com.eldenring.spells.tuning.GlintstoneTrailTuning.TrailStyle;
+
 /**
  * 创星雨（Founding Rain of Stars）可调数值。
  * <p>
- * 本阶段只做出手星云 + 光点升空 + 头顶雨云；落星雨伤害下一步再接。改手感只改这里，
- * 不要在 {@code GlintstoneFx} / 时序实体里写魔法数字。
+ * 出手星云 → 光点升空 → 头顶雨云 → 白紫光带雨点。改手感只改这里，
+ * 不要在时序实体 / 雨点实体 / 渲染器里写魔法数字。
  */
 public final class FoundingRainOfStarsTuning {
 
@@ -108,9 +110,9 @@ public final class FoundingRainOfStarsTuning {
     public static final int OVERHEAD_STAR_COUNT = 56;
 
     /**
-     * 头顶星云存在时长（tick）。20 tick = 1 秒，60 = 3 秒。
+     * 头顶星云存在时长（tick）。20 tick = 1 秒，100 = 5 秒。下雨时长与此相同。
      */
-    public static final int OVERHEAD_CLOUD_LIFETIME_TICKS = 60;
+    public static final int OVERHEAD_CLOUD_LIFETIME_TICKS = 100;
 
     /**
      * 淡入时长（tick）。光点消失的那几帧里云从透明胀出来。
@@ -128,7 +130,7 @@ public final class FoundingRainOfStarsTuning {
     public static final int OVERHEAD_CLOUD_LIFETIME_RANDOM_TICKS = 6;
 
     /**
-     * 云朵粒子出生后的水平游走（方块/tick）。只要一点点，3 秒里挪大约一掌宽。
+     * 云朵粒子出生后的水平游走（方块/tick）。只要一点点，5 秒里挪大约一掌宽。
      */
     public static final double OVERHEAD_CLOUD_DRIFT_BLOCKS_PER_TICK = 0.004;
 
@@ -148,9 +150,99 @@ public final class FoundingRainOfStarsTuning {
     public static final int SPELL_MAX_LEVEL = 1;
 
     /**
-     * 时序实体在雨云淡尽后再活多少 tick。给下一步接落星雨留钩子。
+     * 时序实体在雨云淡尽后再活多少 tick。已生成的雨点是独立实体，不靠这段尾巴续命。
      */
     public static final int PRELUDE_TAIL_TICKS = 2;
+
+    /**
+     * 雨云出现后再隔多少 tick 开始落雨。0 = 乌云一出现就下雨，两者都是 5 秒。
+     */
+    public static final int RAIN_START_DELAY_TICKS = 0;
+
+    /**
+     * 每个服务端 tick 从雨云里抽出的雨点数。
+     * 调大 → 更密、更卡；调小 → 更疏。光带不是粒子，密度主要吃实体 tick。
+     */
+    public static final int RAIN_DROPS_PER_TICK = 8;
+
+    /**
+     * 雨点下落速度（方块/tick），传给 {@code AbstractMagicProjectile#getSpeed()}。
+     * 调大 → 更像坠星、光带更短；调小 → 更像细雨、光带更完整。
+     */
+    public static final float RAIN_DROP_FALL_SPEED_BLOCKS_PER_TICK = 1.15f;
+
+    /**
+     * 相对竖直方向的水平散布（无量纲，与 (0,-1,0) 相加后再归一化）。
+     * 调大 → 雨点更斜、光带更容易看出曲线；调小 → 更接近直落。
+     */
+    public static final double RAIN_DROP_TILT_HORIZONTAL_SPREAD = 0.16;
+
+    /**
+     * 出生点相对雨云层再往下挪的距离（方块）。让针尖从气团里钻出来，而不是浮在云顶。
+     */
+    public static final double RAIN_DROP_SPAWN_BELOW_CLOUD_BLOCKS = 0.22;
+
+    /**
+     * 雨点从出生点算起，位移超过此距离（方块）就消失。
+     * 落地/撞实体会更早销毁；本值是虚空、深坑的保险。
+     */
+    public static final double RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS = 40.0;
+
+    /**
+     * 雨点最长寿命（tick）。按最快下落也够飞完 {@link #RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS}，
+     * 卡住时不会永远留在世界上。
+     */
+    public static final int RAIN_DROP_MAXIMUM_LIFETIME_TICKS = 48;
+
+    /**
+     * 雨幕对同一目标的最短结算间隔（tick）。必须 ≥ 原版受伤无敌窗口（约 10 tick），
+     * 否则红闪一次会叠两下，体感骗伤。调大 → 跳数更疏、总伤更低。
+     */
+    public static final int RAIN_ZONE_DAMAGE_INTERVAL_TICKS = 10;
+
+    /**
+     * 每次雨幕结算的伤害 = {@code getSpellPower(level, caster) * SPELL_DAMAGE_PER_SPELL_POWER}。
+     * 5 秒里大约结算 10 次（间隔 10 tick），系数必须低于单发彗星。
+     */
+    public static final float SPELL_DAMAGE_PER_SPELL_POWER = 0.5f;
+
+    /**
+     * 雨点光带：短、细、几乎不点缀粒子。长度单位方块；点数上限配合下落速度，
+     * 大约保留 3 tick 真实路径，看起来是一根针而不是彗星尾巴。
+     */
+    public static final TrailStyle RAIN_DROP_TRAIL_STYLE = new TrailStyle(
+            3.2,
+            0.038f,
+            0.007f,
+            0.0f,
+            0.0f,
+            12
+    );
+
+    /**
+     * 雨点光芯 ARGB。近白、略带紫，叠在紫色外辉上才读得出「白紫雨针」。
+     */
+    public static final int RAIN_DROP_CORE_COLOR_ARGB = 0xFFF4EEFF;
+
+    /**
+     * 雨点外辉 ARGB。饱和紫；外层还会再乘光束透明度倍率，所以这里 alpha 给满。
+     */
+    public static final int RAIN_DROP_GLOW_COLOR_ARGB = 0xFFB060FF;
+
+    /**
+     * 落地涟漪四边形边长下限（方块）。贴地水平展开，调大 → 水圈更大。
+     */
+    public static final float RAIN_RIPPLE_QUAD_SIZE_MIN_BLOCKS = 0.55f;
+
+    /**
+     * 落地涟漪额外随机边长（方块）。
+     */
+    public static final float RAIN_RIPPLE_QUAD_SIZE_RANDOM_BLOCKS = 0.22f;
+
+    /**
+     * 落地涟漪寿命（tick）。三帧贴图按寿命播完；调大 → 水圈胀得更慢。
+     */
+    public static final int RAIN_RIPPLE_LIFETIME_TICKS = 11;
 
     /**
      * 第一批升空光点到达顶点、开始消失的 tick。
@@ -158,6 +250,20 @@ public final class FoundingRainOfStarsTuning {
      */
     public static int overheadCloudSpawnTick() {
         return ASCENT_LAUNCH_DELAY_TICKS + ASCENT_FLIGHT_DURATION_TICKS;
+    }
+
+    /**
+     * 时序实体开始从雨云里抽雨点的 tick。
+     */
+    public static int rainStartTick() {
+        return overheadCloudSpawnTick() + RAIN_START_DELAY_TICKS;
+    }
+
+    /**
+     * 停止生成新雨点、停止雨幕伤害的 tick。与乌云同寿，整段都是 5 秒。
+     */
+    public static int rainEndTick() {
+        return overheadCloudSpawnTick() + OVERHEAD_CLOUD_LIFETIME_TICKS;
     }
 
     /**
