@@ -2,6 +2,7 @@ package com.eldenring.spells.entity;
 
 import com.eldenring.spells.client.render.glintstone.GlintstoneCometHeadDrawer;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
+import com.eldenring.spells.tuning.GlintstoneHomingTuning;
 import com.eldenring.spells.tuning.GlintstoneTrailTuning;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
@@ -35,6 +36,9 @@ import java.util.UUID;
 
 /**
  * 辉石系弹道公共基类：限角锥形追踪 + {@link GlintstoneFx} 拖尾/爆裂。
+ * <p>
+ * 索敌：飞行方向锥 + 转向预算硬过滤后，按「角度主导、距离弱惩罚」打分；
+ * 施法者准星射线命中合法目标时优先锁它。粘滞 UUID 只在目标失效后重选。
  * <p>
  * 消失问题说明（重要）：找不到追踪目标时<strong>绝不会</strong> discard，只会直飞。
  * 真正会销毁的只有：撞方块、撞实体后结算、超时、反魔法等。
@@ -350,27 +354,154 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             lockedTrackingTargetUuid = null;
         }
 
-        LivingEntity nearestTrackableTarget = findNearestTrackableTarget();
-        if (nearestTrackableTarget != null) {
-            lockedTrackingTargetUuid = nearestTrackableTarget.getUUID();
+        LivingEntity bestTrackableTarget = findBestTrackableTarget();
+        if (bestTrackableTarget != null) {
+            lockedTrackingTargetUuid = bestTrackableTarget.getUUID();
         }
-        return nearestTrackableTarget;
+        return bestTrackableTarget;
     }
 
+    /**
+     * 在合法候选中选最优追踪目标：施法者准星射线命中优先，否则角度主导打分。
+     */
     @Nullable
-    private LivingEntity findNearestTrackableTarget() {
+    private LivingEntity findBestTrackableTarget() {
         Entity ownerEntity = getOwner();
         AABB searchBoundingBox = getBoundingBox().inflate(trackingRangeBlocks());
+        List<LivingEntity> candidates = level().getEntitiesOfClass(
+                LivingEntity.class,
+                searchBoundingBox,
+                candidateEntity -> canAcquireTrackingLivingEntity(candidateEntity, ownerEntity)
+        );
+        if (candidates.isEmpty()) {
+            return null;
+        }
 
-        return level()
-                .getEntitiesOfClass(
-                        LivingEntity.class,
-                        searchBoundingBox,
-                        candidateEntity -> canAcquireTrackingLivingEntity(candidateEntity, ownerEntity)
-                )
-                .stream()
-                .min(Comparator.comparingDouble(candidateEntity -> candidateEntity.distanceToSqr(this)))
+        LivingEntity lookRayTarget = findLookRayPreferredTarget(ownerEntity, candidates);
+        if (lookRayTarget != null) {
+            return lookRayTarget;
+        }
+
+        return candidates.stream()
+                .min(Comparator.comparingDouble(this::acquireScore))
                 .orElse(null);
+    }
+
+    /**
+     * 若施法者眼睛沿准星射线打中某个<strong>已通过硬过滤</strong>的候选，直接优先锁它。
+     * 对应「准星就点在那个更远的怪身上」；弹已飞出后仍用施法者当前视线做一次优先，
+     * 不绑死准星持续重选（外层仍有 UUID 粘滞）。
+     */
+    @Nullable
+    private LivingEntity findLookRayPreferredTarget(
+            @Nullable Entity ownerEntity,
+            List<LivingEntity> candidates
+    ) {
+        if (!(ownerEntity instanceof LivingEntity caster)) {
+            return null;
+        }
+
+        Vec3 eyePosition = caster.getEyePosition();
+        Vec3 lookEnd = eyePosition.add(
+                caster.getLookAngle().scale(trackingRangeBlocks())
+        );
+        LivingEntity closestHitCandidate = null;
+        double closestHitDistanceSquared = Double.MAX_VALUE;
+
+        for (LivingEntity candidate : candidates) {
+            HitResult hit = Utils.checkEntityIntersecting(
+                    candidate,
+                    eyePosition,
+                    lookEnd,
+                    GlintstoneHomingTuning.LOOK_RAY_HIT_INFLATION_BLOCKS
+            );
+            if (hit.getType() == HitResult.Type.MISS) {
+                continue;
+            }
+            double hitDistanceSquared = hit.getLocation().distanceToSqr(eyePosition);
+            if (hitDistanceSquared < closestHitDistanceSquared) {
+                closestHitDistanceSquared = hitDistanceSquared;
+                closestHitCandidate = candidate;
+            }
+        }
+
+        if (closestHitCandidate == null) {
+            return null;
+        }
+
+        // 准星射线被方块挡住时，不优先锁射线后的实体
+        BlockHitResult blockHit = level().clip(new ClipContext(
+                eyePosition,
+                lookEnd,
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE,
+                caster
+        ));
+        if (blockHit.getType() != HitResult.Type.MISS
+                && blockHit.getLocation().distanceToSqr(eyePosition) + 1.0e-4 < closestHitDistanceSquared) {
+            return null;
+        }
+
+        return closestHitCandidate;
+    }
+
+    /**
+     * 索敌分数：越小越优先。
+     * {@code (angle/cone)^2 * 角度权重 + (distance/range) * 距离权重}。
+     */
+    private double acquireScore(LivingEntity candidateEntity) {
+        double distanceToCandidate = aimPointOnTarget(candidateEntity)
+                .subtract(getBoundingBox().getCenter())
+                .length();
+        double angleDegrees = angleFromFlightAxisDegrees(candidateEntity);
+        float coneHalfAngleDegrees = Math.max(1.0e-3f, trackingAcquireConeHalfAngleDegrees());
+        double trackingRange = Math.max(1.0e-3, trackingRangeBlocks());
+        double normalizedAngle = angleDegrees / coneHalfAngleDegrees;
+        double normalizedDistance = distanceToCandidate / trackingRange;
+        return normalizedAngle * normalizedAngle * GlintstoneHomingTuning.ACQUIRE_ANGULAR_WEIGHT
+                + normalizedDistance * GlintstoneHomingTuning.ACQUIRE_DISTANCE_WEIGHT;
+    }
+
+    /**
+     * 目标瞄准点相对当前飞行方向的夹角（度）。速度过小或目标重合时返回 180，表示不可索。
+     */
+    private double angleFromFlightAxisDegrees(LivingEntity candidateEntity) {
+        Vec3 currentDeltaMovement = getDeltaMovement();
+        double currentSpeed = currentDeltaMovement.length();
+        if (currentSpeed < minimumSpeedForHoming()) {
+            return 180.0;
+        }
+
+        Vec3 vectorToCandidate = aimPointOnTarget(candidateEntity).subtract(getBoundingBox().getCenter());
+        double distanceToCandidate = vectorToCandidate.length();
+        if (distanceToCandidate < minimumSpeedForHoming()) {
+            return 180.0;
+        }
+
+        Vec3 currentFlightDirection = currentDeltaMovement.normalize();
+        Vec3 directionToCandidate = vectorToCandidate.scale(1.0 / distanceToCandidate);
+        double forwardDotProduct = Mth.clamp(currentFlightDirection.dot(directionToCandidate), -1.0, 1.0);
+        return Math.toDegrees(Math.acos(forwardDotProduct));
+    }
+
+    /**
+     * 按当前限角转向，在飞到目标大致距离内能否转够偏角。
+     * {@code maxReachable = maxTurnPerTick * (distance / speed) * slack}。
+     */
+    private boolean isWithinTurnBudget(LivingEntity candidateEntity, double angleFromFlightAxisDegrees) {
+        float flightSpeed = flightSpeed();
+        if (flightSpeed < minimumSpeedForHoming()) {
+            return false;
+        }
+
+        double distanceToCandidate = aimPointOnTarget(candidateEntity)
+                .subtract(getBoundingBox().getCenter())
+                .length();
+        double estimatedTicks = distanceToCandidate / flightSpeed;
+        double maxReachableAngleDegrees = maxTurnAngleDegreesPerTick()
+                * estimatedTicks
+                * GlintstoneHomingTuning.TURN_BUDGET_SLACK;
+        return angleFromFlightAxisDegrees <= maxReachableAngleDegrees;
     }
 
     private boolean canAcquireTrackingLivingEntity(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
@@ -384,16 +515,11 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             return false;
         }
 
-        Vec3 currentFlightDirection = currentDeltaMovement.normalize();
-        Vec3 vectorToCandidate = aimPointOnTarget(candidateEntity).subtract(getBoundingBox().getCenter());
-        double distanceToCandidate = vectorToCandidate.length();
-        if (distanceToCandidate < minimumSpeedForHoming()) {
+        double angleFromFlightAxisDegrees = angleFromFlightAxisDegrees(candidateEntity);
+        if (angleFromFlightAxisDegrees > trackingAcquireConeHalfAngleDegrees()) {
             return false;
         }
-        Vec3 directionToCandidate = vectorToCandidate.scale(1.0 / distanceToCandidate);
-        double forwardDotProduct = Mth.clamp(currentFlightDirection.dot(directionToCandidate), -1.0, 1.0);
-        double angleFromFlightAxisDegrees = Math.toDegrees(Math.acos(forwardDotProduct));
-        if (angleFromFlightAxisDegrees > trackingAcquireConeHalfAngleDegrees()) {
+        if (!isWithinTurnBudget(candidateEntity, angleFromFlightAxisDegrees)) {
             return false;
         }
 

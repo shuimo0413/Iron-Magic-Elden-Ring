@@ -2,6 +2,7 @@ package com.eldenring.spells.entity;
 
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.spell.CometAzurCastData;
 import com.eldenring.spells.tuning.CometAzurTuning;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.damage.DamageSources;
@@ -25,9 +26,8 @@ import net.minecraft.world.phys.Vec3;
 /**
  * 彗星亚兹勒星河喷流实体。
  * <p>
- * 自身几乎不可见：每 tick 钉在施法者面前喷流口，同步当前射线长度。
- * 视觉由客户端 ribbon 多层星河柱绘制；周围粒子仍由法术 tick 刷。
- * 伤害沿射线圆柱周期结算，不做密粒子本体。
+ * 朝向 / 喷流口在生成时钉死（施法者整段吟唱不能转身），之后只刷新射线长度与伤害。
+ * 喷流口在玩家面前，出来就是接近最粗的柱体；视觉由客户端直线 ribbon 星河柱绘制。
  */
 public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptible {
 
@@ -40,6 +40,7 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
 
     private float damagePerHit;
     private int spellLevel = 1;
+    private Vec3 lockedMouthWorld = Vec3.ZERO;
 
     /**
      * 服务端：若连续若干 tick 没被法术 refresh，视为吟唱已停，自行销毁。
@@ -53,13 +54,19 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
         this.setInvisible(true);
     }
 
-    public CometAzurJetEntity(Level level, LivingEntity caster, float damagePerHit, int spellLevel) {
+    public CometAzurJetEntity(
+            Level level,
+            LivingEntity caster,
+            CometAzurCastData castData,
+            float damagePerHit,
+            int spellLevel
+    ) {
         this(ModEntities.COMET_AZUR_JET.get(), level);
         setOwner(caster);
         this.damagePerHit = damagePerHit;
         this.spellLevel = Math.max(1, spellLevel);
-        snapToCasterMouth(caster);
-        refreshBeamLength(caster);
+        lockAimFromCastData(castData);
+        refreshBeamLength();
     }
 
     @Override
@@ -70,22 +77,32 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
     }
 
     /**
-     * 法术每 tick 调用：证明仍在按住吟唱，并刷新位置 / 朝向 / 长度。
+     * 法术每 tick 调用：保活 + 更新伤害；朝向不再跟手。
      */
-    public void refreshFromCaster(LivingEntity caster, float damagePerHit, int spellLevel) {
+    public void refreshWhileCasting(float damagePerHit, int spellLevel) {
         this.ticksSinceLastRefresh = 0;
         this.damagePerHit = damagePerHit;
         this.spellLevel = Math.max(1, spellLevel);
-        setOwner(caster);
-        snapToCasterMouth(caster);
-        refreshBeamLength(caster);
+        // 钉回锁定喷流口，防止任何位移/同步抖动。
+        setPos(this.lockedMouthWorld.x, this.lockedMouthWorld.y, this.lockedMouthWorld.z);
+        refreshBeamLength();
+    }
+
+    private void lockAimFromCastData(CometAzurCastData castData) {
+        this.lockedMouthWorld = castData.jetMouthWorld();
+        setPos(this.lockedMouthWorld.x, this.lockedMouthWorld.y, this.lockedMouthWorld.z);
+        setYRot(castData.yawDegrees());
+        setXRot(castData.pitchDegrees());
+        this.yRotO = getYRot();
+        this.xRotO = getXRot();
+        this.entityData.set(DATA_YAW_DEGREES, castData.yawDegrees());
+        this.entityData.set(DATA_PITCH_DEGREES, castData.pitchDegrees());
     }
 
     public float beamLengthBlocks() {
         return this.entityData.get(DATA_BEAM_LENGTH_BLOCKS);
     }
 
-    /** 客户端渲染用的水平朝向（度），走 EntityData，避免 Projectile 旋转包跟手不准。 */
     public float syncedYawDegrees() {
         return this.entityData.get(DATA_YAW_DEGREES);
     }
@@ -95,29 +112,18 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
     }
 
     private void setBeamLengthBlocks(float lengthBlocks) {
-        this.entityData.set(DATA_BEAM_LENGTH_BLOCKS, Mth.clamp(lengthBlocks, 0.5f, (float) CometAzurTuning.JET_BEAM_MAX_RANGE_BLOCKS));
+        this.entityData.set(
+                DATA_BEAM_LENGTH_BLOCKS,
+                Mth.clamp(lengthBlocks, 0.5f, (float) CometAzurTuning.JET_BEAM_MAX_RANGE_BLOCKS)
+        );
     }
 
     /**
-     * 喷流口：眼睛前方略下，与蓄力漩涡 / 周围粒子同一套偏移。
+     * 沿锁定朝向射线检测实心方块，截断长度。朝向不变，只需重测遮挡。
      */
-    private void snapToCasterMouth(LivingEntity caster) {
-        Vec3 lookDirection = caster.getLookAngle();
-        Vec3 mouth = caster.getEyePosition()
-                .add(lookDirection.scale(CometAzurTuning.STARTUP_VORTEX_FORWARD_OFFSET_BLOCKS))
-                .subtract(0.0, CometAzurTuning.STARTUP_VORTEX_DOWN_OFFSET_BLOCKS, 0.0);
-        setPos(mouth.x, mouth.y, mouth.z);
-        setYRot(caster.getYRot());
-        setXRot(caster.getXRot());
-        this.yRotO = getYRot();
-        this.xRotO = getXRot();
-        this.entityData.set(DATA_YAW_DEGREES, caster.getYRot());
-        this.entityData.set(DATA_PITCH_DEGREES, caster.getXRot());
-    }
-
-    private void refreshBeamLength(LivingEntity caster) {
-        Vec3 mouth = position();
-        Vec3 lookDirection = caster.getLookAngle();
+    private void refreshBeamLength() {
+        Vec3 mouth = this.lockedMouthWorld;
+        Vec3 lookDirection = Vec3.directionFromRotation(syncedPitchDegrees(), syncedYawDegrees());
         Vec3 farPoint = mouth.add(lookDirection.scale(CometAzurTuning.JET_BEAM_MAX_RANGE_BLOCKS));
         BlockHitResult blockHit = level().clip(new ClipContext(
                 mouth,
@@ -143,30 +149,27 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
         }
 
         if (level().isClientSide) {
-            // 客户端用同步的 yaw/pitch/长度画；位置仍跟实体插值。
             return;
         }
 
         this.ticksSinceLastRefresh++;
-        if (this.ticksSinceLastRefresh > 8) {
+        if (this.ticksSinceLastRefresh > 1) {
             discard();
             return;
         }
 
-        snapToCasterMouth(caster);
-        refreshBeamLength(caster);
+        setPos(this.lockedMouthWorld.x, this.lockedMouthWorld.y, this.lockedMouthWorld.z);
+        refreshBeamLength();
 
         if (tickCount % CometAzurTuning.JET_BEAM_DAMAGE_INTERVAL_TICKS == 0) {
             dealBeamDamage(caster);
         }
     }
 
-    /**
-     * 沿嘴到尖端的圆柱扫敌。距离用点到线段距离，避免粗 AABB 误伤侧面太远的目标。
-     */
     private void dealBeamDamage(LivingEntity caster) {
-        Vec3 mouth = position();
-        Vec3 tip = mouth.add(Vec3.directionFromRotation(getXRot(), getYRot()).scale(beamLengthBlocks()));
+        Vec3 mouth = this.lockedMouthWorld;
+        Vec3 tip = mouth.add(Vec3.directionFromRotation(syncedPitchDegrees(), syncedYawDegrees())
+                .scale(beamLengthBlocks()));
         double inflate = CometAzurTuning.JET_BEAM_DAMAGE_RADIUS_BLOCKS + 0.35;
         AABB searchBox = new AABB(mouth, tip).inflate(inflate);
         var damageSource = ModSpells.COMET_AZUR.get().getDamageSource(this, caster);
@@ -212,6 +215,17 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
     protected void readAdditionalSaveData(CompoundTag tag) {
         this.damagePerHit = tag.getFloat("DamagePerHit");
         this.spellLevel = Math.max(1, tag.getInt("SpellLevel"));
+        this.lockedMouthWorld = new Vec3(
+                tag.getDouble("MouthX"),
+                tag.getDouble("MouthY"),
+                tag.getDouble("MouthZ")
+        );
+        if (tag.contains("Yaw")) {
+            this.entityData.set(DATA_YAW_DEGREES, tag.getFloat("Yaw"));
+            this.entityData.set(DATA_PITCH_DEGREES, tag.getFloat("Pitch"));
+            setYRot(tag.getFloat("Yaw"));
+            setXRot(tag.getFloat("Pitch"));
+        }
         if (tag.contains("BeamLength")) {
             setBeamLengthBlocks(tag.getFloat("BeamLength"));
         }
@@ -221,6 +235,11 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
     protected void addAdditionalSaveData(CompoundTag tag) {
         tag.putFloat("DamagePerHit", this.damagePerHit);
         tag.putInt("SpellLevel", this.spellLevel);
+        tag.putDouble("MouthX", this.lockedMouthWorld.x);
+        tag.putDouble("MouthY", this.lockedMouthWorld.y);
+        tag.putDouble("MouthZ", this.lockedMouthWorld.z);
+        tag.putFloat("Yaw", syncedYawDegrees());
+        tag.putFloat("Pitch", syncedPitchDegrees());
         tag.putFloat("BeamLength", beamLengthBlocks());
     }
 

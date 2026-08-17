@@ -53,11 +53,11 @@ public class CometAzurVortexParticle extends TextureSheetParticle {
                 ? CometAzurTuning.STARTUP_SHRINK_2_QUAD_SIZE_BLOCKS
                 : CometAzurTuning.STARTUP_SHRINK_1_QUAD_SIZE_BLOCKS;
         this.quadSize = this.birthQuadSize;
-        this.birthAlpha = 0.92f;
+        this.birthAlpha = 0.95f;
         this.alpha = 0.0f;
-        this.rCol = 1.0f;
-        this.gCol = 1.0f;
-        this.bCol = 1.0f;
+        this.rCol = 0.42f;
+        this.gCol = 0.88f;
+        this.bCol = 0.78f;
         this.roll = level.random.nextFloat() * ((float) Math.PI * 2.0f);
         this.oRoll = this.roll;
     }
@@ -144,7 +144,7 @@ public class CometAzurVortexParticle extends TextureSheetParticle {
     }
 
     private ParticleOptions pickInboundParticleType(int curveIndex, int armIndex, int sampleIndex) {
-        int mixIndex = (curveIndex + armIndex + sampleIndex) % 4;
+        int mixIndex = (curveIndex + armIndex * 2 + sampleIndex) % 4;
         return switch (mixIndex) {
             case 0 -> ModParticles.COMET_AZUR_MOTE.get();
             case 1 -> ModParticles.COMET_AZUR_DUST.get();

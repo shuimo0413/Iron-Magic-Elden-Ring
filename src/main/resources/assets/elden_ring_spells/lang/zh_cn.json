@@ -16,6 +16,7 @@
   "attribute.elden_ring_spells.glintstone_magic_resist": "辉石魔法抗性",
   "effect.elden_ring_spells.terra_magica": "魔法之境",
   "ui.elden_ring_spells.spell_power_bonus_percent": "法术强度 +%s%%",
+  "ui.elden_ring_spells.comet_azur_cannot_cast_falling": "下落时无法施放彗星亚兹勒",
   "death.attack.glintstone_magic": "%1$s 被辉石魔法击碎",
   "death.attack.glintstone_magic.player": "%1$s 被 %2$s 的辉石魔法击碎",
   "item.elden_ring_spells.glintstone_pebble_scroll": "辉石魔砾卷轴",

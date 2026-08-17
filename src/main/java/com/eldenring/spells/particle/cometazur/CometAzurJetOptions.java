@@ -40,6 +40,8 @@ public final class CometAzurJetOptions implements ParticleOptions {
     private final int motionOrdinal;
     private final float ringAngleRadians;
     private final float ringRadiusBlocks;
+    private final float birthAlongBeamBlocks;
+    private final float helixRadiansPerTick;
 
     private CometAzurJetOptions(
             boolean emitter,
@@ -48,7 +50,9 @@ public final class CometAzurJetOptions implements ParticleOptions {
             int kindOrdinal,
             int motionOrdinal,
             float ringAngleRadians,
-            float ringRadiusBlocks
+            float ringRadiusBlocks,
+            float birthAlongBeamBlocks,
+            float helixRadiansPerTick
     ) {
         this.emitter = emitter;
         this.yawDegrees = yawDegrees;
@@ -57,17 +61,19 @@ public final class CometAzurJetOptions implements ParticleOptions {
         this.motionOrdinal = motionOrdinal;
         this.ringAngleRadians = ringAngleRadians;
         this.ringRadiusBlocks = ringRadiusBlocks;
+        this.birthAlongBeamBlocks = birthAlongBeamBlocks;
+        this.helixRadiansPerTick = helixRadiansPerTick;
     }
 
     /**
      * 服务端每圈喷流口发一颗：只带朝向。
      */
     public static CometAzurJetOptions emitter(float yawDegrees, float pitchDegrees) {
-        return new CometAzurJetOptions(true, yawDegrees, pitchDegrees, 0, 0, 0.0f, 0.0f);
+        return new CometAzurJetOptions(true, yawDegrees, pitchDegrees, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f);
     }
 
     /**
-     * 客户端发射器在喷流口本地再刷的飞粒子。
+     * 客户端发射器在喷流口本地再刷的飞粒子。角速度用运动模式默认值。
      */
     public static CometAzurJetOptions flying(
             float yawDegrees,
@@ -75,7 +81,34 @@ public final class CometAzurJetOptions implements ParticleOptions {
             int kindOrdinal,
             int motionOrdinal,
             float ringAngleRadians,
-            float ringRadiusBlocks
+            float ringRadiusBlocks,
+            float birthAlongBeamBlocks
+    ) {
+        return flying(
+                yawDegrees,
+                pitchDegrees,
+                kindOrdinal,
+                motionOrdinal,
+                ringAngleRadians,
+                ringRadiusBlocks,
+                birthAlongBeamBlocks,
+                0.0f
+        );
+    }
+
+    /**
+     * @param helixRadiansPerTick 绕喷流轴角速度（弧度 / tick）。0 = 粒子自己按运动模式选；
+     *                            能量场各条欧拉臂传入不同值，形成多条螺旋曲线。
+     */
+    public static CometAzurJetOptions flying(
+            float yawDegrees,
+            float pitchDegrees,
+            int kindOrdinal,
+            int motionOrdinal,
+            float ringAngleRadians,
+            float ringRadiusBlocks,
+            float birthAlongBeamBlocks,
+            float helixRadiansPerTick
     ) {
         return new CometAzurJetOptions(
                 false,
@@ -84,7 +117,9 @@ public final class CometAzurJetOptions implements ParticleOptions {
                 kindOrdinal,
                 motionOrdinal,
                 ringAngleRadians,
-                ringRadiusBlocks
+                ringRadiusBlocks,
+                birthAlongBeamBlocks,
+                helixRadiansPerTick
         );
     }
 
@@ -121,6 +156,18 @@ public final class CometAzurJetOptions implements ParticleOptions {
     /** 出生圆半径（方块）。 */
     public float ringRadiusBlocks() {
         return ringRadiusBlocks;
+    }
+
+    /** 出生时沿喷流轴的距离（方块）。 */
+    public float birthAlongBeamBlocks() {
+        return birthAlongBeamBlocks;
+    }
+
+    /**
+     * 绕喷流轴角速度（弧度 / tick）。0 表示粒子按运动模式自己选。
+     */
+    public float helixRadiansPerTick() {
+        return helixRadiansPerTick;
     }
 
     @Override

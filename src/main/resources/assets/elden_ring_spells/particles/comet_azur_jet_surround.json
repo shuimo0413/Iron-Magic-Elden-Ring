@@ -1,10 +1,22 @@
 {
   "textures": [
-    "elden_ring_spells:comet_azur_glow",
-    "elden_ring_spells:glintstone_spark",
-    "elden_ring_spells:glintstone_mote_1",
-    "elden_ring_spells:glintstone_mote_2",
+    "elden_ring_spells:nebula_cloud_haze",
+    "elden_ring_spells:star_river_mist",
+    "elden_ring_spells:nebula_cloud_stardust",
+    "elden_ring_spells:nebula_cloud_wisp",
+    "elden_ring_spells:nebula_spiral",
+    "elden_ring_spells:star_cluster",
+    "elden_ring_spells:comet_azur_mist",
+    "elden_ring_spells:comet_azur_dust",
+    "elden_ring_spells:comet_azur_head",
+    "elden_ring_spells:nova_star",
+    "elden_ring_spells:dark_filament",
+    "elden_ring_spells:star_streak",
+    "elden_ring_spells:comet_azur_mote_0",
     "elden_ring_spells:comet_azur_impact",
-    "elden_ring_spells:comet_azur_filament"
+    "elden_ring_spells:comet_azur_mote_1",
+    "elden_ring_spells:comet_azur_mote_2",
+    "elden_ring_spells:glintstone_mote_2",
+    "elden_ring_spells:comet_azur_glow"
   ]
 }

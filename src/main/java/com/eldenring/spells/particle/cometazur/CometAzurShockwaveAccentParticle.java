@@ -71,9 +71,10 @@ public class CometAzurShockwaveAccentParticle extends TextureSheetParticle {
         this.quadSize = this.birthQuadSize;
         this.birthAlpha = this.ridingWavefront ? 0.95f : 0.70f;
         this.alpha = this.birthAlpha;
-        this.rCol = 0.82f;
-        this.gCol = 0.97f;
-        this.bCol = 1.0f;
+        // 墨绿星点，呼应冲击波主色。
+        this.rCol = 0.42f;
+        this.gCol = 0.88f;
+        this.bCol = 0.78f;
         this.twinklePhaseRadians = level.random.nextFloat() * ((float) Math.PI * 2.0f);
         int spriteIndex = level.random.nextInt(ACCENT_SPRITE_COUNT);
         setSprite(sprites.get(spriteIndex, ACCENT_SPRITE_COUNT - 1));

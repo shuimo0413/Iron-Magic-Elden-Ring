@@ -13,8 +13,8 @@ import net.minecraft.world.phys.Vec3;
  * <p>
  * 蓄力：服务端刷两层旋转中心；主层在客户端按对数螺线铺汇聚粒子。
  * 蓄力结束：同一位置爆星辰涟漪。
- * 喷流：法术 tick 维持 {@link com.eldenring.spells.entity.CometAzurJetEntity}（ribbon 星河柱），
- * 并在喷流口刷周围粒子。
+ * 喷流：法术 tick 维持 {@link com.eldenring.spells.entity.CometAzurJetEntity}（圆管星河柱），
+ * 并在喷流口刷墨绿星云 / 星团 / 闪星套管。
  * 只在服务端调用粒子入口；客户端再调会双端各刷一次。
  */
 public final class CometAzurFx {
@@ -62,6 +62,14 @@ public final class CometAzurFx {
                 .subtract(0.0, CometAzurTuning.STARTUP_VORTEX_DOWN_OFFSET_BLOCKS, 0.0);
     }
 
+    /**
+     * 喷流口：沿视线钉在玩家正前方，不跟漩涡下偏，出来就是一根粗柱。
+     */
+    public static Vec3 jetMouthInFrontOf(LivingEntity caster) {
+        return caster.getEyePosition()
+                .add(caster.getLookAngle().scale(CometAzurTuning.JET_BEAM_MOUTH_FORWARD_OFFSET_BLOCKS));
+    }
+
     private static void spawnVortexLayer(
             Level level,
             Vec3 vortexCenter,
@@ -93,21 +101,26 @@ public final class CometAzurFx {
     }
 
     /**
-     * 蓄力结束后在漩涡原位置爆一圈星辰涟漪。无伤害，只播 0.5 秒。
+     * 蓄力结束后在漩涡原位置爆多层嵌套星辰涟漪。无伤害。
+     * 波次：0 主环、1 回声、2 中心绽光、3 最外、4 中层、5 内层。
      */
     public static void spawnChargeShockwave(Level level, CometAzurCastData castData) {
         if (level.isClientSide || castData == null) {
             return;
         }
         Vec3 shockwaveCenter = castData.vortexCenter();
-        spawnShockwaveRing(level, shockwaveCenter, castData.yawDegrees(), castData.pitchDegrees(), 0.0);
-        spawnShockwaveRing(level, shockwaveCenter, castData.yawDegrees(), castData.pitchDegrees(), 1.0);
-        spawnShockwaveRing(level, shockwaveCenter, castData.yawDegrees(), castData.pitchDegrees(), 2.0);
+        float yawDegrees = castData.yawDegrees();
+        float pitchDegrees = castData.pitchDegrees();
+        spawnShockwaveRing(level, shockwaveCenter, yawDegrees, pitchDegrees, 0.0);
+        spawnShockwaveRing(level, shockwaveCenter, yawDegrees, pitchDegrees, 1.0);
+        spawnShockwaveRing(level, shockwaveCenter, yawDegrees, pitchDegrees, 2.0);
+        spawnShockwaveRing(level, shockwaveCenter, yawDegrees, pitchDegrees, 3.0);
+        spawnShockwaveRing(level, shockwaveCenter, yawDegrees, pitchDegrees, 4.0);
+        spawnShockwaveRing(level, shockwaveCenter, yawDegrees, pitchDegrees, 5.0);
     }
 
     /**
      * {@code count = 0} 时 yaw / pitch / 波次原样进 xd / yd / zd。
-     * 波次 0 主环，1 回声环，2 中心绽光。
      */
     private static void spawnShockwaveRing(
             Level level,
@@ -132,16 +145,16 @@ public final class CometAzurFx {
     }
 
     /**
-     * 在当前视线前方刷一圈喷流周围粒子。位置跟手，方便对瞄准；激光本体以后再挂。
+     * 在锁定喷流口刷一圈星河套管（星云体积 + 螺旋星团 + 闪星），朝向用出手时钉死的 yaw/pitch。
      */
-    public static void spawnJetSurround(Level level, LivingEntity caster) {
-        if (level.isClientSide || caster == null) {
+    public static void spawnJetSurround(Level level, CometAzurCastData castData) {
+        if (level.isClientSide || castData == null) {
             return;
         }
-        Vec3 jetMouth = vortexCenterInFrontOf(caster);
+        Vec3 jetMouth = castData.jetMouthWorld();
         MagicManager.spawnParticles(
                 level,
-                CometAzurJetOptions.emitter(caster.getYRot(), caster.getXRot()),
+                CometAzurJetOptions.emitter(castData.yawDegrees(), castData.pitchDegrees()),
                 jetMouth.x,
                 jetMouth.y,
                 jetMouth.z,

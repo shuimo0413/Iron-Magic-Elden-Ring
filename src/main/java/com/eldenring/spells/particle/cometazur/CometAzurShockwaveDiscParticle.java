@@ -16,16 +16,20 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 星辰涟漪的光圈：贴在垂直视线的平面上，半径 0.5→2，加法混合，看起来是一圈星光而不是实心盘。
+ * 星辰涟漪光圈：贴在垂直视线的平面上，多层嵌套胀开，墨绿星河色。
  * <p>
- * {@code xd/yd} = yaw/pitch（度）。{@code zd} = 波次：0 主环（喷星点），1 回声环，2 中心绽光。
+ * {@code xd/yd} = yaw/pitch（度）。{@code zd} = 波次：
+ * 0 主环（喷星点）、1 回声、2 中心绽光、3 最外嵌套、4 中层嵌套、5 内层嵌套。
  */
 public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
 
     private enum WaveKind {
         PRIMARY,
         ECHO,
-        CORE
+        CORE,
+        OUTER,
+        MID,
+        INNER
     }
 
     private final WaveKind waveKind;
@@ -34,9 +38,23 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
     private final float rollRadiansPerTick;
     private final float radiusStartBlocks;
     private final float radiusEndBlocks;
+    private final float peakAlpha;
     private float previousRadiusBlocks;
     private float currentRadiusBlocks;
     private boolean spawnedRidingStars;
+
+    private record WaveVisuals(
+            int lifetimeTicks,
+            float radiusStartBlocks,
+            float radiusEndBlocks,
+            float rollRadiansPerTick,
+            float peakAlpha,
+            float red,
+            float green,
+            float blue,
+            int spriteIndex
+    ) {
+    }
 
     protected CometAzurShockwaveDiscParticle(
             ClientLevel level,
@@ -50,39 +68,24 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
     ) {
         super(level, x, y, z);
         this.waveKind = waveKindFromPayload(waveIndexPayload);
+        WaveVisuals visuals = visualsFor(this.waveKind);
         this.xd = 0.0;
         this.yd = 0.0;
         this.zd = 0.0;
         this.hasPhysics = false;
         this.gravity = 0.0f;
-        this.rCol = 0.78f;
-        this.gCol = 0.96f;
-        this.bCol = 1.0f;
-        this.roll = 0.0f;
-        this.oRoll = 0.0f;
-
-        if (this.waveKind == WaveKind.CORE) {
-            this.lifetime = CometAzurTuning.SHOCKWAVE_CORE_DURATION_TICKS;
-            this.radiusStartBlocks = CometAzurTuning.SHOCKWAVE_CORE_RADIUS_START_BLOCKS;
-            this.radiusEndBlocks = CometAzurTuning.SHOCKWAVE_CORE_RADIUS_END_BLOCKS;
-            this.rollRadiansPerTick = 0.10f;
-            this.alpha = 0.80f;
-            setSprite(sprites.get(2, 2));
-        } else if (this.waveKind == WaveKind.ECHO) {
-            this.lifetime = CometAzurTuning.SHOCKWAVE_DURATION_TICKS;
-            this.radiusStartBlocks = CometAzurTuning.SHOCKWAVE_RADIUS_START_BLOCKS * 0.85f;
-            this.radiusEndBlocks = CometAzurTuning.SHOCKWAVE_RADIUS_END_BLOCKS * 0.92f;
-            this.rollRadiansPerTick = CometAzurTuning.SHOCKWAVE_ECHO_ROLL_RADIANS_PER_TICK;
-            this.alpha = 0.42f;
-            setSprite(sprites.get(1, 2));
-        } else {
-            this.lifetime = CometAzurTuning.SHOCKWAVE_DURATION_TICKS;
-            this.radiusStartBlocks = CometAzurTuning.SHOCKWAVE_RADIUS_START_BLOCKS;
-            this.radiusEndBlocks = CometAzurTuning.SHOCKWAVE_RADIUS_END_BLOCKS;
-            this.rollRadiansPerTick = CometAzurTuning.SHOCKWAVE_RING_ROLL_RADIANS_PER_TICK;
-            this.alpha = 0.55f;
-            setSprite(sprites.get(0, 2));
-        }
+        this.lifetime = visuals.lifetimeTicks();
+        this.radiusStartBlocks = visuals.radiusStartBlocks();
+        this.radiusEndBlocks = visuals.radiusEndBlocks();
+        this.rollRadiansPerTick = visuals.rollRadiansPerTick();
+        this.peakAlpha = visuals.peakAlpha();
+        this.rCol = visuals.red();
+        this.gCol = visuals.green();
+        this.bCol = visuals.blue();
+        this.alpha = this.peakAlpha;
+        this.roll = level.random.nextFloat() * 0.35f;
+        this.oRoll = this.roll;
+        setSprite(sprites.get(visuals.spriteIndex(), 2));
 
         this.previousRadiusBlocks = this.radiusStartBlocks;
         this.currentRadiusBlocks = this.radiusStartBlocks;
@@ -103,15 +106,92 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
         this.upAxis = computedRight.cross(lookDirection).normalize();
     }
 
+    /**
+     * 墨绿星河环：暗靛外圈、青绿中圈、偏亮芯。避免原来的冷白青。
+     */
+    private static WaveVisuals visualsFor(WaveKind waveKind) {
+        float baseStart = CometAzurTuning.SHOCKWAVE_RADIUS_START_BLOCKS;
+        float baseEnd = CometAzurTuning.SHOCKWAVE_RADIUS_END_BLOCKS;
+        return switch (waveKind) {
+            case CORE -> new WaveVisuals(
+                    CometAzurTuning.SHOCKWAVE_CORE_DURATION_TICKS,
+                    CometAzurTuning.SHOCKWAVE_CORE_RADIUS_START_BLOCKS,
+                    CometAzurTuning.SHOCKWAVE_CORE_RADIUS_END_BLOCKS,
+                    0.12f,
+                    0.88f,
+                    0.55f,
+                    0.92f,
+                    0.82f,
+                    2
+            );
+            case OUTER -> new WaveVisuals(
+                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS + 4,
+                    baseStart * 0.70f,
+                    baseEnd * CometAzurTuning.SHOCKWAVE_OUTER_RADIUS_END_SCALE,
+                    -0.035f,
+                    0.38f,
+                    0.18f,
+                    0.42f,
+                    0.40f,
+                    1
+            );
+            case MID -> new WaveVisuals(
+                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS + 2,
+                    baseStart * 0.80f,
+                    baseEnd * CometAzurTuning.SHOCKWAVE_MID_RADIUS_END_SCALE,
+                    0.045f,
+                    0.48f,
+                    0.22f,
+                    0.58f,
+                    0.52f,
+                    0
+            );
+            case INNER -> new WaveVisuals(
+                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS,
+                    baseStart * 1.05f,
+                    baseEnd * CometAzurTuning.SHOCKWAVE_INNER_RADIUS_END_SCALE,
+                    -0.09f,
+                    0.58f,
+                    0.28f,
+                    0.72f,
+                    0.64f,
+                    2
+            );
+            case ECHO -> new WaveVisuals(
+                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS,
+                    baseStart * 0.90f,
+                    baseEnd * 0.95f,
+                    CometAzurTuning.SHOCKWAVE_ECHO_ROLL_RADIANS_PER_TICK,
+                    0.40f,
+                    0.24f,
+                    0.62f,
+                    0.58f,
+                    1
+            );
+            case PRIMARY -> new WaveVisuals(
+                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS,
+                    baseStart,
+                    baseEnd,
+                    CometAzurTuning.SHOCKWAVE_RING_ROLL_RADIANS_PER_TICK,
+                    0.62f,
+                    0.30f,
+                    0.78f,
+                    0.70f,
+                    0
+            );
+        };
+    }
+
     private static WaveKind waveKindFromPayload(double waveIndexPayload) {
         int waveIndex = (int) Math.round(waveIndexPayload);
-        if (waveIndex >= 2) {
-            return WaveKind.CORE;
-        }
-        if (waveIndex == 1) {
-            return WaveKind.ECHO;
-        }
-        return WaveKind.PRIMARY;
+        return switch (waveIndex) {
+            case 1 -> WaveKind.ECHO;
+            case 2 -> WaveKind.CORE;
+            case 3 -> WaveKind.OUTER;
+            case 4 -> WaveKind.MID;
+            case 5 -> WaveKind.INNER;
+            default -> WaveKind.PRIMARY;
+        };
     }
 
     @Override
@@ -129,13 +209,21 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
 
         this.roll += this.rollRadiansPerTick;
         float lifeFraction = (float) this.age / (float) this.lifetime;
-        float eased = 1.0f - (1.0f - lifeFraction) * (1.0f - lifeFraction);
+        // 外圈稍慢展开，内圈更快，多层错开读作嵌套。
+        float easePower = switch (this.waveKind) {
+            case OUTER -> 1.55f;
+            case MID -> 1.35f;
+            case INNER -> 0.85f;
+            case CORE -> 0.70f;
+            default -> 1.15f;
+        };
+        float eased = 1.0f - (float) Math.pow(1.0f - lifeFraction, easePower);
         this.currentRadiusBlocks = Mth.lerp(eased, this.radiusStartBlocks, this.radiusEndBlocks);
         this.quadSize = this.currentRadiusBlocks;
-        float peakAlpha = this.waveKind == WaveKind.CORE
-                ? 0.80f
-                : this.waveKind == WaveKind.ECHO ? 0.42f : 0.55f;
-        this.alpha = peakAlpha * (1.0f - lifeFraction * lifeFraction);
+        float fade = this.waveKind == WaveKind.CORE
+                ? (1.0f - lifeFraction)
+                : (1.0f - lifeFraction * lifeFraction);
+        this.alpha = this.peakAlpha * fade;
 
         if (this.waveKind != WaveKind.PRIMARY) {
             return;
@@ -180,9 +268,6 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
         }
     }
 
-    /**
-     * 余波钉在当前半径上，不再跟着波前走，淡出后留下一圈星尘。
-     */
     private void spawnResidueStars() {
         int residueCount = CometAzurTuning.SHOCKWAVE_RESIDUE_STARS_PER_PULSE;
         for (int residueIndex = 0; residueIndex < residueCount; residueIndex++) {
@@ -207,15 +292,15 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
                     + this.random.nextFloat() * 0.20f;
             Vec3 radialDirection = this.rightAxis.scale(Math.cos(ringAngleRadians))
                     .add(this.upAxis.scale(Math.sin(ringAngleRadians)));
-            Vec3 spawnPosition = worldPositionOnRing(this.currentRadiusBlocks * 0.65f, ringAngleRadians);
+            Vec3 spawnPosition = worldPositionOnRing(this.currentRadiusBlocks * 0.55f, ringAngleRadians);
             this.level.addParticle(
                     ModParticles.STAR_STREAK.get(),
                     spawnPosition.x,
                     spawnPosition.y,
                     spawnPosition.z,
-                    radialDirection.x * 0.16,
-                    radialDirection.y * 0.16,
-                    radialDirection.z * 0.16
+                    radialDirection.x * 0.22,
+                    radialDirection.y * 0.22,
+                    radialDirection.z * 0.22
             );
         }
     }

@@ -98,7 +98,7 @@ public final class GlintstoneTrailRenderer {
         VertexConsumer consumer = bufferSource.getBuffer(TRAIL_RENDER_TYPE);
         Matrix4f poseMatrix = poseStack.last().pose();
 
-        // 外层先画：宽、淡、柔边。
+        // 外层先画：宽、淡、柔边。拖尾约定 V=1 旧尾、V=0 弹头。
         putRibbonLayer(
                 consumer,
                 poseMatrix,
@@ -109,6 +109,8 @@ public final class GlintstoneTrailRenderer {
                 totalLengthBlocks,
                 trailStyle.tailHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_OUTER_WIDTH_SCALE,
                 trailStyle.headHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_OUTER_WIDTH_SCALE,
+                1.0f,
+                0.0f,
                 unpackRed(glowColorArgb),
                 unpackGreen(glowColorArgb),
                 unpackBlue(glowColorArgb),
@@ -125,6 +127,8 @@ public final class GlintstoneTrailRenderer {
                 totalLengthBlocks,
                 trailStyle.tailHalfWidthBlocks() * 0.48f,
                 trailStyle.headHalfWidthBlocks() * 0.48f,
+                1.0f,
+                0.0f,
                 unpackRed(coreColorArgb),
                 unpackGreen(coreColorArgb),
                 unpackBlue(coreColorArgb),
@@ -137,6 +141,7 @@ public final class GlintstoneTrailRenderer {
      * <p>
      * 给彗星亚兹勒这类「瞬时整段射线」用：调用方自己铺采样点，不必走历史缓冲。
      * {@code startHalfWidth} 对应折线首点，{@code endHalfWidth} 对应末点。
+     * 默认 UV 与弹道拖尾相同（起点 V=1 淡尾），连续喷流请走带 {@code startTextureV} 的重载。
      *
      * @param applyChaikinSmooth true 时做一次 Chaikin 圆角，折线更柔
      */
@@ -150,6 +155,39 @@ public final class GlintstoneTrailRenderer {
             float endHalfWidthBlocks,
             int colorArgb,
             boolean applyChaikinSmooth
+    ) {
+        renderPolylineRibbonLayer(
+                poseStack,
+                bufferSource,
+                renderOriginWorld,
+                cameraWorld,
+                worldPoints,
+                startHalfWidthBlocks,
+                endHalfWidthBlocks,
+                colorArgb,
+                applyChaikinSmooth,
+                1.0f,
+                0.0f
+        );
+    }
+
+    /**
+     * 与 {@link #renderPolylineRibbonLayer} 相同，但沿路径自定义 {@code trail_beam.png} 的 V。
+     * <p>
+     * 贴图 V=0 是亮头、V=1 是透明淡尾。连续喷流口必须靠近 0，否则侧面看起点会空一截。
+     */
+    public static void renderPolylineRibbonLayer(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            Vec3 renderOriginWorld,
+            Vec3 cameraWorld,
+            List<Vec3> worldPoints,
+            float startHalfWidthBlocks,
+            float endHalfWidthBlocks,
+            int colorArgb,
+            boolean applyChaikinSmooth,
+            float startTextureV,
+            float endTextureV
     ) {
         if (worldPoints == null || worldPoints.size() < 2) {
             return;
@@ -180,6 +218,8 @@ public final class GlintstoneTrailRenderer {
                 totalLengthBlocks,
                 startHalfWidthBlocks,
                 endHalfWidthBlocks,
+                startTextureV,
+                endTextureV,
                 unpackRed(colorArgb),
                 unpackGreen(colorArgb),
                 unpackBlue(colorArgb),
@@ -288,6 +328,8 @@ public final class GlintstoneTrailRenderer {
             double totalLengthBlocks,
             float tailHalfWidthBlocks,
             float headHalfWidthBlocks,
+            float startTextureV,
+            float endTextureV,
             int red,
             int green,
             int blue,
@@ -310,9 +352,9 @@ public final class GlintstoneTrailRenderer {
             Vec3 endLeft = endCenter.subtract(endSide);
             Vec3 endRight = endCenter.add(endSide);
 
-            // 纹理 V=1 是最旧尾端，V=0 是当前弹头；全路径只淡出一次，不按段重复。
-            float startV = 1.0f - (float) startProgress;
-            float endV = 1.0f - (float) endProgress;
+            // 拖尾：startV=1、endV=0。连续喷流应反过来，口部走亮头。
+            float startV = Mth.lerp((float) startProgress, startTextureV, endTextureV);
+            float endV = Mth.lerp((float) endProgress, startTextureV, endTextureV);
             putTexturedVertex(consumer, poseMatrix, startLeft, 0.0f, startV, red, green, blue, clampedAlpha);
             putTexturedVertex(consumer, poseMatrix, startRight, 1.0f, startV, red, green, blue, clampedAlpha);
             putTexturedVertex(consumer, poseMatrix, endRight, 1.0f, endV, red, green, blue, clampedAlpha);

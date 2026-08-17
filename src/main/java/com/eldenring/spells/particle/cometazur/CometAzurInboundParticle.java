@@ -99,9 +99,10 @@ public class CometAzurInboundParticle extends TextureSheetParticle {
         this.quadSize = this.birthQuadSize;
         this.birthAlpha = 0.90f;
         this.alpha = this.birthAlpha;
-        this.rCol = 1.0f;
-        this.gCol = 1.0f;
-        this.bCol = 1.0f;
+        // 蓄力螺线偏墨绿，和喷流星河统一。
+        this.rCol = 0.48f;
+        this.gCol = 0.92f;
+        this.bCol = 0.84f;
         if (kind.pickMoteSpriteFromLastTwoFrames) {
             int moteFrameIndex = 1 + level.random.nextInt(2);
             setSprite(sprites.get(moteFrameIndex, 2));

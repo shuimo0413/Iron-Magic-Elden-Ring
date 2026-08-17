@@ -280,7 +280,7 @@ public final class ModParticles {
             registerAlwaysShown("comet_azur_shockwave_ring");
 
     /**
-     * 喷流周围粒子发射器。服务端只同步这一颗；客户端再铺 glow / spark / mote / impact / filament。
+     * 喷流周围粒子发射器。服务端只同步这一颗；客户端再铺墨绿星云 / 星系 / 闪星。
      */
     public static final DeferredHolder<ParticleType<?>, ParticleType<CometAzurJetOptions>> COMET_AZUR_JET_SURROUND =
             PARTICLE_TYPES.register("comet_azur_jet_surround", () -> new ParticleType<>(true) {

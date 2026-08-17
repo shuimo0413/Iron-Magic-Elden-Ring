@@ -16,6 +16,7 @@
   "attribute.elden_ring_spells.glintstone_magic_resist": "Glintstone Magic Resist",
   "effect.elden_ring_spells.terra_magica": "Terra Magica",
   "ui.elden_ring_spells.spell_power_bonus_percent": "Spell Power +%s%%",
+  "ui.elden_ring_spells.comet_azur_cannot_cast_falling": "Cannot cast Comet Azur while falling",
   "death.attack.glintstone_magic": "%1$s was shattered by glintstone magic",
   "death.attack.glintstone_magic.player": "%1$s was shattered by %2$s's glintstone magic",
   "item.elden_ring_spells.glintstone_pebble_scroll": "Glintstone Pebble Scroll",

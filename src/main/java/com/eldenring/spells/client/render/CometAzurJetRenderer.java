@@ -5,22 +5,25 @@ import com.eldenring.spells.client.render.glintstone.GlintstoneTrailRenderer;
 import com.eldenring.spells.entity.CometAzurJetEntity;
 import com.eldenring.spells.tuning.CometAzurTuning;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 彗星亚兹勒星河喷流：用多层自发光 ribbon 画墨绿星河柱，而不是密粒子激光。
+ * 彗星亚兹勒星河喷流。
  * <p>
- * 原理同辉石曲线拖尾（billboard 光带 + 可选 Chaikin），但路径是「当前射线」而不是飞行历史：
- * 暗靛外雾 → 星云层 → 亮芯，再加几条绕轴螺旋细丝，保持星河质感、避免细彗星尾那种单条塑料带。
+ * 本体是口部圆球 + 沿锁定朝向的墨绿圆柱管。
+ * 细丝带中轴波纹，周围粒子换成星云 / 星团 / 闪星套管，读成喷射而出的星河。
  */
 public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
 
@@ -59,8 +62,89 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
         }
         Vec3 upAxis = rightAxis.cross(forwardAxis).normalize();
 
-        List<Vec3> centerline = buildRiverCenterline(
+        float mouthRadius = CometAzurTuning.JET_BEAM_MOUTH_RADIUS_BLOCKS;
+        float tipRadius = CometAzurTuning.JET_BEAM_TIP_RADIUS_BLOCKS;
+
+        VertexConsumer cylinderConsumer = bufferSource.getBuffer(CometAzurJetRenderTypes.CYLINDER);
+        CometAzurJetMesh.renderOriginSphere(
+                poseStack,
+                cylinderConsumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                CometAzurTuning.JET_BEAM_ORIGIN_SPHERE_RADIUS_BLOCKS,
+                CometAzurTuning.JET_BEAM_NEBULA_COLOR_ARGB
+        );
+        CometAzurJetMesh.renderOriginSphere(
+                poseStack,
+                cylinderConsumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                CometAzurTuning.JET_BEAM_ORIGIN_SPHERE_RADIUS_BLOCKS * 0.62f,
+                CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB
+        );
+        // 外雾 → 星云 → 中管，真正的圆管截面。
+        renderCylinderShell(
+                poseStack,
+                cylinderConsumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                beamLengthBlocks,
+                mouthRadius * CometAzurTuning.JET_BEAM_VEIL_WIDTH_SCALE,
+                tipRadius * CometAzurTuning.JET_BEAM_VEIL_WIDTH_SCALE,
+                CometAzurTuning.JET_BEAM_VEIL_COLOR_ARGB
+        );
+        renderCylinderShell(
+                poseStack,
+                cylinderConsumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                beamLengthBlocks,
+                mouthRadius * CometAzurTuning.JET_BEAM_NEBULA_WIDTH_SCALE,
+                tipRadius * CometAzurTuning.JET_BEAM_NEBULA_WIDTH_SCALE,
+                CometAzurTuning.JET_BEAM_NEBULA_COLOR_ARGB
+        );
+        renderCylinderShell(
+                poseStack,
+                cylinderConsumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                beamLengthBlocks,
+                mouthRadius,
+                tipRadius,
+                CometAzurTuning.JET_BEAM_MID_COLOR_ARGB
+        );
+
+        VertexConsumer coreConsumer = bufferSource.getBuffer(CometAzurJetRenderTypes.CORE);
+        renderCylinderShell(
+                poseStack,
+                coreConsumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                beamLengthBlocks,
+                mouthRadius * CometAzurTuning.JET_BEAM_CORE_WIDTH_SCALE,
+                tipRadius * CometAzurTuning.JET_BEAM_CORE_WIDTH_SCALE,
+                CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB
+        );
+
+        CometAzurJetMesh.renderOriginGlowBillboard(
+                poseStack,
+                bufferSource,
+                this.entityRenderDispatcher.cameraOrientation(),
+                CometAzurTuning.JET_BEAM_ORIGIN_GLOW_RADIUS_BLOCKS,
+                CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB
+        );
+
+        renderRotatingFilaments(
+                poseStack,
+                bufferSource,
                 mouthWorld,
+                cameraWorld,
                 forwardAxis,
                 rightAxis,
                 upAxis,
@@ -68,58 +152,49 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 animationTicks
         );
 
-        float mouthHalfWidth = CometAzurTuning.JET_BEAM_MOUTH_HALF_WIDTH_BLOCKS;
-        float tipHalfWidth = CometAzurTuning.JET_BEAM_TIP_HALF_WIDTH_BLOCKS;
+        super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
+    }
 
-        // 外雾：最宽、最暗，垫出星河体积。
-        GlintstoneTrailRenderer.renderPolylineRibbonLayer(
+    private static void renderCylinderShell(
+            PoseStack poseStack,
+            VertexConsumer consumer,
+            Vec3 forwardAxis,
+            Vec3 rightAxis,
+            Vec3 upAxis,
+            float beamLengthBlocks,
+            float mouthRadiusBlocks,
+            float tipRadiusBlocks,
+            int colorArgb
+    ) {
+        CometAzurJetMesh.renderCylinderLayer(
                 poseStack,
-                bufferSource,
-                mouthWorld,
-                cameraWorld,
-                centerline,
-                mouthHalfWidth * CometAzurTuning.JET_BEAM_VEIL_WIDTH_SCALE,
-                tipHalfWidth * CometAzurTuning.JET_BEAM_VEIL_WIDTH_SCALE,
-                CometAzurTuning.JET_BEAM_VEIL_COLOR_ARGB,
-                true
+                consumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                beamLengthBlocks,
+                mouthRadiusBlocks,
+                tipRadiusBlocks,
+                colorArgb
         );
-        // 星云层：墨绿主色。
-        GlintstoneTrailRenderer.renderPolylineRibbonLayer(
-                poseStack,
-                bufferSource,
-                mouthWorld,
-                cameraWorld,
-                centerline,
-                mouthHalfWidth * CometAzurTuning.JET_BEAM_NEBULA_WIDTH_SCALE,
-                tipHalfWidth * CometAzurTuning.JET_BEAM_NEBULA_WIDTH_SCALE,
-                CometAzurTuning.JET_BEAM_NEBULA_COLOR_ARGB,
-                true
-        );
-        // 中间青绿过渡。
-        GlintstoneTrailRenderer.renderPolylineRibbonLayer(
-                poseStack,
-                bufferSource,
-                mouthWorld,
-                cameraWorld,
-                centerline,
-                mouthHalfWidth,
-                tipHalfWidth,
-                CometAzurTuning.JET_BEAM_MID_COLOR_ARGB,
-                true
-        );
-        // 亮芯：窄而亮，但不刺成白色塑料。
-        GlintstoneTrailRenderer.renderPolylineRibbonLayer(
-                poseStack,
-                bufferSource,
-                mouthWorld,
-                cameraWorld,
-                centerline,
-                mouthHalfWidth * CometAzurTuning.JET_BEAM_CORE_WIDTH_SCALE,
-                tipHalfWidth * CometAzurTuning.JET_BEAM_CORE_WIDTH_SCALE,
-                CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB,
-                true
-        );
+    }
 
+    /**
+     * 绕圆柱旋转的星河细丝。仍用曲线 ribbon，这是「转着的线」而不是柱体截面。
+     */
+    private static void renderRotatingFilaments(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            Vec3 mouthWorld,
+            Vec3 cameraWorld,
+            Vec3 forwardAxis,
+            Vec3 rightAxis,
+            Vec3 upAxis,
+            float beamLengthBlocks,
+            float animationTicks
+    ) {
+        float mouthTextureV = CometAzurTuning.JET_BEAM_TEXTURE_MOUTH_V;
+        float tipTextureV = CometAzurTuning.JET_BEAM_TEXTURE_TIP_V;
         int filamentCount = Math.max(1, CometAzurTuning.JET_BEAM_FILAMENT_COUNT);
         for (int filamentIndex = 0; filamentIndex < filamentCount; filamentIndex++) {
             float phaseRadians = (float) (Math.PI * 2.0 * filamentIndex / filamentCount);
@@ -132,6 +207,9 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                     animationTicks,
                     phaseRadians
             );
+            int filamentColor = (filamentIndex & 1) == 0
+                    ? CometAzurTuning.JET_BEAM_FILAMENT_COLOR_ARGB
+                    : CometAzurTuning.JET_BEAM_FILAMENT_ALT_COLOR_ARGB;
             GlintstoneTrailRenderer.renderPolylineRibbonLayer(
                     poseStack,
                     bufferSource,
@@ -140,53 +218,67 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                     filamentPath,
                     CometAzurTuning.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS,
                     CometAzurTuning.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.72f,
-                    CometAzurTuning.JET_BEAM_FILAMENT_COLOR_ARGB,
-                    true
+                    filamentColor,
+                    true,
+                    mouthTextureV,
+                    tipTextureV
             );
         }
 
-        super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
+        for (int filamentIndex = 0; filamentIndex < Math.max(2, filamentCount / 2); filamentIndex++) {
+            float phaseRadians = (float) (Math.PI * 2.0 * filamentIndex / Math.max(2, filamentCount / 2))
+                    + 0.55f;
+            List<Vec3> innerFilamentPath = buildHelixFilament(
+                    mouthWorld,
+                    forwardAxis,
+                    rightAxis,
+                    upAxis,
+                    beamLengthBlocks,
+                    animationTicks,
+                    phaseRadians,
+                    CometAzurTuning.JET_BEAM_FILAMENT_RADIUS_BLOCKS * 0.55f,
+                    -CometAzurTuning.JET_BEAM_FILAMENT_TWIST_RADIANS_PER_BLOCK * 0.85f,
+                    -CometAzurTuning.JET_BEAM_FILAMENT_SPIN_RADIANS_PER_TICK
+            );
+            GlintstoneTrailRenderer.renderPolylineRibbonLayer(
+                    poseStack,
+                    bufferSource,
+                    mouthWorld,
+                    cameraWorld,
+                    innerFilamentPath,
+                    CometAzurTuning.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.70f,
+                    CometAzurTuning.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.50f,
+                    CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB,
+                    true,
+                    mouthTextureV,
+                    tipTextureV
+            );
+        }
     }
 
     /**
-     * 中轴带轻微横向波纹，读作流动星河而不是死直线。
+     * 实体碰撞箱只有喷流口那么大；旁观者看整根柱子时口可能在视锥外。
      */
-    private static List<Vec3> buildRiverCenterline(
-            Vec3 mouthWorld,
-            Vec3 forwardAxis,
-            Vec3 rightAxis,
-            Vec3 upAxis,
-            float beamLengthBlocks,
-            float animationTicks
+    @Override
+    public boolean shouldRender(
+            CometAzurJetEntity entity,
+            Frustum frustum,
+            double cameraX,
+            double cameraY,
+            double cameraZ
     ) {
-        int sampleCount = Math.max(4, CometAzurTuning.JET_BEAM_SAMPLE_COUNT);
-        List<Vec3> points = new ArrayList<>(sampleCount);
-        float wavePhase = animationTicks * CometAzurTuning.JET_BEAM_RIVER_WAVE_PHASE_RADIANS_PER_TICK;
-        for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
-            float progress = sampleIndex / (float) (sampleCount - 1);
-            float alongBlocks = beamLengthBlocks * progress;
-            float waveRadians = alongBlocks * CometAzurTuning.JET_BEAM_RIVER_WAVE_FREQUENCY_PER_BLOCK + wavePhase;
-            float waveEnvelope = Mth.sin(progress * (float) Math.PI);
-            double rightOffset = Math.sin(waveRadians)
-                    * CometAzurTuning.JET_BEAM_RIVER_WAVE_AMPLITUDE_BLOCKS
-                    * waveEnvelope;
-            double upOffset = Math.cos(waveRadians * 0.83f)
-                    * CometAzurTuning.JET_BEAM_RIVER_WAVE_AMPLITUDE_BLOCKS
-                    * 0.55
-                    * waveEnvelope;
-            points.add(
-                    mouthWorld
-                            .add(forwardAxis.scale(alongBlocks))
-                            .add(rightAxis.scale(rightOffset))
-                            .add(upAxis.scale(upOffset))
-            );
-        }
-        return points;
+        Vec3 mouthWorld = entity.position();
+        Vec3 tipWorld = mouthWorld.add(
+                Vec3.directionFromRotation(entity.syncedPitchDegrees(), entity.syncedYawDegrees())
+                        .scale(Math.max(0.75f, entity.beamLengthBlocks()))
+        );
+        float inflateBlocks = CometAzurTuning.JET_FIELD_EULER_RING_RADIUS_BLOCKS
+                + CometAzurTuning.JET_FIELD_GLOW_QUAD_SIZE_BLOCKS
+                + 0.75f;
+        AABB beamBox = new AABB(mouthWorld, tipWorld).inflate(inflateBlocks);
+        return frustum.isVisible(beamBox);
     }
 
-    /**
-     * 绕喷流轴的螺旋细丝：{@code e^(iθ)} 映到 (right, up)，沿程扭 + 整体自旋。
-     */
     private static List<Vec3> buildHelixFilament(
             Vec3 mouthWorld,
             Vec3 forwardAxis,
@@ -196,24 +288,62 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
             float animationTicks,
             float phaseRadians
     ) {
+        return buildHelixFilament(
+                mouthWorld,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                beamLengthBlocks,
+                animationTicks,
+                phaseRadians,
+                CometAzurTuning.JET_BEAM_FILAMENT_RADIUS_BLOCKS,
+                CometAzurTuning.JET_BEAM_FILAMENT_TWIST_RADIANS_PER_BLOCK,
+                CometAzurTuning.JET_BEAM_FILAMENT_SPIN_RADIANS_PER_TICK
+        );
+    }
+
+    /**
+     * 绕喷流轴的螺旋细丝：只负责星河曲线，不表示光束截面。
+     */
+    private static List<Vec3> buildHelixFilament(
+            Vec3 mouthWorld,
+            Vec3 forwardAxis,
+            Vec3 rightAxis,
+            Vec3 upAxis,
+            float beamLengthBlocks,
+            float animationTicks,
+            float phaseRadians,
+            float radiusBlocks,
+            float twistRadiansPerBlock,
+            float spinRadiansPerTick
+    ) {
         int sampleCount = Math.max(4, CometAzurTuning.JET_BEAM_SAMPLE_COUNT);
         List<Vec3> points = new ArrayList<>(sampleCount);
-        float spinRadians = animationTicks * CometAzurTuning.JET_BEAM_FILAMENT_SPIN_RADIANS_PER_TICK;
+        float spinRadians = animationTicks * spinRadiansPerTick;
+        float wavePhaseRadians = animationTicks * CometAzurTuning.JET_BEAM_RIVER_WAVE_PHASE_RADIANS_PER_TICK;
+        float waveAmplitudeBlocks = CometAzurTuning.JET_BEAM_RIVER_WAVE_AMPLITUDE_BLOCKS;
+        float waveFrequencyPerBlock = CometAzurTuning.JET_BEAM_RIVER_WAVE_FREQUENCY_PER_BLOCK;
         for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
             float progress = sampleIndex / (float) (sampleCount - 1);
             float alongBlocks = beamLengthBlocks * progress;
-            float helixRadians = phaseRadians
-                    + spinRadians
-                    + alongBlocks * CometAzurTuning.JET_BEAM_FILAMENT_TWIST_RADIANS_PER_BLOCK;
-            float radiusBlocks = CometAzurTuning.JET_BEAM_FILAMENT_RADIUS_BLOCKS
-                    * (0.82f + 0.18f * Mth.sin(progress * (float) Math.PI));
+            float helixRadians = phaseRadians + spinRadians + alongBlocks * twistRadiansPerBlock;
+            float localRadiusBlocks = radiusBlocks * Mth.lerp(
+                    progress,
+                    CometAzurTuning.JET_BEAM_FILAMENT_MOUTH_RADIUS_SCALE,
+                    CometAzurTuning.JET_BEAM_FILAMENT_TIP_RADIUS_SCALE
+            );
+            // 中轴轻微起伏，细丝跟着走，读成流动的星河而不是直电缆。
+            float riverWaveRightBlocks = waveAmplitudeBlocks
+                    * (float) Math.sin(alongBlocks * waveFrequencyPerBlock + wavePhaseRadians);
+            float riverWaveUpBlocks = waveAmplitudeBlocks * 0.65f
+                    * (float) Math.cos(alongBlocks * waveFrequencyPerBlock * 0.83f + wavePhaseRadians + phaseRadians);
             double cosineAngle = Math.cos(helixRadians);
             double sineAngle = Math.sin(helixRadians);
             points.add(
                     mouthWorld
                             .add(forwardAxis.scale(alongBlocks))
-                            .add(rightAxis.scale(radiusBlocks * cosineAngle))
-                            .add(upAxis.scale(radiusBlocks * sineAngle))
+                            .add(rightAxis.scale(localRadiusBlocks * cosineAngle + riverWaveRightBlocks))
+                            .add(upAxis.scale(localRadiusBlocks * sineAngle + riverWaveUpBlocks))
             );
         }
         return points;
