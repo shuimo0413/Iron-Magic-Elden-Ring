@@ -12,16 +12,18 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 通用辉石弹道渲染器：先画连续光轨，再画立体晶核 + 光晕。
+ * 通用辉石弹道渲染器：先画连续光轨与螺旋细丝，再画立体晶核 / 刺簇 + 光晕。
  *
  * @param <T> 具体辉石弹道类型
  */
 public class GlintstoneProjectileRenderer<T extends AbstractGlintstoneProjectile> extends EntityRenderer<T> {
-    private final ModelPart cometBodyRoot;
+    private final ModelPart diamondBodyRoot;
+    private final ModelPart spikedBodyRoot;
 
     public GlintstoneProjectileRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.cometBodyRoot = context.bakeLayer(GlintstoneCometModels.COMET_HEAD_LAYER);
+        this.diamondBodyRoot = context.bakeLayer(GlintstoneCometModels.COMET_HEAD_LAYER);
+        this.spikedBodyRoot = context.bakeLayer(GlintstoneCometModels.SPIKED_COMET_HEAD_LAYER);
         this.shadowRadius = 0.0f;
     }
 
@@ -40,23 +42,37 @@ public class GlintstoneProjectileRenderer<T extends AbstractGlintstoneProjectile
                 Mth.lerp(partialTicks, entity.yo, entity.getY()),
                 Mth.lerp(partialTicks, entity.zo, entity.getZ())
         );
+        Vec3 cameraWorld = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         // PoseStack 原点就是插值弹头；历史世界坐标相对此点转换后绘制真实曲线。
         GlintstoneTrailRenderer.renderHistoryRibbon(
                 poseStack,
                 bufferSource,
                 interpolatedHeadWorld,
                 interpolatedHeadWorld,
-                Minecraft.getInstance().gameRenderer.getMainCamera().getPosition(),
+                cameraWorld,
                 entity.trailHistoryWorldPositions(),
                 entity.trailStyle(),
                 visualStyle
         );
+        GlintstoneTrailRenderer.renderHistoryHelixFilaments(
+                poseStack,
+                bufferSource,
+                interpolatedHeadWorld,
+                interpolatedHeadWorld,
+                cameraWorld,
+                entity.trailHistoryWorldPositions(),
+                entity.trailStyle(),
+                visualStyle.glowColorArgb(),
+                visualStyle.spikeColorArgb(),
+                entity.tickCount + partialTicks
+        );
+        ModelPart bodyRoot = visualStyle.usesSpikedCrystalCluster() ? spikedBodyRoot : diamondBodyRoot;
         GlintstoneCometHeadDrawer.render(
                 entity,
                 partialTicks,
                 poseStack,
                 bufferSource,
-                cometBodyRoot,
+                bodyRoot,
                 this.entityRenderDispatcher,
                 visualStyle
         );

@@ -39,9 +39,16 @@ public final class SwiftGlintstoneShardTuning {
     // 彗星头视觉（更细、更亮的针状感）
     // -------------------------------------------------------------------------
 
-    public static final float COMET_HEAD_BODY_SCALE = 0.30f;
-    public static final float COMET_HEAD_GLOW_SCALE = 0.58f;
-    public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.08f;
+    /** 径向缩小，读成细针而不是小圆石。 */
+    public static final float COMET_HEAD_BODY_SCALE_RADIAL = 0.22f;
+
+    /** 沿飞行轴拉长。调大 → 更像示踪弹。 */
+    public static final float COMET_HEAD_BODY_SCALE_ALONG = 0.70f;
+
+    public static final float COMET_HEAD_BODY_SCALE = COMET_HEAD_BODY_SCALE_RADIAL;
+    public static final float COMET_HEAD_GLOW_SCALE = 0.42f;
+    public static final float COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE = 1.85f;
+    public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.06f;
     public static final float COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK = 26.0f;
 
     public static final float COMET_HEAD_CORE_RED = 0.20f;
@@ -54,13 +61,13 @@ public final class SwiftGlintstoneShardTuning {
     public static final float COMET_HEAD_GLOW_ALPHA = 1.0f;
 
     /**
-     * 迅魔砾曲线光轨：高速弹保留约 12 方块 / 32 点，仍保持细针观感。
+     * 迅魔砾曲线光轨：高速细亮示踪线，无螺旋细丝。
      */
     public static final GlintstoneTrailTuning.TrailStyle TRAIL_STYLE =
-            new GlintstoneTrailTuning.TrailStyle(12.0, 0.040f, 0.008f, 0.22f, 0.06f, 32);
+            new GlintstoneTrailTuning.TrailStyle(14.0, 0.028f, 0.006f, 0.12f, 0.04f, 36);
 
     /** 拖尾点缀强度倍率；不影响几何光束长宽。 */
-    public static final float TRAIL_PARTICLE_INTENSITY = 0.65f;
+    public static final float TRAIL_PARTICLE_INTENSITY = 0.35f;
     public static final float IMPACT_PARTICLE_INTENSITY = 1.05f;
     public static final float CAST_BURST_PARTICLE_INTENSITY = 0.8f;
 

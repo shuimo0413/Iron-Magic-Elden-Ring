@@ -90,11 +90,13 @@ public class GlintstoneCometProjectile extends AbstractGlintstoneProjectile {
 
     @Override
     public GlintstoneCometHeadDrawer.VisualStyle visualStyle() {
-        return GlintstoneCometHeadDrawer.VisualStyle.fromFloatColors(
-                GlintstoneCometTuning.COMET_HEAD_BODY_SCALE,
+        return GlintstoneCometHeadDrawer.VisualStyle.anisotropic(
+                GlintstoneCometTuning.COMET_HEAD_BODY_SCALE_RADIAL,
+                GlintstoneCometTuning.COMET_HEAD_BODY_SCALE_ALONG,
                 GlintstoneCometTuning.COMET_HEAD_GLOW_SCALE,
                 GlintstoneCometTuning.COMET_HEAD_GLOW_PULSE_AMPLITUDE,
                 GlintstoneCometTuning.COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK,
+                GlintstoneCometTuning.COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE,
                 GlintstoneCometTuning.COMET_HEAD_CORE_RED,
                 GlintstoneCometTuning.COMET_HEAD_CORE_GREEN,
                 GlintstoneCometTuning.COMET_HEAD_CORE_BLUE,

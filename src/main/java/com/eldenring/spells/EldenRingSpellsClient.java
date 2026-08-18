@@ -141,6 +141,10 @@ public class EldenRingSpellsClient {
                 GlintstoneCometModels.COMET_HEAD_LAYER,
                 GlintstoneCometModels::createCometHeadLayer
         );
+        event.registerLayerDefinition(
+                GlintstoneCometModels.SPIKED_COMET_HEAD_LAYER,
+                GlintstoneCometModels::createSpikedCometHeadLayer
+        );
     }
 
     @SubscribeEvent

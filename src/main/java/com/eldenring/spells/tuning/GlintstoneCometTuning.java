@@ -24,9 +24,12 @@ public final class GlintstoneCometTuning {
      */
     public static final float EXPLOSION_RADIUS_BLOCKS = 2.2f;
 
-    public static final float COMET_HEAD_BODY_SCALE = 1.18f;
-    public static final float COMET_HEAD_GLOW_SCALE = 1.95f;
-    public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.18f;
+    public static final float COMET_HEAD_BODY_SCALE_RADIAL = 0.70f;
+    public static final float COMET_HEAD_BODY_SCALE_ALONG = 1.70f;
+    public static final float COMET_HEAD_BODY_SCALE = COMET_HEAD_BODY_SCALE_RADIAL;
+    public static final float COMET_HEAD_GLOW_SCALE = 1.35f;
+    public static final float COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE = 2.05f;
+    public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.16f;
     public static final float COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK = 13.0f;
 
     public static final float COMET_HEAD_CORE_RED = 0.06f;
@@ -39,13 +42,23 @@ public final class GlintstoneCometTuning {
     public static final float COMET_HEAD_GLOW_ALPHA = 1.0f;
 
     /**
-     * 辉石彗星曲线光轨：最多保留约 48 方块 / 72 点，接近完整可见飞行路径。
+     * 辉石彗星：长尾 + 加法亮芯 + 两条螺旋细丝，开始读成彗星而不是大号魔砾。
      */
     public static final GlintstoneTrailTuning.TrailStyle TRAIL_STYLE =
-            new GlintstoneTrailTuning.TrailStyle(48.0, 0.180f, 0.038f, 0.45f, 0.16f, 72);
+            new GlintstoneTrailTuning.TrailStyle(
+                    40.0,
+                    0.155f,
+                    0.032f,
+                    0.16f,
+                    0.06f,
+                    64,
+                    new GlintstoneTrailTuning.HelixStyle(2, 0.18f, 0.08f, 0.045f, 0.22f, 0.10f),
+                    true,
+                    false
+            );
 
     /** 拖尾点缀强度倍率；不影响几何光束长宽。 */
-    public static final float TRAIL_PARTICLE_INTENSITY = 1.45f;
+    public static final float TRAIL_PARTICLE_INTENSITY = 0.50f;
     public static final float IMPACT_PARTICLE_INTENSITY = 2.55f;
     public static final float CAST_BURST_PARTICLE_INTENSITY = 1.95f;
 

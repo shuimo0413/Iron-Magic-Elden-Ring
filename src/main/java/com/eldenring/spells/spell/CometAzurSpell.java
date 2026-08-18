@@ -33,7 +33,9 @@ import java.util.Optional;
 /**
  * 彗星亚兹勒（Comet Azur）。
  * <p>
- * {@link CastType#CONTINUOUS}：按住右键维持喷流；松开立刻取消（客户端发 CancelCast）。
+ * {@link CastType#CONTINUOUS}：按住施法键维持喷流；松开立刻取消（客户端发 CancelCast）。
+ * 施法键含卷轴/法杖右键、魔法书施法键（默认 V，跟玩家改键）、快捷施法。
+ * 魔法书点按起手时键会先弹起，不能把「没按住」立刻当成松手，否则蓄力一闪就停。
  * 铁魔法本体的 CONTINUOUS 默认会一直喷到时间/蓝耗尽，所以本类额外监听松手。
  * 地面、跳跃上升、创造飞行可以起手；正在下落则拒绝（否则会被钉在半空）。
  * 整段吟唱锁死移动与视角；前 {@link CometAzurTuning#STARTUP_DURATION_TICKS} tick 蓄力，随后喷流沿出手朝向直线延伸。

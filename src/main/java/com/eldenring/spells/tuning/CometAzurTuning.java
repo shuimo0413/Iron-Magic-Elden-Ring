@@ -3,7 +3,7 @@ package com.eldenring.spells.tuning;
 /**
  * 彗星亚兹勒可调常量。
  * <p>
-     * 流程：2 秒蓄力漩涡（对数螺线汇聚）→ 按住右键墨绿色星河喷流（圆管 + 星云套管）→ 松手或没蓝停止。
+     * 流程：2 秒蓄力漩涡（对数螺线汇聚）→ 按住施法键墨绿色星河喷流（圆管 + 星云套管）→ 松手或没蓝停止。
  * 铁魔法 CONTINUOUS 的 {@link #SPELL_CAST_TIME_TICKS} 是最长按住时间，不是蓄力条。
  */
 public final class CometAzurTuning {
@@ -12,7 +12,11 @@ public final class CometAzurTuning {
     }
 
     public static final int SPELL_MAX_LEVEL = 5;
-    public static final int SPELL_COOLDOWN_SECONDS = 18;
+    /**
+     * 冷却（秒）。与辉石彗星同档：连续吟唱结束后很快就能再起手。
+     * 原先 18 秒对点按/中途松手都太长。
+     */
+    public static final double SPELL_COOLDOWN_SECONDS = 1.2;
     /**
      * 每次脉冲蓝耗。CONTINUOUS 约每 10 tick 扣一次，UI「每秒」大约是这个数 ×2。
      * 喷流写好后，没蓝会在下一次脉冲停吟唱。

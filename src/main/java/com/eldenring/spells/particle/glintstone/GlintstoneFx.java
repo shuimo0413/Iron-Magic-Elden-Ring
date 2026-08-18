@@ -17,10 +17,9 @@ import net.minecraft.world.phys.Vec3;
 /**
  * 辉石学派通用粒子助手。新辉石法术应优先调用这里，保持青蓝晶体视觉一致。
  * <p>
- * {@code intensity}：相对魔砾基准的倍率（点缀密度 / 爆裂数量），建议 0.6–2.5。
- * <p>
- * 飞行光轨主体由客户端几何光束绘制；本类负责弹头后的光晕、薄雾、火花、碎晶与闪星点缀，
- * 以及命中/施法爆裂。
+     * {@code intensity}：相对魔砾基准的倍率（点缀密度 / 爆裂数量），建议 0.6–2.5。
+     * <p>
+     * 飞行光轨主体由客户端几何光束绘制；本类只在弹头附近做稀疏点缀，以及命中/施法爆裂。
  */
 public final class GlintstoneFx {
 
@@ -65,10 +64,9 @@ public final class GlintstoneFx {
     }
 
     /**
-     * 飞行拖尾点缀：沿彗星反向飞行方向生成分层粒子，不构成光带主体。
+     * 飞行拖尾点缀：只在弹头附近稀疏生成光晕 / 火花 / 碎晶 / 闪星。
      * <p>
-     * 光晕提供柔和能量残影，缩小的薄雾补充体积感，火花/碎晶向外剥落，
-     * 闪星则作为低频高亮。生成密度随法术自己的 intensity 与 TrailStyle 递增。
+     * 连续轨迹由客户端几何光带承担，不再沿位移线段采样粒子。
      */
     public static void trailAccents(
             Level level,
@@ -92,19 +90,11 @@ public final class GlintstoneFx {
                 0.04,
                 trailStyle.headHalfWidthBlocks() * (0.85 + 0.15 * clampedIntensity)
         );
-        spawnPathParticleSamples(
-                level,
-                new Vec3(x, y, z),
-                motion,
-                clampedIntensity,
-                scatterRadiusBlocks
-        );
-
         float glowChance = Mth.clamp(
                 GlintstoneTrailTuning.PARTICLE_GLOW_BASE_CHANCE
                         + GlintstoneTrailTuning.PARTICLE_GLOW_CHANCE_PER_INTENSITY * clampedIntensity,
                 0.0f,
-                0.95f
+                0.35f
         );
         if (level.random.nextFloat() < glowChance) {
             Vec3 glowOffset = Utils.getRandomVec3(scatterRadiusBlocks * 0.75);
@@ -128,7 +118,7 @@ public final class GlintstoneFx {
                 GlintstoneTrailTuning.PARTICLE_MIST_BASE_CHANCE
                         + GlintstoneTrailTuning.PARTICLE_MIST_CHANCE_PER_INTENSITY * clampedIntensity,
                 0.0f,
-                0.45f
+                0.18f
         );
         if (level.random.nextFloat() < mistChance) {
             Vec3 mistOffset = Utils.getRandomVec3(scatterRadiusBlocks);
@@ -197,87 +187,6 @@ public final class GlintstoneFx {
                     moteOffset.y * 0.15,
                     moteOffset.z * 0.15
             ));
-        }
-    }
-
-    /**
-     * 对本 tick 的真实位移线段做分层采样，使粒子铺在弹道经过的位置，而非只堆在弹头附近。
-     * 每个采样点只生成一种粒子，并用概率混合出光晕、火花、闪星、薄雾和碎晶。
-     */
-    private static void spawnPathParticleSamples(
-            Level level,
-            Vec3 currentPosition,
-            Vec3 motion,
-            float clampedIntensity,
-            double scatterRadiusBlocks
-    ) {
-        if (motion.lengthSqr() < 1.0e-8) {
-            return;
-        }
-
-        int pathParticleCount = Mth.clamp(
-                Math.round(
-                        GlintstoneTrailTuning.PARTICLE_PATH_BASE_SAMPLE_COUNT
-                                + clampedIntensity
-                                * GlintstoneTrailTuning.PARTICLE_PATH_SAMPLE_COUNT_PER_INTENSITY
-                ),
-                1,
-                GlintstoneTrailTuning.PARTICLE_PATH_MAXIMUM_SAMPLE_COUNT
-        );
-
-        for (int sampleIndex = 0; sampleIndex < pathParticleCount; sampleIndex++) {
-            double sampleProgress = (sampleIndex + level.random.nextDouble()) / pathParticleCount;
-            Vec3 sampledPathPosition = currentPosition.subtract(motion.scale(sampleProgress));
-            Vec3 sampleScatterOffset = Utils.getRandomVec3(scatterRadiusBlocks * 0.9);
-            double particleX = sampledPathPosition.x + sampleScatterOffset.x;
-            double particleY = sampledPathPosition.y + sampleScatterOffset.y;
-            double particleZ = sampledPathPosition.z + sampleScatterOffset.z;
-            float particleKindRoll = level.random.nextFloat();
-
-            if (particleKindRoll < 0.34f) {
-                float glowSizeScale = Mth.clamp(0.56f + clampedIntensity * 0.10f, 0.60f, 0.95f);
-                withParticleSizeScale(glowSizeScale, () -> level.addParticle(
-                        ModParticles.GLINTSTONE_GLOW.get(),
-                        particleX, particleY, particleZ,
-                        -motion.x * 0.015 + sampleScatterOffset.x * 0.05,
-                        -motion.y * 0.015 + sampleScatterOffset.y * 0.05,
-                        -motion.z * 0.015 + sampleScatterOffset.z * 0.05
-                ));
-            } else if (particleKindRoll < 0.62f) {
-                withParticleSizeScale(0.78f, () -> level.addParticle(
-                        ModParticles.GLINTSTONE_SPARK.get(),
-                        particleX, particleY, particleZ,
-                        -motion.x * 0.035 + sampleScatterOffset.x * 0.30,
-                        -motion.y * 0.035 + sampleScatterOffset.y * 0.30,
-                        -motion.z * 0.035 + sampleScatterOffset.z * 0.30
-                ));
-            } else if (particleKindRoll < 0.80f) {
-                withParticleSizeScale(0.82f, () -> level.addParticle(
-                        ModParticles.GLINTSTONE_MOTE.get(),
-                        particleX, particleY, particleZ,
-                        sampleScatterOffset.x * 0.12,
-                        sampleScatterOffset.y * 0.12,
-                        sampleScatterOffset.z * 0.12
-                ));
-            } else if (particleKindRoll < 0.93f) {
-                float mistSizeScale = Mth.clamp(0.24f + clampedIntensity * 0.08f, 0.28f, 0.52f);
-                withParticleSizeScale(mistSizeScale, () -> level.addParticle(
-                        ModParticles.GLINTSTONE_MIST.get(),
-                        particleX, particleY, particleZ,
-                        sampleScatterOffset.x * 0.05,
-                        0.003 + sampleScatterOffset.y * 0.05,
-                        sampleScatterOffset.z * 0.05
-                ));
-            } else {
-                float shardSizeScale = Mth.clamp(0.46f + clampedIntensity * 0.08f, 0.50f, 0.72f);
-                withParticleSizeScale(shardSizeScale, () -> level.addParticle(
-                        ModParticles.GLINTSTONE_SHARD.get(),
-                        particleX, particleY, particleZ,
-                        -motion.x * 0.045 + sampleScatterOffset.x * 0.40,
-                        -motion.y * 0.045 + sampleScatterOffset.y * 0.40,
-                        -motion.z * 0.045 + sampleScatterOffset.z * 0.40
-                ));
-            }
         }
     }
 

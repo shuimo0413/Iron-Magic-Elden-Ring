@@ -24,10 +24,6 @@ import java.util.List;
  * 内外两层仍远低于过去逐点生成并长期存活的粒子开销。
  */
 public final class GlintstoneTrailRenderer {
-    /** 自发光透明光带无需事件注册；RenderType 按纹理 ResourceLocation 自动缓存。 */
-    private static final RenderType TRAIL_RENDER_TYPE =
-            RenderType.entityTranslucentEmissive(GlintstoneCometModels.TRAIL_BEAM_TEXTURE);
-
     /** 相邻历史点距离小于此值时合并，避免最后插值点制造零长度四边形。 */
     private static final double MIN_RENDER_SEGMENT_LENGTH_BLOCKS = 0.025;
 
@@ -95,12 +91,33 @@ public final class GlintstoneTrailRenderer {
         }
 
         List<Vec3> sideDirections = buildStableSideDirections(renderPoints, cameraWorld);
-        VertexConsumer consumer = bufferSource.getBuffer(TRAIL_RENDER_TYPE);
         Matrix4f poseMatrix = poseStack.last().pose();
 
-        // 外层先画：宽、淡、柔边。拖尾约定 V=1 旧尾、V=0 弹头。
+        if (trailStyle.extraOuterVeil()) {
+            VertexConsumer veilConsumer = bufferSource.getBuffer(GlintstoneTrailRenderTypes.TRANSLUCENT);
+            putRibbonLayer(
+                    veilConsumer,
+                    poseMatrix,
+                    renderOriginWorld,
+                    renderPoints,
+                    sideDirections,
+                    cumulativeDistances,
+                    totalLengthBlocks,
+                    trailStyle.tailHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_EXTRA_VEIL_WIDTH_SCALE,
+                    trailStyle.headHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_EXTRA_VEIL_WIDTH_SCALE,
+                    1.0f,
+                    0.0f,
+                    unpackRed(glowColorArgb),
+                    unpackGreen(glowColorArgb),
+                    unpackBlue(glowColorArgb),
+                    (int) (unpackAlpha(glowColorArgb) * GlintstoneTrailTuning.BEAM_EXTRA_VEIL_ALPHA_SCALE)
+            );
+        }
+
+        VertexConsumer translucentConsumer = bufferSource.getBuffer(GlintstoneTrailRenderTypes.TRANSLUCENT);
+        // 外层：宽、淡、柔边。拖尾约定 V=1 旧尾、V=0 弹头。
         putRibbonLayer(
-                consumer,
+                translucentConsumer,
                 poseMatrix,
                 renderOriginWorld,
                 renderPoints,
@@ -116,9 +133,13 @@ public final class GlintstoneTrailRenderer {
                 unpackBlue(glowColorArgb),
                 (int) (unpackAlpha(glowColorArgb) * GlintstoneTrailTuning.BEAM_OUTER_ALPHA_SCALE)
         );
-        // 内层后画：窄、亮光芯。
+
+        RenderType coreRenderType = trailStyle.additiveCore()
+                ? GlintstoneTrailRenderTypes.ADDITIVE_CORE
+                : GlintstoneTrailRenderTypes.TRANSLUCENT;
+        VertexConsumer coreConsumer = bufferSource.getBuffer(coreRenderType);
         putRibbonLayer(
-                consumer,
+                coreConsumer,
                 poseMatrix,
                 renderOriginWorld,
                 renderPoints,
@@ -134,6 +155,117 @@ public final class GlintstoneTrailRenderer {
                 unpackBlue(coreColorArgb),
                 235
         );
+    }
+
+    /**
+     * 沿历史曲线缠绕螺旋细丝。体积用几何线而不是粒子；{@link GlintstoneTrailTuning.HelixStyle#NONE} 时直接返回。
+     *
+     * @param animationTicks 实体年龄 + 插值，驱动细丝绕轴自旋
+     */
+    public static void renderHistoryHelixFilaments(
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            Vec3 renderOriginWorld,
+            Vec3 currentHeadWorld,
+            Vec3 cameraWorld,
+            List<Vec3> historyWorldPositions,
+            GlintstoneTrailTuning.TrailStyle trailStyle,
+            int primaryColorArgb,
+            int alternateColorArgb,
+            float animationTicks
+    ) {
+        GlintstoneTrailTuning.HelixStyle helixStyle = trailStyle.helixStyle();
+        if (helixStyle == null || !helixStyle.enabled()) {
+            return;
+        }
+
+        List<Vec3> renderPoints = smoothPolylineOnce(
+                buildRenderPoints(historyWorldPositions, currentHeadWorld)
+        );
+        if (renderPoints.size() < 2) {
+            return;
+        }
+
+        double[] cumulativeDistances = cumulativeDistances(renderPoints);
+        double totalLengthBlocks = cumulativeDistances[cumulativeDistances.length - 1];
+        if (totalLengthBlocks < MIN_RENDER_SEGMENT_LENGTH_BLOCKS) {
+            return;
+        }
+
+        List<Vec3> sideDirections = buildStableSideDirections(renderPoints, cameraWorld);
+        int filamentCount = helixStyle.filamentCount();
+        float spinRadians = animationTicks * helixStyle.spinRadiansPerTick();
+        for (int filamentIndex = 0; filamentIndex < filamentCount; filamentIndex++) {
+            float phaseRadians = (float) (Math.PI * 2.0 * filamentIndex / filamentCount) + spinRadians;
+            List<Vec3> filamentPath = offsetPointsIntoHelix(
+                    renderPoints,
+                    sideDirections,
+                    cumulativeDistances,
+                    totalLengthBlocks,
+                    helixStyle,
+                    phaseRadians
+            );
+            int filamentColor = (filamentIndex & 1) == 0 ? primaryColorArgb : alternateColorArgb;
+            renderPolylineRibbonLayer(
+                    poseStack,
+                    bufferSource,
+                    renderOriginWorld,
+                    cameraWorld,
+                    filamentPath,
+                    helixStyle.halfWidthBlocks() * 0.72f,
+                    helixStyle.halfWidthBlocks(),
+                    filamentColor,
+                    false,
+                    1.0f,
+                    0.0f
+            );
+        }
+    }
+
+    /**
+     * 把路径点沿「切线旋转后的径向」偏成螺旋。侧向向量来自相机 billboard 标架，急弯处不会翻面。
+     */
+    private static List<Vec3> offsetPointsIntoHelix(
+            List<Vec3> renderPoints,
+            List<Vec3> sideDirections,
+            double[] cumulativeDistances,
+            double totalLengthBlocks,
+            GlintstoneTrailTuning.HelixStyle helixStyle,
+            float phaseRadians
+    ) {
+        List<Vec3> helixPoints = new ArrayList<>(renderPoints.size());
+        for (int pointIndex = 0; pointIndex < renderPoints.size(); pointIndex++) {
+            Vec3 tangent;
+            if (pointIndex == 0) {
+                tangent = renderPoints.get(1).subtract(renderPoints.get(0));
+            } else if (pointIndex == renderPoints.size() - 1) {
+                tangent = renderPoints.get(pointIndex).subtract(renderPoints.get(pointIndex - 1));
+            } else {
+                tangent = renderPoints.get(pointIndex + 1).subtract(renderPoints.get(pointIndex - 1));
+            }
+            tangent = tangent.lengthSqr() > 1.0e-8 ? tangent.normalize() : new Vec3(0.0, 0.0, 1.0);
+
+            Vec3 radialAxis = sideDirections.get(pointIndex);
+            Vec3 binormal = tangent.cross(radialAxis);
+            if (binormal.lengthSqr() < 1.0e-8) {
+                binormal = Math.abs(tangent.y) < 0.92 ? new Vec3(0.0, 1.0, 0.0) : new Vec3(1.0, 0.0, 0.0);
+                binormal = tangent.cross(binormal);
+            }
+            binormal = binormal.normalize();
+
+            float progress = (float) (cumulativeDistances[pointIndex] / totalLengthBlocks);
+            float radiusBlocks = Mth.lerp(progress, helixStyle.tailRadiusBlocks(), helixStyle.headRadiusBlocks());
+            float helixRadians = phaseRadians
+                    + (float) (cumulativeDistances[pointIndex] * helixStyle.twistRadiansPerBlock());
+            double cosineAngle = Math.cos(helixRadians);
+            double sineAngle = Math.sin(helixRadians);
+            helixPoints.add(
+                    renderPoints.get(pointIndex)
+                            .add(radialAxis.scale(radiusBlocks * cosineAngle))
+                            .add(binormal.scale(radiusBlocks * sineAngle))
+            );
+        }
+        return helixPoints;
     }
 
     /**
@@ -206,7 +338,7 @@ public final class GlintstoneTrailRenderer {
         }
 
         List<Vec3> sideDirections = buildStableSideDirections(renderPoints, cameraWorld);
-        VertexConsumer consumer = bufferSource.getBuffer(TRAIL_RENDER_TYPE);
+        VertexConsumer consumer = bufferSource.getBuffer(GlintstoneTrailRenderTypes.TRANSLUCENT);
         Matrix4f poseMatrix = poseStack.last().pose();
         putRibbonLayer(
                 consumer,

@@ -82,11 +82,13 @@ public class SwiftGlintstoneShardProjectile extends AbstractGlintstoneProjectile
 
     @Override
     public GlintstoneCometHeadDrawer.VisualStyle visualStyle() {
-        return GlintstoneCometHeadDrawer.VisualStyle.fromFloatColors(
-                SwiftGlintstoneShardTuning.COMET_HEAD_BODY_SCALE,
+        return GlintstoneCometHeadDrawer.VisualStyle.anisotropic(
+                SwiftGlintstoneShardTuning.COMET_HEAD_BODY_SCALE_RADIAL,
+                SwiftGlintstoneShardTuning.COMET_HEAD_BODY_SCALE_ALONG,
                 SwiftGlintstoneShardTuning.COMET_HEAD_GLOW_SCALE,
                 SwiftGlintstoneShardTuning.COMET_HEAD_GLOW_PULSE_AMPLITUDE,
                 SwiftGlintstoneShardTuning.COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK,
+                SwiftGlintstoneShardTuning.COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE,
                 SwiftGlintstoneShardTuning.COMET_HEAD_CORE_RED,
                 SwiftGlintstoneShardTuning.COMET_HEAD_CORE_GREEN,
                 SwiftGlintstoneShardTuning.COMET_HEAD_CORE_BLUE,

@@ -24,9 +24,12 @@ public final class GreatGlintstoneShardTuning {
      */
     public static final float EXPLOSION_RADIUS_BLOCKS = 1.8f;
 
-    public static final float COMET_HEAD_BODY_SCALE = 0.95f;
-    public static final float COMET_HEAD_GLOW_SCALE = 1.55f;
-    public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.16f;
+    public static final float COMET_HEAD_BODY_SCALE_RADIAL = 1.05f;
+    public static final float COMET_HEAD_BODY_SCALE_ALONG = 0.85f;
+    public static final float COMET_HEAD_BODY_SCALE = COMET_HEAD_BODY_SCALE_RADIAL;
+    public static final float COMET_HEAD_GLOW_SCALE = 1.45f;
+    public static final float COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE = 1.0f;
+    public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.14f;
     public static final float COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK = 14.0f;
 
     public static final float COMET_HEAD_CORE_RED = 0.08f;
@@ -39,13 +42,13 @@ public final class GreatGlintstoneShardTuning {
     public static final float COMET_HEAD_GLOW_ALPHA = 1.0f;
 
     /**
-     * 大魔砾曲线光轨：最多保留约 26 方块 / 48 点，明显长于基础魔砾。
+     * 大魔砾曲线光轨：短而粗，强调块状弹头而不是彗尾。
      */
     public static final GlintstoneTrailTuning.TrailStyle TRAIL_STYLE =
-            new GlintstoneTrailTuning.TrailStyle(26.0, 0.120f, 0.028f, 0.36f, 0.12f, 48);
+            new GlintstoneTrailTuning.TrailStyle(12.0, 0.145f, 0.034f, 0.22f, 0.08f, 32);
 
     /** 拖尾点缀强度倍率；不影响几何光束长宽。 */
-    public static final float TRAIL_PARTICLE_INTENSITY = 1.15f;
+    public static final float TRAIL_PARTICLE_INTENSITY = 0.55f;
     public static final float IMPACT_PARTICLE_INTENSITY = 2.35f;
     public static final float CAST_BURST_PARTICLE_INTENSITY = 1.85f;
 

@@ -63,11 +63,20 @@ public final class GlintstonePebbleTuning {
     // 彗星头视觉（GlintstonePebbleRenderer / GlintstoneCometHeadDrawer）
     // -------------------------------------------------------------------------
 
-    /** 立体晶核整体缩放。 */
-    public static final float COMET_HEAD_BODY_SCALE = 0.42f;
+    /** 垂直飞行方向的晶核缩放。魔砾保持接近球形的短菱形。 */
+    public static final float COMET_HEAD_BODY_SCALE_RADIAL = 0.42f;
+
+    /** 沿飞行轴的晶核缩放。与径向相同 = 不拉成针。 */
+    public static final float COMET_HEAD_BODY_SCALE_ALONG = 0.42f;
+
+    /** 兼容旧名：均匀缩放时等于径向。 */
+    public static final float COMET_HEAD_BODY_SCALE = COMET_HEAD_BODY_SCALE_RADIAL;
 
     /** 相机朝向光晕基础缩放。调大 → 本体周围辉光更大。 */
     public static final float COMET_HEAD_GLOW_SCALE = 0.78f;
+
+    /** 光晕沿飞行方向的拉伸倍率。1 = 球形。 */
+    public static final float COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE = 1.0f;
 
     /** 光晕呼吸振幅（叠加在 GLOW_SCALE 上）。 */
     public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.10f;
@@ -113,13 +122,13 @@ public final class GlintstonePebbleTuning {
     
 
     /**
-     * 基础魔砾曲线光轨：最多保留约 8 方块 / 24 点；细而不过度占屏。
+     * 基础魔砾曲线光轨：短细、无螺旋细丝。
      */
     public static final GlintstoneTrailTuning.TrailStyle TRAIL_STYLE =
-            new GlintstoneTrailTuning.TrailStyle(8.0, 0.055f, 0.012f, 0.28f, 0.08f, 24);
+            new GlintstoneTrailTuning.TrailStyle(7.0, 0.050f, 0.010f, 0.18f, 0.05f, 22);
 
     /** 拖尾点缀强度倍率；不影响几何光束长宽。 */
-    public static final float TRAIL_PARTICLE_INTENSITY = 0.70f;
+    public static final float TRAIL_PARTICLE_INTENSITY = 0.45f;
 
     /**
      * 命中爆裂粒子强度（相对魔砾基准）。调大 → 能量场/烟雾更浓。

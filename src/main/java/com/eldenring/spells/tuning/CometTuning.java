@@ -24,29 +24,60 @@ public final class CometTuning {
      */
     public static final float EXPLOSION_RADIUS_BLOCKS = 2.8f;
 
-    public static final float COMET_HEAD_BODY_SCALE = 1.45f;
-    public static final float COMET_HEAD_GLOW_SCALE = 2.35f;
-    public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.20f;
-    public static final float COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK = 12.0f;
+    /**
+     * 刺簇整体缩放。块状，不要再沿飞行轴拉成梭子。
+     * 调大 → 整团晶刺更大。
+     */
+    public static final float COMET_HEAD_BODY_SCALE = 1.80f;
 
-    public static final float COMET_HEAD_CORE_RED = 0.05f;
-    public static final float COMET_HEAD_CORE_GREEN = 0.62f;
-    public static final float COMET_HEAD_CORE_BLUE = 1.0f;
+    /** 包住刺簇的柔光晕缩放。 */
+    public static final float COMET_HEAD_GLOW_SCALE = 2.05f;
 
-    public static final float COMET_HEAD_GLOW_RED = 0.04f;
-    public static final float COMET_HEAD_GLOW_GREEN = 0.68f;
+    /** 略拉长，仍以球形光晕为主，避免把刺簇重新吃成梭子。 */
+    public static final float COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE = 1.25f;
+
+    public static final float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.16f;
+    public static final float COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK = 10.0f;
+
+    /**
+     * 刺簇绕飞行轴自转（度 / tick）。调大 → 侧面更容易看见刺。
+     */
+    public static final float CLUSTER_SPIN_DEGREES_PER_TICK = 7.0f;
+
+    /** 不规则核心：更深的青，对照原作暗核。 */
+    public static final float COMET_HEAD_CORE_RED = 0.04f;
+    public static final float COMET_HEAD_CORE_GREEN = 0.32f;
+    public static final float COMET_HEAD_CORE_BLUE = 0.48f;
+
+    /** 尖刺：更亮的白青。 */
+    public static final float COMET_HEAD_SPIKE_RED = 0.38f;
+    public static final float COMET_HEAD_SPIKE_GREEN = 0.94f;
+    public static final float COMET_HEAD_SPIKE_BLUE = 1.0f;
+
+    public static final float COMET_HEAD_GLOW_RED = 0.22f;
+    public static final float COMET_HEAD_GLOW_GREEN = 0.88f;
     public static final float COMET_HEAD_GLOW_BLUE = 1.0f;
     public static final float COMET_HEAD_GLOW_ALPHA = 1.0f;
 
     /**
-     * 帚星曲线光轨：最多保留约 72 方块 / 96 点，通常可看到整条有效飞行路径。
+     * 帚星扫帚彗尾：更宽更长 + 外雾层 + 加法芯 + 五条螺旋细丝。
      */
     public static final GlintstoneTrailTuning.TrailStyle TRAIL_STYLE =
-            new GlintstoneTrailTuning.TrailStyle(72.0, 0.260f, 0.050f, 0.55f, 0.20f, 96);
+            new GlintstoneTrailTuning.TrailStyle(
+                    64.0,
+                    0.280f,
+                    0.055f,
+                    0.14f,
+                    0.05f,
+                    80,
+                    new GlintstoneTrailTuning.HelixStyle(5, 0.42f, 0.16f, 0.055f, 0.16f, 0.07f),
+                    true,
+                    true
+            );
 
     /** 拖尾点缀强度倍率；不影响几何光束长宽。 */
-    public static final float TRAIL_PARTICLE_INTENSITY = 1.75f;
-    public static final float IMPACT_PARTICLE_INTENSITY = 2.85f;
+    public static final float TRAIL_PARTICLE_INTENSITY = 0.55f;
+    public static final float IMPACT_PARTICLE_INTENSITY = 1.80f;
     public static final float CAST_BURST_PARTICLE_INTENSITY = 2.1f;
 
     public static final int SPELL_BASE_MANA_COST = 24;
