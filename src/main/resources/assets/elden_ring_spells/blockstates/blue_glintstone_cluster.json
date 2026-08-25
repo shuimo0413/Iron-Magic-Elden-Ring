@@ -1,0 +1,400 @@
+{
+  "variants": {
+    "facing=up,waterlogged=false": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle"
+      }
+    ],
+    "facing=down,waterlogged=false": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 180,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 180
+      }
+    ],
+    "facing=north,waterlogged=false": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 90,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 90
+      }
+    ],
+    "facing=south,waterlogged=false": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 90,
+        "y": 180,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 90,
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 90,
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 90,
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 90,
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 90,
+        "y": 180
+      }
+    ],
+    "facing=west,waterlogged=false": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 90,
+        "y": 270,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 90,
+        "y": 270,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 90,
+        "y": 270,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 90,
+        "y": 270,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 90,
+        "y": 270,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 90,
+        "y": 270
+      }
+    ],
+    "facing=east,waterlogged=false": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 90,
+        "y": 90,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 90,
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 90,
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 90,
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 90,
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 90,
+        "y": 90
+      }
+    ],
+    "facing=up,waterlogged=true": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle"
+      }
+    ],
+    "facing=down,waterlogged=true": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 180,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 180
+      }
+    ],
+    "facing=north,waterlogged=true": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 90,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 90
+      }
+    ],
+    "facing=south,waterlogged=true": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 90,
+        "y": 180,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 90,
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 90,
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 90,
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 90,
+        "y": 180,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 90,
+        "y": 180
+      }
+    ],
+    "facing=west,waterlogged=true": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 90,
+        "y": 270,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 90,
+        "y": 270,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 90,
+        "y": 270,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 90,
+        "y": 270,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 90,
+        "y": 270,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 90,
+        "y": 270
+      }
+    ],
+    "facing=east,waterlogged=true": [
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster",
+        "x": 90,
+        "y": 90,
+        "weight": 3
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_spire",
+        "x": 90,
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_fan",
+        "x": 90,
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_thicket",
+        "x": 90,
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_twin",
+        "x": 90,
+        "y": 90,
+        "weight": 2
+      },
+      {
+        "model": "elden_ring_spells:block/blue_glintstone_cluster_needle",
+        "x": 90,
+        "y": 90
+      }
+    ]
+  }
+}

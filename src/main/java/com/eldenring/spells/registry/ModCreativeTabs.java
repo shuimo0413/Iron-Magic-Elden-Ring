@@ -33,6 +33,15 @@ public final class ModCreativeTabs {
                     .title(Component.translatable("itemGroup.elden_ring_spells"))
                     .icon(() -> ModItems.createFilledScroll(1))
                     .displayItems((params, output) -> {
+                        output.accept(ModItems.CYAN_GLINTSTONE_SHARD.get());
+                        output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
+                        output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());
+                        for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
+                            output.accept(set.ore.get());
+                            output.accept(set.deepslateOre.get());
+                            output.accept(set.crystalBlock.get());
+                            output.accept(set.cluster.get());
+                        }
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_PEBBLE, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.SWIFT_GLINTSTONE_SHARD, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GREAT_GLINTSTONE_SHARD, 1));

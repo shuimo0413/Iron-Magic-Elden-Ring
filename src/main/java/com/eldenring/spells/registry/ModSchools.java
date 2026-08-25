@@ -27,7 +27,7 @@ public final class ModSchools {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone");
 
     /**
-     * 辉石学派：青蓝显示色、紫水晶触媒、独立强度/抗性属性与伤害类型。
+     * 辉石学派：青蓝显示色、三色辉石碎片触媒、独立强度/抗性属性与伤害类型。
      * <p>
      * 施法音暂用紫水晶钟鸣，贴合法环辉石晶体手感。
      */

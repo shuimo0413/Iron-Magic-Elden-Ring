@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.7,
+  "ingredient": {
+    "item": "elden_ring_spells:deepslate_blue_glintstone_ore"
+  },
+  "result": {
+    "id": "elden_ring_spells:blue_glintstone_shard"
+  }
+}

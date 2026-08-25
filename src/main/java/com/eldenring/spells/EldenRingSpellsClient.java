@@ -24,10 +24,13 @@ import com.eldenring.spells.particle.foundingrain.OverheadNebulaAccentParticle;
 import com.eldenring.spells.particle.foundingrain.StarAscentParticle;
 import com.eldenring.spells.particle.foundingrain.StarRiverRippleParticle;
 import com.eldenring.spells.particle.starriver.StarRiverParticle;
+import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModParticles;
 import com.eldenring.spells.registry.ModSpells;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
@@ -52,6 +55,12 @@ public class EldenRingSpellsClient {
                 "Elden Ring Spells client ready. Player={}",
                 Minecraft.getInstance().getUser().getName()
         );
+        // 十字面片水晶必须走 cutout，否则透明像素会糊成黑块
+        event.enqueueWork(() -> {
+            for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
+                ItemBlockRenderTypes.setRenderLayer(set.cluster.get(), RenderType.cutout());
+            }
+        });
     }
 
     @SubscribeEvent

@@ -1,9 +1,11 @@
 package com.eldenring.spells;
 
 import com.eldenring.spells.registry.ModAttributes;
+import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModCreativeTabs;
 import com.eldenring.spells.registry.ModEffects;
 import com.eldenring.spells.registry.ModEntities;
+import com.eldenring.spells.registry.ModFeatures;
 import com.eldenring.spells.registry.ModItems;
 import com.eldenring.spells.registry.ModParticles;
 import com.eldenring.spells.registry.ModSchools;
@@ -23,7 +25,10 @@ public class EldenRingSpellsMod {
         ModAttributes.register(modEventBus);
         ModSchools.register(modEventBus);
         ModEffects.register(modEventBus);
+        // 方块必须先于物品：BlockItem 依赖方块 DeferredHolder
+        ModBlocks.register(modEventBus);
         ModItems.register(modEventBus);
+        ModFeatures.register(modEventBus);
         ModParticles.register(modEventBus);
         ModEntities.register(modEventBus);
         ModSpells.register(modEventBus);

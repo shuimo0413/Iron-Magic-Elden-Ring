@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "elden_ring_spells:block/cyan_glintstone_block"
+  }
+}

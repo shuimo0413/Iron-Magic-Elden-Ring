@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": [
+    "elden_ring_spells:ore_cyan_glintstone",
+    "elden_ring_spells:ore_blue_glintstone",
+    "elden_ring_spells:ore_purple_glintstone"
+  ],
+  "step": "underground_ores"
+}

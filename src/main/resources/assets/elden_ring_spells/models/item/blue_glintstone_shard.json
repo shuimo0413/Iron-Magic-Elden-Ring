@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "elden_ring_spells:item/blue_glintstone_shard"
+  }
+}
