@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
@@ -18,10 +17,10 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * 辉石矿物方块注册：每色一套矿石 / 深板岩矿 / 水晶簇 / 水晶块。
+ * 辉石矿物方块注册：每色一套水晶簇 / 水晶块。
  * <p>
  * 逻辑类不按颜色复制；颜色数据在 {@link GlintstoneColor}。
- * 墙上水晶只保留最大簇一档（无小/中/大芽）。不生长、无建材。
+ * 墙上水晶只保留最大簇一档（无小/中/大芽）。不生长、无建材、无矿石。
  */
 public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
@@ -48,21 +47,15 @@ public final class ModBlocks {
      */
     public static final class ColorSet {
         public final GlintstoneColor color;
-        public final DeferredBlock<Block> ore;
-        public final DeferredBlock<Block> deepslateOre;
         public final DeferredBlock<Block> crystalBlock;
         public final DeferredBlock<AmethystClusterBlock> cluster;
 
         private ColorSet(
                 GlintstoneColor color,
-                DeferredBlock<Block> ore,
-                DeferredBlock<Block> deepslateOre,
                 DeferredBlock<Block> crystalBlock,
                 DeferredBlock<AmethystClusterBlock> cluster
         ) {
             this.color = color;
-            this.ore = ore;
-            this.deepslateOre = deepslateOre;
             this.crystalBlock = crystalBlock;
             this.cluster = cluster;
         }
@@ -70,27 +63,6 @@ public final class ModBlocks {
         private static ColorSet register(GlintstoneColor color) {
             String prefix = color.idPrefix();
             MapColor mapColor = color.mapColor();
-
-            DeferredBlock<Block> ore = BLOCKS.registerBlock(
-                    prefix + "_glintstone_ore",
-                    Block::new,
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.STONE)
-                            .instrument(NoteBlockInstrument.BASEDRUM)
-                            .requiresCorrectToolForDrops()
-                            .strength(3.0F, 3.0F)
-            );
-
-            DeferredBlock<Block> deepslateOre = BLOCKS.registerBlock(
-                    "deepslate_" + prefix + "_glintstone_ore",
-                    Block::new,
-                    BlockBehaviour.Properties.of()
-                            .mapColor(MapColor.DEEPSLATE)
-                            .instrument(NoteBlockInstrument.BASEDRUM)
-                            .requiresCorrectToolForDrops()
-                            .strength(4.5F, 3.0F)
-                            .sound(SoundType.DEEPSLATE)
-            );
 
             DeferredBlock<Block> crystalBlock = BLOCKS.registerBlock(
                     prefix + "_glintstone_block",
@@ -106,7 +78,7 @@ public final class ModBlocks {
             DeferredBlock<AmethystClusterBlock> cluster = registerCluster(
                     prefix + "_glintstone_cluster", mapColor, 7.0F, 3.0F, 5);
 
-            return new ColorSet(color, ore, deepslateOre, crystalBlock, cluster);
+            return new ColorSet(color, crystalBlock, cluster);
         }
 
         private static DeferredBlock<AmethystClusterBlock> registerCluster(

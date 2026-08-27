@@ -4,7 +4,6 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.particle.cometazur.CometAzurJetOptions;
 import com.eldenring.spells.particle.cometazur.CometAzurVortexOptions;
 import com.eldenring.spells.particle.foundingrain.OverheadNebulaAccentOptions;
-import com.eldenring.spells.particle.glintstone.AcademyGlintstoneSigilParticleOptions;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -45,6 +44,10 @@ public final class ModParticles {
     /** 稀薄雾气 — 拖尾与爆发的软体积层。 */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GLINTSTONE_MIST =
             PARTICLE_TYPES.register("glintstone_mist", () -> new SimpleParticleType(false));
+
+    /** 卡利亚斩击新月 — 迅剑挥砍点缀，宝蓝弯弧。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_SLASH =
+            PARTICLE_TYPES.register("carian_slash", () -> new SimpleParticleType(false));
 
     /** 星云雾气团 — 星河体积层。 */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STAR_RIVER_MIST =
@@ -206,23 +209,6 @@ public final class ModParticles {
                 @Override
                 public StreamCodec<? super RegistryFriendlyByteBuf, OverheadNebulaAccentOptions> streamCodec() {
                     return OverheadNebulaAccentOptions.STREAM_CODEC;
-                }
-            });
-
-    /**
-     * 学院辉石法阵 — 施法时锁在施法者头顶的镂空纹章。
-     * {@code overrideLimiter=true}：最低粒子设置下仍显示，避免签名特效被画质选项吃掉。
-     */
-    public static final DeferredHolder<ParticleType<?>, ParticleType<AcademyGlintstoneSigilParticleOptions>> ACADEMY_GLINTSTONE_SIGIL =
-            PARTICLE_TYPES.register("academy_glintstone_sigil", () -> new ParticleType<>(true) {
-                @Override
-                public MapCodec<AcademyGlintstoneSigilParticleOptions> codec() {
-                    return AcademyGlintstoneSigilParticleOptions.CODEC;
-                }
-
-                @Override
-                public StreamCodec<? super RegistryFriendlyByteBuf, AcademyGlintstoneSigilParticleOptions> streamCodec() {
-                    return AcademyGlintstoneSigilParticleOptions.STREAM_CODEC;
                 }
             });
 

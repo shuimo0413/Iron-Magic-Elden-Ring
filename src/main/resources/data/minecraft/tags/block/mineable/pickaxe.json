@@ -1,16 +1,10 @@
 {
   "replace": false,
   "values": [
-    "elden_ring_spells:cyan_glintstone_ore",
-    "elden_ring_spells:deepslate_cyan_glintstone_ore",
     "elden_ring_spells:cyan_glintstone_block",
     "elden_ring_spells:cyan_glintstone_cluster",
-    "elden_ring_spells:blue_glintstone_ore",
-    "elden_ring_spells:deepslate_blue_glintstone_ore",
     "elden_ring_spells:blue_glintstone_block",
     "elden_ring_spells:blue_glintstone_cluster",
-    "elden_ring_spells:purple_glintstone_ore",
-    "elden_ring_spells:deepslate_purple_glintstone_ore",
     "elden_ring_spells:purple_glintstone_block",
     "elden_ring_spells:purple_glintstone_cluster"
   ]

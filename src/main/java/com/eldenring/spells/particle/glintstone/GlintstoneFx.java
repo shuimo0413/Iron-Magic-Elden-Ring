@@ -1,11 +1,7 @@
 package com.eldenring.spells.particle.glintstone;
 
-import com.eldenring.spells.particle.foundingrain.FoundingRainFx;
+import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.registry.ModParticles;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
-import com.eldenring.spells.tuning.GlintstoneTrailTuning;
-import com.eldenring.spells.tuning.StarRiverTuning;
-import com.eldenring.spells.tuning.StarsOfRuinTuning;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
 import net.minecraft.core.particles.ParticleOptions;
@@ -22,6 +18,93 @@ import net.minecraft.world.phys.Vec3;
      * 飞行光轨主体由客户端几何光束绘制；本类只在弹头附近做稀疏点缀，以及命中/施法爆裂。
  */
 public final class GlintstoneFx {
+
+    /**
+         * 相对眼睛、沿水平右侧的偏移（方块）。调大 → 更靠右手外侧，容易出画面；调小 → 更靠近准星。
+         */
+        public static final double ANCHOR_RIGHT_OFFSET_BLOCKS = 0.58;
+
+        /**
+         * 相对眼睛、沿水平前方的偏移（方块）。只把星云送到「手前面」，不要铺进视野正中。
+         */
+        public static final double ANCHOR_FORWARD_OFFSET_BLOCKS = 0.42;
+
+        /**
+         * 相对眼睛的世界 Y 上移（方块）。右手本身低于头，上移后与头部平齐并略高一点。
+         */
+        public static final double ANCHOR_UP_OFFSET_BLOCKS = 0.10;
+
+        /**
+         * 星云盘面半径（方块）。对数螺线与椭球采样都缩放到这个尺度。
+         */
+        public static final double NEBULA_RADIUS_BLOCKS = 0.62;
+
+        /**
+         * 沿视线的厚度相对半径的比例。调大 → 更「一团」；调小 → 更扁、更像贴在右手旁的星盘。
+         */
+        public static final double NEBULA_DEPTH_FRACTION = 0.38;
+
+        /**
+         * 对数螺线转过的弧度。约 1.6 圈；调大 → 臂更长、更绕。
+         */
+        public static final double SPIRAL_THETA_SPAN_RADIANS = Math.PI * 3.2;
+
+        /**
+         * 螺线最内圈相对半径的比例。调大 → 核更空、臂更靠外。
+         */
+        public static final double SPIRAL_INNER_RADIUS_FRACTION = 0.12;
+
+        /**
+         * 对数螺线生长率（无量纲）。调大 → 外圈张得更快，更像漩涡星系。
+         */
+        public static final double SPIRAL_GROWTH = 1.65;
+
+        /**
+         * 螺线随游戏时间旋转的角速度（弧度/tick）。调大 → 星云转得更明显。
+         */
+        public static final double SPIRAL_SPIN_RADIANS_PER_TICK = 0.055;
+
+        /**
+         * 旋臂沿视线方向的起伏幅度（方块）。让双臂不完全共面。
+         */
+        public static final double ARM_DEPTH_WEAVE_BLOCKS = 0.08;
+
+        /**
+         * 旋臂采样点相对半径的横向抖动比例。调大 → 臂更蓬、更像星云而不是线。
+         */
+        public static final double ARM_SCATTER_FRACTION = 0.16;
+
+        /** intensity=1 时星云雾气体积层数量。 */
+        public static final float MIST_COUNT_PER_INTENSITY = 7.0f;
+
+        /** intensity=1 时辉光层数量。 */
+        public static final float GLOW_COUNT_PER_INTENSITY = 5.0f;
+
+        /** intensity=1 时双色星尘数量。 */
+        public static final float DUST_COUNT_PER_INTENSITY = 4.0f;
+
+        /** intensity=1 时单条旋臂的采样点数（共两条臂）。 */
+        public static final float SPIRAL_SAMPLES_PER_ARM_PER_INTENSITY = 8.0f;
+
+        /** intensity=1 时闪星数量。 */
+        public static final float MOTE_COUNT_PER_INTENSITY = 9.0f;
+
+        /** intensity=1 时暗丝数量。 */
+        public static final float FILAMENT_COUNT_PER_INTENSITY = 5.0f;
+
+        /** intensity=1 时亮星 / 双星 / 星团点缀数量。 */
+        public static final float STAR_ACCENT_COUNT_PER_INTENSITY = 5.0f;
+
+        /** intensity=1 时彗星残影数量。 */
+        public static final float STREAK_COUNT_PER_INTENSITY = 3.0f;
+
+        /**
+         * 每发流星从星云里「拽出」的残影数量倍率。
+         * 齐射只补发射感，不再整团重铺，避免 12 发叠成粒子风暴。
+         */
+        public static final float LAUNCH_STREAK_COUNT_PER_INTENSITY = 3.0f;
+
+        public static final float LAUNCH_MOTE_COUNT_PER_INTENSITY = 2.0f;
 
     /**
      * 客户端 {@code addParticle} → Provider 同步调用链上的尺寸倍率提示。
@@ -59,7 +142,7 @@ public final class GlintstoneFx {
     public static void trail(Level level, double x, double y, double z, Vec3 motion, float intensity) {
         trailAccents(
                 level, x, y, z, motion, intensity,
-                new GlintstoneTrailTuning.TrailStyle(8.0, 0.055f, 0.012f, 0.28f, 0.08f, 24)
+                new GlintstoneTrailStyle(8.0, 0.055f, 0.012f, 0.28f, 0.08f, 24)
         );
     }
 
@@ -75,15 +158,15 @@ public final class GlintstoneFx {
             double z,
             Vec3 motion,
             float intensity,
-            GlintstoneTrailTuning.TrailStyle trailStyle
+            GlintstoneTrailStyle trailStyle
     ) {
         float clampedIntensity = Mth.clamp(intensity, 0.25f, 3.0f);
         float densityScale = 0.75f + 0.25f * clampedIntensity;
         Vec3 normalizedFlightDirection = motion.lengthSqr() > 1.0e-8
                 ? motion.normalize()
                 : Vec3.ZERO;
-        double backwardOffsetBlocks = GlintstoneTrailTuning.PARTICLE_TRAIL_MINIMUM_BACK_OFFSET_BLOCKS
-                + level.random.nextDouble() * GlintstoneTrailTuning.PARTICLE_TRAIL_RANDOM_BACK_OFFSET_BLOCKS;
+        double backwardOffsetBlocks = GlintstoneTrailStyle.PARTICLE_TRAIL_MINIMUM_BACK_OFFSET_BLOCKS
+                + level.random.nextDouble() * GlintstoneTrailStyle.PARTICLE_TRAIL_RANDOM_BACK_OFFSET_BLOCKS;
         Vec3 particleTrailOrigin = new Vec3(x, y, z)
                 .subtract(normalizedFlightDirection.scale(backwardOffsetBlocks));
         double scatterRadiusBlocks = Math.max(
@@ -91,8 +174,8 @@ public final class GlintstoneFx {
                 trailStyle.headHalfWidthBlocks() * (0.85 + 0.15 * clampedIntensity)
         );
         float glowChance = Mth.clamp(
-                GlintstoneTrailTuning.PARTICLE_GLOW_BASE_CHANCE
-                        + GlintstoneTrailTuning.PARTICLE_GLOW_CHANCE_PER_INTENSITY * clampedIntensity,
+                GlintstoneTrailStyle.PARTICLE_GLOW_BASE_CHANCE
+                        + GlintstoneTrailStyle.PARTICLE_GLOW_CHANCE_PER_INTENSITY * clampedIntensity,
                 0.0f,
                 0.35f
         );
@@ -115,8 +198,8 @@ public final class GlintstoneFx {
         }
 
         float mistChance = Mth.clamp(
-                GlintstoneTrailTuning.PARTICLE_MIST_BASE_CHANCE
-                        + GlintstoneTrailTuning.PARTICLE_MIST_CHANCE_PER_INTENSITY * clampedIntensity,
+                GlintstoneTrailStyle.PARTICLE_MIST_BASE_CHANCE
+                        + GlintstoneTrailStyle.PARTICLE_MIST_CHANCE_PER_INTENSITY * clampedIntensity,
                 0.0f,
                 0.18f
         );
@@ -156,8 +239,8 @@ public final class GlintstoneFx {
         }
 
         float shardChance = Mth.clamp(
-                GlintstoneTrailTuning.PARTICLE_SHARD_BASE_CHANCE
-                        + GlintstoneTrailTuning.PARTICLE_SHARD_CHANCE_PER_INTENSITY * clampedIntensity,
+                GlintstoneTrailStyle.PARTICLE_SHARD_BASE_CHANCE
+                        + GlintstoneTrailStyle.PARTICLE_SHARD_CHANCE_PER_INTENSITY * clampedIntensity,
                 0.0f,
                 0.32f
         );
@@ -202,7 +285,7 @@ public final class GlintstoneFx {
             Vec3 motion,
             float intensity,
             float taper01,
-            GlintstoneTrailTuning.TrailStyle trailStyle
+            GlintstoneTrailStyle trailStyle
     ) {
         if (taper01 <= 0.08f) {
             trailAccents(level, x, y, z, motion, intensity, trailStyle);
@@ -374,16 +457,17 @@ public final class GlintstoneFx {
             double z,
             Vec3 motion,
             float intensity,
-            GlintstoneTrailTuning.TrailStyle trailStyle
+            GlintstoneTrailStyle trailStyle,
+            float accentChanceScale
     ) {
         float clampedIntensity = Mth.clamp(intensity, 0.25f, 3.0f);
         float densityScale = (0.70f + 0.22f * clampedIntensity)
-                * StarsOfRuinTuning.TRAIL_ACCENT_CHANCE_SCALE;
+                * accentChanceScale;
         Vec3 normalizedFlightDirection = motion.lengthSqr() > 1.0e-8
                 ? motion.normalize()
                 : Vec3.ZERO;
-        double backwardOffsetBlocks = GlintstoneTrailTuning.PARTICLE_TRAIL_MINIMUM_BACK_OFFSET_BLOCKS
-                + level.random.nextDouble() * GlintstoneTrailTuning.PARTICLE_TRAIL_RANDOM_BACK_OFFSET_BLOCKS;
+        double backwardOffsetBlocks = GlintstoneTrailStyle.PARTICLE_TRAIL_MINIMUM_BACK_OFFSET_BLOCKS
+                + level.random.nextDouble() * GlintstoneTrailStyle.PARTICLE_TRAIL_RANDOM_BACK_OFFSET_BLOCKS;
         Vec3 particleTrailOrigin = new Vec3(x, y, z)
                 .subtract(normalizedFlightDirection.scale(backwardOffsetBlocks));
         double scatterRadiusBlocks = Math.max(
@@ -392,9 +476,9 @@ public final class GlintstoneFx {
         );
 
         float glowChance = Mth.clamp(
-                (GlintstoneTrailTuning.PARTICLE_GLOW_BASE_CHANCE
-                        + GlintstoneTrailTuning.PARTICLE_GLOW_CHANCE_PER_INTENSITY * clampedIntensity)
-                        * StarsOfRuinTuning.TRAIL_ACCENT_CHANCE_SCALE,
+                (GlintstoneTrailStyle.PARTICLE_GLOW_BASE_CHANCE
+                        + GlintstoneTrailStyle.PARTICLE_GLOW_CHANCE_PER_INTENSITY * clampedIntensity)
+                        * accentChanceScale,
                 0.0f,
                 0.40f
         );
@@ -417,9 +501,9 @@ public final class GlintstoneFx {
         }
 
         float dustChance = Mth.clamp(
-                (GlintstoneTrailTuning.PARTICLE_MIST_BASE_CHANCE
-                        + GlintstoneTrailTuning.PARTICLE_MIST_CHANCE_PER_INTENSITY * clampedIntensity)
-                        * StarsOfRuinTuning.TRAIL_ACCENT_CHANCE_SCALE,
+                (GlintstoneTrailStyle.PARTICLE_MIST_BASE_CHANCE
+                        + GlintstoneTrailStyle.PARTICLE_MIST_CHANCE_PER_INTENSITY * clampedIntensity)
+                        * accentChanceScale,
                 0.0f,
                 0.22f
         );
@@ -459,9 +543,9 @@ public final class GlintstoneFx {
         }
 
         float shardChance = Mth.clamp(
-                (GlintstoneTrailTuning.PARTICLE_SHARD_BASE_CHANCE
-                        + GlintstoneTrailTuning.PARTICLE_SHARD_CHANCE_PER_INTENSITY * clampedIntensity)
-                        * StarsOfRuinTuning.TRAIL_ACCENT_CHANCE_SCALE,
+                (GlintstoneTrailStyle.PARTICLE_SHARD_BASE_CHANCE
+                        + GlintstoneTrailStyle.PARTICLE_SHARD_CHANCE_PER_INTENSITY * clampedIntensity)
+                        * accentChanceScale,
                 0.0f,
                 0.16f
         );
@@ -589,7 +673,7 @@ public final class GlintstoneFx {
     }
 
     /**
-     * 兼容旧签名：长度不再沿视线铺开，半径改由 {@link StarRiverTuning#NEBULA_RADIUS_BLOCKS} 决定。
+     * 兼容旧签名：长度不再沿视线铺开，半径改由 {@link GlintstoneFx#NEBULA_RADIUS_BLOCKS} 决定。
      */
     public static void starRiver(
             Level level,
@@ -600,7 +684,7 @@ public final class GlintstoneFx {
             double riverRadiusBlocks,
             boolean useRuinPalette
     ) {
-        // 旧参数曾表示沿视线拉长的螺旋；星云改用 StarRiverTuning，这里只保留签名兼容。
+        // 旧参数曾表示沿视线拉长的螺旋；星云改用 GlintstoneFx，这里只保留签名兼容。
         spawnStarNebula(level, origin, lookDirection, intensity, useRuinPalette, false);
     }
 
@@ -619,41 +703,23 @@ public final class GlintstoneFx {
     }
 
     /**
-     * 创星雨身前星云：气团由实体软光面片绘制，这里只保留兼容入口。
-     * 实现见 {@link FoundingRainFx#spawnOverheadStars}。
-     */
-    public static void overheadRainCloud(Level level, Vec3 cloudCenter) {
-        FoundingRainFx.spawnOverheadStars(level, cloudCenter, 0.0f);
-    }
-
-    /**
-     * 创星雨升空：从右手星云体内抽样，把光点射向出手瞬间钉死的雨云圆心。
-     */
-    public static void starRiverAscent(Level level, LivingEntity caster, int moteCountThisTick) {
-        starRiverAscent(level, caster, moteCountThisTick, FoundingRainFx.cloudCenterInFrontOf(caster));
-    }
-
-    /**
-     * 创星雨升空：从右手星云体内抽样，把光点射向已经钉死的雨云圆心。
-     * <p>
-     * {@code gatheringCenter} 必须是出手瞬间算好的世界坐标，不能每 tick 跟玩家重算。
-     * {@code moteCountThisTick} 由时序实体按 tick 分批传入。
-     * 粒子收到的 {@code xd/yd/zd} 是终点相对出生点的位移，不是速度；见 {@code StarAscentParticle}。
+     * 从右手星云体内抽样，把光点射向已经钉死的汇聚圆心。
+     * {@code gatheringCenter} 必须是出手瞬间算好的世界坐标。
      */
     public static void starRiverAscent(
             Level level,
             LivingEntity caster,
             int moteCountThisTick,
-            Vec3 gatheringCenter
+            Vec3 gatheringCenter,
+            double scatterRadiusBlocks,
+            double heightJitterBlocks
     ) {
         if (moteCountThisTick <= 0) {
             return;
         }
         NebulaFrame frame = nebulaFrame(caster.getEyePosition(), caster.getLookAngle());
-        double scatterRadiusBlocks = FoundingRainOfStarsTuning.ASCENT_TARGET_SCATTER_RADIUS_BLOCKS;
-        double heightJitterBlocks = FoundingRainOfStarsTuning.ASCENT_TARGET_HEIGHT_JITTER_BLOCKS;
-        double sampleRadiusBlocks = StarRiverTuning.NEBULA_RADIUS_BLOCKS;
-        double sampleDepthBlocks = sampleRadiusBlocks * StarRiverTuning.NEBULA_DEPTH_FRACTION;
+        double sampleRadiusBlocks = GlintstoneFx.NEBULA_RADIUS_BLOCKS;
+        double sampleDepthBlocks = sampleRadiusBlocks * GlintstoneFx.NEBULA_DEPTH_FRACTION;
 
         for (int moteIndex = 0; moteIndex < moteCountThisTick; moteIndex++) {
             Vec3 originOffset = gaussianEllipsoidOffset(level, frame, sampleRadiusBlocks, sampleDepthBlocks);
@@ -720,9 +786,9 @@ public final class GlintstoneFx {
         }
 
         Vec3 nebulaCenter = headOrigin
-                .add(horizontalRight.scale(StarRiverTuning.ANCHOR_RIGHT_OFFSET_BLOCKS))
-                .add(horizontalForward.scale(StarRiverTuning.ANCHOR_FORWARD_OFFSET_BLOCKS))
-                .add(0.0, StarRiverTuning.ANCHOR_UP_OFFSET_BLOCKS, 0.0);
+                .add(horizontalRight.scale(GlintstoneFx.ANCHOR_RIGHT_OFFSET_BLOCKS))
+                .add(horizontalForward.scale(GlintstoneFx.ANCHOR_FORWARD_OFFSET_BLOCKS))
+                .add(0.0, GlintstoneFx.ANCHOR_UP_OFFSET_BLOCKS, 0.0);
 
         Vec3 cameraRight = look.cross(worldUp);
         if (cameraRight.lengthSqr() < 1.0e-8) {
@@ -750,11 +816,11 @@ public final class GlintstoneFx {
      * 高斯椭球体积：雾气 / 辉光 / 双色星尘构成星云本体。
      */
     private static void spawnNebulaVolume(Level level, NebulaFrame frame, float intensity) {
-        double radiusBlocks = StarRiverTuning.NEBULA_RADIUS_BLOCKS;
-        double depthBlocks = radiusBlocks * StarRiverTuning.NEBULA_DEPTH_FRACTION;
-        int mistCount = Math.max(3, Math.round(StarRiverTuning.MIST_COUNT_PER_INTENSITY * intensity));
-        int glowCount = Math.max(2, Math.round(StarRiverTuning.GLOW_COUNT_PER_INTENSITY * intensity));
-        int dustCount = Math.max(2, Math.round(StarRiverTuning.DUST_COUNT_PER_INTENSITY * intensity));
+        double radiusBlocks = GlintstoneFx.NEBULA_RADIUS_BLOCKS;
+        double depthBlocks = radiusBlocks * GlintstoneFx.NEBULA_DEPTH_FRACTION;
+        int mistCount = Math.max(3, Math.round(GlintstoneFx.MIST_COUNT_PER_INTENSITY * intensity));
+        int glowCount = Math.max(2, Math.round(GlintstoneFx.GLOW_COUNT_PER_INTENSITY * intensity));
+        int dustCount = Math.max(2, Math.round(GlintstoneFx.DUST_COUNT_PER_INTENSITY * intensity));
 
         for (int mistIndex = 0; mistIndex < mistCount; mistIndex++) {
             Vec3 offset = gaussianEllipsoidOffset(level, frame, radiusBlocks, depthBlocks);
@@ -774,21 +840,21 @@ public final class GlintstoneFx {
      * 双臂对数螺线：沿臂撒闪星、彗星残影，臂心叠辉光。
      */
     private static void spawnNebulaSpiralArms(Level level, NebulaFrame frame, float intensity) {
-        int samplesPerArm = Math.max(5, Math.round(StarRiverTuning.SPIRAL_SAMPLES_PER_ARM_PER_INTENSITY * intensity));
+        int samplesPerArm = Math.max(5, Math.round(GlintstoneFx.SPIRAL_SAMPLES_PER_ARM_PER_INTENSITY * intensity));
         long gameTimeTicks = level.getGameTime();
-        double radiusBlocks = StarRiverTuning.NEBULA_RADIUS_BLOCKS;
-        int streakBudget = Math.max(1, Math.round(StarRiverTuning.STREAK_COUNT_PER_INTENSITY * intensity));
+        double radiusBlocks = GlintstoneFx.NEBULA_RADIUS_BLOCKS;
+        int streakBudget = Math.max(1, Math.round(GlintstoneFx.STREAK_COUNT_PER_INTENSITY * intensity));
         int streaksSpawned = 0;
 
         for (int armIndex = 0; armIndex < 2; armIndex++) {
             for (int sampleIndex = 0; sampleIndex < samplesPerArm; sampleIndex++) {
-                double theta = ((sampleIndex + 0.5) / samplesPerArm) * StarRiverTuning.SPIRAL_THETA_SPAN_RADIANS;
+                double theta = ((sampleIndex + 0.5) / samplesPerArm) * GlintstoneFx.SPIRAL_THETA_SPAN_RADIANS;
                 Vec3 armOffset = logSpiralOffset(theta, armIndex, frame, radiusBlocks, gameTimeTicks);
                 Vec3 scatter = gaussianEllipsoidOffset(
                         level,
                         frame,
-                        radiusBlocks * StarRiverTuning.ARM_SCATTER_FRACTION,
-                        radiusBlocks * StarRiverTuning.ARM_SCATTER_FRACTION * 0.6
+                        radiusBlocks * GlintstoneFx.ARM_SCATTER_FRACTION,
+                        radiusBlocks * GlintstoneFx.ARM_SCATTER_FRACTION * 0.6
                 );
                 Vec3 particlePosition = frame.center.add(armOffset).add(scatter);
                 Vec3 tangent = spiralTangent(theta, armIndex, frame, gameTimeTicks).scale(0.08);
@@ -809,9 +875,9 @@ public final class GlintstoneFx {
      * 盘面上按半径平方根采样亮星，避免全堆在核里。
      */
     private static void spawnNebulaStars(Level level, NebulaFrame frame, float intensity) {
-        int starCount = Math.max(3, Math.round(StarRiverTuning.STAR_ACCENT_COUNT_PER_INTENSITY * intensity));
-        int moteCount = Math.max(4, Math.round(StarRiverTuning.MOTE_COUNT_PER_INTENSITY * intensity));
-        double radiusBlocks = StarRiverTuning.NEBULA_RADIUS_BLOCKS;
+        int starCount = Math.max(3, Math.round(GlintstoneFx.STAR_ACCENT_COUNT_PER_INTENSITY * intensity));
+        int moteCount = Math.max(4, Math.round(GlintstoneFx.MOTE_COUNT_PER_INTENSITY * intensity));
+        double radiusBlocks = GlintstoneFx.NEBULA_RADIUS_BLOCKS;
 
         for (int starIndex = 0; starIndex < starCount; starIndex++) {
             double angle = level.random.nextDouble() * Math.PI * 2.0;
@@ -833,7 +899,7 @@ public final class GlintstoneFx {
         }
 
         for (int moteIndex = 0; moteIndex < moteCount; moteIndex++) {
-            Vec3 offset = gaussianEllipsoidOffset(level, frame, radiusBlocks, radiusBlocks * StarRiverTuning.NEBULA_DEPTH_FRACTION);
+            Vec3 offset = gaussianEllipsoidOffset(level, frame, radiusBlocks, radiusBlocks * GlintstoneFx.NEBULA_DEPTH_FRACTION);
             spawnOne(level, ModParticles.VOID_MOTE.get(), frame.center.add(offset), offset.scale(0.03));
         }
     }
@@ -842,8 +908,8 @@ public final class GlintstoneFx {
      * S 形暗丝穿过盘面，给星云骨架。
      */
     private static void spawnNebulaFilaments(Level level, NebulaFrame frame, float intensity) {
-        int filamentCount = Math.max(2, Math.round(StarRiverTuning.FILAMENT_COUNT_PER_INTENSITY * intensity));
-        double radiusBlocks = StarRiverTuning.NEBULA_RADIUS_BLOCKS;
+        int filamentCount = Math.max(2, Math.round(GlintstoneFx.FILAMENT_COUNT_PER_INTENSITY * intensity));
+        double radiusBlocks = GlintstoneFx.NEBULA_RADIUS_BLOCKS;
         long gameTimeTicks = level.getGameTime();
         int samplesPerFilament = 3;
         for (int filamentIndex = 0; filamentIndex < filamentCount; filamentIndex++) {
@@ -856,7 +922,7 @@ public final class GlintstoneFx {
     }
 
     private static void spawnNebulaRim(Level level, NebulaFrame frame, float intensity, boolean useRuinPalette) {
-        double radiusBlocks = StarRiverTuning.NEBULA_RADIUS_BLOCKS;
+        double radiusBlocks = GlintstoneFx.NEBULA_RADIUS_BLOCKS;
         Vec3 crescentOffset = frame.diskRight.scale(-radiusBlocks * 0.55)
                 .add(frame.diskUp.scale(-radiusBlocks * 0.2));
         spawnOne(level, ModParticles.CRESCENT_WAKE.get(), frame.center.add(crescentOffset), Vec3.ZERO);
@@ -877,9 +943,9 @@ public final class GlintstoneFx {
      * 主体用彗星残影 + 双色星尘；紫晶碎片、星团、虚空核做点缀，不再叠青蓝辉石。
      */
     private static void spawnNebulaLaunch(Level level, NebulaFrame frame, float intensity) {
-        int streakCount = Math.max(1, Math.round(StarRiverTuning.LAUNCH_STREAK_COUNT_PER_INTENSITY * intensity));
-        int moteCount = Math.max(1, Math.round(StarRiverTuning.LAUNCH_MOTE_COUNT_PER_INTENSITY * intensity));
-        double radiusBlocks = StarRiverTuning.NEBULA_RADIUS_BLOCKS * 0.35;
+        int streakCount = Math.max(1, Math.round(GlintstoneFx.LAUNCH_STREAK_COUNT_PER_INTENSITY * intensity));
+        int moteCount = Math.max(1, Math.round(GlintstoneFx.LAUNCH_MOTE_COUNT_PER_INTENSITY * intensity));
+        double radiusBlocks = GlintstoneFx.NEBULA_RADIUS_BLOCKS * 0.35;
         for (int streakIndex = 0; streakIndex < streakCount; streakIndex++) {
             Vec3 jitter = gaussianEllipsoidOffset(level, frame, radiusBlocks, radiusBlocks * 0.5);
             Vec3 velocity = frame.look.scale(0.18 + level.random.nextDouble() * 0.10).add(jitter.scale(0.08));
@@ -932,24 +998,24 @@ public final class GlintstoneFx {
             long gameTimeTicks
     ) {
         double armPhase = armIndex * Math.PI;
-        double spin = gameTimeTicks * StarRiverTuning.SPIRAL_SPIN_RADIANS_PER_TICK;
+        double spin = gameTimeTicks * GlintstoneFx.SPIRAL_SPIN_RADIANS_PER_TICK;
         double angle = theta + armPhase + spin;
-        double span = StarRiverTuning.SPIRAL_THETA_SPAN_RADIANS;
+        double span = GlintstoneFx.SPIRAL_THETA_SPAN_RADIANS;
         double t = span <= 1.0e-6 ? 0.0 : theta / span;
-        double growth = StarRiverTuning.SPIRAL_GROWTH;
-        double radialFraction = StarRiverTuning.SPIRAL_INNER_RADIUS_FRACTION
-                + (1.0 - StarRiverTuning.SPIRAL_INNER_RADIUS_FRACTION)
+        double growth = GlintstoneFx.SPIRAL_GROWTH;
+        double radialFraction = GlintstoneFx.SPIRAL_INNER_RADIUS_FRACTION
+                + (1.0 - GlintstoneFx.SPIRAL_INNER_RADIUS_FRACTION)
                 * ((Math.exp(growth * t) - 1.0) / (Math.exp(growth) - 1.0));
         double radius = radiusBlocks * radialFraction;
-        double weave = Math.sin(angle * 2.0) * StarRiverTuning.ARM_DEPTH_WEAVE_BLOCKS;
+        double weave = Math.sin(angle * 2.0) * GlintstoneFx.ARM_DEPTH_WEAVE_BLOCKS;
         return frame.diskRight.scale(Math.cos(angle) * radius)
                 .add(frame.diskUp.scale(Math.sin(angle) * radius))
                 .add(frame.look.scale(weave));
     }
 
     private static Vec3 spiralTangent(double theta, int armIndex, NebulaFrame frame, long gameTimeTicks) {
-        Vec3 here = logSpiralOffset(theta, armIndex, frame, StarRiverTuning.NEBULA_RADIUS_BLOCKS, gameTimeTicks);
-        Vec3 ahead = logSpiralOffset(theta + 0.18, armIndex, frame, StarRiverTuning.NEBULA_RADIUS_BLOCKS, gameTimeTicks);
+        Vec3 here = logSpiralOffset(theta, armIndex, frame, GlintstoneFx.NEBULA_RADIUS_BLOCKS, gameTimeTicks);
+        Vec3 ahead = logSpiralOffset(theta + 0.18, armIndex, frame, GlintstoneFx.NEBULA_RADIUS_BLOCKS, gameTimeTicks);
         Vec3 delta = ahead.subtract(here);
         return delta.lengthSqr() > 1.0e-8 ? delta.normalize() : frame.look;
     }
@@ -970,7 +1036,7 @@ public final class GlintstoneFx {
         double ripple = Math.sin(along * Math.PI * 2.2 + phase * 1.7) * 0.12;
         return frame.diskRight.scale((along * 0.58 + ripple) * radiusBlocks)
                 .add(frame.diskUp.scale((sway + along * 0.12) * radiusBlocks))
-                .add(frame.look.scale(Math.sin(along * Math.PI + phase) * StarRiverTuning.ARM_DEPTH_WEAVE_BLOCKS));
+                .add(frame.look.scale(Math.sin(along * Math.PI + phase) * GlintstoneFx.ARM_DEPTH_WEAVE_BLOCKS));
     }
 
     /**

@@ -2,6 +2,8 @@
 
 面向后续 AI 与人类协作者的项目说明书。改代码前先读本文件与 `.cursor/rules/`。
 
+**解耦 / 数值做减法的构建说明书：** 根目录 [`法术解耦架构.md`](法术解耦架构.md)。下个话题按那份落地（删 Tuning、瘦 toml、Spell/Curve/Combat/Fx），不要再开一轮架构讨论。
+
 ## 项目是什么
 
 - **名称**：Elden Ring Spells（法环主题铁魔法扩展）
@@ -31,22 +33,33 @@ src/main/java/com/eldenring/spells/
   EldenRingSpellsMod.java      # @Mod 入口，注册 DeferredRegister
   EldenRingSpellsClient.java   # 客户端（粒子 Provider / 实体渲染）
   registry/ModItems.java       # 物品 DeferredRegister
+  registry/ModBlocks.java      # 辉石水晶簇 / 水晶块
+  registry/ModFeatures.java    # 辉石矿洞 Feature 类型
   registry/ModParticles.java   # 粒子 DeferredRegister
   registry/ModEntities.java    # 弹道等实体 DeferredRegister
   registry/ModSpells.java      # 法术 DeferredRegister（挂 SpellRegistry.SPELL_REGISTRY_KEY）
   registry/ModCreativeTabs.java
-  spell/*.java                 # 具体 AbstractSpell 实现
+  spell/*.java                 # 法术本体（XxxSpell）；helper/curve/combat/fx/data 是被调用的函数
   entity/*.java                # 法术弹道等实体（可继承 AbstractMagicProjectile，非稳定 API）
   particle/glintstone/         # 辉石系通用粒子库（GlintstoneFx + Spark/Glow）
   client/render/               # 弹道朝向等通用渲染工具
   client/render/glintstone/    # 辉石彗星头模型 / Drawer / 具体弹道 Renderer
-  tuning/XxxTuning.java        # 各法术可调常量（速度、转向角、蓝耗、视觉缩放等集中改这里）
+  world/GlintstoneColor.java   # 三色枚举
+  worldgen/GlintstoneCaveFeature.java  # 现成洞穴整片刷同色水晶
+  config/EldenRingConfigs.java         # 注册 toml；加载后 apply + SpellBookStatReloader
+  config/EldenRingServerConfig.java    # 玩法数字 → config/elden_ring_spells-server.toml
+  config/EldenRingCommonConfig.java    # 矿洞密度 → config/elden_ring_spells-common.toml
+  client/ClientParticleProviders.java  # 粒子 Provider
+  client/ClientEntityRenderers.java    # 实体 Renderer / 模型层
+  client/ClientItemModels.java         # 卷轴 standalone 模型
 
 工具链/                              # 所有离线工具脚本统一放这里（勿再写 tools/ 或 像素画/）
   render_pixel_art.py                # JSON 像素画 → 控制台预览 / PNG
   gen_glintstone_pebble.py           # 辉石魔砾卷轴 / 图标 / 粒子贴图
   gen_glintstone_comet_textures.py   # 彗星头 / 光晕贴图
   gen_glintstone_line.py             # 迅魔砾 / 大魔砾 / 流星 / 帚星卷轴与图标
+  gen_glintstone_mineral_textures.py # 水晶块 / 簇占位贴图
+  gen_glintstone_mineral_assets.py   # 水晶块/簇 blockstate/model/loot/recipe/矿洞 JSON
   *.json                             # 像素画源数据（32×32）
   iss-reference/                     # 对照铁魔法源码时解压的参考（可不提交）
 
@@ -75,16 +88,18 @@ src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} �
 
 ## 新增法术标准流程（AI 必须按此做）
 
-1. 在 `spell/` 新建类，继承 `AbstractSpell`
+1. 在 `spell/` 新建类，继承 `EldenRingAbstractSpell`（或 `AbstractSpell`）
 2. 实现至少：`getSpellResource()`、`getDefaultConfig()`、`getCastType()`
 3. 构造里设置 `baseManaCost` / `manaCostPerLevel` / `baseSpellPower` / `spellPowerPerLevel` / `castTime`
-4. `DefaultConfig`：`setMinRarity`、`setSchoolResource`（先用 `SchoolRegistry.*_RESOURCE`）、`setMaxLevel`、`setCooldownSeconds`，最后 `.build()`
-5. 在 `ModSpells` 用 `registerSpell(new YourSpell())` 注册
-6. 语言键：`spell.elden_ring_spells.<spell_path>`（en_us + zh_cn 都要）
-7. 图标：`assets/elden_ring_spells/textures/gui/spell_icons/<spell_path>.png`
-8. 施法逻辑写在 `onCast(...)`；服务端生效时判 `!level.isClientSide`；末尾调用 `super.onCast(...)`
+4. `DefaultConfig`：`setMinRarity`、`setSchoolResource`、`setMaxLevel`、`setCooldownSeconds`，最后 `.build()`
+5. 核心玩法数字：只在 `EldenRingServerConfig` 加 toml 键，`apply` 写到 Spell 运行时字段（详见 `法术解耦架构.md`）
+6. 复杂咒（近战/持续/时序）拆到 `spell/curve` / `combat` / `fx`（持续咒再加 `data`，锁人/清障进 `helper`）；视觉写死在这些类里，**不要新建 Tuning**，也**不要把这些函数写回 XxxSpell**
+7. 在 `ModSpells` 用 `registerSpell(new YourSpell())` 注册
+8. 语言键：`spell.elden_ring_spells.<spell_path>`（en_us + zh_cn 都要）
+9. 图标：`assets/elden_ring_spells/textures/gui/spell_icons/<spell_path>.png`
+10. 施法逻辑写在 `onCast(...)`；服务端生效时判 `!level.isClientSide`；末尾调用 `super.onCast(...)`
 
-参考实现：`spell/GlintstonePebbleSpell.java` + `tuning/GlintstonePebbleTuning.java`（弹道速度/转向角等）。
+参考：`spell/GlintstonePebbleSpell.java`；完整调用顺序见 `法术解耦架构.md`。
 
 ### ResourceLocation / 命名
 
@@ -125,7 +140,7 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 - 资源与代码同步：加法术 = Java + 双语 lang + 图标（可用占位图）
 - **完整注释**：类 / 关键方法 / 可调常量需说明用途与单位；禁止复述代码的废话注释
 - **完整变量名**：可读全称，避免含糊缩写；常量名含语义与单位
-- **常量集中**：平衡手感数字放 `tuning/XxxTuning.java`，逻辑里不写魔法数字
+- **数字分家**：玩法（伤害、蓝耗、弹速、转向角、数量、半径）默认值只写在 `EldenRingServerConfig`，运行时写到 Spell 字段，整合包改 toml **不用重编译**。视觉/动画/握点写死在用到它的类。不要新建 `tuning/`。细则：`法术解耦架构.md`
 - 用户未要求时：不改 git 配置、不主动 commit、不推远程
 
 ## 像素画 / 工具链
@@ -142,8 +157,13 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 - [x] `ModItems` / `ModParticles` / `ModSpells` 注册骨架已就绪
 - [x] 辉石魔砾：法术 + 卷轴物品 + 弹道（限角追踪）+ 辉石粒子库
 - [x] 辉石迅魔砾 / 辉石大魔砾 / 辉石流星 / 帚星（共用 `AbstractGlintstoneProjectile`）
+- [x] 辉石碎片 Focus 已替换紫水晶
+- [x] 三色辉石矿物方块（水晶簇 / 水晶块，不生长、无建材、无矿石）
+- [x] 辉石矿洞 Feature（三色等概率、一洞一色；无矿石矿脉）
+- [x] 法术解耦（删 Tuning、瘦 toml、Curve/Combat/Fx）：见 `法术解耦架构.md`
 - [ ] 自定义学派 / 法环内容批量设计尚未开始
 - [ ] 辉石彗星（Glintstone Cometshard）尚未实现（用户本次未要求）
+- [ ] 地表星落坑 / 粉尘装备 / 学院哨塔尚未实现
 
 ## 外部文档
 

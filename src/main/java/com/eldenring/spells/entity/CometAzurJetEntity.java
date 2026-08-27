@@ -1,9 +1,10 @@
 package com.eldenring.spells.entity;
 
+import com.eldenring.spells.spell.CometAzurSpell;
+
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModSpells;
-import com.eldenring.spells.spell.CometAzurCastData;
-import com.eldenring.spells.tuning.CometAzurTuning;
+import com.eldenring.spells.spell.data.CometAzurCastData;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.damage.DamageSources;
 import io.redspace.ironsspellbooks.entity.mobs.AntiMagicSusceptible;
@@ -71,7 +72,7 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_BEAM_LENGTH_BLOCKS, (float) CometAzurTuning.JET_BEAM_MAX_RANGE_BLOCKS);
+        builder.define(DATA_BEAM_LENGTH_BLOCKS, (float) CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS);
         builder.define(DATA_YAW_DEGREES, 0.0f);
         builder.define(DATA_PITCH_DEGREES, 0.0f);
     }
@@ -114,7 +115,7 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
     private void setBeamLengthBlocks(float lengthBlocks) {
         this.entityData.set(
                 DATA_BEAM_LENGTH_BLOCKS,
-                Mth.clamp(lengthBlocks, 0.5f, (float) CometAzurTuning.JET_BEAM_MAX_RANGE_BLOCKS)
+                Mth.clamp(lengthBlocks, 0.5f, (float) CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS)
         );
     }
 
@@ -124,7 +125,7 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
     private void refreshBeamLength() {
         Vec3 mouth = this.lockedMouthWorld;
         Vec3 lookDirection = Vec3.directionFromRotation(syncedPitchDegrees(), syncedYawDegrees());
-        Vec3 farPoint = mouth.add(lookDirection.scale(CometAzurTuning.JET_BEAM_MAX_RANGE_BLOCKS));
+        Vec3 farPoint = mouth.add(lookDirection.scale(CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS));
         BlockHitResult blockHit = level().clip(new ClipContext(
                 mouth,
                 farPoint,
@@ -133,7 +134,7 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
                 this
         ));
         double lengthBlocks = blockHit.getType() == HitResult.Type.MISS
-                ? CometAzurTuning.JET_BEAM_MAX_RANGE_BLOCKS
+                ? CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS
                 : mouth.distanceTo(blockHit.getLocation());
         setBeamLengthBlocks((float) lengthBlocks);
     }
@@ -161,7 +162,7 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
         setPos(this.lockedMouthWorld.x, this.lockedMouthWorld.y, this.lockedMouthWorld.z);
         refreshBeamLength();
 
-        if (tickCount % CometAzurTuning.JET_BEAM_DAMAGE_INTERVAL_TICKS == 0) {
+        if (tickCount % CometAzurSpell.JET_BEAM_DAMAGE_INTERVAL_TICKS == 0) {
             dealBeamDamage(caster);
         }
     }
@@ -170,10 +171,10 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
         Vec3 mouth = this.lockedMouthWorld;
         Vec3 tip = mouth.add(Vec3.directionFromRotation(syncedPitchDegrees(), syncedYawDegrees())
                 .scale(beamLengthBlocks()));
-        double inflate = CometAzurTuning.JET_BEAM_DAMAGE_RADIUS_BLOCKS + 0.35;
+        double inflate = CometAzurSpell.JET_BEAM_DAMAGE_RADIUS_BLOCKS + 0.35;
         AABB searchBox = new AABB(mouth, tip).inflate(inflate);
         var damageSource = ModSpells.COMET_AZUR.get().getDamageSource(this, caster);
-        float radiusBlocks = CometAzurTuning.JET_BEAM_DAMAGE_RADIUS_BLOCKS;
+        float radiusBlocks = CometAzurSpell.JET_BEAM_DAMAGE_RADIUS_BLOCKS;
         double radiusSquared = radiusBlocks * radiusBlocks;
 
         for (LivingEntity target : level().getEntitiesOfClass(

@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import com.eldenring.spells.entity.GlintstoneVisualStyle;
 
 /**
  * 通用辉石弹道渲染器：先画连续光轨与螺旋细丝，再画立体晶核 / 刺簇 + 光晕。
@@ -36,7 +37,7 @@ public class GlintstoneProjectileRenderer<T extends AbstractGlintstoneProjectile
             MultiBufferSource bufferSource,
             int packedLight
     ) {
-        GlintstoneCometHeadDrawer.VisualStyle visualStyle = entity.visualStyle();
+        GlintstoneVisualStyle visualStyle = entity.visualStyle();
         Vec3 interpolatedHeadWorld = new Vec3(
                 Mth.lerp(partialTicks, entity.xo, entity.getX()),
                 Mth.lerp(partialTicks, entity.yo, entity.getY()),

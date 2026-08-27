@@ -1,7 +1,6 @@
 package com.eldenring.spells.particle.foundingrain;
 
 import com.eldenring.spells.client.render.AdditiveParticleRenderType;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -38,9 +37,9 @@ public class StarRiverRippleParticle extends TextureSheetParticle {
         this.zd = 0.0;
         this.hasPhysics = false;
         this.gravity = 0.0f;
-        this.lifetime = FoundingRainOfStarsTuning.RAIN_RIPPLE_LIFETIME_TICKS;
-        this.birthQuadSize = FoundingRainOfStarsTuning.RAIN_RIPPLE_QUAD_SIZE_MIN_BLOCKS
-                + level.random.nextFloat() * FoundingRainOfStarsTuning.RAIN_RIPPLE_QUAD_SIZE_RANDOM_BLOCKS;
+        this.lifetime = FoundingRainFx.RAIN_RIPPLE_LIFETIME_TICKS;
+        this.birthQuadSize = FoundingRainFx.RAIN_RIPPLE_QUAD_SIZE_MIN_BLOCKS
+                + level.random.nextFloat() * FoundingRainFx.RAIN_RIPPLE_QUAD_SIZE_RANDOM_BLOCKS;
         this.quadSize = this.birthQuadSize * 0.55f;
         this.rCol = 1.0f;
         this.gCol = 0.94f;

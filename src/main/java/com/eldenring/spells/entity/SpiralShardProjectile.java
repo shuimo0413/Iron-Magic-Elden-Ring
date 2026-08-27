@@ -1,11 +1,9 @@
 package com.eldenring.spells.entity;
 
-import com.eldenring.spells.client.render.glintstone.GlintstoneCometHeadDrawer;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModSpells;
-import com.eldenring.spells.tuning.GlintstoneTrailTuning;
-import com.eldenring.spells.tuning.SpiralShardTuning;
+import com.eldenring.spells.spell.SpiralShardSpell;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.DamageSources;
@@ -42,7 +40,7 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
     /** Grace ticks after spawn before hit checks. */
     private static final int COLLISION_GRACE_TICKS = 4;
 
-    /** ?????????????????????????????? */
+    /** 两股螺旋彗星各自的客户端历史点，供 ribbon 画真实曲线。 */
     private final TrailHistoryBuffer[] clientCometTrailHistories = {
             new TrailHistoryBuffer(),
             new TrailHistoryBuffer()
@@ -54,7 +52,7 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
     ) {
         super(entityType, level);
         // pierceLevel = N - 1 => discard after N entity settlements
-        setPierceLevel(Math.max(0, SpiralShardTuning.PROJECTILE_MAX_ENTITY_HITS - 1));
+        setPierceLevel(Math.max(0, SpiralShardSpell.PROJECTILE_MAX_ENTITY_HITS - 1));
     }
 
     public SpiralShardProjectile(Level level, LivingEntity shooter) {
@@ -70,52 +68,52 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
 
     @Override
     protected float flightSpeed() {
-        return SpiralShardTuning.PROJECTILE_FLIGHT_SPEED;
+        return SpiralShardSpell.PROJECTILE_FLIGHT_SPEED;
     }
 
     @Override
     protected double trackingRangeBlocks() {
-        return SpiralShardTuning.PROJECTILE_TRACKING_RANGE_BLOCKS;
+        return SpiralShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
     }
 
     @Override
     protected float maxTurnAngleDegreesPerTick() {
-        return SpiralShardTuning.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
+        return SpiralShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
     }
 
     @Override
     protected int trackingStartDelayTicks() {
-        return SpiralShardTuning.PROJECTILE_TRACKING_START_DELAY_TICKS;
+        return SpiralShardSpell.PROJECTILE_TRACKING_START_DELAY_TICKS;
     }
 
     @Override
     protected float trackingAcquireConeHalfAngleDegrees() {
-        return SpiralShardTuning.PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES;
+        return SpiralShardSpell.PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES;
     }
 
     @Override
     protected double minimumSpeedForHoming() {
-        return SpiralShardTuning.PROJECTILE_MINIMUM_SPEED_FOR_HOMING;
+        return SpiralShardSpell.PROJECTILE_MINIMUM_SPEED_FOR_HOMING;
     }
 
     @Override
     protected double directionAlignEpsilonRadians() {
-        return SpiralShardTuning.PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS;
+        return SpiralShardSpell.PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS;
     }
 
     @Override
     protected float trailParticleIntensity() {
-        return SpiralShardTuning.TRAIL_PARTICLE_INTENSITY;
+        return SpiralShardSpell.TRAIL_PARTICLE_INTENSITY;
     }
 
     @Override
-    public GlintstoneTrailTuning.TrailStyle trailStyle() {
-        return SpiralShardTuning.TRAIL_STYLE;
+    public GlintstoneTrailStyle trailStyle() {
+        return SpiralShardSpell.TRAIL_STYLE;
     }
 
     @Override
     protected float impactParticleIntensity() {
-        return SpiralShardTuning.IMPACT_PARTICLE_INTENSITY;
+        return SpiralShardSpell.IMPACT_PARTICLE_INTENSITY;
     }
 
     @Override
@@ -124,37 +122,37 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
     }
 
     @Override
-    public GlintstoneCometHeadDrawer.VisualStyle visualStyle() {
-        return GlintstoneCometHeadDrawer.VisualStyle.fromFloatColors(
-                SpiralShardTuning.COMET_HEAD_BODY_SCALE,
-                SpiralShardTuning.COMET_HEAD_GLOW_SCALE,
-                SpiralShardTuning.COMET_HEAD_GLOW_PULSE_AMPLITUDE,
-                SpiralShardTuning.COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK,
-                SpiralShardTuning.COMET_HEAD_CORE_RED,
-                SpiralShardTuning.COMET_HEAD_CORE_GREEN,
-                SpiralShardTuning.COMET_HEAD_CORE_BLUE,
-                SpiralShardTuning.COMET_HEAD_GLOW_RED,
-                SpiralShardTuning.COMET_HEAD_GLOW_GREEN,
-                SpiralShardTuning.COMET_HEAD_GLOW_BLUE,
-                SpiralShardTuning.COMET_HEAD_GLOW_ALPHA
+    public GlintstoneVisualStyle visualStyle() {
+        return GlintstoneVisualStyle.fromFloatColors(
+                SpiralShardSpell.COMET_HEAD_BODY_SCALE,
+                SpiralShardSpell.COMET_HEAD_GLOW_SCALE,
+                SpiralShardSpell.COMET_HEAD_GLOW_PULSE_AMPLITUDE,
+                SpiralShardSpell.COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK,
+                SpiralShardSpell.COMET_HEAD_CORE_RED,
+                SpiralShardSpell.COMET_HEAD_CORE_GREEN,
+                SpiralShardSpell.COMET_HEAD_CORE_BLUE,
+                SpiralShardSpell.COMET_HEAD_GLOW_RED,
+                SpiralShardSpell.COMET_HEAD_GLOW_GREEN,
+                SpiralShardSpell.COMET_HEAD_GLOW_BLUE,
+                SpiralShardSpell.COMET_HEAD_GLOW_ALPHA
         );
     }
 
     /** Orbit phase theta in radians: theta = omega * t; comets use theta and theta+pi. */
     public float orbitPhaseRadians(float partialTicks) {
         float ageTicks = tickCount + partialTicks;
-        return (float) Math.toRadians(SpiralShardTuning.SPIRAL_ANGULAR_SPEED_DEGREES_PER_TICK * ageTicks);
+        return (float) Math.toRadians(SpiralShardSpell.SPIRAL_ANGULAR_SPEED_DEGREES_PER_TICK * ageTicks);
     }
 
     /** Current orbit radius in blocks, with short ramp after spawn. */
     public double currentOrbitRadiusBlocks(float partialTicks) {
         float ageTicks = tickCount + partialTicks;
-        int rampTicks = SpiralShardTuning.SPIRAL_RADIUS_RAMP_TICKS;
+        int rampTicks = SpiralShardSpell.SPIRAL_RADIUS_RAMP_TICKS;
         if (rampTicks <= 0) {
-            return SpiralShardTuning.SPIRAL_ORBIT_RADIUS_BLOCKS;
+            return SpiralShardSpell.SPIRAL_ORBIT_RADIUS_BLOCKS;
         }
         float ramp01 = Mth.clamp(ageTicks / (float) rampTicks, 0.0f, 1.0f);
-        return SpiralShardTuning.SPIRAL_ORBIT_RADIUS_BLOCKS * ramp01;
+        return SpiralShardSpell.SPIRAL_ORBIT_RADIUS_BLOCKS * ramp01;
     }
 
     /**
@@ -208,9 +206,9 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
     }
 
     /**
-     * ????????????????? ? ????
+     * 某一股螺旋彗星的光轨历史点。
      *
-     * @param cometIndex 0 ? 1
+     * @param cometIndex 0 或 1
      */
     public List<Vec3> cometTrailHistoryWorldPositions(int cometIndex) {
         if (cometIndex < 0 || cometIndex >= clientCometTrailHistories.length) {
@@ -225,7 +223,7 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
     @Override
     public void trailParticles() {
         float intensity = trailParticleIntensity();
-        GlintstoneTrailTuning.TrailStyle trailStyle = trailStyle();
+        GlintstoneTrailStyle trailStyle = trailStyle();
         for (int cometIndex = 0; cometIndex < 2; cometIndex++) {
             Vec3 cometPosition = position().add(orbitWorldOffset(cometIndex, 0.0f));
             Vec3 flightDirection = orbitFlightDirection(cometIndex, 0.0f);
@@ -248,7 +246,7 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
 
     @Override
     public float getHitDetectionInflation() {
-        return SpiralShardTuning.PROJECTILE_HIT_INFLATION_BLOCKS;
+        return SpiralShardSpell.PROJECTILE_HIT_INFLATION_BLOCKS;
     }
 
     /**

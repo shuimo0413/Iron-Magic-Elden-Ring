@@ -1,7 +1,8 @@
 package com.eldenring.spells.particle.cometazur;
 
+import com.eldenring.spells.spell.CometAzurSpell;
+
 import com.eldenring.spells.client.render.AdditiveParticleRenderType;
-import com.eldenring.spells.tuning.CometAzurTuning;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -45,13 +46,13 @@ public class CometAzurInboundParticle extends TextureSheetParticle {
      */
     public enum Kind {
         /** mote_1 / mote_2 十字闪星。 */
-        MOTE(CometAzurTuning.STARTUP_MOTE_QUAD_SIZE_BLOCKS, true),
+        MOTE(CometAzurFx.STARTUP_MOTE_QUAD_SIZE_BLOCKS, true),
         /** impact 八芒星。 */
-        IMPACT(CometAzurTuning.STARTUP_IMPACT_QUAD_SIZE_BLOCKS, false),
+        IMPACT(CometAzurFx.STARTUP_IMPACT_QUAD_SIZE_BLOCKS, false),
         /** head 星团。 */
-        HEAD(CometAzurTuning.STARTUP_HEAD_QUAD_SIZE_BLOCKS, false),
+        HEAD(CometAzurFx.STARTUP_HEAD_QUAD_SIZE_BLOCKS, false),
         /** dust 碎星尘。 */
-        DUST(CometAzurTuning.STARTUP_DUST_QUAD_SIZE_BLOCKS, false);
+        DUST(CometAzurFx.STARTUP_DUST_QUAD_SIZE_BLOCKS, false);
 
         final float quadSizeBlocks;
         /** true：只取 mote 序列里的 mote_1 / mote_2。 */
@@ -94,7 +95,7 @@ public class CometAzurInboundParticle extends TextureSheetParticle {
         this.zd = 0.0;
         this.hasPhysics = false;
         this.gravity = 0.0f;
-        this.lifetime = CometAzurTuning.STARTUP_DURATION_TICKS;
+        this.lifetime = CometAzurSpell.STARTUP_DURATION_TICKS;
         this.birthQuadSize = kind.quadSizeBlocks * (0.82f + level.random.nextFloat() * 0.36f);
         this.quadSize = this.birthQuadSize;
         this.birthAlpha = 0.90f;
@@ -127,7 +128,7 @@ public class CometAzurInboundParticle extends TextureSheetParticle {
         float currentAngleRadians = Mth.lerp(
                 lifeFraction,
                 this.angleBirthRadians,
-                CometAzurTuning.STARTUP_SPIRAL_MAX_ANGLE_RADIANS
+                CometAzurFx.STARTUP_SPIRAL_MAX_ANGLE_RADIANS
         );
         moveToAngle(currentAngleRadians);
 
@@ -145,7 +146,7 @@ public class CometAzurInboundParticle extends TextureSheetParticle {
      * {@code r = 外半径 × e^(wA)}，平面角 = {@code A + 臂相位}。
      */
     private void moveToAngle(float angleRadians) {
-        double radiusBlocks = CometAzurTuning.STARTUP_SPIRAL_OUTER_RADIUS_BLOCKS
+        double radiusBlocks = CometAzurFx.STARTUP_SPIRAL_OUTER_RADIUS_BLOCKS
                 * Math.exp(this.spiralW * angleRadians);
         double planeAngleRadians = angleRadians + this.armPhaseRadians;
         double cosineAngle = Math.cos(planeAngleRadians);

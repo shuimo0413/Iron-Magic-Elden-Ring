@@ -1,6 +1,5 @@
 package com.eldenring.spells.particle.cometazur;
 
-import com.eldenring.spells.tuning.CometAzurTuning;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -104,8 +103,8 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
     private void spawnSurroundRings() {
         float ringPhaseRadians = this.random.nextFloat() * ((float) Math.PI * 2.0f);
         spawnRing(
-                CometAzurTuning.JET_NEBULA_PARTICLE_COUNT,
-                CometAzurTuning.JET_NEBULA_RING_RADIUS_BLOCKS,
+                CometAzurFx.JET_NEBULA_PARTICLE_COUNT,
+                CometAzurFx.JET_NEBULA_RING_RADIUS_BLOCKS,
                 ringPhaseRadians,
                 NEBULA_KINDS,
                 CometAzurJetSurroundParticle.MotionMode.EULER,
@@ -113,8 +112,8 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
                 0.0f
         );
         spawnRing(
-                CometAzurTuning.JET_GALAXY_PARTICLE_COUNT,
-                CometAzurTuning.JET_GALAXY_RING_RADIUS_BLOCKS,
+                CometAzurFx.JET_GALAXY_PARTICLE_COUNT,
+                CometAzurFx.JET_GALAXY_RING_RADIUS_BLOCKS,
                 ringPhaseRadians + 0.41f,
                 GALAXY_KINDS,
                 CometAzurJetSurroundParticle.MotionMode.EULER,
@@ -122,8 +121,8 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
                 0.0f
         );
         spawnRing(
-                CometAzurTuning.JET_SPARKLE_PARTICLE_COUNT,
-                CometAzurTuning.JET_SPARKLE_RING_RADIUS_BLOCKS,
+                CometAzurFx.JET_SPARKLE_PARTICLE_COUNT,
+                CometAzurFx.JET_SPARKLE_RING_RADIUS_BLOCKS,
                 ringPhaseRadians + 0.83f,
                 SPARKLE_KINDS,
                 CometAzurJetSurroundParticle.MotionMode.STRAIGHT,
@@ -139,21 +138,21 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
      * 多条欧拉螺旋：每条臂固定一个 ω，粒子沿 r e^{iωt} 绕喷流转着往前飞。
      */
     private void spawnEulerEnergyField(float ringPhaseRadians) {
-        int armCount = Math.max(1, CometAzurTuning.JET_FIELD_EULER_ARM_COUNT);
-        int particlesPerArm = Math.max(1, CometAzurTuning.JET_FIELD_EULER_PARTICLES_PER_ARM);
-        float[] helixSpeeds = CometAzurTuning.JET_FIELD_EULER_RADIANS_PER_TICK;
+        int armCount = Math.max(1, CometAzurFx.JET_FIELD_EULER_ARM_COUNT);
+        int particlesPerArm = Math.max(1, CometAzurFx.JET_FIELD_EULER_PARTICLES_PER_ARM);
+        float[] helixSpeeds = CometAzurFx.JET_FIELD_EULER_RADIANS_PER_TICK;
         for (int armIndex = 0; armIndex < armCount; armIndex++) {
             float armPhaseRadians = ringPhaseRadians + (float) (Math.PI * 2.0 * armIndex / armCount);
             float helixRadiansPerTick = helixSpeeds[armIndex % helixSpeeds.length];
             for (int particleIndex = 0; particleIndex < particlesPerArm; particleIndex++) {
                 float slotJitterRadians = (this.random.nextFloat() - 0.5f)
-                        * CometAzurTuning.JET_RING_SLOT_JITTER_RADIANS;
+                        * CometAzurFx.JET_RING_SLOT_JITTER_RADIANS;
                 CometAzurJetSurroundParticle.Kind kind =
                         FIELD_EULER_KINDS[(armIndex + particleIndex) % FIELD_EULER_KINDS.length];
-                float radiusScale = CometAzurTuning.JET_RING_RADIUS_RANDOM_MIN_SCALE
+                float radiusScale = CometAzurFx.JET_RING_RADIUS_RANDOM_MIN_SCALE
                         + this.random.nextFloat()
-                        * (CometAzurTuning.JET_RING_RADIUS_RANDOM_MAX_SCALE
-                        - CometAzurTuning.JET_RING_RADIUS_RANDOM_MIN_SCALE);
+                        * (CometAzurFx.JET_RING_RADIUS_RANDOM_MAX_SCALE
+                        - CometAzurFx.JET_RING_RADIUS_RANDOM_MIN_SCALE);
                 this.level.addParticle(
                         CometAzurJetOptions.flying(
                                 this.yawDegrees,
@@ -161,7 +160,7 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
                                 kind.ordinal(),
                                 CometAzurJetSurroundParticle.MotionMode.EULER.ordinal(),
                                 armPhaseRadians + slotJitterRadians,
-                                CometAzurTuning.JET_FIELD_EULER_RING_RADIUS_BLOCKS * radiusScale,
+                                CometAzurFx.JET_FIELD_EULER_RING_RADIUS_BLOCKS * radiusScale,
                                 0.0f,
                                 helixRadiansPerTick
                         ),
@@ -180,7 +179,7 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
      * 几道直线能量线：半径固定、不绕轴，光带贴着喷流外侧往前冲。
      */
     private void spawnStraightEnergyLines(float ringPhaseRadians) {
-        int lineCount = Math.max(1, CometAzurTuning.JET_FIELD_STRAIGHT_LINE_COUNT);
+        int lineCount = Math.max(1, CometAzurFx.JET_FIELD_STRAIGHT_LINE_COUNT);
         for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
             float lineAngleRadians = ringPhaseRadians
                     + (float) (Math.PI * 2.0 * lineIndex / lineCount)
@@ -194,7 +193,7 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
                             kind.ordinal(),
                             CometAzurJetSurroundParticle.MotionMode.STRAIGHT.ordinal(),
                             lineAngleRadians,
-                            CometAzurTuning.JET_FIELD_STRAIGHT_RING_RADIUS_BLOCKS,
+                            CometAzurFx.JET_FIELD_STRAIGHT_RING_RADIUS_BLOCKS,
                             0.0f,
                             0.0f
                     ),
@@ -209,36 +208,36 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
     }
 
     /**
-     * 在 0～{@link CometAzurTuning#JET_FILL_MAX_ALONG_BLOCKS} 之间随机落点，
+     * 在 0～{@link CometAzurFx#JET_PARTICLE_MAX_ALONG_BLOCKS} 之间随机落点，
      * 只补贴着激光的小星团，避免开喷后前几十格空荡荡。
      * 出生距离不超过当前射线碰到的实心方块，避免墙后还刷一串。
      */
     private void spawnMidBeamFill(float ringPhaseRadians) {
-        int fillCount = Math.max(1, CometAzurTuning.JET_FIELD_FILL_PARTICLE_COUNT);
+        int fillCount = Math.max(1, CometAzurFx.JET_FIELD_FILL_PARTICLE_COUNT);
         float clippedFillMaxAlongBlocks = Math.min(
-                CometAzurTuning.JET_FILL_MAX_ALONG_BLOCKS,
+                CometAzurFx.JET_FILL_MAX_ALONG_BLOCKS,
                 clipSolidAlongBlocks()
         );
         if (clippedFillMaxAlongBlocks < 0.35f) {
             return;
         }
-        float radiusSpan = CometAzurTuning.JET_RING_RADIUS_RANDOM_MAX_SCALE
-                - CometAzurTuning.JET_RING_RADIUS_RANDOM_MIN_SCALE;
+        float radiusSpan = CometAzurFx.JET_RING_RADIUS_RANDOM_MAX_SCALE
+                - CometAzurFx.JET_RING_RADIUS_RANDOM_MIN_SCALE;
         for (int slotIndex = 0; slotIndex < fillCount; slotIndex++) {
             float alongFraction = (slotIndex + this.random.nextFloat()) / fillCount;
             float birthAlongBeamBlocks = alongFraction * clippedFillMaxAlongBlocks;
             float jitterRadians = (this.random.nextFloat() - 0.5f)
-                    * CometAzurTuning.JET_RING_SLOT_JITTER_RADIANS;
+                    * CometAzurFx.JET_RING_SLOT_JITTER_RADIANS;
             float ringAngleRadians = ringPhaseRadians
                     + (float) (Math.PI * 2.0 * slotIndex / fillCount)
                     + jitterRadians;
-            float radiusScale = CometAzurTuning.JET_RING_RADIUS_RANDOM_MIN_SCALE
+            float radiusScale = CometAzurFx.JET_RING_RADIUS_RANDOM_MIN_SCALE
                     + this.random.nextFloat() * radiusSpan;
             CometAzurJetSurroundParticle.Kind kind = FILL_KINDS[slotIndex % FILL_KINDS.length];
             boolean eulerFill = kind != CometAzurJetSurroundParticle.Kind.GLOW;
             float helixRadiansPerTick = 0.0f;
             if (eulerFill) {
-                float[] helixSpeeds = CometAzurTuning.JET_FIELD_EULER_RADIANS_PER_TICK;
+                float[] helixSpeeds = CometAzurFx.JET_FIELD_EULER_RADIANS_PER_TICK;
                 helixRadiansPerTick = helixSpeeds[slotIndex % helixSpeeds.length];
             }
             this.level.addParticle(
@@ -250,7 +249,7 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
                                     ? CometAzurJetSurroundParticle.MotionMode.EULER
                                     : CometAzurJetSurroundParticle.MotionMode.STRAIGHT).ordinal(),
                             ringAngleRadians,
-                            CometAzurTuning.JET_FIELD_EULER_RING_RADIUS_BLOCKS * radiusScale,
+                            CometAzurFx.JET_FIELD_EULER_RING_RADIUS_BLOCKS * radiusScale,
                             birthAlongBeamBlocks,
                             helixRadiansPerTick
                     ),
@@ -274,15 +273,15 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
             float helixRadiansPerTick
     ) {
         int count = Math.max(1, particleCount);
-        float radiusSpan = CometAzurTuning.JET_RING_RADIUS_RANDOM_MAX_SCALE
-                - CometAzurTuning.JET_RING_RADIUS_RANDOM_MIN_SCALE;
+        float radiusSpan = CometAzurFx.JET_RING_RADIUS_RANDOM_MAX_SCALE
+                - CometAzurFx.JET_RING_RADIUS_RANDOM_MIN_SCALE;
         for (int slotIndex = 0; slotIndex < count; slotIndex++) {
             float jitterRadians = (this.random.nextFloat() - 0.5f)
-                    * CometAzurTuning.JET_RING_SLOT_JITTER_RADIANS;
+                    * CometAzurFx.JET_RING_SLOT_JITTER_RADIANS;
             float ringAngleRadians = ringPhaseRadians
                     + (float) (Math.PI * 2.0 * slotIndex / count)
                     + jitterRadians;
-            float radiusScale = CometAzurTuning.JET_RING_RADIUS_RANDOM_MIN_SCALE
+            float radiusScale = CometAzurFx.JET_RING_RADIUS_RANDOM_MIN_SCALE
                     + this.random.nextFloat() * radiusSpan;
             CometAzurJetSurroundParticle.Kind kind = kindCycle[slotIndex % kindCycle.length];
             this.level.addParticle(
@@ -313,7 +312,7 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
     private float clipSolidAlongBlocks() {
         Vec3 mouthWorld = new Vec3(this.x, this.y, this.z);
         Vec3 lookDirection = Vec3.directionFromRotation(this.pitchDegrees, this.yawDegrees);
-        Vec3 farPoint = mouthWorld.add(lookDirection.scale(CometAzurTuning.JET_PARTICLE_MAX_ALONG_BLOCKS));
+        Vec3 farPoint = mouthWorld.add(lookDirection.scale(CometAzurFx.JET_PARTICLE_MAX_ALONG_BLOCKS));
         BlockHitResult blockHit = this.level.clip(new ClipContext(
                 mouthWorld,
                 farPoint,
@@ -322,7 +321,7 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
                 CollisionContext.empty()
         ));
         if (blockHit.getType() == HitResult.Type.MISS) {
-            return CometAzurTuning.JET_PARTICLE_MAX_ALONG_BLOCKS;
+            return CometAzurFx.JET_PARTICLE_MAX_ALONG_BLOCKS;
         }
         return (float) mouthWorld.distanceTo(blockHit.getLocation());
     }

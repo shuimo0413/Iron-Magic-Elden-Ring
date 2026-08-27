@@ -1,7 +1,8 @@
 package com.eldenring.spells.particle.foundingrain;
 
+import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
+
 import com.eldenring.spells.client.render.AdditiveParticleRenderType;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -19,7 +20,7 @@ import net.minecraft.util.Mth;
 public class NebulaCloudParticle extends TextureSheetParticle {
 
     /**
-     * 每种云朵贴图的尺寸与不透明度。寿命统一走 Tuning，方便整团一起淡。
+     * 每种云朵贴图的尺寸与不透明度。寿命统一走 {@link FoundingRainFx}，方便整团一起淡。
      *
      * @param quadSizeMinBlocks     出生时四边形边长下限（方块）。贴近手里星云雾气。
      * @param quadSizeRandomBlocks  额外随机边长（方块）
@@ -100,8 +101,8 @@ public class NebulaCloudParticle extends TextureSheetParticle {
         this.hasPhysics = false;
         this.gravity = 0.0f;
         this.friction = 0.985f;
-        this.lifetime = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_LIFETIME_TICKS
-                + level.random.nextInt(FoundingRainOfStarsTuning.OVERHEAD_CLOUD_LIFETIME_RANDOM_TICKS + 1);
+        this.lifetime = FoundingRainOfStarsSpell.OVERHEAD_CLOUD_LIFETIME_TICKS
+                + level.random.nextInt(FoundingRainFx.OVERHEAD_CLOUD_LIFETIME_RANDOM_TICKS + 1);
         this.birthQuadSize = kind.quadSizeMinBlocks + level.random.nextFloat() * kind.quadSizeRandomBlocks;
         this.quadSize = this.birthQuadSize * 0.82f;
         this.peakAlpha = kind.peakAlpha;
@@ -142,8 +143,8 @@ public class NebulaCloudParticle extends TextureSheetParticle {
      */
     private void applyFadeEnvelope() {
         float life = (float) this.age / (float) this.lifetime;
-        float fadeInEnd = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FADE_IN_TICKS / (float) this.lifetime;
-        float fadeOutStart = 1.0f - FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FADE_OUT_TICKS / (float) this.lifetime;
+        float fadeInEnd = FoundingRainFx.OVERHEAD_CLOUD_FADE_IN_TICKS / (float) this.lifetime;
+        float fadeOutStart = 1.0f - FoundingRainFx.OVERHEAD_CLOUD_FADE_OUT_TICKS / (float) this.lifetime;
         float envelope;
         if (life < fadeInEnd) {
             float fadeInProgress = Mth.clamp(life / Math.max(1.0e-4f, fadeInEnd), 0.0f, 1.0f);

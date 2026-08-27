@@ -1,5 +1,6 @@
 package com.eldenring.spells;
 
+import com.eldenring.spells.config.EldenRingConfigs;
 import com.eldenring.spells.registry.ModAttributes;
 import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModCreativeTabs;
@@ -12,6 +13,7 @@ import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSpells;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.slf4j.Logger;
@@ -21,7 +23,8 @@ public class EldenRingSpellsMod {
     public static final String MOD_ID = "elden_ring_spells";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public EldenRingSpellsMod(IEventBus modEventBus) {
+    public EldenRingSpellsMod(IEventBus modEventBus, ModContainer modContainer) {
+        EldenRingConfigs.register(modContainer, modEventBus);
         ModAttributes.register(modEventBus);
         ModSchools.register(modEventBus);
         ModEffects.register(modEventBus);

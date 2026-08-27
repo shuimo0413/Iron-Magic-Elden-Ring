@@ -1,7 +1,8 @@
 package com.eldenring.spells.particle.foundingrain;
 
+import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
+
 import com.eldenring.spells.client.render.AdditiveParticleRenderType;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -39,8 +40,8 @@ public class OverheadNebulaAccentParticle extends TextureSheetParticle {
         this.hasPhysics = false;
         this.gravity = 0.0f;
         this.friction = 0.985f;
-        this.lifetime = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_LIFETIME_TICKS
-                + level.random.nextInt(FoundingRainOfStarsTuning.OVERHEAD_CLOUD_LIFETIME_RANDOM_TICKS + 1);
+        this.lifetime = FoundingRainOfStarsSpell.OVERHEAD_CLOUD_LIFETIME_TICKS
+                + level.random.nextInt(FoundingRainFx.OVERHEAD_CLOUD_LIFETIME_RANDOM_TICKS + 1);
         this.birthQuadSize = accent.quadSizeMinBlocks + level.random.nextFloat() * accent.quadSizeRandomBlocks;
         this.quadSize = this.birthQuadSize * 0.88f;
         this.peakAlpha = accent.peakAlpha;
@@ -82,8 +83,8 @@ public class OverheadNebulaAccentParticle extends TextureSheetParticle {
 
     private void applyFadeEnvelope() {
         float life = (float) this.age / (float) this.lifetime;
-        float fadeInEnd = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FADE_IN_TICKS / (float) this.lifetime;
-        float fadeOutStart = 1.0f - FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FADE_OUT_TICKS / (float) this.lifetime;
+        float fadeInEnd = FoundingRainFx.OVERHEAD_CLOUD_FADE_IN_TICKS / (float) this.lifetime;
+        float fadeOutStart = 1.0f - FoundingRainFx.OVERHEAD_CLOUD_FADE_OUT_TICKS / (float) this.lifetime;
         float envelope;
         if (life < fadeInEnd) {
             float fadeInProgress = Mth.clamp(life / Math.max(1.0e-4f, fadeInEnd), 0.0f, 1.0f);

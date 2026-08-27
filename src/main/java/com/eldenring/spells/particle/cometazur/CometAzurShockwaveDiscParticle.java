@@ -2,7 +2,6 @@ package com.eldenring.spells.particle.cometazur;
 
 import com.eldenring.spells.client.render.AdditiveParticleRenderType;
 import com.eldenring.spells.registry.ModParticles;
-import com.eldenring.spells.tuning.CometAzurTuning;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -110,13 +109,13 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
      * 墨绿星河环：暗靛外圈、青绿中圈、偏亮芯。避免原来的冷白青。
      */
     private static WaveVisuals visualsFor(WaveKind waveKind) {
-        float baseStart = CometAzurTuning.SHOCKWAVE_RADIUS_START_BLOCKS;
-        float baseEnd = CometAzurTuning.SHOCKWAVE_RADIUS_END_BLOCKS;
+        float baseStart = CometAzurFx.SHOCKWAVE_RADIUS_START_BLOCKS;
+        float baseEnd = CometAzurFx.SHOCKWAVE_RADIUS_END_BLOCKS;
         return switch (waveKind) {
             case CORE -> new WaveVisuals(
-                    CometAzurTuning.SHOCKWAVE_CORE_DURATION_TICKS,
-                    CometAzurTuning.SHOCKWAVE_CORE_RADIUS_START_BLOCKS,
-                    CometAzurTuning.SHOCKWAVE_CORE_RADIUS_END_BLOCKS,
+                    CometAzurFx.SHOCKWAVE_CORE_DURATION_TICKS,
+                    CometAzurFx.SHOCKWAVE_CORE_RADIUS_START_BLOCKS,
+                    CometAzurFx.SHOCKWAVE_CORE_RADIUS_END_BLOCKS,
                     0.12f,
                     0.88f,
                     0.55f,
@@ -125,9 +124,9 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
                     2
             );
             case OUTER -> new WaveVisuals(
-                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS + 4,
+                    CometAzurFx.SHOCKWAVE_DURATION_TICKS + 4,
                     baseStart * 0.70f,
-                    baseEnd * CometAzurTuning.SHOCKWAVE_OUTER_RADIUS_END_SCALE,
+                    baseEnd * CometAzurFx.SHOCKWAVE_OUTER_RADIUS_END_SCALE,
                     -0.035f,
                     0.38f,
                     0.18f,
@@ -136,9 +135,9 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
                     1
             );
             case MID -> new WaveVisuals(
-                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS + 2,
+                    CometAzurFx.SHOCKWAVE_DURATION_TICKS + 2,
                     baseStart * 0.80f,
-                    baseEnd * CometAzurTuning.SHOCKWAVE_MID_RADIUS_END_SCALE,
+                    baseEnd * CometAzurFx.SHOCKWAVE_MID_RADIUS_END_SCALE,
                     0.045f,
                     0.48f,
                     0.22f,
@@ -147,9 +146,9 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
                     0
             );
             case INNER -> new WaveVisuals(
-                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS,
+                    CometAzurFx.SHOCKWAVE_DURATION_TICKS,
                     baseStart * 1.05f,
-                    baseEnd * CometAzurTuning.SHOCKWAVE_INNER_RADIUS_END_SCALE,
+                    baseEnd * CometAzurFx.SHOCKWAVE_INNER_RADIUS_END_SCALE,
                     -0.09f,
                     0.58f,
                     0.28f,
@@ -158,10 +157,10 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
                     2
             );
             case ECHO -> new WaveVisuals(
-                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS,
+                    CometAzurFx.SHOCKWAVE_DURATION_TICKS,
                     baseStart * 0.90f,
                     baseEnd * 0.95f,
-                    CometAzurTuning.SHOCKWAVE_ECHO_ROLL_RADIANS_PER_TICK,
+                    CometAzurFx.SHOCKWAVE_ECHO_ROLL_RADIANS_PER_TICK,
                     0.40f,
                     0.24f,
                     0.62f,
@@ -169,10 +168,10 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
                     1
             );
             case PRIMARY -> new WaveVisuals(
-                    CometAzurTuning.SHOCKWAVE_DURATION_TICKS,
+                    CometAzurFx.SHOCKWAVE_DURATION_TICKS,
                     baseStart,
                     baseEnd,
-                    CometAzurTuning.SHOCKWAVE_RING_ROLL_RADIANS_PER_TICK,
+                    CometAzurFx.SHOCKWAVE_RING_ROLL_RADIANS_PER_TICK,
                     0.62f,
                     0.30f,
                     0.78f,
@@ -233,7 +232,7 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
             spawnRidingStars();
             spawnRadialStreaks();
         }
-        if (this.age % CometAzurTuning.SHOCKWAVE_RESIDUE_INTERVAL_TICKS == 0) {
+        if (this.age % CometAzurFx.SHOCKWAVE_RESIDUE_INTERVAL_TICKS == 0) {
             spawnResidueStars();
         }
     }
@@ -250,7 +249,7 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
                 this.upAxis
         ));
         try {
-            int ridingCount = CometAzurTuning.SHOCKWAVE_RIDING_STAR_COUNT;
+            int ridingCount = CometAzurFx.SHOCKWAVE_RIDING_STAR_COUNT;
             for (int starIndex = 0; starIndex < ridingCount; starIndex++) {
                 float ringAngleRadians = (float) (Math.PI * 2.0 * starIndex / ridingCount);
                 this.level.addParticle(
@@ -269,7 +268,7 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
     }
 
     private void spawnResidueStars() {
-        int residueCount = CometAzurTuning.SHOCKWAVE_RESIDUE_STARS_PER_PULSE;
+        int residueCount = CometAzurFx.SHOCKWAVE_RESIDUE_STARS_PER_PULSE;
         for (int residueIndex = 0; residueIndex < residueCount; residueIndex++) {
             float ringAngleRadians = (this.random.nextFloat() * ((float) Math.PI * 2.0f));
             Vec3 worldPosition = worldPositionOnRing(this.currentRadiusBlocks, ringAngleRadians);
@@ -286,7 +285,7 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
     }
 
     private void spawnRadialStreaks() {
-        int streakCount = CometAzurTuning.SHOCKWAVE_STREAK_COUNT;
+        int streakCount = CometAzurFx.SHOCKWAVE_STREAK_COUNT;
         for (int streakIndex = 0; streakIndex < streakCount; streakIndex++) {
             float ringAngleRadians = (float) (Math.PI * 2.0 * streakIndex / streakCount)
                     + this.random.nextFloat() * 0.20f;

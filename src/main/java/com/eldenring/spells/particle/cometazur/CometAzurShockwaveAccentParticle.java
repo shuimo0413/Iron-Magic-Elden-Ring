@@ -1,7 +1,6 @@
 package com.eldenring.spells.particle.cometazur;
 
 import com.eldenring.spells.client.render.AdditiveParticleRenderType;
-import com.eldenring.spells.tuning.CometAzurTuning;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -63,9 +62,9 @@ public class CometAzurShockwaveAccentParticle extends TextureSheetParticle {
         this.hasPhysics = false;
         this.gravity = 0.0f;
         this.lifetime = this.ridingWavefront
-                ? CometAzurTuning.SHOCKWAVE_DURATION_TICKS
-                : CometAzurTuning.SHOCKWAVE_RESIDUE_LIFETIME_TICKS;
-        this.birthQuadSize = CometAzurTuning.SHOCKWAVE_ACCENT_QUAD_SIZE_BLOCKS
+                ? CometAzurFx.SHOCKWAVE_DURATION_TICKS
+                : CometAzurFx.SHOCKWAVE_RESIDUE_LIFETIME_TICKS;
+        this.birthQuadSize = CometAzurFx.SHOCKWAVE_ACCENT_QUAD_SIZE_BLOCKS
                 * (this.ridingWavefront ? 0.90f : 0.55f)
                 * (0.80f + level.random.nextFloat() * 0.50f);
         this.quadSize = this.birthQuadSize;
@@ -79,7 +78,7 @@ public class CometAzurShockwaveAccentParticle extends TextureSheetParticle {
         int spriteIndex = level.random.nextInt(ACCENT_SPRITE_COUNT);
         setSprite(sprites.get(spriteIndex, ACCENT_SPRITE_COUNT - 1));
         if (this.ridingWavefront) {
-            moveToRadius(CometAzurTuning.SHOCKWAVE_RADIUS_START_BLOCKS, this.ringAngleBirthRadians);
+            moveToRadius(CometAzurFx.SHOCKWAVE_RADIUS_START_BLOCKS, this.ringAngleBirthRadians);
         }
     }
 
@@ -100,10 +99,10 @@ public class CometAzurShockwaveAccentParticle extends TextureSheetParticle {
             float eased = 1.0f - (1.0f - lifeFraction) * (1.0f - lifeFraction);
             float radiusBlocks = Mth.lerp(
                     eased,
-                    CometAzurTuning.SHOCKWAVE_RADIUS_START_BLOCKS,
-                    CometAzurTuning.SHOCKWAVE_RADIUS_END_BLOCKS
+                    CometAzurFx.SHOCKWAVE_RADIUS_START_BLOCKS,
+                    CometAzurFx.SHOCKWAVE_RADIUS_END_BLOCKS
             );
-            float swirlRadians = this.age * CometAzurTuning.SHOCKWAVE_STAR_SWIRL_RADIANS_PER_TICK;
+            float swirlRadians = this.age * CometAzurFx.SHOCKWAVE_STAR_SWIRL_RADIANS_PER_TICK;
             moveToRadius(radiusBlocks, this.ringAngleBirthRadians + swirlRadians);
             this.alpha = this.birthAlpha * (1.0f - lifeFraction * lifeFraction) * twinkle;
             this.quadSize = this.birthQuadSize * (1.05f - 0.20f * lifeFraction);

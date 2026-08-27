@@ -52,8 +52,6 @@ public final class ModItems {
     static {
         // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)
         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
-            ITEMS.registerSimpleBlockItem(set.ore);
-            ITEMS.registerSimpleBlockItem(set.deepslateOre);
             ITEMS.registerSimpleBlockItem(set.crystalBlock);
             ITEMS.registerSimpleBlockItem(set.cluster);
         }

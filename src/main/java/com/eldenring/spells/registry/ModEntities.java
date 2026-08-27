@@ -5,7 +5,10 @@ import com.eldenring.spells.entity.CometProjectile;
 import com.eldenring.spells.entity.CometAzurJetEntity;
 import com.eldenring.spells.entity.FoundingRainDropEntity;
 import com.eldenring.spells.entity.FoundingRainOfStarsEntity;
+import com.eldenring.spells.entity.CarianSlicerEntity;
+import com.eldenring.spells.entity.GavelOfHaimaEntity;
 import com.eldenring.spells.entity.GlintstoneCometProjectile;
+import com.eldenring.spells.entity.MagicGlintbladeEntity;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
 import com.eldenring.spells.entity.GlintstoneStarProjectile;
 import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
@@ -171,6 +174,42 @@ public final class ModEntities {
                             .clientTrackingRange(96)
                             .updateInterval(1)
                             .build(id("comet_azur_jet"))
+            );
+
+    /**
+     * 海摩大槌：锚在砸地点，视觉为立体巨锤，碰撞箱仅作追踪占位。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<GavelOfHaimaEntity>> GAVEL_OF_HAIMA =
+            ENTITIES.register("gavel_of_haima", () ->
+                    EntityType.Builder.<GavelOfHaimaEntity>of(GavelOfHaimaEntity::new, MobCategory.MISC)
+                            .sized(1.2f, 2.0f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("gavel_of_haima"))
+            );
+
+    /**
+     * 卡利亚迅剑：锚在右手握点，碰撞箱仅作追踪占位。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<CarianSlicerEntity>> CARIAN_SLICER =
+            ENTITIES.register("carian_slicer", () ->
+                    EntityType.Builder.<CarianSlicerEntity>of(CarianSlicerEntity::new, MobCategory.MISC)
+                            .sized(0.6f, 1.2f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("carian_slicer"))
+            );
+
+    /**
+     * 魔法辉剑：先悬停后飞出，碰撞箱略长以便追踪。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<MagicGlintbladeEntity>> MAGIC_GLINTBLADE =
+            ENTITIES.register("magic_glintblade", () ->
+                    EntityType.Builder.<MagicGlintbladeEntity>of(MagicGlintbladeEntity::new, MobCategory.MISC)
+                            .sized(0.45f, 0.85f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("magic_glintblade"))
             );
 
     private ModEntities() {

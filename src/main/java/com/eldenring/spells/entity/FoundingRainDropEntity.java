@@ -1,9 +1,9 @@
 package com.eldenring.spells.entity;
 
+import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
+
 import com.eldenring.spells.particle.foundingrain.FoundingRainFx;
 import com.eldenring.spells.registry.ModEntities;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
-import com.eldenring.spells.tuning.GlintstoneTrailTuning;
 import io.redspace.ironsspellbooks.entity.spells.AbstractMagicProjectile;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
@@ -66,13 +66,13 @@ public class FoundingRainDropEntity extends AbstractMagicProjectile {
         return clientTrailHistory.snapshot();
     }
 
-    public GlintstoneTrailTuning.TrailStyle trailStyle() {
-        return FoundingRainOfStarsTuning.RAIN_DROP_TRAIL_STYLE;
+    public GlintstoneTrailStyle trailStyle() {
+        return FoundingRainFx.RAIN_DROP_TRAIL_STYLE;
     }
 
     @Override
     public void trailParticles() {
-        GlintstoneTrailTuning.TrailStyle trailStyle = trailStyle();
+        GlintstoneTrailStyle trailStyle = trailStyle();
         clientTrailHistory.record(
                 position(),
                 trailStyle.lengthBlocks(),
@@ -87,7 +87,7 @@ public class FoundingRainDropEntity extends AbstractMagicProjectile {
 
     @Override
     public float getSpeed() {
-        return FoundingRainOfStarsTuning.RAIN_DROP_FALL_SPEED_BLOCKS_PER_TICK;
+        return FoundingRainOfStarsSpell.RAIN_DROP_FALL_SPEED_BLOCKS_PER_TICK;
     }
 
     @Override
@@ -118,10 +118,10 @@ public class FoundingRainDropEntity extends AbstractMagicProjectile {
         }
 
         traveledDistanceBlocks += position().distanceTo(positionBeforeTick);
-        double maximumTravelBlocks = FoundingRainOfStarsTuning.RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS;
+        double maximumTravelBlocks = FoundingRainFx.RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS;
         if (traveledDistanceBlocks >= maximumTravelBlocks
                 || position().distanceToSqr(spawnWorldPosition) >= maximumTravelBlocks * maximumTravelBlocks
-                || tickCount >= FoundingRainOfStarsTuning.RAIN_DROP_MAXIMUM_LIFETIME_TICKS) {
+                || tickCount >= FoundingRainFx.RAIN_DROP_MAXIMUM_LIFETIME_TICKS) {
             discard();
         }
     }

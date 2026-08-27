@@ -1,7 +1,6 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import com.eldenring.spells.tuning.TerraMagicaTuning;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.effect.MagicMobEffect;
 import net.minecraft.core.registries.Registries;
@@ -12,6 +11,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import com.eldenring.spells.spell.TerraMagicaSpell;
 
 /**
  * 本模组 MobEffect 注册。
@@ -40,7 +40,7 @@ public final class ModEffects {
                             .addAttributeModifier(
                                     AttributeRegistry.SPELL_POWER,
                                     TERRA_MAGICA_ATTRIBUTE_MODIFIER_ID,
-                                    TerraMagicaTuning.SPELL_POWER_BONUS_MULTIPLIED_TOTAL,
+                                    TerraMagicaSpell.SPELL_POWER_BONUS_MULTIPLIED_TOTAL,
                                     AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
                             )
             );

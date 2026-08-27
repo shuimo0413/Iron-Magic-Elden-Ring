@@ -3,7 +3,6 @@ package com.eldenring.spells.client.render;
 import com.eldenring.spells.client.render.glintstone.GlintstoneCometModels;
 import com.eldenring.spells.client.render.glintstone.GlintstoneTrailRenderer;
 import com.eldenring.spells.entity.CometAzurJetEntity;
-import com.eldenring.spells.tuning.CometAzurTuning;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -18,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.eldenring.spells.particle.cometazur.CometAzurFx;
 
 /**
  * 彗星亚兹勒星河喷流。
@@ -62,8 +62,8 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
         }
         Vec3 upAxis = rightAxis.cross(forwardAxis).normalize();
 
-        float mouthRadius = CometAzurTuning.JET_BEAM_MOUTH_RADIUS_BLOCKS;
-        float tipRadius = CometAzurTuning.JET_BEAM_TIP_RADIUS_BLOCKS;
+        float mouthRadius = CometAzurFx.JET_BEAM_MOUTH_RADIUS_BLOCKS;
+        float tipRadius = CometAzurFx.JET_BEAM_TIP_RADIUS_BLOCKS;
 
         VertexConsumer cylinderConsumer = bufferSource.getBuffer(CometAzurJetRenderTypes.CYLINDER);
         CometAzurJetMesh.renderOriginSphere(
@@ -72,8 +72,8 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 forwardAxis,
                 rightAxis,
                 upAxis,
-                CometAzurTuning.JET_BEAM_ORIGIN_SPHERE_RADIUS_BLOCKS,
-                CometAzurTuning.JET_BEAM_NEBULA_COLOR_ARGB
+                CometAzurFx.JET_BEAM_ORIGIN_SPHERE_RADIUS_BLOCKS,
+                CometAzurFx.JET_BEAM_NEBULA_COLOR_ARGB
         );
         CometAzurJetMesh.renderOriginSphere(
                 poseStack,
@@ -81,8 +81,8 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 forwardAxis,
                 rightAxis,
                 upAxis,
-                CometAzurTuning.JET_BEAM_ORIGIN_SPHERE_RADIUS_BLOCKS * 0.62f,
-                CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB
+                CometAzurFx.JET_BEAM_ORIGIN_SPHERE_RADIUS_BLOCKS * 0.62f,
+                CometAzurFx.JET_BEAM_CORE_COLOR_ARGB
         );
         // 外雾 → 星云 → 中管，真正的圆管截面。
         renderCylinderShell(
@@ -92,9 +92,9 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 rightAxis,
                 upAxis,
                 beamLengthBlocks,
-                mouthRadius * CometAzurTuning.JET_BEAM_VEIL_WIDTH_SCALE,
-                tipRadius * CometAzurTuning.JET_BEAM_VEIL_WIDTH_SCALE,
-                CometAzurTuning.JET_BEAM_VEIL_COLOR_ARGB
+                mouthRadius * CometAzurFx.JET_BEAM_VEIL_WIDTH_SCALE,
+                tipRadius * CometAzurFx.JET_BEAM_VEIL_WIDTH_SCALE,
+                CometAzurFx.JET_BEAM_VEIL_COLOR_ARGB
         );
         renderCylinderShell(
                 poseStack,
@@ -103,9 +103,9 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 rightAxis,
                 upAxis,
                 beamLengthBlocks,
-                mouthRadius * CometAzurTuning.JET_BEAM_NEBULA_WIDTH_SCALE,
-                tipRadius * CometAzurTuning.JET_BEAM_NEBULA_WIDTH_SCALE,
-                CometAzurTuning.JET_BEAM_NEBULA_COLOR_ARGB
+                mouthRadius * CometAzurFx.JET_BEAM_NEBULA_WIDTH_SCALE,
+                tipRadius * CometAzurFx.JET_BEAM_NEBULA_WIDTH_SCALE,
+                CometAzurFx.JET_BEAM_NEBULA_COLOR_ARGB
         );
         renderCylinderShell(
                 poseStack,
@@ -116,7 +116,7 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 beamLengthBlocks,
                 mouthRadius,
                 tipRadius,
-                CometAzurTuning.JET_BEAM_MID_COLOR_ARGB
+                CometAzurFx.JET_BEAM_MID_COLOR_ARGB
         );
 
         VertexConsumer coreConsumer = bufferSource.getBuffer(CometAzurJetRenderTypes.CORE);
@@ -127,17 +127,17 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 rightAxis,
                 upAxis,
                 beamLengthBlocks,
-                mouthRadius * CometAzurTuning.JET_BEAM_CORE_WIDTH_SCALE,
-                tipRadius * CometAzurTuning.JET_BEAM_CORE_WIDTH_SCALE,
-                CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB
+                mouthRadius * CometAzurFx.JET_BEAM_CORE_WIDTH_SCALE,
+                tipRadius * CometAzurFx.JET_BEAM_CORE_WIDTH_SCALE,
+                CometAzurFx.JET_BEAM_CORE_COLOR_ARGB
         );
 
         CometAzurJetMesh.renderOriginGlowBillboard(
                 poseStack,
                 bufferSource,
                 this.entityRenderDispatcher.cameraOrientation(),
-                CometAzurTuning.JET_BEAM_ORIGIN_GLOW_RADIUS_BLOCKS,
-                CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB
+                CometAzurFx.JET_BEAM_ORIGIN_GLOW_RADIUS_BLOCKS,
+                CometAzurFx.JET_BEAM_CORE_COLOR_ARGB
         );
 
         renderRotatingFilaments(
@@ -193,9 +193,9 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
             float beamLengthBlocks,
             float animationTicks
     ) {
-        float mouthTextureV = CometAzurTuning.JET_BEAM_TEXTURE_MOUTH_V;
-        float tipTextureV = CometAzurTuning.JET_BEAM_TEXTURE_TIP_V;
-        int filamentCount = Math.max(1, CometAzurTuning.JET_BEAM_FILAMENT_COUNT);
+        float mouthTextureV = CometAzurFx.JET_BEAM_TEXTURE_MOUTH_V;
+        float tipTextureV = CometAzurFx.JET_BEAM_TEXTURE_TIP_V;
+        int filamentCount = Math.max(1, CometAzurFx.JET_BEAM_FILAMENT_COUNT);
         for (int filamentIndex = 0; filamentIndex < filamentCount; filamentIndex++) {
             float phaseRadians = (float) (Math.PI * 2.0 * filamentIndex / filamentCount);
             List<Vec3> filamentPath = buildHelixFilament(
@@ -208,16 +208,16 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                     phaseRadians
             );
             int filamentColor = (filamentIndex & 1) == 0
-                    ? CometAzurTuning.JET_BEAM_FILAMENT_COLOR_ARGB
-                    : CometAzurTuning.JET_BEAM_FILAMENT_ALT_COLOR_ARGB;
+                    ? CometAzurFx.JET_BEAM_FILAMENT_COLOR_ARGB
+                    : CometAzurFx.JET_BEAM_FILAMENT_ALT_COLOR_ARGB;
             GlintstoneTrailRenderer.renderPolylineRibbonLayer(
                     poseStack,
                     bufferSource,
                     mouthWorld,
                     cameraWorld,
                     filamentPath,
-                    CometAzurTuning.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS,
-                    CometAzurTuning.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.72f,
+                    CometAzurFx.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS,
+                    CometAzurFx.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.72f,
                     filamentColor,
                     true,
                     mouthTextureV,
@@ -236,9 +236,9 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                     beamLengthBlocks,
                     animationTicks,
                     phaseRadians,
-                    CometAzurTuning.JET_BEAM_FILAMENT_RADIUS_BLOCKS * 0.55f,
-                    -CometAzurTuning.JET_BEAM_FILAMENT_TWIST_RADIANS_PER_BLOCK * 0.85f,
-                    -CometAzurTuning.JET_BEAM_FILAMENT_SPIN_RADIANS_PER_TICK
+                    CometAzurFx.JET_BEAM_FILAMENT_RADIUS_BLOCKS * 0.55f,
+                    -CometAzurFx.JET_BEAM_FILAMENT_TWIST_RADIANS_PER_BLOCK * 0.85f,
+                    -CometAzurFx.JET_BEAM_FILAMENT_SPIN_RADIANS_PER_TICK
             );
             GlintstoneTrailRenderer.renderPolylineRibbonLayer(
                     poseStack,
@@ -246,9 +246,9 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                     mouthWorld,
                     cameraWorld,
                     innerFilamentPath,
-                    CometAzurTuning.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.70f,
-                    CometAzurTuning.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.50f,
-                    CometAzurTuning.JET_BEAM_CORE_COLOR_ARGB,
+                    CometAzurFx.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.70f,
+                    CometAzurFx.JET_BEAM_FILAMENT_HALF_WIDTH_BLOCKS * 0.50f,
+                    CometAzurFx.JET_BEAM_CORE_COLOR_ARGB,
                     true,
                     mouthTextureV,
                     tipTextureV
@@ -272,8 +272,8 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 Vec3.directionFromRotation(entity.syncedPitchDegrees(), entity.syncedYawDegrees())
                         .scale(Math.max(0.75f, entity.beamLengthBlocks()))
         );
-        float inflateBlocks = CometAzurTuning.JET_FIELD_EULER_RING_RADIUS_BLOCKS
-                + CometAzurTuning.JET_FIELD_GLOW_QUAD_SIZE_BLOCKS
+        float inflateBlocks = CometAzurFx.JET_FIELD_EULER_RING_RADIUS_BLOCKS
+                + CometAzurFx.JET_FIELD_GLOW_QUAD_SIZE_BLOCKS
                 + 0.75f;
         AABB beamBox = new AABB(mouthWorld, tipWorld).inflate(inflateBlocks);
         return frustum.isVisible(beamBox);
@@ -296,9 +296,9 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 beamLengthBlocks,
                 animationTicks,
                 phaseRadians,
-                CometAzurTuning.JET_BEAM_FILAMENT_RADIUS_BLOCKS,
-                CometAzurTuning.JET_BEAM_FILAMENT_TWIST_RADIANS_PER_BLOCK,
-                CometAzurTuning.JET_BEAM_FILAMENT_SPIN_RADIANS_PER_TICK
+                CometAzurFx.JET_BEAM_FILAMENT_RADIUS_BLOCKS,
+                CometAzurFx.JET_BEAM_FILAMENT_TWIST_RADIANS_PER_BLOCK,
+                CometAzurFx.JET_BEAM_FILAMENT_SPIN_RADIANS_PER_TICK
         );
     }
 
@@ -317,20 +317,20 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
             float twistRadiansPerBlock,
             float spinRadiansPerTick
     ) {
-        int sampleCount = Math.max(4, CometAzurTuning.JET_BEAM_SAMPLE_COUNT);
+        int sampleCount = Math.max(4, CometAzurFx.JET_BEAM_SAMPLE_COUNT);
         List<Vec3> points = new ArrayList<>(sampleCount);
         float spinRadians = animationTicks * spinRadiansPerTick;
-        float wavePhaseRadians = animationTicks * CometAzurTuning.JET_BEAM_RIVER_WAVE_PHASE_RADIANS_PER_TICK;
-        float waveAmplitudeBlocks = CometAzurTuning.JET_BEAM_RIVER_WAVE_AMPLITUDE_BLOCKS;
-        float waveFrequencyPerBlock = CometAzurTuning.JET_BEAM_RIVER_WAVE_FREQUENCY_PER_BLOCK;
+        float wavePhaseRadians = animationTicks * CometAzurFx.JET_BEAM_RIVER_WAVE_PHASE_RADIANS_PER_TICK;
+        float waveAmplitudeBlocks = CometAzurFx.JET_BEAM_RIVER_WAVE_AMPLITUDE_BLOCKS;
+        float waveFrequencyPerBlock = CometAzurFx.JET_BEAM_RIVER_WAVE_FREQUENCY_PER_BLOCK;
         for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
             float progress = sampleIndex / (float) (sampleCount - 1);
             float alongBlocks = beamLengthBlocks * progress;
             float helixRadians = phaseRadians + spinRadians + alongBlocks * twistRadiansPerBlock;
             float localRadiusBlocks = radiusBlocks * Mth.lerp(
                     progress,
-                    CometAzurTuning.JET_BEAM_FILAMENT_MOUTH_RADIUS_SCALE,
-                    CometAzurTuning.JET_BEAM_FILAMENT_TIP_RADIUS_SCALE
+                    CometAzurFx.JET_BEAM_FILAMENT_MOUTH_RADIUS_SCALE,
+                    CometAzurFx.JET_BEAM_FILAMENT_TIP_RADIUS_SCALE
             );
             // 中轴轻微起伏，细丝跟着走，读成流动的星河而不是直电缆。
             float riverWaveRightBlocks = waveAmplitudeBlocks

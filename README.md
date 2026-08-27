@@ -6,6 +6,7 @@ Minecraft **1.21.1** / **NeoForge** 扩展模组，依赖 [Iron's Spells 'n Spel
 
 后续改代码请先读：
 
+- **[代码阅读路径.md](./代码阅读路径.md)** — 从哪个文件点进去、下一份打开谁（顺着读）
 - **[AGENTS.md](./AGENTS.md)** — 完整技术说明、目录、加法术流程、命令与约束  
 - **[.cursor/rules/elden-ring-spells.mdc](./.cursor/rules/elden-ring-spells.mdc)** — Cursor 常驻规则（自动带入对话）
 

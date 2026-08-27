@@ -2,10 +2,10 @@ package com.eldenring.spells.entity;
 
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModEntities;
-import com.eldenring.spells.spell.GlintstoneCastHelper;
-import com.eldenring.spells.tuning.GlintstoneStarsTuning;
-import com.eldenring.spells.tuning.StarShowerTuning;
-import com.eldenring.spells.tuning.StarsOfRuinTuning;
+import com.eldenring.spells.spell.helper.GlintstoneCastHelper;
+import com.eldenring.spells.spell.GlintstoneStarsSpell;
+import com.eldenring.spells.spell.StarShowerSpell;
+import com.eldenring.spells.spell.StarsOfRuinSpell;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
@@ -17,13 +17,13 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-    /**
-     * 辉石连发齐射控制器：自身不可见、不碰撞，按 tick 在视线前方圆阵顶点顺时针依次生成流星。
-     * <p>
-     * 必须用实体 tick 错峰，不能用 {@code MinecraftServer#tell(TickTask)}。
-     * {@code TickTask} 在服务端 {@code haveTime()} 为真时会立刻执行，导致「延迟」的几发
-     * 和第一发挤在同一 tick，视觉上齐射、命中叠在一起形成骗伤。
-     */
+/**
+ * 辉石连发齐射控制器：自身不可见、不碰撞，按 tick 在视线前方圆阵顶点顺时针依次生成流星。
+ * <p>
+ * 必须用实体 tick 错峰，不能用 {@code MinecraftServer#tell(TickTask)}。
+ * {@code TickTask} 在服务端 {@code haveTime()} 为真时会立刻执行，导致「延迟」的几发
+ * 和第一发挤在同一 tick，视觉上齐射、命中叠在一起形成骗伤。
+ */
 public class GlintstoneStarVolleyEntity extends Projectile {
 
     /**
@@ -36,8 +36,8 @@ public class GlintstoneStarVolleyEntity extends Projectile {
     }
 
     private VolleyKind volleyKind = VolleyKind.GLINTSTONE_STARS;
-    private int projectileCount = GlintstoneStarsTuning.PROJECTILE_COUNT;
-    private int staggerTicks = GlintstoneStarsTuning.PROJECTILE_SPAWN_STAGGER_TICKS;
+    private int projectileCount = GlintstoneStarsSpell.PROJECTILE_COUNT;
+    private int staggerTicks = GlintstoneStarsSpell.PROJECTILE_SPAWN_STAGGER_TICKS;
     private int spawnedProjectileCount;
     private float damagePerProjectile;
 
@@ -61,23 +61,23 @@ public class GlintstoneStarVolleyEntity extends Projectile {
         setOwner(caster);
         this.volleyKind = volleyKind;
         this.damagePerProjectile = damagePerProjectile;
-        applyKindTuning(volleyKind);
+        applyVolleyKind(volleyKind);
         setPos(caster.getEyePosition());
     }
 
-    private void applyKindTuning(VolleyKind kind) {
+    private void applyVolleyKind(VolleyKind kind) {
         switch (kind) {
             case STAR_SHOWER -> {
-                this.projectileCount = StarShowerTuning.PROJECTILE_COUNT;
-                this.staggerTicks = Math.max(1, StarShowerTuning.PROJECTILE_SPAWN_STAGGER_TICKS);
+                this.projectileCount = StarShowerSpell.PROJECTILE_COUNT;
+                this.staggerTicks = Math.max(1, StarShowerSpell.PROJECTILE_SPAWN_STAGGER_TICKS);
             }
             case STARS_OF_RUIN -> {
-                this.projectileCount = StarsOfRuinTuning.PROJECTILE_COUNT;
-                this.staggerTicks = Math.max(1, StarsOfRuinTuning.PROJECTILE_SPAWN_STAGGER_TICKS);
+                this.projectileCount = StarsOfRuinSpell.PROJECTILE_COUNT;
+                this.staggerTicks = Math.max(1, StarsOfRuinSpell.PROJECTILE_SPAWN_STAGGER_TICKS);
             }
             default -> {
-                this.projectileCount = GlintstoneStarsTuning.PROJECTILE_COUNT;
-                this.staggerTicks = Math.max(1, GlintstoneStarsTuning.PROJECTILE_SPAWN_STAGGER_TICKS);
+                this.projectileCount = GlintstoneStarsSpell.PROJECTILE_COUNT;
+                this.staggerTicks = Math.max(1, GlintstoneStarsSpell.PROJECTILE_SPAWN_STAGGER_TICKS);
             }
         }
     }
@@ -113,7 +113,7 @@ public class GlintstoneStarVolleyEntity extends Projectile {
     /**
      * 按当前发序在视线前方圆阵顶点生成一发，再沿视线立刻射出。
      * 顶点按顺时针等分，3 发呈三角形、6 发六边形、12 发十二边形。
-     * 上扬由各 Tuning 的 {@code PROJECTILE_INITIAL_UPWARD_LIFT} 控制，当前均为 0（平射）。
+     * 上扬由各 Spell 的 {@code PROJECTILE_INITIAL_UPWARD_LIFT} 控制，当前均为 0（平射）。
      * 毁灭流星出手闪光改走星河粒子，不再叠青蓝 castBurst。
      */
     private void spawnNextProjectile(LivingEntity caster) {
@@ -160,7 +160,7 @@ public class GlintstoneStarVolleyEntity extends Projectile {
             GlintstoneFx.starRiverLaunch(
                     level(),
                     caster,
-                    StarsOfRuinTuning.CAST_BURST_PARTICLE_INTENSITY * 0.55f
+                    StarsOfRuinSpell.CAST_BURST_PARTICLE_INTENSITY * 0.55f
             );
         }
     }
@@ -175,49 +175,49 @@ public class GlintstoneStarVolleyEntity extends Projectile {
 
     private double spawnCircleRadiusBlocks() {
         return switch (volleyKind) {
-            case STAR_SHOWER -> StarShowerTuning.SPAWN_CIRCLE_RADIUS_BLOCKS;
-            case STARS_OF_RUIN -> StarsOfRuinTuning.SPAWN_CIRCLE_RADIUS_BLOCKS;
-            case GLINTSTONE_STARS -> GlintstoneStarsTuning.SPAWN_CIRCLE_RADIUS_BLOCKS;
+            case STAR_SHOWER -> StarShowerSpell.SPAWN_CIRCLE_RADIUS_BLOCKS;
+            case STARS_OF_RUIN -> StarsOfRuinSpell.SPAWN_CIRCLE_RADIUS_BLOCKS;
+            case GLINTSTONE_STARS -> GlintstoneStarsSpell.SPAWN_CIRCLE_RADIUS_BLOCKS;
         };
     }
 
     private int spawnCircleStartAngleDegrees() {
         return switch (volleyKind) {
-            case STAR_SHOWER -> StarShowerTuning.SPAWN_CIRCLE_START_ANGLE_DEGREES;
-            case STARS_OF_RUIN -> StarsOfRuinTuning.SPAWN_CIRCLE_START_ANGLE_DEGREES;
-            case GLINTSTONE_STARS -> GlintstoneStarsTuning.SPAWN_CIRCLE_START_ANGLE_DEGREES;
+            case STAR_SHOWER -> StarShowerSpell.SPAWN_CIRCLE_START_ANGLE_DEGREES;
+            case STARS_OF_RUIN -> StarsOfRuinSpell.SPAWN_CIRCLE_START_ANGLE_DEGREES;
+            case GLINTSTONE_STARS -> GlintstoneStarsSpell.SPAWN_CIRCLE_START_ANGLE_DEGREES;
         };
     }
 
     private double initialUpwardLift() {
         return switch (volleyKind) {
-            case STAR_SHOWER -> StarShowerTuning.PROJECTILE_INITIAL_UPWARD_LIFT;
-            case STARS_OF_RUIN -> StarsOfRuinTuning.PROJECTILE_INITIAL_UPWARD_LIFT;
-            case GLINTSTONE_STARS -> GlintstoneStarsTuning.PROJECTILE_INITIAL_UPWARD_LIFT;
+            case STAR_SHOWER -> StarShowerSpell.PROJECTILE_INITIAL_UPWARD_LIFT;
+            case STARS_OF_RUIN -> StarsOfRuinSpell.PROJECTILE_INITIAL_UPWARD_LIFT;
+            case GLINTSTONE_STARS -> GlintstoneStarsSpell.PROJECTILE_INITIAL_UPWARD_LIFT;
         };
     }
 
     private double spawnForwardOffsetBlocks() {
         return switch (volleyKind) {
-            case STAR_SHOWER -> StarShowerTuning.PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS;
-            case STARS_OF_RUIN -> StarsOfRuinTuning.PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS;
-            case GLINTSTONE_STARS -> GlintstoneStarsTuning.PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS;
+            case STAR_SHOWER -> StarShowerSpell.PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS;
+            case STARS_OF_RUIN -> StarsOfRuinSpell.PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS;
+            case GLINTSTONE_STARS -> GlintstoneStarsSpell.PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS;
         };
     }
 
     private double castBurstForwardOffsetBlocks() {
         return switch (volleyKind) {
-            case STAR_SHOWER -> StarShowerTuning.SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS;
-            case STARS_OF_RUIN -> StarsOfRuinTuning.SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS;
-            case GLINTSTONE_STARS -> GlintstoneStarsTuning.SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS;
+            case STAR_SHOWER -> StarShowerSpell.SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS;
+            case STARS_OF_RUIN -> StarsOfRuinSpell.SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS;
+            case GLINTSTONE_STARS -> GlintstoneStarsSpell.SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS;
         };
     }
 
     private float castBurstParticleIntensity() {
         return switch (volleyKind) {
-            case STAR_SHOWER -> StarShowerTuning.CAST_BURST_PARTICLE_INTENSITY;
-            case STARS_OF_RUIN -> StarsOfRuinTuning.CAST_BURST_PARTICLE_INTENSITY;
-            case GLINTSTONE_STARS -> GlintstoneStarsTuning.CAST_BURST_PARTICLE_INTENSITY;
+            case STAR_SHOWER -> StarShowerSpell.CAST_BURST_PARTICLE_INTENSITY;
+            case STARS_OF_RUIN -> StarsOfRuinSpell.CAST_BURST_PARTICLE_INTENSITY;
+            case GLINTSTONE_STARS -> GlintstoneStarsSpell.CAST_BURST_PARTICLE_INTENSITY;
         };
     }
 
@@ -243,7 +243,7 @@ public class GlintstoneStarVolleyEntity extends Projectile {
         } catch (IllegalArgumentException ignored) {
             this.volleyKind = VolleyKind.GLINTSTONE_STARS;
         }
-        applyKindTuning(this.volleyKind);
+        applyVolleyKind(this.volleyKind);
         if (tag.contains("ProjectileCount")) {
             this.projectileCount = tag.getInt("ProjectileCount");
         }

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
+import com.eldenring.spells.entity.GlintstoneVisualStyle;
 
 /**
  * 旋飞魔砾渲染：两颗相位差 π 的彗星头，各自带连续光轨。
@@ -32,7 +33,7 @@ public class SpiralShardRenderer extends EntityRenderer<SpiralShardProjectile> {
             MultiBufferSource bufferSource,
             int packedLight
     ) {
-        GlintstoneCometHeadDrawer.VisualStyle visualStyle = entity.visualStyle();
+        GlintstoneVisualStyle visualStyle = entity.visualStyle();
         for (int cometIndex = 0; cometIndex < 2; cometIndex++) {
             Vec3 orbitOffset = entity.orbitWorldOffset(cometIndex, partialTicks);
             Vec3 cometHeadWorld = entity.orbitWorldPosition(cometIndex, partialTicks);

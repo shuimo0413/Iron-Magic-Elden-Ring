@@ -1,7 +1,6 @@
 package com.eldenring.spells.particle.foundingrain;
 
 import com.eldenring.spells.registry.ModParticles;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -53,10 +52,10 @@ public class StarAscentParticle extends TextureSheetParticle {
         this.zd = 0.0;
         this.hasPhysics = false;
         this.gravity = 0.0f;
-        this.lifetime = FoundingRainOfStarsTuning.ASCENT_FLIGHT_DURATION_TICKS
-                + level.random.nextInt(FoundingRainOfStarsTuning.ASCENT_FLIGHT_DURATION_RANDOM_TICKS + 1);
-        this.birthQuadSize = FoundingRainOfStarsTuning.ASCENT_MOTE_QUAD_SIZE_BLOCKS
-                + level.random.nextFloat() * FoundingRainOfStarsTuning.ASCENT_MOTE_QUAD_SIZE_RANDOM_BLOCKS;
+        this.lifetime = FoundingRainFx.ASCENT_FLIGHT_DURATION_TICKS
+                + level.random.nextInt(FoundingRainFx.ASCENT_FLIGHT_DURATION_RANDOM_TICKS + 1);
+        this.birthQuadSize = FoundingRainFx.ASCENT_MOTE_QUAD_SIZE_BLOCKS
+                + level.random.nextFloat() * FoundingRainFx.ASCENT_MOTE_QUAD_SIZE_RANDOM_BLOCKS;
         this.quadSize = this.birthQuadSize;
         this.birthAlpha = 0.95f;
         this.alpha = this.birthAlpha;
@@ -105,7 +104,7 @@ public class StarAscentParticle extends TextureSheetParticle {
      * 在上一帧位置留残影。速度取当前→终点方向的一小段，让拖尾略被拉长。
      */
     private void maybeSpawnTrail() {
-        int trailIntervalTicks = Math.max(1, FoundingRainOfStarsTuning.ASCENT_TRAIL_INTERVAL_TICKS);
+        int trailIntervalTicks = Math.max(1, FoundingRainFx.ASCENT_TRAIL_INTERVAL_TICKS);
         if (this.age % trailIntervalTicks != 0) {
             return;
         }
@@ -115,8 +114,8 @@ public class StarAscentParticle extends TextureSheetParticle {
                 this.birthZ + this.destinationOffsetZ - this.z
         );
         Vec3 trailVelocity = remainingOffset.lengthSqr() > 1.0e-8
-                ? remainingOffset.normalize().scale(FoundingRainOfStarsTuning.ASCENT_TRAIL_STRETCH_SPEED_BLOCKS_PER_TICK)
-                : new Vec3(0.0, FoundingRainOfStarsTuning.ASCENT_TRAIL_STRETCH_SPEED_BLOCKS_PER_TICK, 0.0);
+                ? remainingOffset.normalize().scale(FoundingRainFx.ASCENT_TRAIL_STRETCH_SPEED_BLOCKS_PER_TICK)
+                : new Vec3(0.0, FoundingRainFx.ASCENT_TRAIL_STRETCH_SPEED_BLOCKS_PER_TICK, 0.0);
         this.level.addParticle(
                 ModParticles.STAR_ASCENT_TRAIL.get(),
                 this.xo,

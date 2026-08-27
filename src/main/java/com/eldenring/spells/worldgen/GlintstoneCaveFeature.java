@@ -1,7 +1,7 @@
 package com.eldenring.spells.worldgen;
 
+import com.eldenring.spells.config.EldenRingCommonConfig;
 import com.eldenring.spells.registry.ModBlocks;
-import com.eldenring.spells.tuning.GlintstoneWorldTuning;
 import com.eldenring.spells.world.GlintstoneColor;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -17,13 +17,25 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 辉石矿洞 Feature：大尺度噪声决定「辉石地带 + 整洞同色」；
- * 小尺度 chunk 门控避免整片连通洞穴每个 chunk 都刷满。
- * 水晶簇优先长在已替换的辉石水晶块上，裸石面概率极低。
+ * 小尺度 chunk 门控抽出分散的合格 chunk，每个 chunk 只在一处囊心周围刷晶体。
+ * 不新挖空洞，只装饰现成洞穴表面；晶簇优先长在已替换的辉石水晶块上。
  * 轮廓混搭不在本 Feature 里抽：同一簇方块的 blockstate 已对放射簇 / 尖塔 / 扇形 / 密丛 / 双晶 / 细针加权随机。
  */
 public final class GlintstoneCaveFeature extends Feature<NoneFeatureConfiguration> {
+
+    /**
+     * 与世界种子异或的盐，避免和其它结构抢同一噪声相位。不进 toml。
+     */
+    private static final long CAVE_NOISE_SALT = 0x67C15_70C5_CAFEL;
+
+    /** chunk 门控噪声盐（与大尺度、颜色噪声错相位）。 */
+    private static final long CAVE_CHUNK_GATE_SALT = 0x51A71C57E0DEL;
+
     public GlintstoneCaveFeature(Codec<NoneFeatureConfiguration> codec) {
         super(codec);
     }
@@ -36,21 +48,21 @@ public final class GlintstoneCaveFeature extends Feature<NoneFeatureConfiguratio
 
         int chunkX = origin.getX() >> 4;
         int chunkZ = origin.getZ() >> 4;
-        long seed = level.getSeed() ^ GlintstoneWorldTuning.CAVE_NOISE_SALT;
+        long seed = level.getSeed() ^ CAVE_NOISE_SALT;
 
-        double regionCell = GlintstoneWorldTuning.CAVE_REGION_NOISE_CELL_SIZE_CHUNKS;
+        double regionCell = EldenRingCommonConfig.caveRegionNoiseCellSizeChunks;
         double regionNoise = valueNoise2D(seed, chunkX / regionCell, chunkZ / regionCell);
-        if (regionNoise < GlintstoneWorldTuning.CAVE_REGION_PRESENCE_THRESHOLD) {
+        if (regionNoise < EldenRingCommonConfig.caveRegionPresenceThreshold) {
             return false;
         }
 
-        double chunkCell = GlintstoneWorldTuning.CAVE_CHUNK_NOISE_CELL_SIZE_CHUNKS;
+        double chunkCell = EldenRingCommonConfig.caveChunkNoiseCellSizeChunks;
         double chunkGateNoise = valueNoise2D(
-                seed ^ GlintstoneWorldTuning.CAVE_CHUNK_GATE_SALT,
+                seed ^ CAVE_CHUNK_GATE_SALT,
                 chunkX / chunkCell,
                 chunkZ / chunkCell
         );
-        if (chunkGateNoise < GlintstoneWorldTuning.CAVE_CHUNK_DECORATE_THRESHOLD) {
+        if (chunkGateNoise < EldenRingCommonConfig.caveChunkDecorateThreshold) {
             return false;
         }
 
@@ -63,71 +75,149 @@ public final class GlintstoneCaveFeature extends Feature<NoneFeatureConfiguratio
 
         int minX = chunkX << 4;
         int minZ = chunkZ << 4;
-        int minY = Math.max(GlintstoneWorldTuning.CAVE_SCAN_MIN_Y, level.getMinBuildHeight());
-        int maxY = Math.min(GlintstoneWorldTuning.CAVE_SCAN_MAX_Y, level.getMaxBuildHeight() - 1);
+        int minY = Math.max(EldenRingCommonConfig.caveScanMinY, level.getMinBuildHeight());
+        int maxY = Math.min(EldenRingCommonConfig.caveScanMaxY, level.getMaxBuildHeight() - 1);
+
+        List<BlockPos> pocketCenters = pickPocketCenters(level, minX, minZ, minY, maxY, random);
+        if (pocketCenters.isEmpty()) {
+            return false;
+        }
 
         boolean placedAny = false;
         int clustersPlaced = 0;
+        int pocketRadiusBlocks = EldenRingCommonConfig.cavePocketRadiusBlocks;
+        int pocketRadiusSquared = pocketRadiusBlocks * pocketRadiusBlocks;
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos neighbor = new BlockPos.MutableBlockPos();
 
-        for (int y = minY; y <= maxY; y++) {
-            for (int dx = 0; dx < 16; dx++) {
-                for (int dz = 0; dz < 16; dz++) {
-                    cursor.set(minX + dx, y, minZ + dz);
-                    BlockState state = level.getBlockState(cursor);
-                    if (!isReplaceableStone(state)) {
-                        continue;
-                    }
+        for (BlockPos pocketCenter : pocketCenters) {
+            int yStart = Math.max(minY, pocketCenter.getY() - pocketRadiusBlocks);
+            int yEnd = Math.min(maxY, pocketCenter.getY() + pocketRadiusBlocks);
+            int xStart = Math.max(minX, pocketCenter.getX() - pocketRadiusBlocks);
+            int xEnd = Math.min(minX + 15, pocketCenter.getX() + pocketRadiusBlocks);
+            int zStart = Math.max(minZ, pocketCenter.getZ() - pocketRadiusBlocks);
+            int zEnd = Math.min(minZ + 15, pocketCenter.getZ() + pocketRadiusBlocks);
 
-                    Direction openFace = findOpenFace(level, cursor, neighbor);
-                    if (openFace == null) {
-                        continue;
-                    }
+            for (int y = yStart; y <= yEnd; y++) {
+                for (int x = xStart; x <= xEnd; x++) {
+                    for (int z = zStart; z <= zEnd; z++) {
+                        int offsetX = x - pocketCenter.getX();
+                        int offsetY = y - pocketCenter.getY();
+                        int offsetZ = z - pocketCenter.getZ();
+                        if (offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ > pocketRadiusSquared) {
+                            continue;
+                        }
 
-                    // 先低概率把表面石头换成同色水晶块
-                    if (random.nextFloat() < GlintstoneWorldTuning.CAVE_SURFACE_BLOCK_CHANCE) {
-                        level.setBlock(cursor, crystalBlock.defaultBlockState(), Block.UPDATE_ALL);
-                        placedAny = true;
-                    }
+                        cursor.set(x, y, z);
+                        BlockState state = level.getBlockState(cursor);
+                        if (!isReplaceableStone(state)) {
+                            continue;
+                        }
 
-                    BlockState surfaceState = level.getBlockState(cursor);
-                    boolean onCrystalBlock = surfaceState.is(crystalBlock);
-                    float clusterChance = onCrystalBlock
-                            ? GlintstoneWorldTuning.CAVE_SURFACE_CLUSTER_ON_BLOCK_CHANCE
-                            : GlintstoneWorldTuning.CAVE_SURFACE_CLUSTER_ON_STONE_CHANCE;
+                        Direction openFace = findOpenFace(level, cursor, neighbor);
+                        if (openFace == null) {
+                            continue;
+                        }
 
-                    if (clustersPlaced >= GlintstoneWorldTuning.CAVE_MAX_CLUSTERS_PER_CHUNK) {
-                        continue;
-                    }
-                    if (random.nextFloat() >= clusterChance) {
-                        continue;
-                    }
+                        if (random.nextFloat() < EldenRingCommonConfig.caveSurfaceBlockChance) {
+                            level.setBlock(cursor, crystalBlock.defaultBlockState(), Block.UPDATE_ALL);
+                            placedAny = true;
+                        }
 
-                    neighbor.setWithOffset(cursor, openFace);
-                    BlockState airSideState = level.getBlockState(neighbor);
-                    if (!airSideState.isAir() && !airSideState.is(Blocks.CAVE_AIR)) {
-                        continue;
-                    }
-                    if (airSideState.is(Blocks.WATER)) {
-                        continue;
-                    }
-                    if (level.getBlockState(neighbor).is(clusterBlock)) {
-                        continue;
-                    }
+                        BlockState surfaceState = level.getBlockState(cursor);
+                        boolean onCrystalBlock = surfaceState.is(crystalBlock);
+                        float clusterChance = onCrystalBlock
+                                ? EldenRingCommonConfig.caveSurfaceClusterOnBlockChance
+                                : EldenRingCommonConfig.caveSurfaceClusterOnStoneChance;
 
-                    BlockState crystalCluster = clusterBlock.defaultBlockState()
-                            .setValue(AmethystClusterBlock.FACING, openFace);
-                    if (crystalCluster.canSurvive(level, neighbor)) {
-                        level.setBlock(neighbor, crystalCluster, Block.UPDATE_ALL);
-                        placedAny = true;
-                        clustersPlaced++;
+                        if (clustersPlaced >= EldenRingCommonConfig.caveMaxClustersPerChunk) {
+                            continue;
+                        }
+                        if (random.nextFloat() >= clusterChance) {
+                            continue;
+                        }
+
+                        neighbor.setWithOffset(cursor, openFace);
+                        BlockState airSideState = level.getBlockState(neighbor);
+                        if (!airSideState.isAir() && !airSideState.is(Blocks.CAVE_AIR)) {
+                            continue;
+                        }
+                        if (airSideState.is(Blocks.WATER)) {
+                            continue;
+                        }
+                        if (level.getBlockState(neighbor).is(clusterBlock)) {
+                            continue;
+                        }
+
+                        BlockState crystalCluster = clusterBlock.defaultBlockState()
+                                .setValue(AmethystClusterBlock.FACING, openFace);
+                        if (crystalCluster.canSurvive(level, neighbor)) {
+                            level.setBlock(neighbor, crystalCluster, Block.UPDATE_ALL);
+                            placedAny = true;
+                            clustersPlaced++;
+                        }
                     }
                 }
             }
         }
 
         return placedAny;
+    }
+
+    /**
+     * 在本 chunk 洞穴表面做步长抽样，蓄水池抽出若干囊心。
+     * 装饰阶段只处理囊心欧氏半径内的表面，所以这里不必扫满每一格。
+     */
+    private static List<BlockPos> pickPocketCenters(
+            WorldGenLevel level,
+            int minX,
+            int minZ,
+            int minY,
+            int maxY,
+            RandomSource random
+    ) {
+        int pocketCount = Math.max(1, EldenRingCommonConfig.cavePocketsPerChunk);
+        int stride = Math.max(1, EldenRingCommonConfig.cavePocketCenterScanStride);
+        BlockPos[] reservoir = new BlockPos[pocketCount];
+        int seenSurfaceCount = 0;
+        BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos neighbor = new BlockPos.MutableBlockPos();
+
+        for (int y = minY; y <= maxY; y += stride) {
+            for (int localX = 0; localX < 16; localX += stride) {
+                for (int localZ = 0; localZ < 16; localZ += stride) {
+                    cursor.set(minX + localX, y, minZ + localZ);
+                    BlockState state = level.getBlockState(cursor);
+                    if (!isReplaceableStone(state)) {
+                        continue;
+                    }
+                    if (findOpenFace(level, cursor, neighbor) == null) {
+                        continue;
+                    }
+
+                    seenSurfaceCount++;
+                    if (seenSurfaceCount <= pocketCount) {
+                        reservoir[seenSurfaceCount - 1] = cursor.immutable();
+                    } else {
+                        int replaceIndex = random.nextInt(seenSurfaceCount);
+                        if (replaceIndex < pocketCount) {
+                            reservoir[replaceIndex] = cursor.immutable();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (seenSurfaceCount == 0) {
+            return List.of();
+        }
+
+        int actualPocketCount = Math.min(pocketCount, seenSurfaceCount);
+        List<BlockPos> pocketCenters = new ArrayList<>(actualPocketCount);
+        for (int index = 0; index < actualPocketCount; index++) {
+            pocketCenters.add(reservoir[index]);
+        }
+        return pocketCenters;
     }
 
     /**

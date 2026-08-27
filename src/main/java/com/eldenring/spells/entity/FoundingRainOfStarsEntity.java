@@ -1,10 +1,10 @@
 package com.eldenring.spells.entity;
 
+import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
+
 import com.eldenring.spells.particle.foundingrain.FoundingRainFx;
-import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModSpells;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
 import io.redspace.ironsspellbooks.damage.DamageSources;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -117,18 +117,18 @@ public class FoundingRainOfStarsEntity extends Projectile {
         maybeSpawnRainDrops(caster);
         maybeApplyRainZoneDamage(caster);
 
-        if (tickCount >= FoundingRainOfStarsTuning.sequenceLifetimeTicks()) {
+        if (tickCount >= FoundingRainFx.sequenceLifetimeTicks()) {
             discard();
         }
     }
 
     /**
-     * 等待结束后，在错峰窗口内把 {@link FoundingRainOfStarsTuning#ASCENT_MOTE_COUNT} 颗光点分批抽走。
+     * 等待结束后，在错峰窗口内把 {@link FoundingRainFx#ASCENT_MOTE_COUNT} 颗光点分批抽走。
      */
     private void maybeLaunchAscentMotes(LivingEntity caster) {
-        int launchDelayTicks = FoundingRainOfStarsTuning.ASCENT_LAUNCH_DELAY_TICKS;
-        int staggerWindowTicks = Math.max(1, FoundingRainOfStarsTuning.ASCENT_STAGGER_WINDOW_TICKS);
-        int totalMoteCount = FoundingRainOfStarsTuning.ASCENT_MOTE_COUNT;
+        int launchDelayTicks = FoundingRainFx.ASCENT_LAUNCH_DELAY_TICKS;
+        int staggerWindowTicks = Math.max(1, FoundingRainFx.ASCENT_STAGGER_WINDOW_TICKS);
+        int totalMoteCount = FoundingRainFx.ASCENT_MOTE_COUNT;
         if (tickCount < launchDelayTicks || spawnedAscentMoteCount >= totalMoteCount) {
             return;
         }
@@ -154,7 +154,7 @@ public class FoundingRainOfStarsEntity extends Projectile {
         int remainingMoteCount = totalMoteCount - spawnedAscentMoteCount;
         int motesThisTick = Math.max(1, (remainingMoteCount + remainingWindowTicks - 1) / remainingWindowTicks);
         motesThisTick = Math.min(motesThisTick, remainingMoteCount);
-        GlintstoneFx.starRiverAscent(level(), caster, motesThisTick, overheadCloudCenter());
+        FoundingRainFx.starRiverAscent(level(), caster, motesThisTick, overheadCloudCenter());
         spawnedAscentMoteCount += motesThisTick;
     }
 
@@ -162,7 +162,7 @@ public class FoundingRainOfStarsEntity extends Projectile {
      * 第一批光点到达汇聚点时点亮雨云。圆心在构造时已经写好，这里只把 {@code CLOUD_ACTIVE} 打开。
      */
     private void maybeSpawnOverheadCloud() {
-        if (spawnedOverheadCloud || tickCount < FoundingRainOfStarsTuning.overheadCloudSpawnTick()) {
+        if (spawnedOverheadCloud || tickCount < FoundingRainFx.overheadCloudSpawnTick()) {
             return;
         }
         spawnedOverheadCloud = true;
@@ -193,8 +193,8 @@ public class FoundingRainOfStarsEntity extends Projectile {
         if (!isOverheadCloudActive()) {
             return;
         }
-        if (tickCount < FoundingRainOfStarsTuning.rainStartTick()
-                || tickCount >= FoundingRainOfStarsTuning.rainEndTick()) {
+        if (tickCount < FoundingRainFx.rainStartTick()
+                || tickCount >= FoundingRainFx.rainEndTick()) {
             return;
         }
 
@@ -202,7 +202,7 @@ public class FoundingRainOfStarsEntity extends Projectile {
         float yawRadians = overheadCloudYawRadians();
         Vec3 right = new Vec3(Math.cos(yawRadians), 0.0, Math.sin(yawRadians));
         Vec3 forward = new Vec3(-Math.sin(yawRadians), 0.0, Math.cos(yawRadians));
-        int dropsThisTick = FoundingRainOfStarsTuning.RAIN_DROPS_PER_TICK;
+        int dropsThisTick = FoundingRainOfStarsSpell.RAIN_DROPS_PER_TICK;
         for (int dropIndex = 0; dropIndex < dropsThisTick; dropIndex++) {
             Vec3 spawnPosition = sampleRainDropSpawnPosition(cloudCenter, right, forward);
             if (spawnPosition == null) {
@@ -216,8 +216,8 @@ public class FoundingRainOfStarsEntity extends Projectile {
      * 在雨云椭圆盘内拒绝采样一个点；多次都落在盘外就放弃这一针，避免边角挤成方块雨。
      */
     private Vec3 sampleRainDropSpawnPosition(Vec3 cloudCenter, Vec3 right, Vec3 forward) {
-        double halfWidthBlocks = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_RADIUS_BLOCKS;
-        double halfDepthBlocks = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FORWARD_HALF_BLOCKS;
+        double halfWidthBlocks = FoundingRainOfStarsSpell.OVERHEAD_CLOUD_RADIUS_BLOCKS;
+        double halfDepthBlocks = FoundingRainFx.OVERHEAD_CLOUD_FORWARD_HALF_BLOCKS;
         for (int attemptIndex = 0; attemptIndex < 6; attemptIndex++) {
             double alongRight = (random.nextDouble() * 2.0 - 1.0) * halfWidthBlocks;
             double alongForward = (random.nextDouble() * 2.0 - 1.0) * halfDepthBlocks;
@@ -232,14 +232,14 @@ public class FoundingRainOfStarsEntity extends Projectile {
             return cloudCenter
                     .add(right.scale(alongRight))
                     .add(forward.scale(alongForward))
-                    .add(0.0, -FoundingRainOfStarsTuning.RAIN_DROP_SPAWN_BELOW_CLOUD_BLOCKS, 0.0);
+                    .add(0.0, -FoundingRainFx.RAIN_DROP_SPAWN_BELOW_CLOUD_BLOCKS, 0.0);
         }
         return null;
     }
 
     private void spawnRainDrop(LivingEntity caster, Vec3 spawnPosition) {
         FoundingRainDropEntity rainDrop = new FoundingRainDropEntity(level(), caster);
-        double tiltSpread = FoundingRainOfStarsTuning.RAIN_DROP_TILT_HORIZONTAL_SPREAD;
+        double tiltSpread = FoundingRainFx.RAIN_DROP_TILT_HORIZONTAL_SPREAD;
         Vec3 fallDirection = new Vec3(
                 (random.nextDouble() - 0.5) * 2.0 * tiltSpread,
                 -1.0,
@@ -266,20 +266,20 @@ public class FoundingRainOfStarsEntity extends Projectile {
         if (!isOverheadCloudActive()) {
             return;
         }
-        int rainStartTick = FoundingRainOfStarsTuning.rainStartTick();
-        if (tickCount < rainStartTick || tickCount >= FoundingRainOfStarsTuning.rainEndTick()) {
+        int rainStartTick = FoundingRainFx.rainStartTick();
+        if (tickCount < rainStartTick || tickCount >= FoundingRainFx.rainEndTick()) {
             return;
         }
 
-        int damageIntervalTicks = Math.max(1, FoundingRainOfStarsTuning.RAIN_ZONE_DAMAGE_INTERVAL_TICKS);
+        int damageIntervalTicks = Math.max(1, FoundingRainOfStarsSpell.RAIN_ZONE_DAMAGE_INTERVAL_TICKS);
         Vec3 cloudCenter = overheadCloudCenter();
         double horizontalPadBlocks = Math.max(
-                FoundingRainOfStarsTuning.OVERHEAD_CLOUD_RADIUS_BLOCKS,
-                FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FORWARD_HALF_BLOCKS
+                FoundingRainOfStarsSpell.OVERHEAD_CLOUD_RADIUS_BLOCKS,
+                FoundingRainFx.OVERHEAD_CLOUD_FORWARD_HALF_BLOCKS
         ) + 0.5;
         AABB searchBox = new AABB(
                 cloudCenter.x - horizontalPadBlocks,
-                cloudCenter.y - FoundingRainOfStarsTuning.RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS,
+                cloudCenter.y - FoundingRainFx.RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS,
                 cloudCenter.z - horizontalPadBlocks,
                 cloudCenter.x + horizontalPadBlocks,
                 cloudCenter.y + 1.0,
@@ -322,11 +322,11 @@ public class FoundingRainOfStarsEntity extends Projectile {
     }
 
     /**
-     * 水平落在雨云椭圆盘内，竖直夹在云层到下方 {@link FoundingRainOfStarsTuning#RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS} 格之间。
+     * 水平落在雨云椭圆盘内，竖直夹在云层到下方 {@link FoundingRainFx#RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS} 格之间。
      */
     private boolean isInsideRainColumn(LivingEntity target, Vec3 cloudCenter) {
         AABB targetBox = target.getBoundingBox();
-        double rainBottomY = cloudCenter.y - FoundingRainOfStarsTuning.RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS;
+        double rainBottomY = cloudCenter.y - FoundingRainFx.RAIN_DROP_MAXIMUM_TRAVEL_BLOCKS;
         if (targetBox.maxY < rainBottomY || targetBox.minY > cloudCenter.y) {
             return false;
         }
@@ -335,8 +335,8 @@ public class FoundingRainOfStarsEntity extends Projectile {
         float yawRadians = overheadCloudYawRadians();
         double alongRight = relativeX * Math.cos(yawRadians) + relativeZ * Math.sin(yawRadians);
         double alongForward = relativeX * -Math.sin(yawRadians) + relativeZ * Math.cos(yawRadians);
-        double halfWidthBlocks = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_RADIUS_BLOCKS;
-        double halfDepthBlocks = Math.max(0.2, FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FORWARD_HALF_BLOCKS);
+        double halfWidthBlocks = FoundingRainOfStarsSpell.OVERHEAD_CLOUD_RADIUS_BLOCKS;
+        double halfDepthBlocks = Math.max(0.2, FoundingRainFx.OVERHEAD_CLOUD_FORWARD_HALF_BLOCKS);
         double normalizedRight = alongRight / halfWidthBlocks;
         double normalizedForward = alongForward / halfDepthBlocks;
         return (normalizedRight * normalizedRight) + (normalizedForward * normalizedForward) <= 1.0;

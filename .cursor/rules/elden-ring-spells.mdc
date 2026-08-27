@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Elden Ring Spells 约定
 
-本仓库是 **MC 1.21.1 + NeoForge** 的 **Iron's Spells** 扩展（`elden_ring_spells`），主题为艾尔登法环，但还有部分其它游戏的魔法元素。完整说明见根目录 `AGENTS.md`。
+本仓库是 **MC 1.21.1 + NeoForge** 的 **Iron's Spells** 扩展（`elden_ring_spells`），主题为艾尔登法环，但还有部分其它游戏的魔法元素。完整说明见根目录 `AGENTS.md`。解耦与数值规则见根目录 `法术解耦架构.md`（下个话题按那份构建）。
 
 ## 硬约束
 
@@ -17,11 +17,13 @@ alwaysApply: true
 ## 加新内容清单
 
 ### 法术
-1. `spell/XxxSpell.java` 继承 `AbstractSpell`
-2. `ModSpells` 注册
-3. `lang`：`spell.elden_ring_spells.<path>`
-4. 图标：`textures/gui/spell_icons/<path>.png`
-5. `onCast` 服务端逻辑后调用 `super.onCast`
+1. `spell/XxxSpell.java` 继承 `EldenRingAbstractSpell`
+2. 玩法数字进 `EldenRingServerConfig`（toml），视觉写死在 Spell/Curve/Combat/Fx/Entity；**禁止新建 `tuning/XxxTuning.java`**
+3. 复杂咒拆 `spell/curve` / `combat` / `fx`（持续咒再加 `data`；锁人/清障进 `helper`），不要把这些写回 `XxxSpell`
+4. `ModSpells` 注册
+5. `lang`：`spell.elden_ring_spells.<path>`
+6. 图标：`textures/gui/spell_icons/<path>.png`
+7. `onCast` 服务端逻辑后调用 `super.onCast`
 
 ### 物品
 1. `ModItems` 注册
@@ -63,14 +65,12 @@ alwaysApply: true
 - **变量名写完整、可读**：优先 `nearestTrackableTarget`、`maxTurnAngleRadians`，禁止 `t`/`tmp`/`v` 等除非极短作用域的循环下标
 - 常量用 `SCREAMING_SNAKE`，且名称含含义 + 单位语义（如 `PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK`）
 
-### 可调常量集中存放
-- 法术/弹道的平衡与手感数字 **不要散落在逻辑代码里**
-- 每个法术（或一族法术）建 `tuning/XxxTuning.java`，逻辑类只引用 Tuning 常量
-- 例：辉石魔砾 → `com.eldenring.spells.tuning.GlintstonePebbleTuning`
-  - 转向角：`PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK`
-  - 飞行速度：`PROJECTILE_FLIGHT_SPEED`
-  - 索敌半径：`PROJECTILE_TRACKING_RANGE_BLOCKS`
-  - 彗星头视觉：`COMET_HEAD_*`
+### 数字分家（替代旧 Tuning 仓库）
+- **玩法**（伤害、蓝耗、弹速、转向角、数量、爆炸/扇形半径、穿透）：默认值只写 `config/EldenRingServerConfig`，`apply` 写到 Spell 运行时字段。整合包改 `config/elden_ring_spells-server.toml`，**不用重编译**。矿洞改 `-common.toml`。
+- **视觉 / 动画 / 握点 / 粒子密度**：`private static final` 写在用到它的类（CastCurve、Fx、Entity、Renderer）。不要进 toml。
+- **不要**再新建 `tuning/XxxTuning.java`（该包待删，见 `法术解耦架构.md`）。
+- 冷却 / 最大等级 / 法术开关走铁魔法 `config/irons_spellbooks_spell_config/elden_ring_spells/<id>.json`
+- 实体禁止 `import com.eldenring.spells.client.render...`
 
 ### 辉石弹道渲染复用
 - 立体彗星头：`client/render/glintstone/GlintstoneCometHeadDrawer` + `GlintstoneCometModels`

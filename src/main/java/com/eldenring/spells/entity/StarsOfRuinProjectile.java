@@ -1,11 +1,9 @@
 package com.eldenring.spells.entity;
 
-import com.eldenring.spells.client.render.glintstone.GlintstoneCometHeadDrawer;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModSpells;
-import com.eldenring.spells.tuning.GlintstoneTrailTuning;
-import com.eldenring.spells.tuning.StarsOfRuinTuning;
+import com.eldenring.spells.spell.StarsOfRuinSpell;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,52 +32,52 @@ public class StarsOfRuinProjectile extends AbstractGlintstoneProjectile {
 
     @Override
     protected float flightSpeed() {
-        return StarsOfRuinTuning.PROJECTILE_FLIGHT_SPEED;
+        return StarsOfRuinSpell.PROJECTILE_FLIGHT_SPEED;
     }
 
     @Override
     protected double trackingRangeBlocks() {
-        return StarsOfRuinTuning.PROJECTILE_TRACKING_RANGE_BLOCKS;
+        return StarsOfRuinSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
     }
 
     @Override
     protected float maxTurnAngleDegreesPerTick() {
-        return StarsOfRuinTuning.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
+        return StarsOfRuinSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
     }
 
     @Override
     protected int trackingStartDelayTicks() {
-        return StarsOfRuinTuning.PROJECTILE_TRACKING_START_DELAY_TICKS;
+        return StarsOfRuinSpell.PROJECTILE_TRACKING_START_DELAY_TICKS;
     }
 
     @Override
     protected float trackingAcquireConeHalfAngleDegrees() {
-        return StarsOfRuinTuning.PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES;
+        return StarsOfRuinSpell.PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES;
     }
 
     @Override
     protected double minimumSpeedForHoming() {
-        return StarsOfRuinTuning.PROJECTILE_MINIMUM_SPEED_FOR_HOMING;
+        return StarsOfRuinSpell.PROJECTILE_MINIMUM_SPEED_FOR_HOMING;
     }
 
     @Override
     protected double directionAlignEpsilonRadians() {
-        return StarsOfRuinTuning.PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS;
+        return StarsOfRuinSpell.PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS;
     }
 
     @Override
     protected float trailParticleIntensity() {
-        return StarsOfRuinTuning.TRAIL_PARTICLE_INTENSITY;
+        return StarsOfRuinSpell.TRAIL_PARTICLE_INTENSITY;
     }
 
     @Override
-    public GlintstoneTrailTuning.TrailStyle trailStyle() {
-        return StarsOfRuinTuning.TRAIL_STYLE;
+    public GlintstoneTrailStyle trailStyle() {
+        return StarsOfRuinSpell.TRAIL_STYLE;
     }
 
     @Override
     protected float impactParticleIntensity() {
-        return StarsOfRuinTuning.IMPACT_PARTICLE_INTENSITY;
+        return StarsOfRuinSpell.IMPACT_PARTICLE_INTENSITY;
     }
 
     @Override
@@ -88,16 +86,17 @@ public class StarsOfRuinProjectile extends AbstractGlintstoneProjectile {
     }
 
     @Override
-    protected void spawnTrailAccentParticles(Vec3 deltaMovement, GlintstoneTrailTuning.TrailStyle trailStyle) {
-        GlintstoneFx.ruinTrailAccents(
+    protected void spawnTrailAccentParticles(Vec3 deltaMovement, GlintstoneTrailStyle trailStyle) {
+            GlintstoneFx.ruinTrailAccents(
                 level(),
                 getX(),
                 getY(),
                 getZ(),
                 deltaMovement,
                 trailParticleIntensity(),
-                trailStyle
-        );
+                trailStyle,
+                StarsOfRuinSpell.TRAIL_ACCENT_CHANCE_SCALE
+            );
     }
 
     @Override
@@ -106,35 +105,35 @@ public class StarsOfRuinProjectile extends AbstractGlintstoneProjectile {
     }
 
     @Override
-    public GlintstoneCometHeadDrawer.VisualStyle visualStyle() {
+    public GlintstoneVisualStyle visualStyle() {
         boolean useDeepBlue = (getId() & 1) == 1;
         if (useDeepBlue) {
-            return GlintstoneCometHeadDrawer.VisualStyle.fromFloatColors(
-                    StarsOfRuinTuning.COMET_HEAD_BODY_SCALE,
-                    StarsOfRuinTuning.COMET_HEAD_GLOW_SCALE,
-                    StarsOfRuinTuning.COMET_HEAD_GLOW_PULSE_AMPLITUDE,
-                    StarsOfRuinTuning.COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK,
-                    StarsOfRuinTuning.DEEP_CORE_RED,
-                    StarsOfRuinTuning.DEEP_CORE_GREEN,
-                    StarsOfRuinTuning.DEEP_CORE_BLUE,
-                    StarsOfRuinTuning.DEEP_GLOW_RED,
-                    StarsOfRuinTuning.DEEP_GLOW_GREEN,
-                    StarsOfRuinTuning.DEEP_GLOW_BLUE,
-                    StarsOfRuinTuning.DEEP_GLOW_ALPHA
+            return GlintstoneVisualStyle.fromFloatColors(
+                    StarsOfRuinSpell.COMET_HEAD_BODY_SCALE,
+                    StarsOfRuinSpell.COMET_HEAD_GLOW_SCALE,
+                    StarsOfRuinSpell.COMET_HEAD_GLOW_PULSE_AMPLITUDE,
+                    StarsOfRuinSpell.COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK,
+                    StarsOfRuinSpell.DEEP_CORE_RED,
+                    StarsOfRuinSpell.DEEP_CORE_GREEN,
+                    StarsOfRuinSpell.DEEP_CORE_BLUE,
+                    StarsOfRuinSpell.DEEP_GLOW_RED,
+                    StarsOfRuinSpell.DEEP_GLOW_GREEN,
+                    StarsOfRuinSpell.DEEP_GLOW_BLUE,
+                    StarsOfRuinSpell.DEEP_GLOW_ALPHA
             );
         }
-        return GlintstoneCometHeadDrawer.VisualStyle.fromFloatColors(
-                StarsOfRuinTuning.COMET_HEAD_BODY_SCALE,
-                StarsOfRuinTuning.COMET_HEAD_GLOW_SCALE,
-                StarsOfRuinTuning.COMET_HEAD_GLOW_PULSE_AMPLITUDE,
-                StarsOfRuinTuning.COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK,
-                StarsOfRuinTuning.PURPLE_CORE_RED,
-                StarsOfRuinTuning.PURPLE_CORE_GREEN,
-                StarsOfRuinTuning.PURPLE_CORE_BLUE,
-                StarsOfRuinTuning.PURPLE_GLOW_RED,
-                StarsOfRuinTuning.PURPLE_GLOW_GREEN,
-                StarsOfRuinTuning.PURPLE_GLOW_BLUE,
-                StarsOfRuinTuning.PURPLE_GLOW_ALPHA
+        return GlintstoneVisualStyle.fromFloatColors(
+                StarsOfRuinSpell.COMET_HEAD_BODY_SCALE,
+                StarsOfRuinSpell.COMET_HEAD_GLOW_SCALE,
+                StarsOfRuinSpell.COMET_HEAD_GLOW_PULSE_AMPLITUDE,
+                StarsOfRuinSpell.COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK,
+                StarsOfRuinSpell.PURPLE_CORE_RED,
+                StarsOfRuinSpell.PURPLE_CORE_GREEN,
+                StarsOfRuinSpell.PURPLE_CORE_BLUE,
+                StarsOfRuinSpell.PURPLE_GLOW_RED,
+                StarsOfRuinSpell.PURPLE_GLOW_GREEN,
+                StarsOfRuinSpell.PURPLE_GLOW_BLUE,
+                StarsOfRuinSpell.PURPLE_GLOW_ALPHA
         );
     }
 }

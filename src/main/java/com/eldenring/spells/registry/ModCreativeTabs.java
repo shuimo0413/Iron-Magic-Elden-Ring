@@ -37,8 +37,6 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());
                         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
-                            output.accept(set.ore.get());
-                            output.accept(set.deepslateOre.get());
                             output.accept(set.crystalBlock.get());
                             output.accept(set.cluster.get());
                         }
@@ -54,6 +52,9 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.createFilledScroll(ModSpells.SPIRAL_SHARD, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.TERRA_MAGICA, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.COMET_AZUR, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.GAVEL_OF_HAIMA, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_SLICER, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.MAGIC_GLINTBLADE, 1));
                     })
                     .build());
 

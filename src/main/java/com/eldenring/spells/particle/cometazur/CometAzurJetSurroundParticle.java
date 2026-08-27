@@ -1,7 +1,6 @@
 package com.eldenring.spells.particle.cometazur;
 
 import com.eldenring.spells.client.render.AdditiveParticleRenderType;
-import com.eldenring.spells.tuning.CometAzurTuning;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
@@ -37,128 +36,128 @@ public class CometAzurJetSurroundParticle extends TextureSheetParticle {
      */
     public enum Kind {
         HAZE(
-                CometAzurTuning.JET_HAZE_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_HAZE_QUAD_SIZE_BLOCKS,
                 0.70f,
-                CometAzurTuning.JET_TINT_HAZE_RGB,
+                CometAzurFx.JET_TINT_HAZE_RGB,
                 true,
                 true
         ),
         STAR_RIVER_MIST(
-                CometAzurTuning.JET_STAR_RIVER_MIST_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_STAR_RIVER_MIST_QUAD_SIZE_BLOCKS,
                 0.78f,
-                CometAzurTuning.JET_TINT_STAR_RIVER_MIST_RGB,
+                CometAzurFx.JET_TINT_STAR_RIVER_MIST_RGB,
                 true,
                 true
         ),
         STARDUST(
-                CometAzurTuning.JET_STARDUST_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_STARDUST_QUAD_SIZE_BLOCKS,
                 0.80f,
-                CometAzurTuning.JET_TINT_STARDUST_RGB,
+                CometAzurFx.JET_TINT_STARDUST_RGB,
                 true,
                 true
         ),
         WISP(
-                CometAzurTuning.JET_WISP_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_WISP_QUAD_SIZE_BLOCKS,
                 0.72f,
-                CometAzurTuning.JET_TINT_WISP_RGB,
+                CometAzurFx.JET_TINT_WISP_RGB,
                 true,
                 true
         ),
         SPIRAL(
-                CometAzurTuning.JET_SPIRAL_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_SPIRAL_QUAD_SIZE_BLOCKS,
                 0.88f,
-                CometAzurTuning.JET_TINT_SPIRAL_RGB,
+                CometAzurFx.JET_TINT_SPIRAL_RGB,
                 true,
                 false
         ),
         CLUSTER(
-                CometAzurTuning.JET_CLUSTER_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_CLUSTER_QUAD_SIZE_BLOCKS,
                 0.90f,
-                CometAzurTuning.JET_TINT_CLUSTER_RGB,
+                CometAzurFx.JET_TINT_CLUSTER_RGB,
                 false,
                 false
         ),
         COMET_MIST(
-                CometAzurTuning.JET_COMET_MIST_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_COMET_MIST_QUAD_SIZE_BLOCKS,
                 0.80f,
-                CometAzurTuning.JET_TINT_COMET_MIST_RGB,
+                CometAzurFx.JET_TINT_COMET_MIST_RGB,
                 true,
                 false
         ),
         DUST(
-                CometAzurTuning.JET_DUST_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_DUST_QUAD_SIZE_BLOCKS,
                 0.85f,
-                CometAzurTuning.JET_TINT_DUST_RGB,
+                CometAzurFx.JET_TINT_DUST_RGB,
                 false,
                 false
         ),
         HEAD(
-                CometAzurTuning.JET_HEAD_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_HEAD_QUAD_SIZE_BLOCKS,
                 0.92f,
-                CometAzurTuning.JET_TINT_HEAD_RGB,
+                CometAzurFx.JET_TINT_HEAD_RGB,
                 false,
                 false
         ),
         NOVA(
-                CometAzurTuning.JET_NOVA_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_NOVA_QUAD_SIZE_BLOCKS,
                 0.95f,
-                CometAzurTuning.JET_TINT_NOVA_RGB,
+                CometAzurFx.JET_TINT_NOVA_RGB,
                 false,
                 false
         ),
         FILAMENT(
-                CometAzurTuning.JET_FILAMENT_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_FILAMENT_QUAD_SIZE_BLOCKS,
                 0.72f,
-                CometAzurTuning.JET_TINT_FILAMENT_RGB,
+                CometAzurFx.JET_TINT_FILAMENT_RGB,
                 true,
                 false
         ),
         STREAK(
-                CometAzurTuning.JET_STREAK_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_STREAK_QUAD_SIZE_BLOCKS,
                 0.82f,
-                CometAzurTuning.JET_TINT_STREAK_RGB,
+                CometAzurFx.JET_TINT_STREAK_RGB,
                 false,
                 false
         ),
         MOTE(
-                CometAzurTuning.JET_MOTE_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_MOTE_QUAD_SIZE_BLOCKS,
                 0.90f,
-                CometAzurTuning.JET_TINT_MOTE_RGB,
+                CometAzurFx.JET_TINT_MOTE_RGB,
                 false,
                 false
         ),
         IMPACT(
-                CometAzurTuning.JET_FIELD_IMPACT_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_FIELD_IMPACT_QUAD_SIZE_BLOCKS,
                 0.94f,
-                CometAzurTuning.JET_TINT_FIELD_IMPACT_RGB,
+                CometAzurFx.JET_TINT_FIELD_IMPACT_RGB,
                 false,
                 false
         ),
         MOTE_1(
-                CometAzurTuning.JET_FIELD_MOTE_1_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_FIELD_MOTE_1_QUAD_SIZE_BLOCKS,
                 0.92f,
-                CometAzurTuning.JET_TINT_FIELD_MOTE_1_RGB,
+                CometAzurFx.JET_TINT_FIELD_MOTE_1_RGB,
                 false,
                 false
         ),
         MOTE_2(
-                CometAzurTuning.JET_FIELD_MOTE_2_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_FIELD_MOTE_2_QUAD_SIZE_BLOCKS,
                 0.92f,
-                CometAzurTuning.JET_TINT_FIELD_MOTE_2_RGB,
+                CometAzurFx.JET_TINT_FIELD_MOTE_2_RGB,
                 false,
                 false
         ),
         GLINT_MOTE(
-                CometAzurTuning.JET_FIELD_GLINT_MOTE_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_FIELD_GLINT_MOTE_QUAD_SIZE_BLOCKS,
                 0.93f,
-                CometAzurTuning.JET_TINT_FIELD_GLINT_MOTE_RGB,
+                CometAzurFx.JET_TINT_FIELD_GLINT_MOTE_RGB,
                 false,
                 false
         ),
         GLOW(
-                CometAzurTuning.JET_FIELD_GLOW_QUAD_SIZE_BLOCKS,
+                CometAzurFx.JET_FIELD_GLOW_QUAD_SIZE_BLOCKS,
                 0.78f,
-                CometAzurTuning.JET_TINT_FIELD_GLOW_RGB,
+                CometAzurFx.JET_TINT_FIELD_GLOW_RGB,
                 false,
                 false
         );
@@ -265,14 +264,14 @@ public class CometAzurJetSurroundParticle extends TextureSheetParticle {
                 ? options.helixRadiansPerTick()
                 : helixSpeedFor(this.motionMode, level.random.nextBoolean());
         float noiseScale = noiseScaleFor(this.motionMode);
-        this.noiseAmplitudeBlocks = CometAzurTuning.JET_NOISE_AMPLITUDE_BLOCKS * noiseScale;
-        this.noiseAngleAmplitudeRadians = CometAzurTuning.JET_NOISE_ANGLE_AMPLITUDE_RADIANS * noiseScale;
+        this.noiseAmplitudeBlocks = CometAzurFx.JET_NOISE_AMPLITUDE_BLOCKS * noiseScale;
+        this.noiseAngleAmplitudeRadians = CometAzurFx.JET_NOISE_ANGLE_AMPLITUDE_RADIANS * noiseScale;
         this.noiseSeed = level.random.nextInt();
         this.alongBeamBlocks = Math.max(0.0f, options.birthAlongBeamBlocks());
-        if (this.alongBeamBlocks >= CometAzurTuning.JET_PARTICLE_MAX_ALONG_BLOCKS) {
+        if (this.alongBeamBlocks >= CometAzurFx.JET_PARTICLE_MAX_ALONG_BLOCKS) {
             this.lifetime = 1;
         } else {
-            float remainingBlocks = CometAzurTuning.JET_PARTICLE_MAX_ALONG_BLOCKS - this.alongBeamBlocks;
+            float remainingBlocks = CometAzurFx.JET_PARTICLE_MAX_ALONG_BLOCKS - this.alongBeamBlocks;
             int ticksUntilRangeEnd = Math.max(
                     4,
                     (int) Math.ceil(remainingBlocks / Math.max(0.05f, this.forwardSpeedBlocksPerTick))
@@ -304,24 +303,24 @@ public class CometAzurJetSurroundParticle extends TextureSheetParticle {
 
     private static int lifetimeTicksFor(MotionMode motionMode) {
         return switch (motionMode) {
-            case DRIFT -> CometAzurTuning.JET_NEBULA_LIFETIME_TICKS;
-            case EULER -> CometAzurTuning.JET_GALAXY_LIFETIME_TICKS;
-            case STRAIGHT -> CometAzurTuning.JET_SPARKLE_LIFETIME_TICKS;
+            case DRIFT -> CometAzurFx.JET_NEBULA_LIFETIME_TICKS;
+            case EULER -> CometAzurFx.JET_GALAXY_LIFETIME_TICKS;
+            case STRAIGHT -> CometAzurFx.JET_SPARKLE_LIFETIME_TICKS;
         };
     }
 
     private static float forwardSpeedFor(MotionMode motionMode) {
         return switch (motionMode) {
-            case DRIFT -> CometAzurTuning.JET_NEBULA_FORWARD_SPEED_BLOCKS_PER_TICK;
-            case EULER -> CometAzurTuning.JET_GALAXY_FORWARD_SPEED_BLOCKS_PER_TICK;
-            case STRAIGHT -> CometAzurTuning.JET_SPARKLE_FORWARD_SPEED_BLOCKS_PER_TICK;
+            case DRIFT -> CometAzurFx.JET_NEBULA_FORWARD_SPEED_BLOCKS_PER_TICK;
+            case EULER -> CometAzurFx.JET_GALAXY_FORWARD_SPEED_BLOCKS_PER_TICK;
+            case STRAIGHT -> CometAzurFx.JET_SPARKLE_FORWARD_SPEED_BLOCKS_PER_TICK;
         };
     }
 
     private static float helixSpeedFor(MotionMode motionMode, boolean clockwise) {
         float baseRadiansPerTick = switch (motionMode) {
-            case DRIFT -> CometAzurTuning.JET_NEBULA_HELIX_RADIANS_PER_TICK;
-            case EULER -> CometAzurTuning.JET_GALAXY_HELIX_RADIANS_PER_TICK;
+            case DRIFT -> CometAzurFx.JET_NEBULA_HELIX_RADIANS_PER_TICK;
+            case EULER -> CometAzurFx.JET_GALAXY_HELIX_RADIANS_PER_TICK;
             case STRAIGHT -> 0.0f;
         };
         return clockwise ? baseRadiansPerTick : -baseRadiansPerTick;
@@ -330,8 +329,8 @@ public class CometAzurJetSurroundParticle extends TextureSheetParticle {
     private static float noiseScaleFor(MotionMode motionMode) {
         return switch (motionMode) {
             case DRIFT -> 1.0f;
-            case EULER -> CometAzurTuning.JET_GALAXY_NOISE_SCALE;
-            case STRAIGHT -> CometAzurTuning.JET_SPARKLE_NOISE_SCALE;
+            case EULER -> CometAzurFx.JET_GALAXY_NOISE_SCALE;
+            case STRAIGHT -> CometAzurFx.JET_SPARKLE_NOISE_SCALE;
         };
     }
 
@@ -363,10 +362,10 @@ public class CometAzurJetSurroundParticle extends TextureSheetParticle {
 
         if (this.motionMode == MotionMode.EULER) {
             this.forwardSpeedBlocksPerTick +=
-                    CometAzurTuning.JET_GALAXY_FORWARD_ACCELERATION_BLOCKS_PER_TICK_SQUARED;
+                    CometAzurFx.JET_GALAXY_FORWARD_ACCELERATION_BLOCKS_PER_TICK_SQUARED;
         }
         this.alongBeamBlocks += this.forwardSpeedBlocksPerTick;
-        if (this.alongBeamBlocks >= CometAzurTuning.JET_PARTICLE_MAX_ALONG_BLOCKS) {
+        if (this.alongBeamBlocks >= CometAzurFx.JET_PARTICLE_MAX_ALONG_BLOCKS) {
             remove();
             return;
         }
@@ -383,7 +382,7 @@ public class CometAzurJetSurroundParticle extends TextureSheetParticle {
      * 世界坐标 = 喷流口 + 前向距离 × 朝向 + r e^{iθ} 映到 (right, up) + 噪声。
      */
     private void applyPoseAtAge(int ageTicks) {
-        float noiseTime = ageTicks * CometAzurTuning.JET_NOISE_FREQUENCY_PER_TICK;
+        float noiseTime = ageTicks * CometAzurFx.JET_NOISE_FREQUENCY_PER_TICK;
         float radiusNoiseBlocks = this.noiseAmplitudeBlocks * interpolatedNoise(this.noiseSeed, noiseTime);
         float angleNoiseRadians = this.noiseAngleAmplitudeRadians
                 * interpolatedNoise(this.noiseSeed + 19, noiseTime * 1.17f);

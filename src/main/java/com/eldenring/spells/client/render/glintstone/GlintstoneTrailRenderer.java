@@ -1,6 +1,7 @@
 package com.eldenring.spells.client.render.glintstone;
 
-import com.eldenring.spells.tuning.GlintstoneTrailTuning;
+import com.eldenring.spells.entity.GlintstoneTrailStyle;
+import com.eldenring.spells.entity.GlintstoneVisualStyle;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
@@ -46,8 +47,8 @@ public final class GlintstoneTrailRenderer {
             Vec3 currentHeadWorld,
             Vec3 cameraWorld,
             List<Vec3> historyWorldPositions,
-            GlintstoneTrailTuning.TrailStyle trailStyle,
-            GlintstoneCometHeadDrawer.VisualStyle visualStyle
+            GlintstoneTrailStyle trailStyle,
+            GlintstoneVisualStyle visualStyle
     ) {
         renderHistoryRibbon(
                 poseStack,
@@ -73,7 +74,7 @@ public final class GlintstoneTrailRenderer {
             Vec3 currentHeadWorld,
             Vec3 cameraWorld,
             List<Vec3> historyWorldPositions,
-            GlintstoneTrailTuning.TrailStyle trailStyle,
+            GlintstoneTrailStyle trailStyle,
             int glowColorArgb,
             int coreColorArgb
     ) {
@@ -103,14 +104,14 @@ public final class GlintstoneTrailRenderer {
                     sideDirections,
                     cumulativeDistances,
                     totalLengthBlocks,
-                    trailStyle.tailHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_EXTRA_VEIL_WIDTH_SCALE,
-                    trailStyle.headHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_EXTRA_VEIL_WIDTH_SCALE,
+                    trailStyle.tailHalfWidthBlocks() * GlintstoneTrailStyle.BEAM_EXTRA_VEIL_WIDTH_SCALE,
+                    trailStyle.headHalfWidthBlocks() * GlintstoneTrailStyle.BEAM_EXTRA_VEIL_WIDTH_SCALE,
                     1.0f,
                     0.0f,
                     unpackRed(glowColorArgb),
                     unpackGreen(glowColorArgb),
                     unpackBlue(glowColorArgb),
-                    (int) (unpackAlpha(glowColorArgb) * GlintstoneTrailTuning.BEAM_EXTRA_VEIL_ALPHA_SCALE)
+                    (int) (unpackAlpha(glowColorArgb) * GlintstoneTrailStyle.BEAM_EXTRA_VEIL_ALPHA_SCALE)
             );
         }
 
@@ -124,14 +125,14 @@ public final class GlintstoneTrailRenderer {
                 sideDirections,
                 cumulativeDistances,
                 totalLengthBlocks,
-                trailStyle.tailHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_OUTER_WIDTH_SCALE,
-                trailStyle.headHalfWidthBlocks() * GlintstoneTrailTuning.BEAM_OUTER_WIDTH_SCALE,
+                trailStyle.tailHalfWidthBlocks() * GlintstoneTrailStyle.BEAM_OUTER_WIDTH_SCALE,
+                trailStyle.headHalfWidthBlocks() * GlintstoneTrailStyle.BEAM_OUTER_WIDTH_SCALE,
                 1.0f,
                 0.0f,
                 unpackRed(glowColorArgb),
                 unpackGreen(glowColorArgb),
                 unpackBlue(glowColorArgb),
-                (int) (unpackAlpha(glowColorArgb) * GlintstoneTrailTuning.BEAM_OUTER_ALPHA_SCALE)
+                (int) (unpackAlpha(glowColorArgb) * GlintstoneTrailStyle.BEAM_OUTER_ALPHA_SCALE)
         );
 
         RenderType coreRenderType = trailStyle.additiveCore()
@@ -158,7 +159,7 @@ public final class GlintstoneTrailRenderer {
     }
 
     /**
-     * 沿历史曲线缠绕螺旋细丝。体积用几何线而不是粒子；{@link GlintstoneTrailTuning.HelixStyle#NONE} 时直接返回。
+     * 沿历史曲线缠绕螺旋细丝。体积用几何线而不是粒子；{@link GlintstoneTrailStyle.HelixStyle#NONE} 时直接返回。
      *
      * @param animationTicks 实体年龄 + 插值，驱动细丝绕轴自旋
      */
@@ -169,12 +170,12 @@ public final class GlintstoneTrailRenderer {
             Vec3 currentHeadWorld,
             Vec3 cameraWorld,
             List<Vec3> historyWorldPositions,
-            GlintstoneTrailTuning.TrailStyle trailStyle,
+            GlintstoneTrailStyle trailStyle,
             int primaryColorArgb,
             int alternateColorArgb,
             float animationTicks
     ) {
-        GlintstoneTrailTuning.HelixStyle helixStyle = trailStyle.helixStyle();
+        GlintstoneTrailStyle.HelixStyle helixStyle = trailStyle.helixStyle();
         if (helixStyle == null || !helixStyle.enabled()) {
             return;
         }
@@ -230,7 +231,7 @@ public final class GlintstoneTrailRenderer {
             List<Vec3> sideDirections,
             double[] cumulativeDistances,
             double totalLengthBlocks,
-            GlintstoneTrailTuning.HelixStyle helixStyle,
+            GlintstoneTrailStyle.HelixStyle helixStyle,
             float phaseRadians
     ) {
         List<Vec3> helixPoints = new ArrayList<>(renderPoints.size());

@@ -4,7 +4,6 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.FoundingRainOfStarsEntity;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModSchools;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -24,14 +23,37 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Optional;
+import com.eldenring.spells.particle.foundingrain.FoundingRainFx;
 
 /**
  * 创星雨（Founding Rain of Stars）：原初辉石咒。
  * <p>
  * 右手前方铺星云 → 光点飞向出手瞬间钉死的雨云圆心 → 云层落下白紫雨针，雨柱内持续受伤。
- * 雨针不复用彗星/流星弹道，只复用曲线光带的画法；数字改 {@link FoundingRainOfStarsTuning}。
+ * 雨针不复用彗星/流星弹道，只复用曲线光带的画法；玩法数字改 {@link FoundingRainOfStarsSpell}。
  */
-public class FoundingRainOfStarsSpell extends AbstractSpell {
+public class FoundingRainOfStarsSpell extends EldenRingAbstractSpell {
+
+    public static final int SPELL_MAX_LEVEL = 1;
+    public static final double SPELL_COOLDOWN_SECONDS = 8.0;
+
+    public static int SPELL_BASE_MANA_COST = 48;
+    public static int SPELL_MANA_COST_PER_LEVEL = 8;
+    public static int SPELL_BASE_SPELL_POWER = 10;
+    public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+    public static int SPELL_CAST_TIME_TICKS = 0;
+
+    /** 每次雨幕结算伤害 = 法强 × 本系数。 */
+    public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.5f;
+    /** 每 tick 落下的雨针数量。 */
+    public static int RAIN_DROPS_PER_TICK = 8;
+    /** 雨针下落速度（方块/tick）。 */
+    public static float RAIN_DROP_FALL_SPEED_BLOCKS_PER_TICK = 1.15f;
+    /** 雨幕伤害结算间隔（tick）。 */
+    public static int RAIN_ZONE_DAMAGE_INTERVAL_TICKS = 10;
+    /** 头顶雨云水平半径（方块）。 */
+    public static double OVERHEAD_CLOUD_RADIUS_BLOCKS = 4.0;
+    /** 雨云寿命（tick）。 */
+    public static int OVERHEAD_CLOUD_LIFETIME_TICKS = 100;
 
     /** 注册 ID：{@code elden_ring_spells:founding_rain_of_stars}。 */
     private final ResourceLocation spellResourceLocation =
@@ -40,16 +62,16 @@ public class FoundingRainOfStarsSpell extends AbstractSpell {
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.LEGENDARY)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
-            .setMaxLevel(FoundingRainOfStarsTuning.SPELL_MAX_LEVEL)
-            .setCooldownSeconds(FoundingRainOfStarsTuning.SPELL_COOLDOWN_SECONDS)
+            .setMaxLevel(SPELL_MAX_LEVEL)
+            .setCooldownSeconds(SPELL_COOLDOWN_SECONDS)
             .build();
 
     public FoundingRainOfStarsSpell() {
-        this.manaCostPerLevel = FoundingRainOfStarsTuning.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = FoundingRainOfStarsTuning.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = FoundingRainOfStarsTuning.SPELL_SPELL_POWER_PER_LEVEL;
-        this.castTime = FoundingRainOfStarsTuning.SPELL_CAST_TIME_TICKS;
-        this.baseManaCost = FoundingRainOfStarsTuning.SPELL_BASE_MANA_COST;
+        this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
+        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
+        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.castTime = SPELL_CAST_TIME_TICKS;
+        this.baseManaCost = SPELL_BASE_MANA_COST;
     }
 
     @Override
@@ -89,7 +111,7 @@ public class FoundingRainOfStarsSpell extends AbstractSpell {
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
         return super.getDamageSource(projectile, attacker)
-                .setIFrames(FoundingRainOfStarsTuning.RAIN_ZONE_DAMAGE_INTERVAL_TICKS);
+                .setIFrames(RAIN_ZONE_DAMAGE_INTERVAL_TICKS);
     }
 
     /**
@@ -107,7 +129,7 @@ public class FoundingRainOfStarsSpell extends AbstractSpell {
             GlintstoneFx.starRiver(
                     level,
                     castingEntity,
-                    FoundingRainOfStarsTuning.CAST_NEBULA_INTENSITY,
+                    FoundingRainFx.CAST_NEBULA_INTENSITY,
                     true
             );
             level.addFreshEntity(new FoundingRainOfStarsEntity(
@@ -120,10 +142,10 @@ public class FoundingRainOfStarsSpell extends AbstractSpell {
     }
 
     /**
-     * 雨幕每次结算的伤害 = 铁魔法法术强度 × Tuning 系数。站在云下会连续挨打。
+     * 雨幕每次结算的伤害 = 铁魔法法术强度 × 伤害系数。站在云下会连续挨打。
      */
     private float getDamageAmountPerRainDrop(int spellLevel, LivingEntity castingEntity) {
         return getSpellPower(spellLevel, castingEntity)
-                * FoundingRainOfStarsTuning.SPELL_DAMAGE_PER_SPELL_POWER;
+                * SPELL_DAMAGE_PER_SPELL_POWER;
     }
 }

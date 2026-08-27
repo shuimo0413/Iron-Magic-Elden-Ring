@@ -3,7 +3,6 @@ package com.eldenring.spells.entity;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModEffects;
 import com.eldenring.spells.registry.ModEntities;
-import com.eldenring.spells.tuning.TerraMagicaTuning;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.entity.mobs.AntiMagicSusceptible;
@@ -23,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Optional;
+import com.eldenring.spells.spell.TerraMagicaSpell;
 
 /**
  * 魔法之境地面法阵：静止圆形 AoE，周期性给阵内友方刷新唯一的 {@link ModEffects#TERRA_MAGICA}。
@@ -43,7 +43,7 @@ public class TerraMagicaZoneEntity extends AoeEntity implements AntiMagicSuscept
     public TerraMagicaZoneEntity(EntityType<? extends Projectile> entityType, Level level) {
         super(entityType, level);
         setCircular();
-        setReapplicationDelay(TerraMagicaTuning.ZONE_REAPPLICATION_DELAY_TICKS);
+        setReapplicationDelay(TerraMagicaSpell.ZONE_REAPPLICATION_DELAY_TICKS);
     }
 
     public TerraMagicaZoneEntity(Level level) {
@@ -65,7 +65,7 @@ public class TerraMagicaZoneEntity extends AoeEntity implements AntiMagicSuscept
         }
         target.addEffect(new MobEffectInstance(
                 ModEffects.TERRA_MAGICA,
-                TerraMagicaTuning.EFFECT_REFRESH_DURATION_TICKS,
+                TerraMagicaSpell.EFFECT_REFRESH_DURATION_TICKS,
                 0,
                 false,
                 true,
@@ -89,7 +89,7 @@ public class TerraMagicaZoneEntity extends AoeEntity implements AntiMagicSuscept
 
     @Override
     public float getParticleCount() {
-        return TerraMagicaTuning.ZONE_AMBIENT_PARTICLE_COUNT;
+        return TerraMagicaSpell.ZONE_AMBIENT_PARTICLE_COUNT;
     }
 
     /**
@@ -120,8 +120,8 @@ public class TerraMagicaZoneEntity extends AoeEntity implements AntiMagicSuscept
                 getY(),
                 getZ(),
                 getRadius(),
-                TerraMagicaTuning.ZONE_AMBIENT_PARTICLE_COUNT,
-                TerraMagicaTuning.ZONE_AMBIENT_FILL_RADIUS_FRACTION
+                TerraMagicaSpell.ZONE_AMBIENT_PARTICLE_COUNT,
+                TerraMagicaSpell.ZONE_AMBIENT_FILL_RADIUS_FRACTION
         );
     }
 
@@ -156,7 +156,7 @@ public class TerraMagicaZoneEntity extends AoeEntity implements AntiMagicSuscept
             }
         }
         BlockState lightState = Blocks.LIGHT.defaultBlockState()
-                .setValue(LightBlock.LEVEL, TerraMagicaTuning.ZONE_CENTER_LIGHT_LEVEL);
+                .setValue(LightBlock.LEVEL, TerraMagicaSpell.ZONE_CENTER_LIGHT_LEVEL);
         level().setBlock(lightPos, lightState, 3);
         centerLightBlockPos = lightPos.immutable();
         placedCenterLight = true;

@@ -2,7 +2,6 @@ package com.eldenring.spells.client.render;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.TerraMagicaZoneEntity;
-import com.eldenring.spells.tuning.TerraMagicaTuning;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -14,11 +13,12 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
+import com.eldenring.spells.spell.TerraMagicaSpell;
 
 /**
  * 魔法之境：水平贴地半透明徽记四边形。
  * <p>
- * 边长 = {@code 2 * radius}，略抬高防 z-fighting；默认不自转（见 Tuning）。
+ * 边长 = {@code 2 * radius}，略抬高防 z-fighting；默认不自转。
  */
 public class TerraMagicaZoneRenderer extends EntityRenderer<TerraMagicaZoneEntity> {
 
@@ -46,10 +46,10 @@ public class TerraMagicaZoneRenderer extends EntityRenderer<TerraMagicaZoneEntit
         }
 
         poseStack.pushPose();
-        poseStack.translate(0.0, TerraMagicaTuning.SIGIL_Y_OFFSET_BLOCKS, 0.0);
-        if (TerraMagicaTuning.SIGIL_SPIN_DEGREES_PER_TICK != 0.0f) {
+        poseStack.translate(0.0, TerraMagicaSpell.SIGIL_Y_OFFSET_BLOCKS, 0.0);
+        if (TerraMagicaSpell.SIGIL_SPIN_DEGREES_PER_TICK != 0.0f) {
             float ageTicks = entity.tickCount + partialTick;
-            poseStack.mulPose(Axis.YP.rotationDegrees(ageTicks * TerraMagicaTuning.SIGIL_SPIN_DEGREES_PER_TICK));
+            poseStack.mulPose(Axis.YP.rotationDegrees(ageTicks * TerraMagicaSpell.SIGIL_SPIN_DEGREES_PER_TICK));
         }
         // 默认四边形在 XY 平面；转到 XZ（贴地）
         poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
@@ -58,7 +58,7 @@ public class TerraMagicaZoneRenderer extends EntityRenderer<TerraMagicaZoneEntit
         Matrix4f poseMatrix = poseStack.last().pose();
         VertexConsumer consumer = bufferSource.getBuffer(SIGIL_RENDER_TYPE);
 
-        int alpha = Mth.clamp(Math.round(TerraMagicaTuning.SIGIL_OPACITY * 255.0f), 0, 255);
+        int alpha = Mth.clamp(Math.round(TerraMagicaSpell.SIGIL_OPACITY * 255.0f), 0, 255);
         int packedColor = (alpha << 24) | 0x00FFFFFF;
         int fullBright = 0xF000F0;
 

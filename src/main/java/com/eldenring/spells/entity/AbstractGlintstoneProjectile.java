@@ -1,9 +1,6 @@
 package com.eldenring.spells.entity;
 
-import com.eldenring.spells.client.render.glintstone.GlintstoneCometHeadDrawer;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
-import com.eldenring.spells.tuning.GlintstoneHomingTuning;
-import com.eldenring.spells.tuning.GlintstoneTrailTuning;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.DamageSources;
@@ -58,6 +55,26 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     private static final float HIT_DETECTION_INFLATION_BLOCKS = 0.35f;
 
     /**
+     * 施法者准星射线命中检测时，目标碰撞箱外扩（方块）。
+     */
+    private static final float LOOK_RAY_HIT_INFLATION_BLOCKS = 0.30f;
+
+    /**
+     * 索敌打分角度权重。调大更死盯准星方向。
+     */
+    private static final double ACQUIRE_ANGULAR_WEIGHT = 1.0;
+
+    /**
+     * 索敌打分距离权重。调大更倾向近目标。
+     */
+    private static final double ACQUIRE_DISTANCE_WEIGHT = 0.25;
+
+    /**
+     * 转向预算松弛 [0,1]。调小则近处大偏角更难被锁。
+     */
+    private static final double TURN_BUDGET_SLACK = 0.85;
+
+    /**
      * 瞄准点相对目标碰撞箱：0=脚底，1=头顶。取偏上避免扎地。
      */
     private static final double TRACKING_AIM_HEIGHT_FRACTION = 0.7;
@@ -100,7 +117,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
      * 当前法术独立的连续光轨配置（长度、半宽、点缀概率）。
      * 供客户端 Renderer 与粒子点缀共用。
      */
-    public abstract GlintstoneTrailTuning.TrailStyle trailStyle();
+    public abstract GlintstoneTrailStyle trailStyle();
 
     /**
      * 返回普通辉石弹道的客户端历史路径（最旧 → 最新）。
@@ -113,7 +130,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
 
     protected abstract AbstractSpell damageSourceSpell();
 
-    public abstract GlintstoneCometHeadDrawer.VisualStyle visualStyle();
+    public abstract GlintstoneVisualStyle visualStyle();
 
     @Override
     public void trailParticles() {
@@ -122,7 +139,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         if (movementLength < 1.0e-4) {
             return;
         }
-        GlintstoneTrailTuning.TrailStyle trailStyle = trailStyle();
+        GlintstoneTrailStyle trailStyle = trailStyle();
         clientTrailHistory.record(
                 position(),
                 trailStyle.lengthBlocks(),
@@ -135,7 +152,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     /**
      * 弹头点缀粒子。普通辉石走青蓝库；毁灭流星等可覆盖成蓝紫星河粒子。
      */
-    protected void spawnTrailAccentParticles(Vec3 deltaMovement, GlintstoneTrailTuning.TrailStyle trailStyle) {
+    protected void spawnTrailAccentParticles(Vec3 deltaMovement, GlintstoneTrailStyle trailStyle) {
         GlintstoneFx.trailAccents(
                 level(),
                 getX(),
@@ -413,7 +430,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
                     candidate,
                     eyePosition,
                     lookEnd,
-                    GlintstoneHomingTuning.LOOK_RAY_HIT_INFLATION_BLOCKS
+                    LOOK_RAY_HIT_INFLATION_BLOCKS
             );
             if (hit.getType() == HitResult.Type.MISS) {
                 continue;
@@ -458,8 +475,8 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         double trackingRange = Math.max(1.0e-3, trackingRangeBlocks());
         double normalizedAngle = angleDegrees / coneHalfAngleDegrees;
         double normalizedDistance = distanceToCandidate / trackingRange;
-        return normalizedAngle * normalizedAngle * GlintstoneHomingTuning.ACQUIRE_ANGULAR_WEIGHT
-                + normalizedDistance * GlintstoneHomingTuning.ACQUIRE_DISTANCE_WEIGHT;
+        return normalizedAngle * normalizedAngle * ACQUIRE_ANGULAR_WEIGHT
+                + normalizedDistance * ACQUIRE_DISTANCE_WEIGHT;
     }
 
     /**
@@ -500,7 +517,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         double estimatedTicks = distanceToCandidate / flightSpeed;
         double maxReachableAngleDegrees = maxTurnAngleDegreesPerTick()
                 * estimatedTicks
-                * GlintstoneHomingTuning.TURN_BUDGET_SLACK;
+                * TURN_BUDGET_SLACK;
         return angleFromFlightAxisDegrees <= maxReachableAngleDegrees;
     }
 

@@ -18,25 +18,27 @@
  *
  * <h2>一个法术通常拆成几处</h2>
  * <ul>
- *   <li>本包 {@code XxxSpell.java}：注册 ID、稀有度、蓝耗、冷却、施法瞬间做什么。</li>
- *   <li>{@code tuning/XxxTuning.java}：速度、伤害系数、半径等<strong>可调数字</strong>。改手感只改 Tuning。</li>
+ *   <li>本包 {@code XxxSpell.java}：注册 ID、稀有度、蓝耗、冷却、施法瞬间做什么；
+ *       玩法数字的运行时字段由 {@code EldenRingServerConfig.apply()} 写回。打开 {@code spell/} 根目录应只看到这些。</li>
+ *   <li>被 Spell 调用的函数按职责分开放：{@code helper/} 出手清障、{@code curve/} 时间轴、
+ *       {@code combat/} 命中、{@code fx/} 粒子音效、{@code data/} 持续吟唱绑定。</li>
  *   <li>{@code entity/}：弹道或法阵实体（飞行、追踪、爆炸）。Spell 只负责「生成」它们。</li>
  *   <li>{@code registry/ModSpells.java}：挂到铁魔法法术注册表。</li>
- *   <li>语言键 {@code spell.elden_ring_spells.<path>} + 图标 {@code textures/gui/spell_icons/<path>.png}。</li>
+ *   <li>语言键 {@code spell.elden_ring_spells.&lt;path&gt;} + 图标 {@code textures/gui/spell_icons/&lt;path&gt;.png}。</li>
  * </ul>
  *
  * <h2>现有法术怎么分工</h2>
  * <ul>
  *   <li>单发弹道：魔砾 / 迅魔砾 / 大魔砾 / 辉石彗星 / 帚星 —— 都走
- *       {@link com.eldenring.spells.spell.GlintstoneCastHelper#spawnAlongLook}。</li>
+ *       {@link com.eldenring.spells.spell.helper.GlintstoneCastHelper#spawnAlongLook}。</li>
  *   <li>连发流星：辉石流星 / 流星雨 / 毁灭流星 —— Spell 只生成
  *       {@code GlintstoneStarVolleyEntity}，由它按 tick 错峰出弹。</li>
  *   <li>旋飞魔砾：一发实体内部画双螺旋。</li>
  *   <li>魔法之境：脚下铺法阵，给站在里面的人加全局法术强度。</li>
- *   <li>创星雨：时序实体抽光点升空，消失时钉一朵头顶雨云（落星雨尚未实现）。</li>
+ *   <li>创星雨：时序实体抽光点升空，钉一朵头顶雨云再落雨针。</li>
  * </ul>
  *
  * 入门请先看 {@link com.eldenring.spells.spell.GlintstonePebbleSpell}（最简单的瞬时单发）
- * 和 {@link com.eldenring.spells.spell.GlintstoneCastHelper}（所有辉石弹怎么出生）。
+ * 和 {@link com.eldenring.spells.spell.helper.GlintstoneCastHelper}（所有辉石弹怎么出生）。
  */
 package com.eldenring.spells.spell;

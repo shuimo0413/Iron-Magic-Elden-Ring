@@ -1,6 +1,7 @@
 package com.eldenring.spells.client.render.glintstone;
 
 import com.eldenring.spells.client.render.ProjectileOrientation;
+import com.eldenring.spells.entity.GlintstoneVisualStyle;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -20,150 +21,10 @@ import org.joml.Matrix4f;
  * 可复用的辉石「彗星头」绘制器：立体晶核 + 朝向相机的青色光晕。
  * <p>
  * 其它辉石弹道只需 bake {@link GlintstoneCometModels#COMET_HEAD_LAYER}（或帚星刺簇层），
- * 再调用 {@link #render(Entity, float, PoseStack, MultiBufferSource, ModelPart, EntityRenderDispatcher, VisualStyle)}。
+ * 再调用 {@link #render(Entity, float, PoseStack, MultiBufferSource, ModelPart, EntityRenderDispatcher, GlintstoneVisualStyle)}。
  */
 public final class GlintstoneCometHeadDrawer {
     private GlintstoneCometHeadDrawer() {
-    }
-
-    /**
-     * 颜色与尺寸参数；各法术可自定义一份，不必改绘制逻辑。
-     *
-     * @param bodyScaleRadial            垂直于飞行方向的缩放；调大 → 更胖
-     * @param bodyScaleAlongFlight       沿飞行轴（模型 -Z）的缩放；调大 → 更长
-     * @param glowScale                  相机朝向光晕基础缩放
-     * @param glowPulseAmplitude         光晕呼吸振幅
-     * @param glowSpinDegreesPerTick     光晕绕视线旋转（度 / tick）
-     * @param glowAlongFlightScale       沿飞行方向的光晕拉伸倍率；1 = 球形
-     * @param coreColorArgb              晶核 / 刺簇核心颜色
-     * @param glowColorArgb              光晕颜色
-     * @param spikeColorArgb             刺簇尖刺颜色；非刺簇时与核心相同
-     * @param usesSpikedCrystalCluster   true 时按 core/spikes 两组分别着色
-     * @param clusterSpinDegreesPerTick  刺簇绕飞行轴自转（度 / tick）；0 = 不转
-     */
-    public record VisualStyle(
-            float bodyScaleRadial,
-            float bodyScaleAlongFlight,
-            float glowScale,
-            float glowPulseAmplitude,
-            float glowSpinDegreesPerTick,
-            float glowAlongFlightScale,
-            int coreColorArgb,
-            int glowColorArgb,
-            int spikeColorArgb,
-            ResourceLocation bodyTexture,
-            ResourceLocation glowTexture,
-            boolean usesSpikedCrystalCluster,
-            float clusterSpinDegreesPerTick
-    ) {
-        /** 兼容旧调用：均匀缩放时的等效整体缩放。 */
-        public float bodyScale() {
-            return bodyScaleRadial;
-        }
-
-        /** 辉石魔砾默认外观（饱和蓝绿菱形晶核 + 自发光晕）。 */
-        public static VisualStyle glintstonePebbleDefault() {
-            return fromFloatColors(
-                    0.42f, 0.78f, 0.10f, 18.0f,
-                    0.12f, 0.78f, 1.0f,
-                    0.10f, 0.82f, 1.0f, 1.0f
-            );
-        }
-
-        /**
-         * 用 0–1 浮点色构造均匀缩放样式（流星 / 旋飞等未改剪影的弹道）。
-         */
-        public static VisualStyle fromFloatColors(
-                float bodyScale,
-                float glowScale,
-                float glowPulseAmplitude,
-                float glowSpinDegreesPerTick,
-                float coreRed, float coreGreen, float coreBlue,
-                float glowRed, float glowGreen, float glowBlue, float glowAlpha
-        ) {
-            return anisotropic(
-                    bodyScale,
-                    bodyScale,
-                    glowScale,
-                    glowPulseAmplitude,
-                    glowSpinDegreesPerTick,
-                    1.0f,
-                    coreRed, coreGreen, coreBlue,
-                    glowRed, glowGreen, glowBlue, glowAlpha
-            );
-        }
-
-        /**
-         * 各向异性菱形晶核（魔砾 / 迅魔砾 / 大魔砾 / 辉石彗星）。
-         *
-         * @param glowAlongFlightScale 1 = 球形光晕；大于 1 沿速度拉成残影
-         */
-        public static VisualStyle anisotropic(
-                float bodyScaleRadial,
-                float bodyScaleAlongFlight,
-                float glowScale,
-                float glowPulseAmplitude,
-                float glowSpinDegreesPerTick,
-                float glowAlongFlightScale,
-                float coreRed, float coreGreen, float coreBlue,
-                float glowRed, float glowGreen, float glowBlue, float glowAlpha
-        ) {
-            int coreColor = packRgb(coreRed, coreGreen, coreBlue, 1.0f);
-            return new VisualStyle(
-                    bodyScaleRadial,
-                    bodyScaleAlongFlight,
-                    glowScale,
-                    glowPulseAmplitude,
-                    glowSpinDegreesPerTick,
-                    glowAlongFlightScale,
-                    coreColor,
-                    packRgb(glowRed, glowGreen, glowBlue, glowAlpha),
-                    coreColor,
-                    GlintstoneCometModels.COMET_HEAD_TEXTURE,
-                    GlintstoneCometModels.COMET_GLOW_TEXTURE,
-                    false,
-                    0.0f
-            );
-        }
-
-        /**
-         * 帚星带刺晶簇：核更深、刺更亮，绕飞行轴慢转。
-         */
-        public static VisualStyle spikedCluster(
-                float bodyScale,
-                float glowScale,
-                float glowPulseAmplitude,
-                float glowSpinDegreesPerTick,
-                float glowAlongFlightScale,
-                float clusterSpinDegreesPerTick,
-                float coreRed, float coreGreen, float coreBlue,
-                float spikeRed, float spikeGreen, float spikeBlue,
-                float glowRed, float glowGreen, float glowBlue, float glowAlpha
-        ) {
-            return new VisualStyle(
-                    bodyScale,
-                    bodyScale,
-                    glowScale,
-                    glowPulseAmplitude,
-                    glowSpinDegreesPerTick,
-                    glowAlongFlightScale,
-                    packRgb(coreRed, coreGreen, coreBlue, 1.0f),
-                    packRgb(glowRed, glowGreen, glowBlue, glowAlpha),
-                    packRgb(spikeRed, spikeGreen, spikeBlue, 1.0f),
-                    GlintstoneCometModels.COMET_HEAD_TEXTURE,
-                    GlintstoneCometModels.COMET_GLOW_TEXTURE,
-                    true,
-                    clusterSpinDegreesPerTick
-            );
-        }
-
-        private static int packRgb(float red, float green, float blue, float alpha) {
-            int a = Mth.clamp((int) (alpha * 255.0f), 0, 255);
-            int r = Mth.clamp((int) (red * 255.0f), 0, 255);
-            int g = Mth.clamp((int) (green * 255.0f), 0, 255);
-            int b = Mth.clamp((int) (blue * 255.0f), 0, 255);
-            return (a << 24) | (r << 16) | (g << 8) | b;
-        }
     }
 
     public static void render(
@@ -173,7 +34,7 @@ public final class GlintstoneCometHeadDrawer {
             MultiBufferSource bufferSource,
             ModelPart cometBodyRoot,
             EntityRenderDispatcher entityRenderDispatcher,
-            VisualStyle visualStyle
+            GlintstoneVisualStyle visualStyle
     ) {
         renderCrystalBody(entity, partialTicks, poseStack, bufferSource, cometBodyRoot, visualStyle);
         renderCameraFacingGlow(entity, partialTicks, poseStack, bufferSource, entityRenderDispatcher, visualStyle);
@@ -191,7 +52,7 @@ public final class GlintstoneCometHeadDrawer {
             MultiBufferSource bufferSource,
             ModelPart cometBodyRoot,
             EntityRenderDispatcher entityRenderDispatcher,
-            VisualStyle visualStyle,
+            GlintstoneVisualStyle visualStyle,
             Vec3 flightDirectionWorld
     ) {
         renderCrystalBodyAlongDirection(
@@ -221,7 +82,7 @@ public final class GlintstoneCometHeadDrawer {
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             ModelPart cometBodyRoot,
-            VisualStyle visualStyle
+            GlintstoneVisualStyle visualStyle
     ) {
         poseStack.pushPose();
         ProjectileOrientation.alignPoseToDeltaMovement(poseStack, entity, partialTicks);
@@ -237,7 +98,7 @@ public final class GlintstoneCometHeadDrawer {
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             ModelPart cometBodyRoot,
-            VisualStyle visualStyle,
+            GlintstoneVisualStyle visualStyle,
             Vec3 flightDirectionWorld,
             float animationTicks
     ) {
@@ -251,7 +112,7 @@ public final class GlintstoneCometHeadDrawer {
     /**
      * 径向 / 轴向缩放；帚星再绕飞行轴慢转，让侧面也能看见刺。
      */
-    private static void applyBodyScaleAndSpin(PoseStack poseStack, VisualStyle visualStyle, float animationTicks) {
+    private static void applyBodyScaleAndSpin(PoseStack poseStack, GlintstoneVisualStyle visualStyle, float animationTicks) {
         poseStack.scale(
                 visualStyle.bodyScaleRadial(),
                 visualStyle.bodyScaleRadial(),
@@ -266,7 +127,7 @@ public final class GlintstoneCometHeadDrawer {
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             ModelPart cometBodyRoot,
-            VisualStyle visualStyle
+            GlintstoneVisualStyle visualStyle
     ) {
         VertexConsumer bodyConsumer = bufferSource.getBuffer(
                 RenderType.entityTranslucentEmissive(visualStyle.bodyTexture())
@@ -307,7 +168,7 @@ public final class GlintstoneCometHeadDrawer {
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             EntityRenderDispatcher entityRenderDispatcher,
-            VisualStyle visualStyle
+            GlintstoneVisualStyle visualStyle
     ) {
         float age = entity.tickCount + partialTicks;
         float alongStretch = Math.max(1.0f, visualStyle.glowAlongFlightScale());
@@ -352,7 +213,7 @@ public final class GlintstoneCometHeadDrawer {
             float partialTicks,
             PoseStack poseStack,
             MultiBufferSource bufferSource,
-            VisualStyle visualStyle
+            GlintstoneVisualStyle visualStyle
     ) {
         if (visualStyle.glowAlongFlightScale() <= 1.05f) {
             return;
@@ -366,7 +227,7 @@ public final class GlintstoneCometHeadDrawer {
     private static void renderFlightAlignedGlowAlongDirection(
             PoseStack poseStack,
             MultiBufferSource bufferSource,
-            VisualStyle visualStyle,
+            GlintstoneVisualStyle visualStyle,
             Vec3 flightDirectionWorld,
             float animationTicks
     ) {
@@ -382,7 +243,7 @@ public final class GlintstoneCometHeadDrawer {
     private static void renderFlightAlignedGlowQuads(
             PoseStack poseStack,
             MultiBufferSource bufferSource,
-            VisualStyle visualStyle,
+            GlintstoneVisualStyle visualStyle,
             float animationTicks
     ) {
         float pulse = visualStyle.glowScale()
@@ -414,7 +275,7 @@ public final class GlintstoneCometHeadDrawer {
             PoseStack poseStack,
             MultiBufferSource bufferSource,
             EntityRenderDispatcher entityRenderDispatcher,
-            VisualStyle visualStyle,
+            GlintstoneVisualStyle visualStyle,
             float scale,
             float spinDegrees,
             int red,

@@ -1,8 +1,9 @@
 package com.eldenring.spells.particle.cometazur;
 
+import com.eldenring.spells.spell.CometAzurSpell;
+
 import com.eldenring.spells.client.render.AdditiveParticleRenderType;
 import com.eldenring.spells.registry.ModParticles;
-import com.eldenring.spells.tuning.CometAzurTuning;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -42,7 +43,7 @@ public class CometAzurVortexParticle extends TextureSheetParticle {
         this.zd = 0.0;
         this.hasPhysics = false;
         this.gravity = 0.0f;
-        this.lifetime = CometAzurTuning.STARTUP_DURATION_TICKS;
+        this.lifetime = CometAzurSpell.STARTUP_DURATION_TICKS;
         this.rollRadiansPerTick = options.rollRadiansPerTick();
         this.spawnSpirals = options.spawnSpirals();
         this.yawDegrees = options.yawDegrees();
@@ -50,8 +51,8 @@ public class CometAzurVortexParticle extends TextureSheetParticle {
         int spriteIndex = Mth.clamp(options.spriteIndex(), 0, 1);
         setSprite(sprites.get(spriteIndex, 1));
         this.birthQuadSize = spriteIndex == 1
-                ? CometAzurTuning.STARTUP_SHRINK_2_QUAD_SIZE_BLOCKS
-                : CometAzurTuning.STARTUP_SHRINK_1_QUAD_SIZE_BLOCKS;
+                ? CometAzurFx.STARTUP_SHRINK_2_QUAD_SIZE_BLOCKS
+                : CometAzurFx.STARTUP_SHRINK_1_QUAD_SIZE_BLOCKS;
         this.quadSize = this.birthQuadSize;
         this.birthAlpha = 0.95f;
         this.alpha = 0.0f;
@@ -116,10 +117,10 @@ public class CometAzurVortexParticle extends TextureSheetParticle {
                 upAxis
         ));
         try {
-            float[] spiralWValues = CometAzurTuning.STARTUP_SPIRAL_W_PER_CURVE;
-            int armCount = Math.max(1, CometAzurTuning.STARTUP_SPIRAL_ARM_COUNT);
-            int samplesPerCurve = Math.max(1, CometAzurTuning.STARTUP_SPIRAL_SAMPLES_PER_CURVE);
-            float maxAngleRadians = CometAzurTuning.STARTUP_SPIRAL_MAX_ANGLE_RADIANS;
+            float[] spiralWValues = CometAzurFx.STARTUP_SPIRAL_W_PER_CURVE;
+            int armCount = Math.max(1, CometAzurFx.STARTUP_SPIRAL_ARM_COUNT);
+            int samplesPerCurve = Math.max(1, CometAzurFx.STARTUP_SPIRAL_SAMPLES_PER_CURVE);
+            float maxAngleRadians = CometAzurFx.STARTUP_SPIRAL_MAX_ANGLE_RADIANS;
             for (int curveIndex = 0; curveIndex < spiralWValues.length; curveIndex++) {
                 float spiralW = spiralWValues[curveIndex];
                 for (int armIndex = 0; armIndex < armCount; armIndex++) {

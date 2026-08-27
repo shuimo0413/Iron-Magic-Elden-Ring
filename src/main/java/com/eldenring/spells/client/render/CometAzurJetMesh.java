@@ -1,6 +1,5 @@
 package com.eldenring.spells.client.render;
 
-import com.eldenring.spells.tuning.CometAzurTuning;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
@@ -9,6 +8,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import com.eldenring.spells.particle.cometazur.CometAzurFx;
 
 /**
  * 彗星亚兹勒喷流几何：口部 UV 圆球 + 沿朝向的圆管。
@@ -41,15 +41,15 @@ public final class CometAzurJetMesh {
             float tipRadiusBlocks,
             int colorArgb
     ) {
-        int sideCount = Math.max(6, CometAzurTuning.JET_BEAM_CYLINDER_SIDE_COUNT);
-        int ringCount = Math.max(3, CometAzurTuning.JET_BEAM_CYLINDER_RING_COUNT);
+        int sideCount = Math.max(6, CometAzurFx.JET_BEAM_CYLINDER_SIDE_COUNT);
+        int ringCount = Math.max(3, CometAzurFx.JET_BEAM_CYLINDER_RING_COUNT);
         Matrix4f poseMatrix = poseStack.last().pose();
         int red = unpackRed(colorArgb);
         int green = unpackGreen(colorArgb);
         int blue = unpackBlue(colorArgb);
         int alpha = unpackAlpha(colorArgb);
-        float mouthTextureV = CometAzurTuning.JET_BEAM_TEXTURE_MOUTH_V;
-        float tipTextureV = CometAzurTuning.JET_BEAM_TEXTURE_TIP_V;
+        float mouthTextureV = CometAzurFx.JET_BEAM_TEXTURE_MOUTH_V;
+        float tipTextureV = CometAzurFx.JET_BEAM_TEXTURE_TIP_V;
 
         for (int ringIndex = 0; ringIndex < ringCount - 1; ringIndex++) {
             float startProgress = ringIndex / (float) (ringCount - 1);
@@ -94,8 +94,8 @@ public final class CometAzurJetMesh {
             float radiusBlocks,
             int colorArgb
     ) {
-        int stackCount = Math.max(4, CometAzurTuning.JET_BEAM_SPHERE_STACK_COUNT);
-        int sliceCount = Math.max(6, CometAzurTuning.JET_BEAM_SPHERE_SLICE_COUNT);
+        int stackCount = Math.max(4, CometAzurFx.JET_BEAM_SPHERE_STACK_COUNT);
+        int sliceCount = Math.max(6, CometAzurFx.JET_BEAM_SPHERE_SLICE_COUNT);
         Matrix4f poseMatrix = poseStack.last().pose();
         int red = unpackRed(colorArgb);
         int green = unpackGreen(colorArgb);

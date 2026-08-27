@@ -1,7 +1,8 @@
 package com.eldenring.spells.client.render;
 
+import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
+
 import com.eldenring.spells.entity.FoundingRainOfStarsEntity;
-import com.eldenring.spells.tuning.FoundingRainOfStarsTuning;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -16,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import com.eldenring.spells.particle.foundingrain.FoundingRainFx;
 
 /**
  * 创星雨身前星云：水平贴天的一层软光面片（对照法环创星雨，不是一团球）。
@@ -75,8 +77,8 @@ public class FoundingRainNebulaRenderer extends EntityRenderer<FoundingRainOfSta
             return super.shouldRender(entity, frustum, cameraX, cameraY, cameraZ);
         }
         Vec3 cloudCenter = entity.overheadCloudCenter();
-        double pad = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_RADIUS_BLOCKS + 3.0;
-        double sheetPad = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_SHEET_THICKNESS_BLOCKS + 1.2;
+        double pad = FoundingRainOfStarsSpell.OVERHEAD_CLOUD_RADIUS_BLOCKS + 3.0;
+        double sheetPad = FoundingRainFx.OVERHEAD_CLOUD_SHEET_THICKNESS_BLOCKS + 1.2;
         AABB cloudBox = new AABB(
                 cloudCenter.x - pad,
                 cloudCenter.y - sheetPad,
@@ -239,16 +241,16 @@ public class FoundingRainNebulaRenderer extends EntityRenderer<FoundingRainOfSta
     }
 
     /**
-     * 雨云从出现到消失的透明度包络。单位：相对 {@link FoundingRainOfStarsTuning#overheadCloudSpawnTick()}。
+     * 雨云从出现到消失的透明度包络。单位：相对 {@link FoundingRainFx#overheadCloudSpawnTick()}。
      */
     private static float cloudFadeEnvelope(FoundingRainOfStarsEntity entity, float partialTick) {
-        float cloudAgeTicks = entity.tickCount + partialTick - FoundingRainOfStarsTuning.overheadCloudSpawnTick();
-        float lifetimeTicks = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_LIFETIME_TICKS;
+        float cloudAgeTicks = entity.tickCount + partialTick - FoundingRainFx.overheadCloudSpawnTick();
+        float lifetimeTicks = FoundingRainOfStarsSpell.OVERHEAD_CLOUD_LIFETIME_TICKS;
         if (cloudAgeTicks < 0.0f || cloudAgeTicks > lifetimeTicks) {
             return 0.0f;
         }
-        float fadeInEnd = FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FADE_IN_TICKS;
-        float fadeOutStart = lifetimeTicks - FoundingRainOfStarsTuning.OVERHEAD_CLOUD_FADE_OUT_TICKS;
+        float fadeInEnd = FoundingRainFx.OVERHEAD_CLOUD_FADE_IN_TICKS;
+        float fadeOutStart = lifetimeTicks - FoundingRainFx.OVERHEAD_CLOUD_FADE_OUT_TICKS;
         if (cloudAgeTicks < fadeInEnd) {
             float fadeInProgress = Mth.clamp(cloudAgeTicks / Math.max(1.0e-4f, fadeInEnd), 0.0f, 1.0f);
             return fadeInProgress * fadeInProgress * (3.0f - 2.0f * fadeInProgress);

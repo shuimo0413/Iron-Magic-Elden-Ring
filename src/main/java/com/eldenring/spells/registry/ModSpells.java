@@ -1,9 +1,12 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.spell.CarianSlicerSpell;
 import com.eldenring.spells.spell.CometAzurSpell;
 import com.eldenring.spells.spell.CometSpell;
 import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
+import com.eldenring.spells.spell.GavelOfHaimaSpell;
+import com.eldenring.spells.spell.MagicGlintbladeSpell;
 import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
@@ -78,6 +81,18 @@ public final class ModSpells {
     /** 彗星亚兹勒：2 秒蓄力后按住喷流，不能叠多发。 */
     public static final Supplier<AbstractSpell> COMET_AZUR =
             registerSpell(new CometAzurSpell());
+
+    /** 海摩大槌：身前巨锤砸地，直击 + 冲击波。 */
+    public static final Supplier<AbstractSpell> GAVEL_OF_HAIMA =
+            registerSpell(new GavelOfHaimaSpell());
+
+    /** 卡利亚迅剑：按住正反手连斩。 */
+    public static final Supplier<AbstractSpell> CARIAN_SLICER =
+            registerSpell(new CarianSlicerSpell());
+
+    /** 魔法辉剑：身前悬停后追踪飞出。 */
+    public static final Supplier<AbstractSpell> MAGIC_GLINTBLADE =
+            registerSpell(new MagicGlintbladeSpell());
 
     private ModSpells() {
     }
