@@ -67,6 +67,11 @@ public final class CarianSlicerCastCurve {
     public static final double GRIP_HEIGHT_BLOCKS = 0.92;
 
     /**
+     * 铁魔法 {@code horizontal_slash_one_handed} 片长（tick，20 tick = 1 秒）。原片 0.72 秒。
+     */
+    public static final float ONE_HANDED_SLASH_ANIMATION_LENGTH_TICKS = 14.4f;
+
+    /**
      * 剑刃沿本地 +Y 的长度（方块，含缩放），供斩击光弧外沿和粒子估尖端。
      */
     public static final double BLADE_LENGTH_BLOCKS = 1.28;
@@ -127,5 +132,13 @@ public final class CarianSlicerCastCurve {
 
     public static float endPitchDegrees(boolean backhandSlash) {
         return backhandSlash ? SWORD_START_PITCH_DEGREES : SWORD_END_PITCH_DEGREES;
+    }
+
+    /**
+     * 把 0.72 秒的单手横斩加速到当前单刀周期。周期缩短 → 动作更快。
+     */
+    public static float slashAnimationSpeed(int slashCycleTicks) {
+        float cycleTicks = Math.max(1.0f, slashCycleTicks);
+        return ONE_HANDED_SLASH_ANIMATION_LENGTH_TICKS / cycleTicks;
     }
 }

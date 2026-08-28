@@ -2,9 +2,9 @@ package com.eldenring.spells.spell;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
-import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.sigil.AcademySigilFx;
+import com.eldenring.spells.spell.fx.MagicGlintbladeFx;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -16,8 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -28,9 +26,11 @@ import java.util.Optional;
 import com.eldenring.spells.entity.GlintstoneTrailStyle;
 
 /**
- * 魔法辉剑（Magic Glintblade）：瞬时在身前偏右悬停一柄辉剑，短延迟后追踪飞出。
+ * 魔法辉剑（Magic Glintblade）：瞬时在身前偏右铺一盘卡利亚漩涡，剑在盘上平躺凝结，完成后追踪飞出。
  * <p>
  * 延迟写在实体上，不是 {@link CastType#LONG}。冷却允许同时挂多柄。
+ * 漩涡 / 凝结时序在 {@link com.eldenring.spells.spell.curve.MagicGlintbladeCastCurve}，
+ * 粒子与音效在 {@link MagicGlintbladeFx}。
  */
 public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
 
@@ -49,7 +49,7 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         /** 每级额外法术强度。 */
         public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
 
-        /** 吟唱 tick。0 = 瞬时生成悬停剑。 */
+        /** 吟唱 tick。0 = 瞬时生成漩涡，剑在实体上凝结。 */
         public static int SPELL_CAST_TIME_TICKS = 0;
 
         /**
@@ -84,19 +84,10 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         public static double HOVER_UP_OFFSET_BLOCKS = 0.18;
 
         /**
-         * 悬停阶段时长（tick）。到期后发射。调大 → 更像陷阱；调小 → 更快出手。
+         * 漩涡凝结总时长（tick）。到期后发射。调大 → 更像陷阱；调小 → 更快出手。
+         * 前段只铺漩涡、中段平躺长剑，时序比例见 CastCurve。
          */
-        public static int HOVER_DURATION_TICKS = 18;
-
-        /**
-         * 渲染用上下浮动振幅（方块）。只影响客户端视觉，不改碰撞。
-         */
-        public static float HOVER_BOB_AMPLITUDE_BLOCKS = 0.06f;
-
-        /**
-         * 渲染浮动角速度（弧度 / tick）。
-         */
-        public static float HOVER_BOB_RADIANS_PER_TICK = 0.28f;
+        public static int HOVER_DURATION_TICKS = 28;
 
         // —— 飞行 / 追踪 ——
 
@@ -140,7 +131,8 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         public static double TRACKING_AIM_HEIGHT_FRACTION = 0.68;
 
         /**
-         * 发射后忽略命中检测的 tick 数，避免刚加速就擦到施法者。
+         * 发射后忽略<strong>方块</strong>命中的 tick 数，避免刚加速嵌块立刻销毁。
+         * 实体命中从发射当 tick 就检测（主人已排除），否则贴身目标会被穿过去。
          */
         public static int COLLISION_GRACE_TICKS = 2;
 
@@ -157,12 +149,9 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         // —— 视觉 ——
 
         /**
-         * 模型整体缩放。辉剑比迅剑更细更长。
+         * 模型整体缩放。凝结剑要落在 1 格漩涡里，比迅剑明显更小。
          */
-        public static float SWORD_RENDER_SCALE = 1.05f;
-
-        /** 沿本地 X/Z 再乘一次，做出细长剑身。 */
-        public static float SWORD_RADIAL_SCALE = 0.72f;
+        public static float SWORD_RENDER_SCALE = 0.52f;
 
         /** 剑身自发光（更深的蓝）。 */
         public static int SWORD_BODY_COLOR_ARGB = 0xC01038B0;
@@ -243,9 +232,12 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         return spellResourceLocation;
     }
 
+    /**
+     * 凝结不是飞弹出手。起手音在漩涡里播，射出音等剑真正飞出再播，这里不要抢先响一次。
+     */
     @Override
     public Optional<SoundEvent> getCastFinishSound() {
-        return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
+        return Optional.empty();
     }
 
     @Override
@@ -265,37 +257,26 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
             AcademySigilFx.spawnAboveHead(level, castingEntity);
             MagicGlintbladeEntity glintbladeEntity = new MagicGlintbladeEntity(level, castingEntity);
             Vec3 lookDirection = castingEntity.getLookAngle();
-            Vec3 hoverPosition = computeHoverWorld(castingEntity, lookDirection, glintbladeEntity.getBbHeight());
+            Vec3 hoverPosition = computeHoverWorld(castingEntity, lookDirection);
             glintbladeEntity.setPos(hoverPosition);
             glintbladeEntity.setStoredLaunchDirection(lookDirection);
             glintbladeEntity.setDamage(getDamageAmount(spellLevel, castingEntity));
-
-            float yawDegrees = (float) (Mth.atan2(lookDirection.x, lookDirection.z) * Mth.RAD_TO_DEG);
-            float pitchDegrees = (float) (Mth.atan2(
-                    lookDirection.y,
-                    lookDirection.horizontalDistance()
-            ) * Mth.RAD_TO_DEG);
-            glintbladeEntity.setYRot(yawDegrees);
-            glintbladeEntity.setXRot(pitchDegrees);
-            glintbladeEntity.yRotO = yawDegrees;
-            glintbladeEntity.xRotO = pitchDegrees;
+            glintbladeEntity.lockHoverFacing(castingEntity.getYRot(), castingEntity.getXRot());
 
             level.addFreshEntity(glintbladeEntity);
-            GlintstoneFx.castBurst(
+            MagicGlintbladeFx.spawnOpeningVortex(
                     level,
-                    hoverPosition.x,
-                    hoverPosition.y + 0.35,
-                    hoverPosition.z,
-                    0.75f
+                    glintbladeEntity.vortexCenterWorld(),
+                    lookDirection
             );
         }
         super.onCast(level, spellLevel, castingEntity, castSource, playerMagicData);
     }
 
     /**
-     * 眼睛前方偏右偏上：法环辉剑挂在准星外侧，而不是从嘴里喷出来。
+     * 眼睛前方偏右偏上：漩涡和剑都钉在这一点，不要从嘴里喷出来。
      */
-    private static Vec3 computeHoverWorld(LivingEntity caster, Vec3 lookDirection, float entityHeight) {
+    private static Vec3 computeHoverWorld(LivingEntity caster, Vec3 lookDirection) {
         Vec3 forward = lookDirection.lengthSqr() > 1.0e-8 ? lookDirection.normalize() : new Vec3(0.0, 0.0, 1.0);
         Vec3 worldUp = new Vec3(0.0, 1.0, 0.0);
         Vec3 right = forward.cross(worldUp);
@@ -306,7 +287,6 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         }
         Vec3 planeUp = right.cross(forward).normalize();
         return caster.getEyePosition()
-                .subtract(0.0, entityHeight * 0.5, 0.0)
                 .add(forward.scale(MagicGlintbladeSpell.HOVER_FORWARD_OFFSET_BLOCKS))
                 .add(right.scale(MagicGlintbladeSpell.HOVER_RIGHT_OFFSET_BLOCKS))
                 .add(planeUp.scale(MagicGlintbladeSpell.HOVER_UP_OFFSET_BLOCKS));

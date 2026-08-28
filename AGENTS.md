@@ -38,6 +38,7 @@ src/main/java/com/eldenring/spells/
   registry/ModParticles.java   # 粒子 DeferredRegister
   registry/ModEntities.java    # 弹道等实体 DeferredRegister
   registry/ModSpells.java      # 法术 DeferredRegister（挂 SpellRegistry.SPELL_REGISTRY_KEY）
+  registry/ModSounds.java      # 施法音（SPELL_CAST 飞弹射出，SPELL_CAST_START 蓄力起手）
   registry/ModCreativeTabs.java
   spell/*.java                 # 法术本体（XxxSpell）；helper/curve/combat/fx/data 是被调用的函数
   entity/*.java                # 法术弹道等实体（可继承 AbstractMagicProjectile，非稳定 API）
@@ -70,6 +71,9 @@ src/main/resources/assets/elden_ring_spells/
   textures/item/<item_id>.png
   textures/particle/<particle_id>.png
   textures/gui/spell_icons/<spell_path>.png   # 必须与法术 ResourceLocation path 一致
+  sounds.json
+  sounds/spell_cast.ogg                       # 飞弹射出
+  sounds/spell_cast_start.ogg                 # 蓄力起手
 
 src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} 由 Gradle 展开）
 ```
@@ -98,6 +102,7 @@ src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} �
 8. 语言键：`spell.elden_ring_spells.<spell_path>`（en_us + zh_cn 都要）
 9. 图标：`assets/elden_ring_spells/textures/gui/spell_icons/<spell_path>.png`
 10. 施法逻辑写在 `onCast(...)`；服务端生效时判 `!level.isClientSide`；末尾调用 `super.onCast(...)`
+11. 弹道出手音用 `ModSounds.SPELL_CAST`，蓄力起手用 `ModSounds.SPELL_CAST_START`；不要用 `SoundEvents.AMETHYST_BLOCK_CHIME`。卡利亚迅剑除外（斩击自播）
 
 参考：`spell/GlintstonePebbleSpell.java`；完整调用顺序见 `法术解耦架构.md`。
 

@@ -1,11 +1,15 @@
 package com.eldenring.spells.config;
 
 import com.eldenring.spells.particle.cometazur.CometAzurFx;
+import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CarianSlicerSpell;
 import com.eldenring.spells.spell.CometAzurSpell;
 import com.eldenring.spells.spell.CometSpell;
+import com.eldenring.spells.spell.CrystalBarrageSpell;
+import com.eldenring.spells.spell.CrystalBurstSpell;
 import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
 import com.eldenring.spells.spell.GavelOfHaimaSpell;
+import com.eldenring.spells.spell.GlintstoneArcSpell;
 import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
@@ -13,6 +17,7 @@ import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
 import com.eldenring.spells.spell.StarShowerSpell;
+import com.eldenring.spells.spell.StarlightSpell;
 import com.eldenring.spells.spell.StarsOfRuinSpell;
 import com.eldenring.spells.spell.SwiftGlintstoneShardSpell;
 import com.eldenring.spells.spell.TerraMagicaSpell;
@@ -45,11 +50,16 @@ public final class EldenRingServerConfig {
     public static final VolleyValues STARS_OF_RUIN;
     public static final SpiralValues SPIRAL_SHARD;
     public static final FoundingRainValues FOUNDING_RAIN_OF_STARS;
+    public static final StarlightValues STARLIGHT;
     public static final TerraMagicaValues TERRA_MAGICA;
     public static final CometAzurValues COMET_AZUR;
     public static final GavelValues GAVEL_OF_HAIMA;
+    public static final CannonValues CANNON_OF_HAIMA;
     public static final CarianSlicerValues CARIAN_SLICER;
     public static final MagicGlintbladeValues MAGIC_GLINTBLADE;
+    public static final CrystalBarrageValues CRYSTAL_BARRAGE;
+    public static final CrystalBurstValues CRYSTAL_BURST;
+    public static final GlintstoneArcValues GLINTSTONE_ARC;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -164,11 +174,16 @@ public final class EldenRingServerConfig {
 
         SPIRAL_SHARD = SpiralValues.create(builder);
         FOUNDING_RAIN_OF_STARS = FoundingRainValues.create(builder);
+        STARLIGHT = StarlightValues.create(builder);
         TERRA_MAGICA = TerraMagicaValues.create(builder);
         COMET_AZUR = CometAzurValues.create(builder);
         GAVEL_OF_HAIMA = GavelValues.create(builder);
+        CANNON_OF_HAIMA = CannonValues.create(builder);
         CARIAN_SLICER = CarianSlicerValues.create(builder);
         MAGIC_GLINTBLADE = MagicGlintbladeValues.create(builder);
+        CRYSTAL_BARRAGE = CrystalBarrageValues.create(builder);
+        CRYSTAL_BURST = CrystalBurstValues.create(builder);
+        GLINTSTONE_ARC = GlintstoneArcValues.create(builder);
 
         SPEC = builder.build();
     }
@@ -287,11 +302,16 @@ public final class EldenRingServerConfig {
 
         SPIRAL_SHARD.apply();
         FOUNDING_RAIN_OF_STARS.apply();
+        STARLIGHT.apply();
         TERRA_MAGICA.apply();
         COMET_AZUR.apply();
         GAVEL_OF_HAIMA.apply();
+        CANNON_OF_HAIMA.apply();
         CARIAN_SLICER.apply();
         MAGIC_GLINTBLADE.apply();
+        CRYSTAL_BARRAGE.apply();
+        CRYSTAL_BURST.apply();
+        GLINTSTONE_ARC.apply();
     }
 
     private static void applyHoming(HomingValues values, HomingTarget target) {
@@ -656,6 +676,67 @@ public final class EldenRingServerConfig {
         }
     }
 
+    /**
+     * 星光玩法键：蓝耗 / 法强 / 持续 / 光源亮度。
+     */
+    public static final class StarlightValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.IntValue starDurationTicks;
+        private final ModConfigSpec.IntValue lightLevel;
+
+        private StarlightValues(
+                SpellBookKeys book,
+                ModConfigSpec.IntValue starDurationTicks,
+                ModConfigSpec.IntValue lightLevel
+        ) {
+            this.book = book;
+            this.starDurationTicks = starDurationTicks;
+            this.lightLevel = lightLevel;
+        }
+
+        static StarlightValues create(ModConfigSpec.Builder builder) {
+            builder.push("starlight");
+            StarlightValues values = new StarlightValues(
+                    SpellBookKeys.define(
+                            builder,
+                            StarlightSpell.SPELL_BASE_MANA_COST,
+                            StarlightSpell.SPELL_MANA_COST_PER_LEVEL,
+                            StarlightSpell.SPELL_BASE_SPELL_POWER,
+                            StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            StarlightSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.integer(
+                            builder,
+                            "star_duration_ticks",
+                            "星星持续（tick）。2400=120 秒。",
+                            StarlightSpell.STAR_DURATION_TICKS,
+                            20,
+                            72_000
+                    ),
+                    ConfigSpecHelper.integer(
+                            builder,
+                            "light_level",
+                            "中心光源亮度（0–15）。14=原版火把。",
+                            StarlightSpell.LIGHT_LEVEL,
+                            0,
+                            15
+                    )
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            StarlightSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            StarlightSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            StarlightSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
+            StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            StarlightSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            StarlightSpell.STAR_DURATION_TICKS = starDurationTicks.get();
+            StarlightSpell.LIGHT_LEVEL = lightLevel.get();
+        }
+    }
+
     public static final class TerraMagicaValues {
         private final SpellBookKeys book;
         private final ModConfigSpec.DoubleValue zoneRadiusBlocks;
@@ -834,6 +915,63 @@ public final class EldenRingServerConfig {
         }
     }
 
+    /**
+     * 海摩炮弹玩法键：蓝耗 / 法强 / 蓄力 tick / 弹速 / 爆炸半径 / 伤害系数 / 击退。
+     */
+    public static final class CannonValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.DoubleValue explosionRadius;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue knockback;
+
+        private CannonValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.DoubleValue explosionRadius,
+                ModConfigSpec.DoubleValue flightSpeed,
+                ModConfigSpec.DoubleValue knockback
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.explosionRadius = explosionRadius;
+            this.flightSpeed = flightSpeed;
+            this.knockback = knockback;
+        }
+
+        static CannonValues create(ModConfigSpec.Builder builder) {
+            builder.push("cannon_of_haima");
+            CannonValues values = new CannonValues(
+                    SpellBookKeys.define(
+                            builder,
+                            CannonOfHaimaSpell.SPELL_BASE_MANA_COST,
+                            CannonOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL,
+                            CannonOfHaimaSpell.SPELL_BASE_SPELL_POWER,
+                            CannonOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            CannonOfHaimaSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(builder, "damage_per_spell_power", "爆炸伤害 = 法强 × 本系数。", CannonOfHaimaSpell.DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.floating(builder, "explosion_radius_blocks", "爆炸半径（方块）。落地或碰敌立刻结算。", CannonOfHaimaSpell.EXPLOSION_RADIUS_BLOCKS, 0.5, 32.0),
+                    ConfigSpecHelper.floating(builder, "projectile_flight_speed", "出手初速（方块/tick）。越大抛物线越平、射得越远。", CannonOfHaimaSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0),
+                    ConfigSpecHelper.floating(builder, "explosion_knockback_strength", "爆炸击退强度。", CannonOfHaimaSpell.EXPLOSION_KNOCKBACK_STRENGTH, 0.0, 8.0)
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            CannonOfHaimaSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            CannonOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            CannonOfHaimaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
+            CannonOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CannonOfHaimaSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            CannonOfHaimaSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            CannonOfHaimaSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadius.get().floatValue();
+            CannonOfHaimaSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            CannonOfHaimaSpell.EXPLOSION_KNOCKBACK_STRENGTH = knockback.get();
+        }
+    }
+
     public static final class CarianSlicerValues {
         private final SpellBookKeys book;
         private final ModConfigSpec.DoubleValue slashDamage;
@@ -924,7 +1062,7 @@ public final class EldenRingServerConfig {
             MagicGlintbladeValues values = new MagicGlintbladeValues(
                     book,
                     ConfigSpecHelper.floating(builder, "damage_per_spell_power", "命中伤害 = 法强 × 本系数。", MagicGlintbladeSpell.DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
-                    ConfigSpecHelper.integer(builder, "hover_duration_ticks", "悬停蓄势时长（tick）。到期后发射。", MagicGlintbladeSpell.HOVER_DURATION_TICKS, 0, 200),
+                    ConfigSpecHelper.integer(builder, "hover_duration_ticks", "漩涡凝结时长（tick）。到期后发射。", MagicGlintbladeSpell.HOVER_DURATION_TICKS, 0, 200),
                     HomingFlightKeys.define(builder, new HomingSeed(
                             MagicGlintbladeSpell.SPELL_BASE_MANA_COST,
                             MagicGlintbladeSpell.SPELL_MANA_COST_PER_LEVEL,
@@ -953,6 +1091,309 @@ public final class EldenRingServerConfig {
             MagicGlintbladeSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
             MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
             MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
+        }
+    }
+
+    /**
+     * 结晶连弹玩法键：蓝耗 / 法强 / 最长按住 / 弹速 / 射程 / 散射半角 / 连射间隔 / 伤害系数。
+     */
+    public static final class CrystalBarrageValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue maxRangeBlocks;
+        private final ModConfigSpec.DoubleValue scatterHalfAngleDegrees;
+        private final ModConfigSpec.IntValue shardSpawnIntervalTicks;
+
+        private CrystalBarrageValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.DoubleValue flightSpeed,
+                ModConfigSpec.DoubleValue maxRangeBlocks,
+                ModConfigSpec.DoubleValue scatterHalfAngleDegrees,
+                ModConfigSpec.IntValue shardSpawnIntervalTicks
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.scatterHalfAngleDegrees = scatterHalfAngleDegrees;
+            this.shardSpawnIntervalTicks = shardSpawnIntervalTicks;
+        }
+
+        static CrystalBarrageValues create(ModConfigSpec.Builder builder) {
+            builder.push("crystal_barrage");
+            CrystalBarrageValues values = new CrystalBarrageValues(
+                    SpellBookKeys.define(
+                            builder,
+                            CrystalBarrageSpell.SPELL_BASE_MANA_COST,
+                            CrystalBarrageSpell.SPELL_MANA_COST_PER_LEVEL,
+                            CrystalBarrageSpell.SPELL_BASE_SPELL_POWER,
+                            CrystalBarrageSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            CrystalBarrageSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "spell_damage_per_spell_power",
+                            "单片伤害 = 法强 × 本系数。连射很密，默认比迅魔砾单发低。",
+                            CrystalBarrageSpell.SPELL_DAMAGE_PER_SPELL_POWER,
+                            0.0,
+                            20.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_flight_speed",
+                            "碎片速度（方块/tick）。越大越难躲。",
+                            CrystalBarrageSpell.PROJECTILE_FLIGHT_SPEED,
+                            0.05,
+                            8.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_max_range_blocks",
+                            "直线最大射程（方块）。超过就碎裂消失。",
+                            CrystalBarrageSpell.PROJECTILE_MAX_RANGE_BLOCKS,
+                            2.0,
+                            64.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "scatter_half_angle_degrees",
+                            "散射锥半角（度）。调大更散，不会叠成一条线。",
+                            CrystalBarrageSpell.SCATTER_HALF_ANGLE_DEGREES,
+                            1.0,
+                            45.0
+                    ),
+                    ConfigSpecHelper.integer(
+                            builder,
+                            "shard_spawn_interval_ticks",
+                            "相邻两发间隔（tick）。1=每 tick 一发。",
+                            CrystalBarrageSpell.SHARD_SPAWN_INTERVAL_TICKS,
+                            1,
+                            20
+                    )
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            CrystalBarrageSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            CrystalBarrageSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            CrystalBarrageSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
+            CrystalBarrageSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CrystalBarrageSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            CrystalBarrageSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            CrystalBarrageSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            CrystalBarrageSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            CrystalBarrageSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
+            CrystalBarrageSpell.SHARD_SPAWN_INTERVAL_TICKS = shardSpawnIntervalTicks.get();
+        }
+    }
+
+    /**
+     * 结晶散射玩法键：蓝耗 / 法强 / 弹速 / 射程 / 散射半角 / 齐射片数 / 伤害系数。
+     */
+    public static final class CrystalBurstValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue maxRangeBlocks;
+        private final ModConfigSpec.DoubleValue scatterHalfAngleDegrees;
+        private final ModConfigSpec.IntValue projectileCount;
+
+        private CrystalBurstValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.DoubleValue flightSpeed,
+                ModConfigSpec.DoubleValue maxRangeBlocks,
+                ModConfigSpec.DoubleValue scatterHalfAngleDegrees,
+                ModConfigSpec.IntValue projectileCount
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.scatterHalfAngleDegrees = scatterHalfAngleDegrees;
+            this.projectileCount = projectileCount;
+        }
+
+        static CrystalBurstValues create(ModConfigSpec.Builder builder) {
+            builder.push("crystal_burst");
+            CrystalBurstValues values = new CrystalBurstValues(
+                    SpellBookKeys.define(
+                            builder,
+                            CrystalBurstSpell.SPELL_BASE_MANA_COST,
+                            CrystalBurstSpell.SPELL_MANA_COST_PER_LEVEL,
+                            CrystalBurstSpell.SPELL_BASE_SPELL_POWER,
+                            CrystalBurstSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            CrystalBurstSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "spell_damage_per_spell_power",
+                            "单片伤害 = 法强 × 本系数。齐射很密，默认比迅魔砾单发低。",
+                            CrystalBurstSpell.SPELL_DAMAGE_PER_SPELL_POWER,
+                            0.0,
+                            20.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_flight_speed",
+                            "碎片速度（方块/tick）。越大越难躲。",
+                            CrystalBurstSpell.PROJECTILE_FLIGHT_SPEED,
+                            0.05,
+                            8.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_max_range_blocks",
+                            "直线最大射程（方块）。超过就碎裂消失。",
+                            CrystalBurstSpell.PROJECTILE_MAX_RANGE_BLOCKS,
+                            2.0,
+                            64.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "scatter_half_angle_degrees",
+                            "散射锥半角（度）。比结晶连弹更开。调大更散。",
+                            CrystalBurstSpell.SCATTER_HALF_ANGLE_DEGREES,
+                            1.0,
+                            60.0
+                    ),
+                    ConfigSpecHelper.integer(
+                            builder,
+                            "projectile_count",
+                            "一次齐射的碎片数量。",
+                            CrystalBurstSpell.PROJECTILE_COUNT,
+                            2,
+                            32
+                    )
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            CrystalBurstSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            CrystalBurstSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            CrystalBurstSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
+            CrystalBurstSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CrystalBurstSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            CrystalBurstSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            CrystalBurstSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            CrystalBurstSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            CrystalBurstSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
+            CrystalBurstSpell.PROJECTILE_COUNT = projectileCount.get();
+        }
+    }
+
+    /**
+     * 辉石弯弧玩法键：蓝耗 / 法强 / 弹速 / 射程 / 起止半宽 / 穿透次数 / 伤害系数。
+     */
+    public static final class GlintstoneArcValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue maxRangeBlocks;
+        private final ModConfigSpec.DoubleValue startHalfWidthBlocks;
+        private final ModConfigSpec.DoubleValue maxHalfWidthBlocks;
+        private final ModConfigSpec.IntValue maxEntityHits;
+
+        private GlintstoneArcValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.DoubleValue flightSpeed,
+                ModConfigSpec.DoubleValue maxRangeBlocks,
+                ModConfigSpec.DoubleValue startHalfWidthBlocks,
+                ModConfigSpec.DoubleValue maxHalfWidthBlocks,
+                ModConfigSpec.IntValue maxEntityHits
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.startHalfWidthBlocks = startHalfWidthBlocks;
+            this.maxHalfWidthBlocks = maxHalfWidthBlocks;
+            this.maxEntityHits = maxEntityHits;
+        }
+
+        static GlintstoneArcValues create(ModConfigSpec.Builder builder) {
+            builder.push("glintstone_arc");
+            GlintstoneArcValues values = new GlintstoneArcValues(
+                    SpellBookKeys.define(
+                            builder,
+                            GlintstoneArcSpell.SPELL_BASE_MANA_COST,
+                            GlintstoneArcSpell.SPELL_MANA_COST_PER_LEVEL,
+                            GlintstoneArcSpell.SPELL_BASE_SPELL_POWER,
+                            GlintstoneArcSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            GlintstoneArcSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "spell_damage_per_spell_power",
+                            "单次命中伤害 = 法强 × 本系数。弯弧能穿一排，默认略低于魔砾。",
+                            GlintstoneArcSpell.SPELL_DAMAGE_PER_SPELL_POWER,
+                            0.0,
+                            20.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_flight_speed",
+                            "弯弧速度（方块/tick）。越大越难躲。",
+                            GlintstoneArcSpell.PROJECTILE_FLIGHT_SPEED,
+                            0.05,
+                            8.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_max_range_blocks",
+                            "直线最大射程（方块）。超过就碎裂消失。",
+                            GlintstoneArcSpell.PROJECTILE_MAX_RANGE_BLOCKS,
+                            2.0,
+                            64.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "arc_start_half_width_blocks",
+                            "出手时弯弧半宽（方块）。调大 → 出手就已经很宽。",
+                            GlintstoneArcSpell.ARC_START_HALF_WIDTH_BLOCKS,
+                            0.3,
+                            16.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "arc_max_half_width_blocks",
+                            "飞到最大射程时的弯弧半宽（方块）。调大 → 横向扩散更夸张。",
+                            GlintstoneArcSpell.ARC_MAX_HALF_WIDTH_BLOCKS,
+                            0.5,
+                            24.0
+                    ),
+                    ConfigSpecHelper.integer(
+                            builder,
+                            "max_entity_hits",
+                            "最多穿透命中次数。每个敌人只结算一次。",
+                            GlintstoneArcSpell.PROJECTILE_MAX_ENTITY_HITS,
+                            1,
+                            64
+                    )
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            GlintstoneArcSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            GlintstoneArcSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            GlintstoneArcSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
+            GlintstoneArcSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            GlintstoneArcSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            GlintstoneArcSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            GlintstoneArcSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            GlintstoneArcSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            GlintstoneArcSpell.ARC_START_HALF_WIDTH_BLOCKS = startHalfWidthBlocks.get().floatValue();
+            GlintstoneArcSpell.ARC_MAX_HALF_WIDTH_BLOCKS = maxHalfWidthBlocks.get().floatValue();
+            GlintstoneArcSpell.PROJECTILE_MAX_ENTITY_HITS = maxEntityHits.get();
         }
     }
 }

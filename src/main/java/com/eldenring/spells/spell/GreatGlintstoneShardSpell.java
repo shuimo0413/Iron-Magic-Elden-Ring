@@ -15,13 +15,10 @@ import io.redspace.ironsspellbooks.api.util.Utils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
-import java.util.Optional;
 import com.eldenring.spells.entity.GlintstoneTrailStyle;
 
 /**
@@ -136,11 +133,6 @@ public class GreatGlintstoneShardSpell extends EldenRingAbstractSpell {
     @Override
     public ResourceLocation getSpellResource() {
         return spellResourceLocation;
-    }
-
-    @Override
-    public Optional<SoundEvent> getCastFinishSound() {
-        return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
     }
 
     /** 服务端生成大魔砾弹道；爆炸逻辑在 {@link GreatGlintstoneShardProjectile} 命中时触发。 */

@@ -3,6 +3,8 @@ package com.eldenring.spells.client.render.carian;
 import com.eldenring.spells.client.render.ProjectileOrientation;
 import com.eldenring.spells.client.render.glintstone.GlintstoneTrailRenderer;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
+import com.eldenring.spells.spell.MagicGlintbladeSpell;
+import com.eldenring.spells.spell.curve.MagicGlintbladeCastCurve;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -18,10 +20,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import com.eldenring.spells.spell.MagicGlintbladeSpell;
 
 /**
- * 魔法辉剑客户端渲染：悬停时竖直漂浮，发射后刃尖对准速度并拖一条短蓝光带。
+ * 魔法辉剑客户端渲染：Blockbench 网格 + 半透明自发光。
+ * 凝结时平躺、刃尖朝出手方向由小变大，射出后沿速度飞出。
  */
 public class MagicGlintbladeRenderer extends EntityRenderer<MagicGlintbladeEntity> {
 
@@ -29,13 +31,13 @@ public class MagicGlintbladeRenderer extends EntityRenderer<MagicGlintbladeEntit
 
     public MagicGlintbladeRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.swordRoot = context.bakeLayer(CarianSwordModels.SWORD_LAYER);
+        this.swordRoot = context.bakeLayer(MagicGlintbladeModels.GLINTBLADE_LAYER);
         this.shadowRadius = 0.0f;
     }
 
     @Override
     public ResourceLocation getTextureLocation(MagicGlintbladeEntity entity) {
-        return CarianSwordModels.SWORD_BODY_TEXTURE;
+        return MagicGlintbladeModels.GLINTBLADE_BODY_TEXTURE;
     }
 
     @Override
@@ -67,65 +69,91 @@ public class MagicGlintbladeRenderer extends EntityRenderer<MagicGlintbladeEntit
             );
         }
 
+        float hoverAgeTicks = entity.tickCount + partialTicks;
+        int hoverDurationTicks = MagicGlintbladeSpell.HOVER_DURATION_TICKS;
+        float swordScale = entity.hasLaunched()
+                ? 1.0f
+                : MagicGlintbladeCastCurve.swordScale(hoverAgeTicks, hoverDurationTicks);
+
         poseStack.pushPose();
         if (!entity.hasLaunched()) {
-            float bob = Mth.sin((entity.tickCount + partialTicks) * MagicGlintbladeSpell.HOVER_BOB_RADIANS_PER_TICK)
-                    * MagicGlintbladeSpell.HOVER_BOB_AMPLITUDE_BLOCKS;
-            poseStack.translate(0.0, bob, 0.0);
-            poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getYRot()));
-            // 悬停时刃尖略朝前上方，像挂在空中蓄势
-            poseStack.mulPose(Axis.XP.rotationDegrees(12.0f));
+            applyHoverBladePose(poseStack, entity);
         } else {
             ProjectileOrientation.alignPoseToDeltaMovement(poseStack, entity, partialTicks);
-            // 模型刃沿 +Y，弹道朝向工具把 -Z 对准速度，再转 -90° 让刃尖朝前
             poseStack.mulPose(Axis.XP.rotationDegrees(-90.0f));
         }
+        // 宽厚已经写进 Blockbench 网格，不要再径向压扁。
         poseStack.scale(
-                MagicGlintbladeSpell.SWORD_RENDER_SCALE * MagicGlintbladeSpell.SWORD_RADIAL_SCALE,
-                MagicGlintbladeSpell.SWORD_RENDER_SCALE,
-                MagicGlintbladeSpell.SWORD_RENDER_SCALE * MagicGlintbladeSpell.SWORD_RADIAL_SCALE
+                MagicGlintbladeSpell.SWORD_RENDER_SCALE * swordScale,
+                MagicGlintbladeSpell.SWORD_RENDER_SCALE * swordScale,
+                MagicGlintbladeSpell.SWORD_RENDER_SCALE * swordScale
         );
 
-        VertexConsumer bodyConsumer = bufferSource.getBuffer(
-                RenderType.entityTranslucentEmissive(CarianSwordModels.SWORD_BODY_TEXTURE)
-        );
-        swordRoot.getChild(CarianSwordModels.POMMEL_PART).render(
-                poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                MagicGlintbladeSpell.SWORD_BODY_COLOR_ARGB
-        );
-        swordRoot.getChild(CarianSwordModels.HANDLE_PART).render(
-                poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                MagicGlintbladeSpell.SWORD_BODY_COLOR_ARGB
-        );
-        swordRoot.getChild(CarianSwordModels.GUARD_PART).render(
-                poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                MagicGlintbladeSpell.SWORD_BLADE_COLOR_ARGB
-        );
-        swordRoot.getChild(CarianSwordModels.BLADE_PART).render(
-                poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                MagicGlintbladeSpell.SWORD_BLADE_COLOR_ARGB
-        );
-        swordRoot.getChild(CarianSwordModels.EDGE_PART).render(
-                poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                MagicGlintbladeSpell.SWORD_EDGE_COLOR_ARGB
-        );
+        if (swordScale > 0.02f) {
+            VertexConsumer bodyConsumer = bufferSource.getBuffer(
+                    RenderType.entityTranslucentEmissive(MagicGlintbladeModels.GLINTBLADE_BODY_TEXTURE)
+            );
+            swordRoot.getChild(MagicGlintbladeModels.POMMEL_PART).render(
+                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    MagicGlintbladeSpell.SWORD_BODY_COLOR_ARGB
+            );
+            swordRoot.getChild(MagicGlintbladeModels.HANDLE_PART).render(
+                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    MagicGlintbladeSpell.SWORD_BODY_COLOR_ARGB
+            );
+            swordRoot.getChild(MagicGlintbladeModels.GUARD_PART).render(
+                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    MagicGlintbladeSpell.SWORD_BLADE_COLOR_ARGB
+            );
+            swordRoot.getChild(MagicGlintbladeModels.BLADE_PART).render(
+                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    MagicGlintbladeSpell.SWORD_BLADE_COLOR_ARGB
+            );
+            swordRoot.getChild(MagicGlintbladeModels.RIDGE_PART).render(
+                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    MagicGlintbladeSpell.SWORD_EDGE_COLOR_ARGB
+            );
+            swordRoot.getChild(MagicGlintbladeModels.EDGE_PART).render(
+                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    MagicGlintbladeSpell.SWORD_EDGE_COLOR_ARGB
+            );
+        }
         poseStack.popPose();
 
-        renderHoverGlow(entity, partialTicks, poseStack, bufferSource);
+        renderHoverGlow(entity, partialTicks, swordScale, poseStack, bufferSource);
         super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
     }
 
     /**
-     * 悬停阶段在刃中段叠一层朝向相机的柔光，发射后光斑缩小以免盖住剑身。
+     * 凝结姿态：刃尖沿出手瞬间视线平躺（宽面朝天、护手水平）。
+     * <p>
+     * 朝向只读实体上锁死的同步 yaw/pitch，不读 {@code entityYaw}。
+     * 弹道基类在速度为零时会把 yRot 拧成 0，用渲染器传入的 yaw 会让剑永远指南、看起来像斜 45°。
+     */
+    private static void applyHoverBladePose(PoseStack poseStack, MagicGlintbladeEntity entity) {
+        float yawDegrees = entity.hoverYawDegrees();
+        float pitchDegrees = entity.hoverPitchDegrees();
+        poseStack.mulPose(Axis.YP.rotationDegrees(-yawDegrees));
+        poseStack.mulPose(Axis.XP.rotationDegrees(pitchDegrees + 90.0f));
+    }
+
+    /**
+     * 漩涡核柔光。纯漩涡段只留一小点；凝结时随剑变大；射出后缩小以免盖住剑身。
      */
     private void renderHoverGlow(
             MagicGlintbladeEntity entity,
             float partialTicks,
+            float swordScale,
             PoseStack poseStack,
             MultiBufferSource bufferSource
     ) {
         float pulse = 1.0f + Mth.sin((entity.tickCount + partialTicks) * 0.45f) * 0.12f;
-        float scale = entity.hasLaunched() ? 0.55f * pulse : 0.95f * pulse;
+        float scale;
+        if (entity.hasLaunched()) {
+            scale = 0.38f * pulse;
+        } else {
+            scale = (0.20f + 0.42f * swordScale) * pulse;
+        }
         int glowColor = MagicGlintbladeSpell.SWORD_GLOW_COLOR_ARGB;
         int red = (glowColor >> 16) & 0xFF;
         int green = (glowColor >> 8) & 0xFF;
@@ -133,12 +161,11 @@ public class MagicGlintbladeRenderer extends EntityRenderer<MagicGlintbladeEntit
         int alpha = (glowColor >> 24) & 0xFF;
 
         poseStack.pushPose();
-        poseStack.translate(0.0, entity.hasLaunched() ? 0.0 : 0.45, 0.0);
         poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
         poseStack.scale(scale, scale, scale);
         Matrix4f matrix = poseStack.last().pose();
         VertexConsumer consumer = bufferSource.getBuffer(
-                RenderType.entityTranslucentEmissive(CarianSwordModels.SWORD_GLOW_TEXTURE)
+                RenderType.entityTranslucentEmissive(MagicGlintbladeModels.GLINTBLADE_GLOW_TEXTURE)
         );
         int color = (alpha << 24) | (red << 16) | (green << 8) | blue;
         consumer.addVertex(matrix, -0.5f, -0.5f, 0.0f)

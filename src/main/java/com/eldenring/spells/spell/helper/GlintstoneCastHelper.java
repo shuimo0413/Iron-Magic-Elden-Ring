@@ -25,13 +25,22 @@ import java.util.function.BiFunction;
  *   <li>从眼睛沿视线前移到 Spell 指定的生成点；</li>
  *   <li>射线碰到墙则把点收回墙前；</li>
  *   <li>再按弹体碰撞箱厚度做回退 / 轴向挪动，直到箱子不嵌块；</li>
- *   <li>写入飞行方向、yaw/pitch、伤害，再刷实体；</li>
- *   <li>可选：在生成点再往前一点刷施法爆发粒子。</li>
+ *   <li>写入飞行方向、yaw/pitch、伤害，再刷实体。</li>
  * </ol>
  * 连发流星（辉石流星 / 流星雨 / 毁灭流星）也走这里，只是 {@code shootDirection}
  * 和 {@code lookPlaneOffset} 由齐射实体按圆阵顶点算好再传入。
+ * <p>
+ * 不再在准星前方刷 {@link GlintstoneFx#castBurst}：绽光会胀成一颗挡视野的魔力球。
  */
 public final class GlintstoneCastHelper {
+
+    /**
+     * 出手瞬间是否在准星前方刷绽光球。
+     * {@code false}：第一人称不会被胀开的 {@code GLINTSTONE_FLARE} 糊住准星。
+     * 签名里的 burst 参数仍从各 Spell 传入，改回 {@code true} 即可恢复，不必改调用点。
+     */
+    private static final boolean SPAWN_FRONT_CAST_BURST = false;
+
     private GlintstoneCastHelper() {
     }
 
@@ -44,11 +53,11 @@ public final class GlintstoneCastHelper {
      *
      * @param projectileFactory              弹道工厂，通常写 {@code XxxProjectile::new}
      * @param spawnForwardOffsetBlocks       生成点相对眼睛、沿视线前移的距离（方块）。太小容易嵌进玩家自己，太大容易穿墙
-     * @param castBurstForwardOffsetBlocks   爆发粒子相对生成点再沿视线前移的距离（方块）
-     * @param castBurstIntensity             爆发粒子密度倍率；1.0 为魔砾基准，大弹可略大于 1
+     * @param castBurstForwardOffsetBlocks   爆发粒子相对生成点再沿视线前移的距离（方块）。当前被 {@link #SPAWN_FRONT_CAST_BURST} 关掉
+     * @param castBurstIntensity             爆发粒子密度倍率；1.0 为魔砾基准。当前被关掉，调用点可继续传
      * @param damageAmount                   已算好的命中伤害（Spell 里用 spellPower × 伤害系数）
      * @param shootDirection                 飞行方向；单发法术传 {@code castingEntity.getLookAngle()} 即可
-     * @param playCastBurst                  {@code true} 刷出手闪光；连发里只有第一发或齐射自己刷时才开
+     * @param playCastBurst                  调用点仍可传；实际是否刷光由 {@link #SPAWN_FRONT_CAST_BURST} 总闸决定
      */
     public static AbstractGlintstoneProjectile spawnAlongLook(
             Level level,
@@ -135,7 +144,7 @@ public final class GlintstoneCastHelper {
         projectile.setDamage(damageAmount);
         level.addFreshEntity(projectile);
 
-        if (playCastBurst) {
+        if (SPAWN_FRONT_CAST_BURST && playCastBurst) {
             Vec3 castBurstPosition = spawnPosition.add(lookDirection.scale(castBurstForwardOffsetBlocks));
             GlintstoneFx.castBurst(
                     level,

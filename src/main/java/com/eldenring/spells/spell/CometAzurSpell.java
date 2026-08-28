@@ -3,6 +3,7 @@ package com.eldenring.spells.spell;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.particle.cometazur.CometAzurFx;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.spell.data.CometAzurCastData;
 import com.eldenring.spells.spell.helper.CometAzurCasting;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
@@ -19,7 +20,6 @@ import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -116,9 +116,12 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
         return spellResourceLocation;
     }
 
+    /**
+     * 前两秒蓄力用起手音；喷流真正打出时在 {@link #onServerCastTick} 里另播飞弹射出音。
+     */
     @Override
     public Optional<SoundEvent> getCastStartSound() {
-        return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
+        return Optional.of(ModSounds.SPELL_CAST_START.get());
     }
 
     @Override
@@ -193,6 +196,7 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
         }
         if (castData.tryMarkChargeShockwaveSpawned()) {
             CometAzurFx.spawnChargeShockwave(level, castData);
+            ModSounds.playProjectileLaunch(level, entity);
         }
         CometAzurCasting.ensureJetEntity(level, entity, castData, getDamage(spellLevel, entity), spellLevel);
         int jetElapsedTicks = elapsedCastTicks - STARTUP_DURATION_TICKS;

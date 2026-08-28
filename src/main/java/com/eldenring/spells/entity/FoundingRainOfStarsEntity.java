@@ -137,19 +137,6 @@ public class FoundingRainOfStarsEntity extends Projectile {
             return;
         }
 
-        if (tickInWindow == 0) {
-            level().playSound(
-                    null,
-                    caster.getX(),
-                    caster.getY(),
-                    caster.getZ(),
-                    SoundEvents.AMETHYST_BLOCK_CHIME,
-                    SoundSource.PLAYERS,
-                    0.70f,
-                    1.35f
-            );
-        }
-
         int remainingWindowTicks = staggerWindowTicks - tickInWindow;
         int remainingMoteCount = totalMoteCount - spawnedAscentMoteCount;
         int motesThisTick = Math.max(1, (remainingMoteCount + remainingWindowTicks - 1) / remainingWindowTicks);

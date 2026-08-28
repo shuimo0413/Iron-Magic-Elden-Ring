@@ -17,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
@@ -101,9 +100,12 @@ public class GavelOfHaimaSpell extends EldenRingAbstractSpell {
         return spellResourceLocation;
     }
 
+    /**
+     * 大槌没有飞弹。砸地音由 {@code GavelOfHaimaFx} 自己播，不要套射出音。
+     */
     @Override
     public Optional<SoundEvent> getCastFinishSound() {
-        return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
+        return Optional.empty();
     }
 
     /**

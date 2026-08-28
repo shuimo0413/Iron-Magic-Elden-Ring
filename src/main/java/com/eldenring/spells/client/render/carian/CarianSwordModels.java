@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
  * 卡利亚辉剑 Java 立方体模型（单位约 1/16 方块；{@link net.minecraft.client.model.ModelPart#render} 已换算）。
  * <p>
  * 坐标系：枢轴在握柄中下部，+Y 为刃尖方向。
- * 迅剑与辉剑共用网格，渲染器靠缩放区分长短粗细。
+ * 仅卡利亚迅剑使用；魔法辉剑见 {@link MagicGlintbladeModels}。
  */
 public final class CarianSwordModels {
 

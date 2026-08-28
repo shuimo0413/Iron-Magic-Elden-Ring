@@ -3,6 +3,7 @@ package com.eldenring.spells.client;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.CarianSlicerEntity;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.spell.CarianSlicerSpell;
 import com.eldenring.spells.spell.curve.CarianSlicerCastCurve;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
@@ -11,7 +12,7 @@ import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
-import dev.kosmx.playerAnim.api.layered.modifier.MirrorModifier;
+import dev.kosmx.playerAnim.api.layered.modifier.SpeedModifier;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Ease;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
@@ -43,10 +44,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 卡利亚迅剑客户端：松手停连斩、隐藏蓄力条、每一刀重播左右挥砍动作。
+ * 卡利亚迅剑客户端：松手停连斩、隐藏蓄力条、每一刀只重播右手动作。
  * <p>
  * 铁魔法 CONTINUOUS 默认只会在起手播一次动作，并且会画蓄力条。迅剑要看起来像近战连斩，
- * 所以这里按实体连斩序号自己重播 {@code horizontal_slash_one_handed}；反手再套一层镜像。
+ * 所以这里按实体连斩序号重播 {@code horizontal_slash_one_handed}，但关掉除右手外的通道。
+ * 左右挥砍由身前的剑实体自己做，不再镜像到左手。
  */
 @EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class CarianSlicerClientHold {
@@ -118,7 +120,7 @@ public final class CarianSlicerClientHold {
     }
 
     /**
-     * 附近每把迅剑换刀时，给持有者重播一次挥砍。偶数刀原向，奇数刀镜像（左手方向）。
+     * 附近每把迅剑换刀时，给持有者重播一次右手横斩。剑本身在身前左右挥，手臂只给一点右手动作。
      */
     private static void replaySlashAnimations(LocalPlayer localPlayer) {
         AABB searchBox = localPlayer.getBoundingBox().inflate(32.0);
@@ -142,16 +144,16 @@ public final class CarianSlicerClientHold {
                 continue;
             }
             lastPlayedComboBySlicerId.put(slicerId, comboIndex);
-            playHorizontalSlash(clientPlayer, slicerEntity.isBackhandSlash());
+            playRightHandSlash(clientPlayer);
         }
         lastPlayedComboBySlicerId.keySet().removeIf(slicerId -> !seenSlicerIds.contains(slicerId));
     }
 
     /**
-     * 重播铁魔法的单手横斩。{@code mirrored} 为 true 时左右对调，配合反手刀。
+     * 重播铁魔法单手横斩，只驱动右手。左右挥砍由身前的剑实体自己做，这里不镜像、不跟准星加俯仰。
      */
     @SuppressWarnings("unchecked")
-    private static void playHorizontalSlash(AbstractClientPlayer player, boolean mirrored) {
+    private static void playRightHandSlash(AbstractClientPlayer player) {
         ResourceLocation animationId = SpellAnimations.ONE_HANDED_HORIZONTAL_SWING_ANIMATION
                 .getForPlayer()
                 .orElse(null);
@@ -168,28 +170,42 @@ public final class CarianSlicerClientHold {
         if (playerAnimationData == null) {
             return;
         }
-        KeyframeAnimationPlayer keyframePlayer = new KeyframeAnimationPlayer(keyframeAnimation);
-        boolean showArms = ClientConfigs.SHOW_FIRST_PERSON_ARMS.get();
-        boolean showItems = ClientConfigs.SHOW_FIRST_PERSON_ITEMS.get();
-        if (showArms || showItems) {
+        KeyframeAnimation rightArmOnly = keepRightArmOnly(keyframeAnimation);
+        KeyframeAnimationPlayer keyframePlayer = new KeyframeAnimationPlayer(rightArmOnly);
+        boolean showRightArm = ClientConfigs.SHOW_FIRST_PERSON_ARMS.get();
+        if (showRightArm) {
             keyframePlayer.setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL);
             keyframePlayer.setFirstPersonConfiguration(new FirstPersonConfiguration(
-                    showArms, showArms, showItems, showItems
+                    true, false, false, false
             ));
         } else {
             keyframePlayer.setFirstPersonMode(FirstPersonMode.DISABLED);
         }
-        IAnimation animationToPlay = keyframePlayer;
-        if (mirrored) {
-            ModifierLayer<IAnimation> mirroredLayer = new ModifierLayer<>(keyframePlayer);
-            mirroredLayer.addModifierLast(new MirrorModifier(true));
-            animationToPlay = mirroredLayer;
-        }
+        ModifierLayer<IAnimation> slashLayer = new ModifierLayer<>(keyframePlayer);
+        slashLayer.addModifierLast(new SpeedModifier(
+                CarianSlicerCastCurve.slashAnimationSpeed(CarianSlicerSpell.SLASH_CYCLE_TICKS)
+        ));
         playerAnimationData.replaceAnimationWithFade(
-                AbstractFadeModifier.standardFadeIn(1, Ease.INOUTSINE),
-                animationToPlay,
+                AbstractFadeModifier.standardFadeIn(2, Ease.INOUTSINE),
+                slashLayer,
                 true
         );
+    }
+
+    /**
+     * 关掉除 rightArm 以外的通道。原片的 left_arm / torso / legs 会和走路抢骨骼。
+     */
+    private static KeyframeAnimation keepRightArmOnly(KeyframeAnimation source) {
+        KeyframeAnimation.AnimationBuilder builder = source.mutableCopy();
+        for (var partEntry : builder.getBodyParts().entrySet()) {
+            if ("rightArm".equals(partEntry.getKey()) || "right_arm".equals(partEntry.getKey())) {
+                continue;
+            }
+            if (partEntry.getValue() != null) {
+                partEntry.getValue().setEnabled(false);
+            }
+        }
+        return builder.build();
     }
 
     private static void resetWatchState() {

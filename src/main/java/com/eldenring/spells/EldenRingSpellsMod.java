@@ -10,6 +10,7 @@ import com.eldenring.spells.registry.ModFeatures;
 import com.eldenring.spells.registry.ModItems;
 import com.eldenring.spells.registry.ModParticles;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.registry.ModSpells;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
@@ -24,6 +25,7 @@ public class EldenRingSpellsMod {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public EldenRingSpellsMod(IEventBus modEventBus, ModContainer modContainer) {
+        
         EldenRingConfigs.register(modContainer, modEventBus);
         ModAttributes.register(modEventBus);
         ModSchools.register(modEventBus);
@@ -33,6 +35,7 @@ public class EldenRingSpellsMod {
         ModItems.register(modEventBus);
         ModFeatures.register(modEventBus);
         ModParticles.register(modEventBus);
+        ModSounds.register(modEventBus);
         ModEntities.register(modEventBus);
         ModSpells.register(modEventBus);
         ModCreativeTabs.register(modEventBus);

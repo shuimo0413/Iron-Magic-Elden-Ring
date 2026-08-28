@@ -3,6 +3,7 @@ package com.eldenring.spells.spell;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.TerraMagicaZoneEntity;
 import com.eldenring.spells.registry.ModSchools;
+import com.eldenring.spells.registry.ModSounds;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -16,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -218,15 +218,12 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
         return spellResourceLocation;
     }
 
+    /**
+     * 落阵前的蓄力起手音。收招仍走基类飞弹射出音，给法阵落地一点冲击。
+     */
     @Override
     public Optional<SoundEvent> getCastStartSound() {
-        return Optional.of(SoundEvents.AMETHYST_BLOCK_CHIME);
-    }
-
-    /** 完成音用水晶共鸣，和「法阵落地」比出手铃更沉一点。 */
-    @Override
-    public Optional<SoundEvent> getCastFinishSound() {
-        return Optional.of(SoundEvents.AMETHYST_BLOCK_RESONATE);
+        return Optional.of(ModSounds.SPELL_CAST_START.get());
     }
 
     /** 双手举过头顶的持续动画，对应法环里往地面铺徽记的姿势。 */

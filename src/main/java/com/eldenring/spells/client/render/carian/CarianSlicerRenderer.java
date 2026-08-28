@@ -82,11 +82,25 @@ public class CarianSlicerRenderer extends EntityRenderer<CarianSlicerEntity> {
         poseStack.mulPose(Axis.ZP.rotationDegrees(rollDegrees));
         poseStack.mulPose(Axis.XP.rotationDegrees(bladePitchDegrees));
         poseStack.scale(scale, scale, scale);
+        renderSwordMesh(this.swordRoot, poseStack, bufferSource, fadeAlpha);
+        poseStack.popPose();
 
+        renderSlashArc(entity, swingProgress, fadeAlpha, entityYaw, lookPitchDegrees, partialTicks, poseStack, bufferSource);
+        super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
+    }
+
+    /**
+     * 画剑身各段。
+     */
+    private static void renderSwordMesh(
+            ModelPart swordRoot,
+            PoseStack poseStack,
+            MultiBufferSource bufferSource,
+            float fadeAlpha
+    ) {
         int bodyColor = applyAlpha(SWORD_BODY_COLOR_ARGB, fadeAlpha);
         int bladeColor = applyAlpha(SWORD_BLADE_COLOR_ARGB, fadeAlpha);
         int edgeColor = applyAlpha(SWORD_EDGE_COLOR_ARGB, fadeAlpha);
-
         VertexConsumer bodyConsumer = bufferSource.getBuffer(
                 RenderType.entityTranslucentEmissive(CarianSwordModels.SWORD_BODY_TEXTURE)
         );
@@ -105,10 +119,6 @@ public class CarianSlicerRenderer extends EntityRenderer<CarianSlicerEntity> {
         swordRoot.getChild(CarianSwordModels.EDGE_PART).render(
                 poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, edgeColor
         );
-        poseStack.popPose();
-
-        renderSlashArc(entity, swingProgress, fadeAlpha, entityYaw, lookPitchDegrees, partialTicks, poseStack, bufferSource);
-        super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
     }
 
     /**

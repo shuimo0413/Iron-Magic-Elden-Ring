@@ -1,9 +1,11 @@
 package com.eldenring.spells.entity;
 
-import com.eldenring.spells.particle.glintstone.GlintstoneFx;
+import com.eldenring.spells.particle.carian.CarianFx;
 import com.eldenring.spells.registry.ModEntities;
-import com.eldenring.spells.registry.ModParticles;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.spell.MagicGlintbladeSpell;
+import com.eldenring.spells.spell.curve.MagicGlintbladeCastCurve;
+import com.eldenring.spells.spell.fx.MagicGlintbladeFx;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.DamageSources;
@@ -16,7 +18,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -38,18 +39,27 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import com.eldenring.spells.spell.MagicGlintbladeSpell;
 
 /**
- * 魔法辉剑：先在身前悬停，再沿准星飞出并做限角追踪。
+ * 魔法辉剑：先在身前铺漩涡、平躺凝结，再沿准星飞出并做限角追踪。
  * <p>
- * 悬停阶段 {@code noPhysics}、速度为零；到期后 {@link #shoot} 进入普通弹道。
- * 视觉是立体辉剑 + 短曲线光带，不走彗星头。
+ * 凝结阶段 {@code noPhysics}、速度为零；到期后 {@link #shoot} 进入普通弹道。
+ * 时序问 {@link MagicGlintbladeCastCurve}，粒子问 {@link MagicGlintbladeFx}。
  */
 public class MagicGlintbladeEntity extends AbstractMagicProjectile {
 
     private static final EntityDataAccessor<Boolean> DATA_LAUNCHED =
             SynchedEntityData.defineId(MagicGlintbladeEntity.class, EntityDataSerializers.BOOLEAN);
+    /**
+     * 出手瞬间的视线 yaw（度）。弹道实体自己的 yRot 凝结时会被速度清掉，客户端必须走这份同步数据。
+     */
+    private static final EntityDataAccessor<Float> DATA_HOVER_YAW_DEGREES =
+            SynchedEntityData.defineId(MagicGlintbladeEntity.class, EntityDataSerializers.FLOAT);
+    /**
+     * 出手瞬间的视线 pitch（度）。和 {@link #DATA_HOVER_YAW_DEGREES} 一起还原刃尖朝向。
+     */
+    private static final EntityDataAccessor<Float> DATA_HOVER_PITCH_DEGREES =
+            SynchedEntityData.defineId(MagicGlintbladeEntity.class, EntityDataSerializers.FLOAT);
 
     /** 仅客户端写入的真实飞行历史。 */
     private final TrailHistoryBuffer clientTrailHistory = new TrailHistoryBuffer();
@@ -75,6 +85,8 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_LAUNCHED, false);
+        builder.define(DATA_HOVER_YAW_DEGREES, 0.0f);
+        builder.define(DATA_HOVER_PITCH_DEGREES, 0.0f);
     }
 
     public boolean hasLaunched() {
@@ -82,7 +94,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     }
 
     /**
-     * 记下悬停结束后的默认飞行方向（通常是施法者当时的视线）。
+     * 记下凝结结束后的默认飞行方向（通常是施法者当时的视线）。
      */
     public void setStoredLaunchDirection(Vec3 launchDirection) {
         if (launchDirection.lengthSqr() < 1.0e-8) {
@@ -90,6 +102,56 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
             return;
         }
         this.storedLaunchDirection = launchDirection.normalize();
+    }
+
+    /**
+     * 钉死凝结朝向：写入同步数据，并立刻写进实体 yaw/pitch。
+     * 客户端渲染和漩涡都读这份，不要信弹道实体自己的旋转。
+     */
+    public void lockHoverFacing(float yawDegrees, float pitchDegrees) {
+        entityData.set(DATA_HOVER_YAW_DEGREES, yawDegrees);
+        entityData.set(DATA_HOVER_PITCH_DEGREES, pitchDegrees);
+        applyLockedHoverRotation();
+    }
+
+    /**
+     * 出手瞬间视线 yaw（度）。凝结渲染用这个，不用 {@code entityYaw}。
+     */
+    public float hoverYawDegrees() {
+        return entityData.get(DATA_HOVER_YAW_DEGREES);
+    }
+
+    /**
+     * 出手瞬间视线 pitch（度）。
+     */
+    public float hoverPitchDegrees() {
+        return entityData.get(DATA_HOVER_PITCH_DEGREES);
+    }
+
+    /**
+     * 把锁死的凝结朝向写回实体旋转，防止 {@code super.tick} / 零速度 atan2 把它拧成 0。
+     */
+    private void applyLockedHoverRotation() {
+        float yawDegrees = hoverYawDegrees();
+        float pitchDegrees = hoverPitchDegrees();
+        setYRot(yawDegrees);
+        setXRot(pitchDegrees);
+        this.yRotO = yawDegrees;
+        this.xRotO = pitchDegrees;
+    }
+
+    /**
+     * 漩涡盘面法线 / 凝结刃尖朝向：出手瞬间锁死的视线，不读可能被清掉的 yRot。
+     */
+    public Vec3 vortexFacing() {
+        return Vec3.directionFromRotation(hoverPitchDegrees(), hoverYawDegrees());
+    }
+
+    /**
+     * 漩涡与剑模型的世界中心：实体原点就是凝结点，不要再用碰撞箱脚底。
+     */
+    public Vec3 vortexCenterWorld() {
+        return position();
     }
 
     public List<Vec3> trailHistoryWorldPositions() {
@@ -103,7 +165,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     @Override
     public void trailParticles() {
         if (!hasLaunched()) {
-            spawnHoverParticles();
+            MagicGlintbladeFx.tickBeforeLaunch(this, level());
             return;
         }
         Vec3 deltaMovement = getDeltaMovement();
@@ -115,20 +177,19 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
                 trailStyle().lengthBlocks(),
                 trailStyle().maximumHistoryPointCount()
         );
-        GlintstoneFx.trailAccents(
+        CarianFx.trailAccents(
                 level(),
                 getX(),
                 getY(),
                 getZ(),
                 deltaMovement,
-                MagicGlintbladeSpell.TRAIL_PARTICLE_INTENSITY,
-                trailStyle()
+                MagicGlintbladeSpell.TRAIL_PARTICLE_INTENSITY
         );
     }
 
     @Override
     public void impactParticles(double impactX, double impactY, double impactZ) {
-        GlintstoneFx.impact(level(), impactX, impactY, impactZ, MagicGlintbladeSpell.IMPACT_PARTICLE_INTENSITY);
+        CarianFx.impact(level(), impactX, impactY, impactZ, MagicGlintbladeSpell.IMPACT_PARTICLE_INTENSITY);
     }
 
     @Override
@@ -161,7 +222,11 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
             setDeltaMovement(Vec3.ZERO);
             this.noPhysics = true;
             super.tick();
-            if (!level().isClientSide && tickCount >= MagicGlintbladeSpell.HOVER_DURATION_TICKS) {
+            applyLockedHoverRotation();
+            if (!level().isClientSide && MagicGlintbladeCastCurve.shouldLaunch(
+                    tickCount,
+                    MagicGlintbladeSpell.HOVER_DURATION_TICKS
+            )) {
                 launchTowardTargetOrLook();
             }
             return;
@@ -171,7 +236,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     }
 
     /**
-     * 悬停时不要按速度平移，也不要被零向量的 atan2 把朝向拧成 0。
+     * 凝结时不要按速度平移，也不要被零向量的 atan2 把朝向拧成 0。
      */
     @Override
     public void travel() {
@@ -190,7 +255,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     }
 
     /**
-     * 悬停结束：优先朝锥内最近合法目标飞，否则沿生成时视线。
+     * 凝结结束：优先朝锥内最近合法目标飞，否则沿生成时视线。
      */
     private void launchTowardTargetOrLook() {
         Vec3 shootDirection = storedLaunchDirection;
@@ -214,53 +279,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         this.yRotO = yawDegrees;
         this.xRotO = pitchDegrees;
 
-        level().playSound(
-                null,
-                getX(),
-                getY(),
-                getZ(),
-                SoundEvents.AMETHYST_BLOCK_CHIME,
-                SoundSource.NEUTRAL,
-                0.9f,
-                1.45f + level().random.nextFloat() * 0.15f
-        );
-        level().playSound(
-                null,
-                getX(),
-                getY(),
-                getZ(),
-                SoundEvents.TRIDENT_THROW.value(),
-                SoundSource.NEUTRAL,
-                0.55f,
-                1.65f
-        );
-    }
-
-    private void spawnHoverParticles() {
-        if (level().random.nextFloat() > 0.55f) {
-            return;
-        }
-        double scatter = 0.18;
-        level().addParticle(
-                ModParticles.GLINTSTONE_GLOW.get(),
-                getX() + (level().random.nextDouble() - 0.5) * scatter,
-                getY() + 0.35 + (level().random.nextDouble() - 0.5) * scatter,
-                getZ() + (level().random.nextDouble() - 0.5) * scatter,
-                0.0,
-                0.015,
-                0.0
-        );
-        if (level().random.nextFloat() < 0.4f) {
-            level().addParticle(
-                    ModParticles.GLINTSTONE_MOTE.get(),
-                    getX() + (level().random.nextDouble() - 0.5) * scatter,
-                    getY() + 0.45,
-                    getZ() + (level().random.nextDouble() - 0.5) * scatter,
-                    (level().random.nextDouble() - 0.5) * 0.02,
-                    0.02,
-                    (level().random.nextDouble() - 0.5) * 0.02
-            );
-        }
+        MagicGlintbladeFx.playLaunchSounds(level(), position());
     }
 
     @Override
@@ -269,9 +288,8 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
             return;
         }
         int ticksSinceLaunch = tickCount - MagicGlintbladeSpell.HOVER_DURATION_TICKS;
-        if (ticksSinceLaunch <= MagicGlintbladeSpell.COLLISION_GRACE_TICKS) {
-            return;
-        }
+        boolean withinBlockCollisionGrace =
+                ticksSinceLaunch <= MagicGlintbladeSpell.COLLISION_GRACE_TICKS;
         Vec3 startPosition = position();
         Vec3 destination = startPosition.add(getDeltaMovement());
         BlockHitResult blockCollision = level().clip(new ClipContext(
@@ -309,7 +327,8 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
             }
         }
 
-        if (collidesWithBlocks()
+        if (!withinBlockCollisionGrace
+                && collidesWithBlocks()
                 && blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
                 && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {
@@ -537,6 +556,8 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     protected void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean("Launched", hasLaunched());
+        tag.putFloat("HoverYaw", hoverYawDegrees());
+        tag.putFloat("HoverPitch", hoverPitchDegrees());
         tag.putDouble("LaunchX", storedLaunchDirection.x);
         tag.putDouble("LaunchY", storedLaunchDirection.y);
         tag.putDouble("LaunchZ", storedLaunchDirection.z);
@@ -549,6 +570,9 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         entityData.set(DATA_LAUNCHED, tag.getBoolean("Launched"));
+        entityData.set(DATA_HOVER_YAW_DEGREES, tag.getFloat("HoverYaw"));
+        entityData.set(DATA_HOVER_PITCH_DEGREES, tag.getFloat("HoverPitch"));
+        applyLockedHoverRotation();
         this.noPhysics = !hasLaunched();
         this.storedLaunchDirection = new Vec3(
                 tag.getDouble("LaunchX"),

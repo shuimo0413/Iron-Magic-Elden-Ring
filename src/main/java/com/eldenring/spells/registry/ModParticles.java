@@ -15,7 +15,9 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * 本模组粒子类型注册。辉石系视觉统一经 {@link com.eldenring.spells.particle.glintstone.GlintstoneFx} 生成。
+ * 本模组粒子类型注册。
+ * 辉石系视觉统一经 {@link com.eldenring.spells.particle.glintstone.GlintstoneFx} 生成；
+ * 卡利亚深蓝库经 {@link com.eldenring.spells.particle.carian.CarianFx} 生成。
  */
 public final class ModParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
@@ -48,6 +50,152 @@ public final class ModParticles {
     /** 卡利亚斩击新月 — 迅剑挥砍点缀，宝蓝弯弧。 */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_SLASH =
             PARTICLE_TYPES.register("carian_slash", () -> new SimpleParticleType(false));
+
+    // --- 卡利亚深蓝粒子库：青辉石六种换色 + 近战/皇家变体，贴图走 #A3B6D0 / #5D7AC1 / #506394 / #35518F ---
+
+    /** 卡利亚尖锐火花。青辉石 spark 的深蓝换色。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_SPARK =
+            PARTICLE_TYPES.register("carian_spark", () -> new SimpleParticleType(false));
+
+    /** 卡利亚柔和光晕。青辉石 glow 的深蓝换色。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_GLOW =
+            PARTICLE_TYPES.register("carian_glow", () -> new SimpleParticleType(false));
+
+    /** 卡利亚菱形碎晶。青辉石 shard 的深蓝换色。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_SHARD =
+            PARTICLE_TYPES.register("carian_shard", () -> new SimpleParticleType(false));
+
+    /** 卡利亚十字闪星（三帧）。青辉石 mote 的深蓝换色。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_MOTE =
+            PARTICLE_TYPES.register("carian_mote", () -> new SimpleParticleType(false));
+
+    /** 卡利亚中心绽光。青辉石 flare 的深蓝换色。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_FLARE =
+            PARTICLE_TYPES.register("carian_flare", () -> new SimpleParticleType(false));
+
+    /** 卡利亚稀薄雾气。青辉石 mist 的深蓝换色。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_MIST =
+            PARTICLE_TYPES.register("carian_mist", () -> new SimpleParticleType(false));
+
+    /** 卡利亚新月刃弧。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_CRESCENT =
+            PARTICLE_TYPES.register("carian_crescent", () -> new SimpleParticleType(false));
+
+    /** 卡利亚宽斩击弯弧。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_ARC =
+            PARTICLE_TYPES.register("carian_arc", () -> new SimpleParticleType(false));
+
+    /** 卡利亚细长针刃。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_NEEDLE =
+            PARTICLE_TYPES.register("carian_needle", () -> new SimpleParticleType(false));
+
+    /** 卡利亚皇家星尘。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_DUST =
+            PARTICLE_TYPES.register("carian_dust", () -> new SimpleParticleType(false));
+
+    /** 卡利亚 S 形辉丝。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_FILAMENT =
+            PARTICLE_TYPES.register("carian_filament", () -> new SimpleParticleType(false));
+
+    /** 卡利亚薄脉冲环。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_RING =
+            PARTICLE_TYPES.register("carian_ring", () -> new SimpleParticleType(false));
+
+    /** 卡利亚密实核。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_CORE =
+            PARTICLE_TYPES.register("carian_core", () -> new SimpleParticleType(false));
+
+    /** 卡利亚迷你双臂漩涡。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_SPIRAL =
+            PARTICLE_TYPES.register("carian_spiral", () -> new SimpleParticleType(false));
+
+    /** 卡利亚斜向彗星残影。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_STREAK =
+            PARTICLE_TYPES.register("carian_streak", () -> new SimpleParticleType(false));
+
+    /** 卡利亚微星团。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_CLUSTER =
+            PARTICLE_TYPES.register("carian_cluster", () -> new SimpleParticleType(false));
+
+    /** 卡利亚八芒冲击星。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_NOVA =
+            PARTICLE_TYPES.register("carian_nova", () -> new SimpleParticleType(false));
+
+    /** 卡利亚大而淡的光环。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_HALO =
+            PARTICLE_TYPES.register("carian_halo", () -> new SimpleParticleType(false));
+
+    /** 卡利亚对角 X 火花。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_CROSS =
+            PARTICLE_TYPES.register("carian_cross", () -> new SimpleParticleType(false));
+
+    /** 卡利亚斜向软絮。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_WISP =
+            PARTICLE_TYPES.register("carian_wisp", () -> new SimpleParticleType(false));
+
+    /** 卡利亚最大最淡气团。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_VEIL =
+            PARTICLE_TYPES.register("carian_veil", () -> new SimpleParticleType(false));
+
+    /** 卡利亚中心软光斑。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_BLOOM =
+            PARTICLE_TYPES.register("carian_bloom", () -> new SimpleParticleType(false));
+
+    /** 卡利亚涟漪（三帧）。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_RIPPLE =
+            PARTICLE_TYPES.register("carian_ripple", () -> new SimpleParticleType(false));
+
+    /** 卡利亚空心菱形纹章。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_SIGIL =
+            PARTICLE_TYPES.register("carian_sigil", () -> new SimpleParticleType(false));
+
+    /** 卡利亚极小高光点。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_GLINT =
+            PARTICLE_TYPES.register("carian_glint", () -> new SimpleParticleType(false));
+
+    /** 卡利亚六边形切面晶体。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_CRYSTAL =
+            PARTICLE_TYPES.register("carian_crystal", () -> new SimpleParticleType(false));
+
+    /** 卡利亚扁椭圆光碟。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_LENS =
+            PARTICLE_TYPES.register("carian_lens", () -> new SimpleParticleType(false));
+
+    /** 卡利亚螺旋圆盘。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_VORTEX =
+            PARTICLE_TYPES.register("carian_vortex", () -> new SimpleParticleType(false));
+
+    /** 卡利亚小彗星头。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_COMET =
+            PARTICLE_TYPES.register("carian_comet", () -> new SimpleParticleType(false));
+
+    /** 卡利亚双团交叠星尘。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_TWIN =
+            PARTICLE_TYPES.register("carian_twin", () -> new SimpleParticleType(false));
+
+    /** 卡利亚空心蚀环。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_ECLIPSE =
+            PARTICLE_TYPES.register("carian_eclipse", () -> new SimpleParticleType(false));
+
+    /** 卡利亚双核相连。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_BINARY =
+            PARTICLE_TYPES.register("carian_binary", () -> new SimpleParticleType(false));
+
+    /** 卡利亚扇形飞沫。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_SPRAY =
+            PARTICLE_TYPES.register("carian_spray", () -> new SimpleParticleType(false));
+
+    /** 卡利亚运动残影浅弧。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_WAKE =
+            PARTICLE_TYPES.register("carian_wake", () -> new SimpleParticleType(false));
+
+    /** 卡利亚尖刺碎片。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_THORN =
+            PARTICLE_TYPES.register("carian_thorn", () -> new SimpleParticleType(false));
+
+    /** 卡利亚角状符文。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_RUNE =
+            PARTICLE_TYPES.register("carian_rune", () -> new SimpleParticleType(false));
 
     /** 星云雾气团 — 星河体积层。 */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> STAR_RIVER_MIST =

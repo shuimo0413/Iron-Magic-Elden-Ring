@@ -41,6 +41,30 @@ public final class SpellBookStatReloader {
                 SwiftGlintstoneShardSpell.SPELL_CAST_TIME_TICKS
         );
         apply(
+                ModSpells.GLINTSTONE_ARC.get(),
+                GlintstoneArcSpell.SPELL_BASE_MANA_COST,
+                GlintstoneArcSpell.SPELL_MANA_COST_PER_LEVEL,
+                GlintstoneArcSpell.SPELL_BASE_SPELL_POWER,
+                GlintstoneArcSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                GlintstoneArcSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
+                ModSpells.CRYSTAL_BARRAGE.get(),
+                CrystalBarrageSpell.SPELL_BASE_MANA_COST,
+                CrystalBarrageSpell.SPELL_MANA_COST_PER_LEVEL,
+                CrystalBarrageSpell.SPELL_BASE_SPELL_POWER,
+                CrystalBarrageSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                CrystalBarrageSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
+                ModSpells.CRYSTAL_BURST.get(),
+                CrystalBurstSpell.SPELL_BASE_MANA_COST,
+                CrystalBurstSpell.SPELL_MANA_COST_PER_LEVEL,
+                CrystalBurstSpell.SPELL_BASE_SPELL_POWER,
+                CrystalBurstSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                CrystalBurstSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
                 ModSpells.GREAT_GLINTSTONE_SHARD.get(),
                 GreatGlintstoneShardSpell.SPELL_BASE_MANA_COST,
                 GreatGlintstoneShardSpell.SPELL_MANA_COST_PER_LEVEL,
@@ -105,6 +129,14 @@ public final class SpellBookStatReloader {
                 SpiralShardSpell.SPELL_CAST_TIME_TICKS
         );
         apply(
+                ModSpells.STARLIGHT.get(),
+                StarlightSpell.SPELL_BASE_MANA_COST,
+                StarlightSpell.SPELL_MANA_COST_PER_LEVEL,
+                StarlightSpell.SPELL_BASE_SPELL_POWER,
+                StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                StarlightSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
                 ModSpells.TERRA_MAGICA.get(),
                 TerraMagicaSpell.SPELL_BASE_MANA_COST,
                 TerraMagicaSpell.SPELL_MANA_COST_PER_LEVEL,
@@ -127,6 +159,14 @@ public final class SpellBookStatReloader {
                 GavelOfHaimaSpell.SPELL_BASE_SPELL_POWER,
                 GavelOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL,
                 GavelOfHaimaSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
+                ModSpells.CANNON_OF_HAIMA.get(),
+                CannonOfHaimaSpell.SPELL_BASE_MANA_COST,
+                CannonOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL,
+                CannonOfHaimaSpell.SPELL_BASE_SPELL_POWER,
+                CannonOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                CannonOfHaimaSpell.SPELL_CAST_TIME_TICKS
         );
         apply(
                 ModSpells.CARIAN_SLICER.get(),

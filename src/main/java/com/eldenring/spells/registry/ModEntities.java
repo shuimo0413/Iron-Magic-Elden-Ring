@@ -1,12 +1,16 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.entity.CannonOfHaimaProjectile;
 import com.eldenring.spells.entity.CometProjectile;
 import com.eldenring.spells.entity.CometAzurJetEntity;
 import com.eldenring.spells.entity.FoundingRainDropEntity;
 import com.eldenring.spells.entity.FoundingRainOfStarsEntity;
 import com.eldenring.spells.entity.CarianSlicerEntity;
+import com.eldenring.spells.entity.CrystalBarrageShardProjectile;
+import com.eldenring.spells.entity.CrystalBurstShardProjectile;
 import com.eldenring.spells.entity.GavelOfHaimaEntity;
+import com.eldenring.spells.entity.GlintstoneArcProjectile;
 import com.eldenring.spells.entity.GlintstoneCometProjectile;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
@@ -15,6 +19,7 @@ import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
 import com.eldenring.spells.entity.GreatGlintstoneShardProjectile;
 import com.eldenring.spells.entity.SpiralShardProjectile;
 import com.eldenring.spells.entity.StarShowerProjectile;
+import com.eldenring.spells.entity.StarlightEntity;
 import com.eldenring.spells.entity.StarsOfRuinProjectile;
 import com.eldenring.spells.entity.SwiftGlintstoneShardProjectile;
 import com.eldenring.spells.entity.TerraMagicaZoneEntity;
@@ -46,6 +51,42 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("swift_glintstone_shard"))
+            );
+
+    /**
+     * 辉石弯弧：碰撞箱仅作追踪占位；横向命中体积在 Combat 里按当前半宽计算。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneArcProjectile>> GLINTSTONE_ARC =
+            ENTITIES.register("glintstone_arc", () ->
+                    EntityType.Builder.<GlintstoneArcProjectile>of(GlintstoneArcProjectile::new, MobCategory.MISC)
+                            .sized(0.40f, 0.40f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("glintstone_arc"))
+            );
+
+    /**
+     * 结晶连弹碎片：迅魔砾同尺寸针状弹，不追踪、短射程。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<CrystalBarrageShardProjectile>> CRYSTAL_BARRAGE_SHARD =
+            ENTITIES.register("crystal_barrage_shard", () ->
+                    EntityType.Builder.<CrystalBarrageShardProjectile>of(CrystalBarrageShardProjectile::new, MobCategory.MISC)
+                            .sized(0.32f, 0.32f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("crystal_barrage_shard"))
+            );
+
+    /**
+     * 结晶散射碎片：迅魔砾同尺寸针状弹，不追踪、短射程，一次齐射多发。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<CrystalBurstShardProjectile>> CRYSTAL_BURST_SHARD =
+            ENTITIES.register("crystal_burst_shard", () ->
+                    EntityType.Builder.<CrystalBurstShardProjectile>of(CrystalBurstShardProjectile::new, MobCategory.MISC)
+                            .sized(0.32f, 0.32f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("crystal_burst_shard"))
             );
 
     public static final DeferredHolder<EntityType<?>, EntityType<GreatGlintstoneShardProjectile>> GREAT_GLINTSTONE_SHARD =
@@ -152,6 +193,18 @@ public final class ModEntities {
             );
 
     /**
+     * 星光头顶小星：跟随主人，碰撞箱仅作客户端追踪占位。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<StarlightEntity>> STARLIGHT =
+            ENTITIES.register("starlight", () ->
+                    EntityType.Builder.<StarlightEntity>of(StarlightEntity::new, MobCategory.MISC)
+                            .sized(0.25f, 0.25f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("starlight"))
+            );
+
+    /**
      * 魔法之境法阵：静止圆形区域，尺寸由运行时 {@code setRadius} 刷新；
      * 此处初始碰撞箱仅作占位，实际以同步半径为准。
      */
@@ -174,6 +227,18 @@ public final class ModEntities {
                             .clientTrackingRange(96)
                             .updateInterval(1)
                             .build(id("comet_azur_jet"))
+            );
+
+    /**
+     * 海摩炮弹：受重力的实心辉石球，碰撞箱约 1 格，用于落地与碰敌爆炸。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<CannonOfHaimaProjectile>> CANNON_OF_HAIMA =
+            ENTITIES.register("cannon_of_haima", () ->
+                    EntityType.Builder.<CannonOfHaimaProjectile>of(CannonOfHaimaProjectile::new, MobCategory.MISC)
+                            .sized(0.95f, 0.95f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("cannon_of_haima"))
             );
 
     /**
@@ -201,12 +266,12 @@ public final class ModEntities {
             );
 
     /**
-     * 魔法辉剑：先悬停后飞出，碰撞箱略长以便追踪。
+     * 魔法辉剑：先漩涡凝结后飞出。碰撞箱绕凝结点，原点就是盘心。
      */
     public static final DeferredHolder<EntityType<?>, EntityType<MagicGlintbladeEntity>> MAGIC_GLINTBLADE =
             ENTITIES.register("magic_glintblade", () ->
                     EntityType.Builder.<MagicGlintbladeEntity>of(MagicGlintbladeEntity::new, MobCategory.MISC)
-                            .sized(0.45f, 0.85f)
+                            .sized(0.40f, 0.40f)
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("magic_glintblade"))

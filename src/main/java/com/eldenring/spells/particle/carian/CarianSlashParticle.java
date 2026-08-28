@@ -35,9 +35,10 @@ public class CarianSlashParticle extends TextureSheetParticle {
         this.quadSize = 0.22f + level.random.nextFloat() * 0.10f;
         this.gravity = 0.0f;
         this.hasPhysics = false;
-        this.rCol = 0.28f + level.random.nextFloat() * 0.10f;
-        this.gCol = 0.48f + level.random.nextFloat() * 0.12f;
-        this.bCol = 0.95f + level.random.nextFloat() * 0.05f;
+        // 斩击新月同样压深蓝：贴近 #35518F / #506394。
+        this.rCol = 0.28f + level.random.nextFloat() * 0.08f;
+        this.gCol = 0.38f + level.random.nextFloat() * 0.08f;
+        this.bCol = 0.88f + level.random.nextFloat() * 0.08f;
         this.alpha = 0.92f;
         this.roll = (level.random.nextFloat() - 0.5f) * 0.8f;
         this.oRoll = this.roll;

@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
 
-    /** Grace ticks after spawn before hit checks. */
+    /** Grace ticks after spawn: skip block impacts only, not entity hits. */
     private static final int COLLISION_GRACE_TICKS = 4;
 
     /** 两股螺旋彗星各自的客户端历史点，供 ribbon 画真实曲线。 */
@@ -252,12 +252,14 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
     /**
      * Dual-comet pierce hits ordered by distance from center.
      * Also counts start/end already inside target AABB to avoid miss-while-embedded.
+     * Block-impact grace does not skip entity hits (melee-range targets must connect).
      */
     @Override
     public void handleHitDetection() {
-        if (tickCount <= COLLISION_GRACE_TICKS || this.isRemoved()) {
+        if (this.isRemoved()) {
             return;
         }
+        boolean withinBlockCollisionGrace = tickCount <= COLLISION_GRACE_TICKS;
 
         Vec3 centerStart = position();
         Vec3 centerDelta = getDeltaMovement();
@@ -320,7 +322,8 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
             }
         }
 
-        if (!this.isRemoved()
+        if (!withinBlockCollisionGrace
+                && !this.isRemoved()
                 && nearestBlockHit != null
                 && nearestBlockHit.getType() != HitResult.Type.MISS
                 && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, nearestBlockHit)).isCanceled()) {

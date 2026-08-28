@@ -44,8 +44,9 @@ import java.util.UUID;
 public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjectile {
 
     /**
-     * 出手后忽略命中检测的 tick 数，避免出生重叠立刻销毁。
-     * 期间照常飞行；不做贴墖setPos / 嵌块挤出（那些反而会把弹塞进方块里）。
+     * 出手后忽略<strong>方块</strong>命中的 tick 数，避免出生略嵌实心块时立刻销毁。
+     * 实体命中从第 1 tick 就检测：贴身约 2 格的敌人必须能打中。
+     * 若整段命中都跳过，魔砾 0.7 格/tick × 4 tick 已飞出约 2.8 格，近战距离会被穿模。
      */
     private static final int COLLISION_GRACE_TICKS = 4;
 
@@ -132,6 +133,13 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
 
     public abstract GlintstoneVisualStyle visualStyle();
 
+    /**
+     * 光轨历史记录点（世界坐标）。默认是实体脚底；炮弹等要把点记在球心。
+     */
+    protected Vec3 trailRecordWorldPosition() {
+        return position();
+    }
+
     @Override
     public void trailParticles() {
         Vec3 deltaMovement = getDeltaMovement();
@@ -140,8 +148,9 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             return;
         }
         GlintstoneTrailStyle trailStyle = trailStyle();
+        Vec3 trailPosition = trailRecordWorldPosition();
         clientTrailHistory.record(
-                position(),
+                trailPosition,
                 trailStyle.lengthBlocks(),
                 trailStyle.maximumHistoryPointCount()
         );
@@ -216,13 +225,12 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     }
 
     /**
-     * 宽限期内完全跳过命中；之后走铁魔法流程，但实体已销毁时不再二次撞方块。
+     * 实体命中始终检测（主人已由 {@link #canHitEntity} 排除）。
+     * 宽限期内仍把实体射线截在第一面墙上，但不结算撞方块，避免出生嵌块立刻消失。
      */
     @Override
     public void handleHitDetection() {
-        if (tickCount <= COLLISION_GRACE_TICKS) {
-            return;
-        }
+        boolean withinBlockCollisionGrace = tickCount <= COLLISION_GRACE_TICKS;
         Vec3 startPosition = position();
         Vec3 destination = startPosition.add(getDeltaMovement());
         BlockHitResult blockCollision = level().clip(new ClipContext(
@@ -249,7 +257,8 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             }
         }
 
-        if (collidesWithBlocks()
+        if (!withinBlockCollisionGrace
+                && collidesWithBlocks()
                 && blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
                 && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {

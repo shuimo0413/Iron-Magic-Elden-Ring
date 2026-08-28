@@ -8,8 +8,6 @@ import com.eldenring.spells.spell.StarShowerSpell;
 import com.eldenring.spells.spell.StarsOfRuinSpell;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -143,17 +141,6 @@ public class GlintstoneStarVolleyEntity extends Projectile {
                 shootDirection,
                 lookPlaneOffset,
                 playCyanCastBurst
-        );
-
-        level().playSound(
-                null,
-                caster.getX(),
-                caster.getY(),
-                caster.getZ(),
-                SoundEvents.AMETHYST_BLOCK_CHIME,
-                SoundSource.PLAYERS,
-                0.55f,
-                1.15f + projectileIndex * 0.04f
         );
 
         if (volleyKind == VolleyKind.STARS_OF_RUIN) {

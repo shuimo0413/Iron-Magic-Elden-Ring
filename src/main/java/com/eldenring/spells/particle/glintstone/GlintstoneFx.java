@@ -400,6 +400,12 @@ public final class GlintstoneFx {
         }
     }
 
+    /**
+     * 出手瞬间准星前方的绽光球（中心 {@code GLINTSTONE_FLARE} + 碎晶/雾）。
+     * <p>
+     * 第一人称会被胀开的盘面挡住准星，辉石弹道已在 {@code GlintstoneCastHelper}
+     * 关掉调用。方法本身保留，第三人称或以后要加回时改总闸即可。
+     */
     public static void castBurst(Level level, double x, double y, double z) {
         castBurst(level, x, y, z, 1.0f);
     }

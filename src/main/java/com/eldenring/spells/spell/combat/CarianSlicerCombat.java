@@ -15,10 +15,8 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class CarianSlicerCombat {
 
-    /**
-     * 扇形竖直半高（方块），inflate 用。写死：只影响搜箱高度，不进 toml。
-     */
-    public static final float SLASH_VERTICAL_HALF_HEIGHT_BLOCKS = 1.35f;
+
+    public static final float SLASH_VERTICAL_HALF_HEIGHT_BLOCKS = 1.1f;
 
     private CarianSlicerCombat() {
     }

@@ -19,7 +19,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 卡利亚迅剑实体：跟在施法者右手握点，按周期正反手连斩。
+ * 卡利亚迅剑实体：跟在施法者身前握点，按周期左右挥砍。
  * <p>
  * tick 只问 {@link CarianSlicerCastCurve} → {@link CarianSlicerCombat} → {@link CarianSlicerFx}。
  * 不是弹道。碰撞箱只作客户端追踪占位。
@@ -164,22 +164,20 @@ public class CarianSlicerEntity extends Projectile implements AntiMagicSusceptib
     }
 
     /**
-     * 把实体锚到施法者身前握点，并同步朝向（含俯仰，刀光才能跟准星）。
+     * 把实体锚到施法者身前握点。水平朝向用 {@code yBodyRot}，不用视线压平，避免走路/抬头抽搐。
      */
     private void snapToOwnerGrip(LivingEntity owner) {
         Vec3 gripWorld = computeGripWorld(owner);
         setPos(gripWorld.x, gripWorld.y, gripWorld.z);
-        setYRot(owner.getYRot());
+        setYRot(owner.yBodyRot);
         setXRot(owner.getXRot());
-        this.yRotO = getYRot();
-        this.xRotO = getXRot();
     }
 
     /**
-     * 握点世界坐标：脚底 + 前 + 右 + 高。
+     * 握点世界坐标：脚底 + 身体前方 + 右侧 + 高。
      */
     public static Vec3 computeGripWorld(LivingEntity owner) {
-        Vec3 forwardFlat = horizontalForward(owner);
+        Vec3 forwardFlat = horizontalForwardFromBody(owner);
         Vec3 rightFlat = new Vec3(-forwardFlat.z, 0.0, forwardFlat.x);
         return owner.position()
                 .add(forwardFlat.scale(CarianSlicerCastCurve.GRIP_FORWARD_OFFSET_BLOCKS))
@@ -187,15 +185,12 @@ public class CarianSlicerEntity extends Projectile implements AntiMagicSusceptib
                 .add(0.0, CarianSlicerCastCurve.GRIP_HEIGHT_BLOCKS, 0.0);
     }
 
-    private static Vec3 horizontalForward(LivingEntity owner) {
-        Vec3 horizontalLook = owner.getLookAngle().multiply(1.0, 0.0, 1.0);
-        if (horizontalLook.lengthSqr() < 1.0e-6) {
-            horizontalLook = owner.getForward().multiply(1.0, 0.0, 1.0);
-        }
-        if (horizontalLook.lengthSqr() < 1.0e-6) {
-            return new Vec3(0.0, 0.0, 1.0);
-        }
-        return horizontalLook.normalize();
+    /**
+     * 身体水平朝前。走路时仍是有效 yaw，抬头低头也不会退化成噪声。
+     */
+    private static Vec3 horizontalForwardFromBody(LivingEntity owner) {
+        float bodyYawRadians = owner.yBodyRot * Mth.DEG_TO_RAD;
+        return new Vec3(-Mth.sin(bodyYawRadians), 0.0, Mth.cos(bodyYawRadians));
     }
 
     /**

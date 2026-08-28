@@ -24,6 +24,17 @@ alwaysApply: true
 5. `lang`：`spell.elden_ring_spells.<path>`
 6. 图标：`textures/gui/spell_icons/<path>.png`
 7. `onCast` 服务端逻辑后调用 `super.onCast`
+8. 施法音：弹道出手走 `ModSounds.SPELL_CAST`，蓄力起手走 `ModSounds.SPELL_CAST_START`（基类已接射出音，不要再写 `AMETHYST_BLOCK_CHIME`）
+
+### 施法音效（两套，勿混用）
+
+- **飞弹射出** `elden_ring_spells:spell_cast`：弹道真正飞出。瞬时弹道咒走 `getCastFinishSound()`（基类已接）。资源：`sounds/spell_cast.ogg`
+- **蓄力起手** `elden_ring_spells:spell_cast_start`：长吟唱 / 持续咒蓄力。`getCastStartSound()` 接 `ModSounds.SPELL_CAST_START.get()`（海摩炮、魔法之境、彗星亚兹勒）。资源：`sounds/spell_cast_start.ogg`
+- 注册：`registry/ModSounds.java`；`sounds.json` 键与上面一致
+- 例外：卡利亚迅剑起手/收招静音，斩击声走实体 / Fx；海摩大槌砸地音走 Fx，不要套射出音
+- 延迟出弹（魔法辉剑凝结后再飞、亚兹勒蓄力结束喷流）在真正出弹点调 `ModSounds.playProjectileLaunch`，并把 `getCastFinishSound` 留空，避免出手瞬间抢响
+- 换文件：覆盖对应 `.ogg`（可淡入淡出、压峰值约 -7 dB）。新独立音效事件才改 Java
+- 命中 / 挥砍 / 爆炸仍各自用实体或 Fx 的音，不要拿施法音冒充
 
 ### 物品
 1. `ModItems` 注册

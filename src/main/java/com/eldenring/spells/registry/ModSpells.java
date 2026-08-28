@@ -1,17 +1,22 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CarianSlicerSpell;
 import com.eldenring.spells.spell.CometAzurSpell;
+import com.eldenring.spells.spell.CrystalBarrageSpell;
+import com.eldenring.spells.spell.CrystalBurstSpell;
 import com.eldenring.spells.spell.CometSpell;
 import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
 import com.eldenring.spells.spell.GavelOfHaimaSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
+import com.eldenring.spells.spell.GlintstoneArcSpell;
 import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
+import com.eldenring.spells.spell.StarlightSpell;
 import com.eldenring.spells.spell.StarShowerSpell;
 import com.eldenring.spells.spell.StarsOfRuinSpell;
 import com.eldenring.spells.spell.SwiftGlintstoneShardSpell;
@@ -41,6 +46,18 @@ public final class ModSpells {
     /** 辉石迅魔砾：更快更便宜、单发更弱。 */
     public static final Supplier<AbstractSpell> SWIFT_GLINTSTONE_SHARD =
             registerSpell(new SwiftGlintstoneShardSpell());
+
+    /** 辉石弯弧：横向拉开的青色穿透刃，不追踪。 */
+    public static final Supplier<AbstractSpell> GLINTSTONE_ARC =
+            registerSpell(new GlintstoneArcSpell());
+
+    /** 结晶连弹：按住散射不追踪的迅魔砾碎片，不能边走边放。 */
+    public static final Supplier<AbstractSpell> CRYSTAL_BARRAGE =
+            registerSpell(new CrystalBarrageSpell());
+
+    /** 结晶散射：瞬时齐射不追踪的迅魔砾碎片，可边走边放，扇面比连弹更开。 */
+    public static final Supplier<AbstractSpell> CRYSTAL_BURST =
+            registerSpell(new CrystalBurstSpell());
 
     /** 辉石大魔砾：大体积弹，命中小范围爆炸。 */
     public static final Supplier<AbstractSpell> GREAT_GLINTSTONE_SHARD =
@@ -74,6 +91,10 @@ public final class ModSpells {
     public static final Supplier<AbstractSpell> SPIRAL_SHARD =
             registerSpell(new SpiralShardSpell());
 
+    /** 星光：头顶跟随小星，火把级照明，持续 120 秒。 */
+    public static final Supplier<AbstractSpell> STARLIGHT =
+            registerSpell(new StarlightSpell());
+
     /** 魔法之境：脚下法阵，站内全局法术强度 +30%。 */
     public static final Supplier<AbstractSpell> TERRA_MAGICA =
             registerSpell(new TerraMagicaSpell());
@@ -85,6 +106,10 @@ public final class ModSpells {
     /** 海摩大槌：身前巨锤砸地，直击 + 冲击波。 */
     public static final Supplier<AbstractSpell> GAVEL_OF_HAIMA =
             registerSpell(new GavelOfHaimaSpell());
+
+    /** 海摩炮弹：1 秒蓄力后抛出不追踪的抛物线炮弹，落地/碰敌爆炸。 */
+    public static final Supplier<AbstractSpell> CANNON_OF_HAIMA =
+            registerSpell(new CannonOfHaimaSpell());
 
     /** 卡利亚迅剑：按住正反手连斩。 */
     public static final Supplier<AbstractSpell> CARIAN_SLICER =

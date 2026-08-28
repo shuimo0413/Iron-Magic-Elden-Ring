@@ -42,6 +42,9 @@ public final class ModCreativeTabs {
                         }
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_PEBBLE, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.SWIFT_GLINTSTONE_SHARD, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_ARC, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.CRYSTAL_BURST, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.CRYSTAL_BARRAGE, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GREAT_GLINTSTONE_SHARD, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_COMET, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_STARS, 1));
@@ -50,9 +53,11 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.createFilledScroll(ModSpells.FOUNDING_RAIN_OF_STARS, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.COMET, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.SPIRAL_SHARD, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.STARLIGHT, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.TERRA_MAGICA, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.COMET_AZUR, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GAVEL_OF_HAIMA, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.CANNON_OF_HAIMA, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_SLICER, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.MAGIC_GLINTBLADE, 1));
                     })
