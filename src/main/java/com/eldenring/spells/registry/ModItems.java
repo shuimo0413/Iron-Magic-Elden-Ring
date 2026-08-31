@@ -49,6 +49,15 @@ public final class ModItems {
             () -> new Item(new Item.Properties())
     );
 
+    /**
+     * 卡利亚迅剑视觉用物品：只给挥砍时 {@code ItemRenderer} 画手里那把像素剑。
+     * 不进创造栏，玩家不会当武器用。
+     */
+    public static final DeferredItem<Item> CARIAN_SLICER_SWORD = ITEMS.register(
+            "carian_slicer_sword",
+            () -> new Item(new Item.Properties())
+    );
+
     static {
         // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)
         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {

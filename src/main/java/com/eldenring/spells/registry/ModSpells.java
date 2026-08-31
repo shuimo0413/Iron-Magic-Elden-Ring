@@ -1,8 +1,8 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CarianSlicerSpell;
+import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CometAzurSpell;
 import com.eldenring.spells.spell.CrystalBarrageSpell;
 import com.eldenring.spells.spell.CrystalBurstSpell;
@@ -10,6 +10,7 @@ import com.eldenring.spells.spell.CometSpell;
 import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
 import com.eldenring.spells.spell.GavelOfHaimaSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
+import com.eldenring.spells.spell.GlintbladePhalanxSpell;
 import com.eldenring.spells.spell.GlintstoneArcSpell;
 import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
@@ -111,13 +112,17 @@ public final class ModSpells {
     public static final Supplier<AbstractSpell> CANNON_OF_HAIMA =
             registerSpell(new CannonOfHaimaSpell());
 
-    /** 卡利亚迅剑：按住正反手连斩。 */
+    /** 卡利亚迅剑：按下第一刀，长按交替两段 0.5 秒斩击动作。 */
     public static final Supplier<AbstractSpell> CARIAN_SLICER =
             registerSpell(new CarianSlicerSpell());
 
     /** 魔法辉剑：身前悬停后追踪飞出。 */
     public static final Supplier<AbstractSpell> MAGIC_GLINTBLADE =
             registerSpell(new MagicGlintbladeSpell());
+
+    /** 辉剑圆阵：头上五把跟手辉剑，附近有敌人自动射出。 */
+    public static final Supplier<AbstractSpell> GLINTBLADE_PHALANX =
+            registerSpell(new GlintbladePhalanxSpell());
 
     private ModSpells() {
     }

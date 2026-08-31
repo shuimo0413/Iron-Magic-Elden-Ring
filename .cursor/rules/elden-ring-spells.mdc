@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Elden Ring Spells 约定
 
-本仓库是 **MC 1.21.1 + NeoForge** 的 **Iron's Spells** 扩展（`elden_ring_spells`），主题为艾尔登法环，但还有部分其它游戏的魔法元素。完整说明见根目录 `AGENTS.md`。解耦与数值规则见根目录 `法术解耦架构.md`（下个话题按那份构建）。
+本仓库是 **MC 1.21.1 + NeoForge** 的 **Iron's Spells** 扩展（`elden_ring_spells`），主题为艾尔登法环，但还有部分其它游戏的魔法元素。完整说明见根目录 `AGENTS.md`。解耦与数值规则见根目录 `法术解耦架构.md`（下个话题按那份构建）。卡利亚迅剑未完成项与作废修法见根目录 `卡利亚迅剑话题交接.md`，接着做迅剑前必读。
 
 ## 硬约束
 

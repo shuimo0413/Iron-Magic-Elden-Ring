@@ -1,144 +1,51 @@
 package com.eldenring.spells.spell.curve;
 
-import net.minecraft.util.Mth;
-
 /**
- * 卡利亚迅剑时间轴与挥砍姿态。全部写死，不进 toml。
+ * 卡利亚迅剑服务端时间轴。与客户端 PlayerAnimator 片长对齐：每刀 10 tick = 0.5 秒。
  * <p>
- * 单刀周期（toml）决定何时接下刀；本类只回答「这一刀挥到哪、何时命中、何时淡出」。
+ * 命中窗、收招写死；伤害数字在 Spell / toml。
  */
 public final class CarianSlicerCastCurve {
 
     /**
-     * 相对本刀起点，开始挥动的 tick。0 = 立刻抡。
+     * 单刀片长（tick）。调大 → 每刀更慢、连斩更疏；必须与客户端 Hold 的片长一致。
      */
-    public static final int SWING_START_TICK = 0;
+    public static final int SLASH_DURATION_TICKS = 10;
 
     /**
-     * 相对本刀起点的命中结算 tick。应对挥砍弧线扫过身前的瞬间。
+     * 本刀结算伤害的 tick（从本刀第 0 tick 起算）。
+     * 约在挥砍中段；调小 → 出手更早结算，调大 → 更接近收招才打到人。
      */
-    public static final int HIT_TICK = 5;
+    public static final int HIT_TICK = 4;
 
     /**
-     * 最后一刀收完后的淡出时长（tick）。调大 → 剑在空中停更久。
+     * 收到停止请求后，最多再撑几 tick 让本刀命中窗跑完。
+     * 略大于 {@link #SLASH_DURATION_TICKS}，避免 CancelCast 瞬间砍掉最后一刀伤害。
      */
-    public static final int SLASH_FADE_TICKS = 4;
-
-    /**
-     * 客户端：进入吟唱后这么多 tick 里从没见到施法键按住，就当点按，只砍一刀。
-     */
-    public static final int HOLD_CANCEL_GRACE_TICKS = 4;
-
-    /**
-     * 服务端：超过这么多 tick 没收到「仍在吟唱」刷新，就不再连下一刀。
-     */
-    public static final int HOLD_STALE_TICKS = 2;
-
-    /**
-     * 安全寿命余量（tick）。正常由松手/没蓝结束；这是防止实体残留。
-     */
-    public static final int ENTITY_LIFETIME_PADDING_TICKS = 20;
-
-    /** 正手预备绕本地 Z 轴滚转（度）。正值 = 剑趴向右侧。 */
-    public static final float SWORD_START_ROLL_DEGREES = 78.0f;
-
-    /** 正手斩完绕本地 Z 轴滚转（度）。负值 = 剑趴到左侧。 */
-    public static final float SWORD_END_ROLL_DEGREES = -82.0f;
-
-    /** 正手预备绕本地 X 轴俯仰（度）。 */
-    public static final float SWORD_START_PITCH_DEGREES = 32.0f;
-
-    /** 正手斩完绕本地 X 轴俯仰（度）。 */
-    public static final float SWORD_END_PITCH_DEGREES = 48.0f;
-
-    /**
-     * 握点相对脚底向前（方块）。略收一点，避免剑身顶在准星上。
-     */
-    public static final double GRIP_FORWARD_OFFSET_BLOCKS = 0.32;
-
-    /**
-     * 握点相对身体中线向右（方块，主手侧）。
-     */
-    public static final double GRIP_RIGHT_OFFSET_BLOCKS = 0.48;
-
-    /**
-     * 握点相对脚底高度（方块）。
-     */
-    public static final double GRIP_HEIGHT_BLOCKS = 0.92;
-
-    /**
-     * 铁魔法 {@code horizontal_slash_one_handed} 片长（tick，20 tick = 1 秒）。原片 0.72 秒。
-     */
-    public static final float ONE_HANDED_SLASH_ANIMATION_LENGTH_TICKS = 14.4f;
-
-    /**
-     * 剑刃沿本地 +Y 的长度（方块，含缩放），供斩击光弧外沿和粒子估尖端。
-     */
-    public static final double BLADE_LENGTH_BLOCKS = 1.28;
+    public static final int STOP_GRACE_TICKS = SLASH_DURATION_TICKS + 2;
 
     private CarianSlicerCastCurve() {
     }
 
     /**
-     * 实体安全寿命上限（tick）= 最长按住时间 + 淡出 + 余量。
+     * 实体存活总 tick 落在本刀的哪一帧（0 … {@link #SLASH_DURATION_TICKS}-1）。
      */
-    public static int entityMaxLifetimeTicks(int maxCastTimeTicks) {
-        return maxCastTimeTicks + SLASH_FADE_TICKS + ENTITY_LIFETIME_PADDING_TICKS;
+    public static int tickIntoCurrentSlash(int entityAgeTicks) {
+        int safeAge = Math.max(0, entityAgeTicks);
+        return safeAge % SLASH_DURATION_TICKS;
     }
 
     /**
-     * 当前这一刀的挥砍进度 0–1。先快后收，迅剑要有「一下子砍过去」的手感。
+     * 当前这一刀是否刚到命中帧（每刀只为 true 一次）。
      */
-    public static float swingProgress(float swingAgeTicks) {
-        if (swingAgeTicks <= SWING_START_TICK) {
-            return 0.0f;
-        }
-        if (swingAgeTicks >= HIT_TICK) {
-            return 1.0f;
-        }
-        float swingDurationTicks = HIT_TICK - SWING_START_TICK;
-        if (swingDurationTicks <= 1.0e-4f) {
-            return 1.0f;
-        }
-        float linear = (swingAgeTicks - SWING_START_TICK) / swingDurationTicks;
-        return 1.0f - (1.0f - linear) * (1.0f - linear);
+    public static boolean isHitTick(int entityAgeTicks) {
+        return tickIntoCurrentSlash(entityAgeTicks) == HIT_TICK;
     }
 
     /**
-     * 斩完淡出：1 = 完全不透明，0 = 消失。
+     * 第几刀（从 0 起）。与客户端 {@code slashSequenceIndex} 对齐意图相同。
      */
-    public static float fadeAlpha(float fadeAgeTicks) {
-        if (SLASH_FADE_TICKS <= 1.0e-4f) {
-            return 0.0f;
-        }
-        return Mth.clamp(1.0f - fadeAgeTicks / SLASH_FADE_TICKS, 0.0f, 1.0f);
-    }
-
-    public static boolean isHitWindow(int swingAgeTicks, boolean alreadyResolved) {
-        return !alreadyResolved && swingAgeTicks >= HIT_TICK;
-    }
-
-    public static float startRollDegrees(boolean backhandSlash) {
-        return backhandSlash ? SWORD_END_ROLL_DEGREES : SWORD_START_ROLL_DEGREES;
-    }
-
-    public static float endRollDegrees(boolean backhandSlash) {
-        return backhandSlash ? SWORD_START_ROLL_DEGREES : SWORD_END_ROLL_DEGREES;
-    }
-
-    public static float startPitchDegrees(boolean backhandSlash) {
-        return backhandSlash ? SWORD_END_PITCH_DEGREES : SWORD_START_PITCH_DEGREES;
-    }
-
-    public static float endPitchDegrees(boolean backhandSlash) {
-        return backhandSlash ? SWORD_START_PITCH_DEGREES : SWORD_END_PITCH_DEGREES;
-    }
-
-    /**
-     * 把 0.72 秒的单手横斩加速到当前单刀周期。周期缩短 → 动作更快。
-     */
-    public static float slashAnimationSpeed(int slashCycleTicks) {
-        float cycleTicks = Math.max(1.0f, slashCycleTicks);
-        return ONE_HANDED_SLASH_ANIMATION_LENGTH_TICKS / cycleTicks;
+    public static int slashSequenceIndex(int entityAgeTicks) {
+        return Math.max(0, entityAgeTicks) / SLASH_DURATION_TICKS;
     }
 }

@@ -2,17 +2,18 @@ package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.CannonOfHaimaProjectile;
+import com.eldenring.spells.entity.CarianSlicerEntity;
 import com.eldenring.spells.entity.CometProjectile;
 import com.eldenring.spells.entity.CometAzurJetEntity;
 import com.eldenring.spells.entity.FoundingRainDropEntity;
 import com.eldenring.spells.entity.FoundingRainOfStarsEntity;
-import com.eldenring.spells.entity.CarianSlicerEntity;
 import com.eldenring.spells.entity.CrystalBarrageShardProjectile;
 import com.eldenring.spells.entity.CrystalBurstShardProjectile;
 import com.eldenring.spells.entity.GavelOfHaimaEntity;
 import com.eldenring.spells.entity.GlintstoneArcProjectile;
 import com.eldenring.spells.entity.GlintstoneCometProjectile;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
+import com.eldenring.spells.entity.PhalanxGlintbladeEntity;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
 import com.eldenring.spells.entity.GlintstoneStarProjectile;
 import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
@@ -254,12 +255,12 @@ public final class ModEntities {
             );
 
     /**
-     * 卡利亚迅剑：锚在右手握点，碰撞箱仅作追踪占位。
+     * 卡利亚迅剑：服务端斩击锚点，无渲染；跟施法者结算扇形伤害。
      */
     public static final DeferredHolder<EntityType<?>, EntityType<CarianSlicerEntity>> CARIAN_SLICER =
             ENTITIES.register("carian_slicer", () ->
                     EntityType.Builder.<CarianSlicerEntity>of(CarianSlicerEntity::new, MobCategory.MISC)
-                            .sized(0.6f, 1.2f)
+                            .sized(0.5f, 0.5f)
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("carian_slicer"))
@@ -275,6 +276,18 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("magic_glintblade"))
+            );
+
+    /**
+     * 圆阵辉剑：跟手半圆后自动射出。碰撞箱与魔法辉剑相同，模型复用。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<PhalanxGlintbladeEntity>> PHALANX_GLINTBLADE =
+            ENTITIES.register("phalanx_glintblade", () ->
+                    EntityType.Builder.<PhalanxGlintbladeEntity>of(PhalanxGlintbladeEntity::new, MobCategory.MISC)
+                            .sized(0.40f, 0.40f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("phalanx_glintblade"))
             );
 
     private ModEntities() {

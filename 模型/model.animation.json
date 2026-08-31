@@ -1,0 +1,602 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.animation.elden_ring_spells.cast_raise": {
+			"animation_length": 1,
+			"bones": {
+				"head": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.25": {
+							"vector": [8, 0, 0]
+						}
+					}
+				},
+				"leftArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.1": {
+							"vector": [0, 0, 0]
+						},
+						"0.25": {
+							"vector": [0, 0, 0]
+						},
+						"0.4": {
+							"pre": {
+								"vector": [0, 0, 0]
+							},
+							"post": {
+								"vector": [0, 0, 0]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.5": {
+							"post": {
+								"vector": [0, 0, 0]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.6": {
+							"post": {
+								"vector": [0, 0, 0]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [0, 0, 0]
+						},
+						"0.9": {
+							"pre": {
+								"vector": [0, 0, 0]
+							},
+							"post": {
+								"vector": [0, 0, 0]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"1.0": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"rightArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.1": {
+							"pre": {
+								"vector": [0, 0, 0]
+							},
+							"post": {
+								"vector": [0, 0, 0]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.25": {
+							"vector": [0, 0, 0]
+						},
+						"0.4": {
+							"pre": {
+								"vector": [0, 0, 0]
+							},
+							"post": {
+								"vector": [0, 0, 0]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.5": {
+							"vector": [0, 0, 0]
+						},
+						"0.6": {
+							"vector": [0, 0, 0]
+						},
+						"0.75": {
+							"vector": [0, 0, 0]
+						},
+						"0.9": {
+							"vector": [0, 0, 0]
+						},
+						"1.0": {
+							"vector": [0, 0, 0]
+						}
+					}
+				},
+				"torso": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"0.5": {
+							"vector": [6, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"animation.elden_ring_spells.carian_slicer_1": {
+			"animation_length": 0.75,
+			"bones": {
+				"rightArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, -7]
+						},
+						"0.1": {
+							"vector": [15, 15, -36],
+							"lerp_mode": "catmullrom"
+						},
+						"0.22": {
+							"vector": [50, -26, -66]
+						},
+						"0.38": {
+							"vector": [70, -31, -43],
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [85, -31, -43]
+						},
+						"0.75": {
+							"vector": [82, -28, -40]
+						}
+					}
+				},
+				"leftArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [-10, 6, 8]
+						},
+						"0.22": {
+							"vector": [-22, 12, 14]
+						},
+						"0.38": {
+							"vector": [-12, 8, 6],
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [-14, 6, 8]
+						}
+					}
+				},
+				"body": {
+					"rotation": {
+						"0.0": {
+							"vector": [-10, 0, 0]
+						},
+						"0.22": {
+							"vector": [-12, 14, 4]
+						},
+						"0.38": {
+							"vector": [-16, -22, -6],
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [-14, -26, -8]
+						},
+						"0.75": {
+							"vector": [-12, -18, -4]
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, -2, 1.2]
+						},
+						"0.22": {
+							"vector": [0, -2.4, 1.6]
+						},
+						"0.38": {
+							"vector": [0, -2.8, 2.4]
+						},
+						"0.75": {
+							"vector": [0, -2.4, 1.8]
+						}
+					}
+				},
+				"torso": {
+					"rotation": {
+						"0.0": {
+							"vector": [-4, 0, 0]
+						},
+						"0.22": {
+							"vector": [-6, 22, 8]
+						},
+						"0.38": {
+							"vector": [-12, -32, -10],
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [-10, -36, -12]
+						},
+						"0.75": {
+							"vector": [-8, -20, -6]
+						}
+					}
+				},
+				"head": {
+					"rotation": {
+						"0.0": {
+							"vector": [-6, 0, 0]
+						},
+						"0.22": {
+							"vector": [-10, 8, 4]
+						},
+						"0.38": {
+							"vector": [-14, -16, -6],
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [-10, -10, -3]
+						}
+					}
+				},
+				"rightLeg": {
+					"rotation": {
+						"0.0": {
+							"vector": [-8, 0, 2]
+						},
+						"0.22": {
+							"vector": [6, 6, 3]
+						},
+						"0.38": {
+							"vector": [-16, 4, 2],
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [-10, 0, 2]
+						}
+					}
+				},
+				"leftLeg": {
+					"rotation": {
+						"0.0": {
+							"vector": [10, 0, -2]
+						},
+						"0.22": {
+							"vector": [4, -4, -2]
+						},
+						"0.38": {
+							"vector": [14, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [8, 0, -2]
+						}
+					}
+				}
+			}
+		},
+		"animation.elden_ring_spells.carian_slicer_2": {
+			"animation_length": 0.75,
+			"bones": {
+				"rightArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [82, -28, -40],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1": {
+							"vector": [90, -40, -22],
+							"lerp_mode": "catmullrom"
+						},
+						"0.22": {
+							"vector": [95, -52, -8]
+						},
+						"0.38": {
+							"vector": [58, 8, -58],
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [28, 24, -72]
+						},
+						"0.75": {
+							"vector": [18, 16, -58]
+						}
+					}
+				},
+				"leftArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [-14, 6, 8]
+						},
+						"0.22": {
+							"vector": [-8, 4, 4]
+						},
+						"0.38": {
+							"vector": [-20, 10, 16],
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [-12, 6, 10]
+						}
+					}
+				},
+				"body": {
+					"rotation": {
+						"0.0": {
+							"vector": [-12, -18, -4]
+						},
+						"0.22": {
+							"vector": [-14, -24, -6]
+						},
+						"0.38": {
+							"vector": [-16, 18, 6],
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [-14, 24, 8]
+						},
+						"0.75": {
+							"vector": [-12, 12, 4]
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, -2.4, 1.8]
+						},
+						"0.22": {
+							"vector": [0, -2.6, 2]
+						},
+						"0.38": {
+							"vector": [0, -2.8, 2.4]
+						},
+						"0.75": {
+							"vector": [0, -2.4, 1.8]
+						}
+					}
+				},
+				"torso": {
+					"rotation": {
+						"0.0": {
+							"vector": [-8, -20, -6]
+						},
+						"0.22": {
+							"vector": [-10, -30, -10]
+						},
+						"0.38": {
+							"vector": [-12, 28, 10],
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [-10, 32, 12]
+						},
+						"0.75": {
+							"vector": [-8, 16, 6]
+						}
+					}
+				},
+				"head": {
+					"rotation": {
+						"0.0": {
+							"vector": [-10, -10, -3]
+						},
+						"0.22": {
+							"vector": [-12, -14, -5]
+						},
+						"0.38": {
+							"vector": [-14, 14, 5],
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [-10, 8, 2]
+						}
+					}
+				},
+				"rightLeg": {
+					"rotation": {
+						"0.0": {
+							"vector": [-10, 0, 2]
+						},
+						"0.22": {
+							"vector": [-4, -4, 0]
+						},
+						"0.38": {
+							"vector": [14, 4, 2]
+						},
+						"0.75": {
+							"vector": [8, 0, 2]
+						}
+					}
+				},
+				"leftLeg": {
+					"rotation": {
+						"0.0": {
+							"vector": [8, 0, -2]
+						},
+						"0.22": {
+							"vector": [12, 4, -2]
+						},
+						"0.38": {
+							"vector": [-12, 0, 0]
+						},
+						"0.75": {
+							"vector": [-6, 0, -2]
+						}
+					}
+				}
+			}
+		},
+		"carian_slicer_1": {
+			"animation_length": 0.75,
+			"bones": {
+				"body": {
+					"rotation": {
+						"0.0": {
+							"vector": [10, 0, 0]
+						},
+						"0.2": {
+							"vector": [12, -14, 4]
+						},
+						"0.4": {
+							"pre": {
+								"vector": [16, 22, -6]
+							},
+							"post": {
+								"vector": [16, 22, -6]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [14, 26, -8]
+						},
+						"0.75": {
+							"vector": [12, 18, -4]
+						}
+					},
+					"position": {
+						"0.0": {
+							"vector": [0, -2, 1.2]
+						},
+						"0.2": {
+							"vector": [0, -2.4, 1.6]
+						},
+						"0.4": {
+							"vector": [0, -2.8, 2.4]
+						},
+						"0.75": {
+							"vector": [0, -2.4, 1.8]
+						}
+					}
+				},
+				"head": {
+					"rotation": {
+						"0.0": {
+							"vector": [6, 0, 0]
+						},
+						"0.2": {
+							"vector": [10, -8, 4]
+						},
+						"0.4": {
+							"pre": {
+								"vector": [14, 16, -6]
+							},
+							"post": {
+								"vector": [14, 16, -6]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [10, 10, -3]
+						}
+					}
+				},
+				"leftArm": {
+					"rotation": {
+						"0.0": {
+							"vector": [10, -6, 8]
+						},
+						"0.2": {
+							"vector": [22, -12, 14]
+						},
+						"0.4": {
+							"pre": {
+								"vector": [12, -8, 6]
+							},
+							"post": {
+								"vector": [12, -8, 6]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"vector": [14, -6, 8]
+						}
+					}
+				},
+				"leftLeg": {
+					"rotation": {
+						"0.0": {
+							"vector": [-10, 0, -2]
+						},
+						"0.2": {
+							"vector": [-4, 4, -2]
+						},
+						"0.4": {
+							"vector": [-14, 0, 0]
+						},
+						"0.75": {
+							"vector": [-8, 0, -2]
+						}
+					}
+				},
+				"rightArm": {
+					"rotation": {
+						"0.0": {
+							"post": {
+								"vector": [0, 0, -7]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.1": {
+							"post": {
+								"vector": [-15, -15, -36]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.2": {
+							"vector": [-50, 26, -66]
+						},
+						"0.4": {
+							"pre": {
+								"vector": [-70, 31, -43]
+							},
+							"post": {
+								"vector": [-70, 31, -43]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [-85, 31, -43]
+						},
+						"0.75": {
+							"vector": [-82, 28, -40]
+						}
+					}
+				},
+				"rightLeg": {
+					"rotation": {
+						"0.0": {
+							"vector": [8, 0, 2]
+						},
+						"0.2": {
+							"vector": [-6, -6, 3]
+						},
+						"0.4": {
+							"vector": [16, -4, 2]
+						},
+						"0.75": {
+							"vector": [10, 0, 2]
+						}
+					}
+				},
+				"torso": {
+					"rotation": {
+						"0.0": {
+							"vector": [4, 0, 0]
+						},
+						"0.2": {
+							"vector": [6, -22, 8]
+						},
+						"0.4": {
+							"pre": {
+								"vector": [12, 32, -10]
+							},
+							"post": {
+								"vector": [12, 32, -10]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"0.55": {
+							"vector": [10, 36, -12]
+						},
+						"0.75": {
+							"vector": [8, 20, -6]
+						}
+					}
+				}
+			}
+		}
+	}
+}

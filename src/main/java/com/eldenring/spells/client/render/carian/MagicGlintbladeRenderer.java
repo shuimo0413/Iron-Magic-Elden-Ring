@@ -4,7 +4,6 @@ import com.eldenring.spells.client.render.ProjectileOrientation;
 import com.eldenring.spells.client.render.glintstone.GlintstoneTrailRenderer;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
-import com.eldenring.spells.spell.curve.MagicGlintbladeCastCurve;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -25,7 +24,7 @@ import org.joml.Matrix4f;
  * 魔法辉剑客户端渲染：Blockbench 网格 + 半透明自发光。
  * 凝结时平躺、刃尖朝出手方向由小变大，射出后沿速度飞出。
  */
-public class MagicGlintbladeRenderer extends EntityRenderer<MagicGlintbladeEntity> {
+public class MagicGlintbladeRenderer<T extends MagicGlintbladeEntity> extends EntityRenderer<T> {
 
     private final ModelPart swordRoot;
 
@@ -36,13 +35,13 @@ public class MagicGlintbladeRenderer extends EntityRenderer<MagicGlintbladeEntit
     }
 
     @Override
-    public ResourceLocation getTextureLocation(MagicGlintbladeEntity entity) {
+    public ResourceLocation getTextureLocation(T entity) {
         return MagicGlintbladeModels.GLINTBLADE_BODY_TEXTURE;
     }
 
     @Override
     public void render(
-            MagicGlintbladeEntity entity,
+            T entity,
             float entityYaw,
             float partialTicks,
             PoseStack poseStack,
@@ -70,14 +69,17 @@ public class MagicGlintbladeRenderer extends EntityRenderer<MagicGlintbladeEntit
         }
 
         float hoverAgeTicks = entity.tickCount + partialTicks;
-        int hoverDurationTicks = MagicGlintbladeSpell.HOVER_DURATION_TICKS;
         float swordScale = entity.hasLaunched()
                 ? 1.0f
-                : MagicGlintbladeCastCurve.swordScale(hoverAgeTicks, hoverDurationTicks);
+                : entity.renderHoverSwordScale(hoverAgeTicks);
 
         poseStack.pushPose();
         if (!entity.hasLaunched()) {
-            applyHoverBladePose(poseStack, entity);
+            if (entity.usesOutwardHoverPose()) {
+                applyOutwardHoverPose(poseStack, entity);
+            } else {
+                applyHoverBladePose(poseStack, entity);
+            }
         } else {
             ProjectileOrientation.alignPoseToDeltaMovement(poseStack, entity, partialTicks);
             poseStack.mulPose(Axis.XP.rotationDegrees(-90.0f));
@@ -138,10 +140,18 @@ public class MagicGlintbladeRenderer extends EntityRenderer<MagicGlintbladeEntit
     }
 
     /**
+     * 圆阵跟手：刃尖沿玩家当前视线，五把剑平行朝前；姿态与射出后同一套轴向。
+     */
+    private static void applyOutwardHoverPose(PoseStack poseStack, MagicGlintbladeEntity entity) {
+        ProjectileOrientation.alignPoseToDirection(poseStack, entity.hoverBladeTipWorldDirection());
+        poseStack.mulPose(Axis.XP.rotationDegrees(-90.0f));
+    }
+
+    /**
      * 漩涡核柔光。纯漩涡段只留一小点；凝结时随剑变大；射出后缩小以免盖住剑身。
      */
     private void renderHoverGlow(
-            MagicGlintbladeEntity entity,
+            T entity,
             float partialTicks,
             float swordScale,
             PoseStack poseStack,

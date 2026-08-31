@@ -184,6 +184,14 @@ public final class SpellBookStatReloader {
                 MagicGlintbladeSpell.SPELL_SPELL_POWER_PER_LEVEL,
                 MagicGlintbladeSpell.SPELL_CAST_TIME_TICKS
         );
+        apply(
+                ModSpells.GLINTBLADE_PHALANX.get(),
+                GlintbladePhalanxSpell.SPELL_BASE_MANA_COST,
+                GlintbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL,
+                GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER,
+                GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                GlintbladePhalanxSpell.SPELL_CAST_TIME_TICKS
+        );
     }
 
     private static void apply(

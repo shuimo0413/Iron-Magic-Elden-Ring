@@ -1,69 +1,385 @@
 package com.eldenring.spells.client;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import com.eldenring.spells.entity.CarianSlicerEntity;
 import com.eldenring.spells.registry.ModSpells;
-import com.eldenring.spells.spell.CarianSlicerSpell;
-import com.eldenring.spells.spell.curve.CarianSlicerCastCurve;
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.kosmx.playerAnim.api.IPlayable;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonMode;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
-import dev.kosmx.playerAnim.api.layered.modifier.SpeedModifier;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Ease;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.spells.SpellAnimations;
-import io.redspace.ironsspellbooks.config.ClientConfigs;
 import io.redspace.ironsspellbooks.network.casting.CancelCastPacket;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
 import io.redspace.ironsspellbooks.player.KeyMappings;
+import java.util.Map;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /**
- * 卡利亚迅剑客户端：松手停连斩、隐藏蓄力条、每一刀只重播右手动作。
+ * 卡利亚迅剑客户端：交替播放 {@code carian_slicer_1}（第一刀）与 {@code carian_slicer_2}（第二刀）。
  * <p>
- * 铁魔法 CONTINUOUS 默认只会在起手播一次动作，并且会画蓄力条。迅剑要看起来像近战连斩，
- * 所以这里按实体连斩序号重播 {@code horizontal_slash_one_handed}，但关掉除右手外的通道。
- * 左右挥砍由身前的剑实体自己做，不再镜像到左手。
+ * 每刀 0.5 秒（10 tick），1.0× 速对齐 JSON 片长；上一刀播完才切下一刀。
+ * 按下出第一刀，长按且仍按住施法键则连续交替。
+ * 一旦某一刀已经起手，松手也要播完这一刀，再发 CancelCast；中途取消会让铁魔法清掉动画层。
+ * <p>
+ * 斩击只走本 mod 自己的 PlayerAnimator 层 {@link #CARIAN_SLICER_ANIMATION_LAYER}，上面不挂
+ * 铁魔法的 {@code MirrorModifier} / {@code IronsAdjustmentModifier}。
+ * 铁魔法默认 ANIMATION 层在副手施法时会左右镜像（旋转 Y/Z 取反），把 Blockbench 里
+ * 「右手从右往左」翻成游戏里「从左往右」。迅剑剑和关键帧都写死右手，不能走那一层。
+ * 起手时还会清掉铁魔法层上可能残留的动画，避免两层抢播。
+ * <p>
+ * 斩击期间按走路 / 冲刺原速移动：铁魔法会在 {@code MovementInputUpdateEvent} 把冲量乘到约 0.2，
+ * 本类先记下未减速冲量，再在 {@link EventPriority#LOWEST} 写回去。
+ * <p>
+ * PlayerAnimator 2.x 用动画 JSON 内的 clip 名做 path，不是文件名。
+ * 本类用 {@link EventPriority#LOWEST}，保证盖掉铁魔法 CONTINUOUS 可能先塞进默认层的挥击。
  */
 @EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class CarianSlicerClientHold {
 
     private static final ResourceLocation CAST_BAR_LAYER_ID = IronsSpellbooks.id("cast_bar");
 
-    private static boolean watchingCast;
-    private static boolean cancelPacketSent;
-    private static boolean holdKeyLatched;
-    private static int ticksSinceCastStart;
+    /**
+     * 迅剑专用动画层。在 {@link com.eldenring.spells.EldenRingSpellsClient} 里注册，
+     * 优先级高于铁魔法的 42，且不挂 Mirror / 准星修正。
+     */
+    public static final ResourceLocation CARIAN_SLICER_ANIMATION_LAYER =
+            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_slicer_animation");
 
-    /** 迅剑实体 id → 已经播过动作的连斩序号，用来侦测「新的一刀」。 */
-    private static final Map<Integer, Integer> lastPlayedComboBySlicerId = new HashMap<>();
+    /**
+     * 下标 0 = 点按第一刀（资源 {@code carian_slicer_1}），1 = 连斩第二刀（{@code carian_slicer_2}）。
+     * 导出时已把 Blockbench {@code carian_slicer_2} 写入游戏 {@code _1}、BB {@code _1} 写入游戏 {@code _2}。
+     */
+    private static final String[] SLASH_CLIP_NAMES = {
+            "carian_slicer_1",
+            "carian_slicer_2"
+    };
+
+    /**
+     * 与 player_animation JSON {@code animation_length: 0.5} 对齐（10 tick = 0.5 秒）。
+     */
+    private static final int SLASH_ANIMATION_LENGTH_TICKS = 10;
+
+    /**
+     * 刀与刀之间的淡入 tick。片长 0.5 秒时 4 tick 会占近半刀，用 2 tick 衔接。
+     */
+    private static final int ANIMATION_FADE_IN_TICKS = 2;
+
+    /** 是否正在跑某一刀的 0.5 秒计时（含松手后收完当前刀）。 */
+    private static boolean slashPlaybackActive;
+
+    /** 0 = 点按第一刀（{@code carian_slicer_1}），1 = 连斩第二刀（{@code carian_slicer_2}）。 */
+    private static int slashSequenceIndex;
+
+    /** 当前刀已播放 tick（0 起计，满 {@link #SLASH_ANIMATION_LENGTH_TICKS} 才允许下一刀）。 */
+    private static int ticksIntoCurrentSlash;
+
+    /** 起手这一 tick 不计入片长，避免少播最后一帧。 */
+    private static boolean skipLengthTickThisFrame;
+
+    /** 松手后为 true：当前刀播完即停，不再交替。取消包也要等到这一刀结束才发。 */
+    private static boolean stopChainingAfterCurrentSlash;
+
+    private static boolean cancelPacketSent;
+
+    /**
+     * 铁魔法施法减速前的前后冲量。{@link EventPriority#HIGH} 记下，
+     * {@link EventPriority#LOWEST} 写回，抵消约 0.2 倍的施法移速惩罚。
+     */
+    private static float unslowedForwardImpulse;
+
+    /** 铁魔法施法减速前的左右冲量。单位与 {@link #unslowedForwardImpulse} 相同（-1～1）。 */
+    private static float unslowedLeftImpulse;
 
     private CarianSlicerClientHold() {
+    }
+
+    /**
+     * 正在播某一刀（含松手后收完这一刀）。手里的剑跟这个窗口对齐。
+     */
+    public static boolean isSlashPlaybackActive() {
+        return slashPlaybackActive;
+    }
+
+    /**
+     * 当前是第几刀（0 = {@code carian_slicer_1}）。光轨在换刀时清空，避免两刀之间拉线。
+     */
+    public static int slashSequenceIndex() {
+        return slashSequenceIndex;
+    }
+
+    /**
+     * 铁魔法 {@code ClientPlayerEvents.onCalculatePlayerSpeed} 优先级是 NORMAL，
+     * 会把冲量乘上 {@code 0.2 + CASTING_MOVESPEED - 1}。这里赶在它之前记下原冲量。
+     */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void captureUnslowedMovement(MovementInputUpdateEvent event) {
+        if (!shouldRestoreFullMoveSpeed(event)) {
+            return;
+        }
+        unslowedForwardImpulse = event.getInput().forwardImpulse;
+        unslowedLeftImpulse = event.getInput().leftImpulse;
+    }
+
+    /**
+     * 铁魔法乘完之后把冲量写回减速前，斩击时就能按正常走路 / 冲刺速度移动。
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void restoreUnslowedMovement(MovementInputUpdateEvent event) {
+        if (!shouldRestoreFullMoveSpeed(event)) {
+            return;
+        }
+        event.getInput().forwardImpulse = unslowedForwardImpulse;
+        event.getInput().leftImpulse = unslowedLeftImpulse;
+    }
+
+    @SubscribeEvent
+    public static void hideChargeBar(RenderGuiLayerEvent.Pre event) {
+        if (!event.getName().equals(CAST_BAR_LAYER_ID)) {
+            return;
+        }
+        if (isLocalPlayerCastingCarianSlicer()) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onClientTick(ClientTickEvent.Post event) {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        if (localPlayer == null) {
+            resetAll();
+            return;
+        }
+
+        boolean castingCarianSlicer = isLocalPlayerCastingCarianSlicer();
+
+        if (castingCarianSlicer) {
+            if (!slashPlaybackActive) {
+                beginSlashSequence(localPlayer);
+            }
+            updateHoldKeyState();
+        } else if (slashPlaybackActive) {
+            stopChainingAfterCurrentSlash = true;
+        }
+
+        if (!slashPlaybackActive) {
+            return;
+        }
+
+        if (skipLengthTickThisFrame) {
+            skipLengthTickThisFrame = false;
+            return;
+        }
+
+        ticksIntoCurrentSlash++;
+
+        if (ticksIntoCurrentSlash < SLASH_ANIMATION_LENGTH_TICKS) {
+            return;
+        }
+
+        if (shouldChainIntoNextSlash(castingCarianSlicer)) {
+            slashSequenceIndex++;
+            ticksIntoCurrentSlash = 0;
+            skipLengthTickThisFrame = true;
+            playSlashAnimation(localPlayer, slashSequenceIndex);
+            return;
+        }
+
+        sendCancelIfNeeded();
+        resetAll();
+    }
+
+    private static void beginSlashSequence(LocalPlayer localPlayer) {
+        slashPlaybackActive = true;
+        slashSequenceIndex = 0;
+        ticksIntoCurrentSlash = 0;
+        skipLengthTickThisFrame = true;
+        stopChainingAfterCurrentSlash = false;
+        cancelPacketSent = false;
+        playSlashAnimation(localPlayer, 0);
+    }
+
+    /**
+     * 松手只标记「这一刀之后不再连斩」，不立刻 CancelCast。
+     * 铁魔法 {@code OnCastFinishedPacket(cancelled)} 会清动画，中途发取消等于砍掉当前刀。
+     */
+    private static void updateHoldKeyState() {
+        stopChainingAfterCurrentSlash = !isAnyCastHoldKeyPhysicallyDown();
+    }
+
+    private static boolean shouldChainIntoNextSlash(boolean castingCarianSlicer) {
+        if (stopChainingAfterCurrentSlash) {
+            return false;
+        }
+        if (!castingCarianSlicer) {
+            return false;
+        }
+        return isAnyCastHoldKeyPhysicallyDown();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void playSlashAnimation(LocalPlayer player, int sequenceIndex) {
+        int slashClipIndex = sequenceIndex & 1;
+        IPlayable playable = resolveSlashClip(slashClipIndex);
+        if (playable == null) {
+            return;
+        }
+        // 清掉铁魔法默认层，防止 MirrorModifier 层上残留的同名 clip 和本层抢。
+        clearIronSpellAnimationLayer(player);
+
+        ModifierLayer<IAnimation> slicerAnimationLayer =
+                (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player)
+                        .get(CARIAN_SLICER_ANIMATION_LAYER);
+        if (slicerAnimationLayer == null) {
+            EldenRingSpellsMod.LOGGER.warn(
+                    "Carian slicer animation layer {} missing; was registerFactory called?",
+                    CARIAN_SLICER_ANIMATION_LAYER
+            );
+            return;
+        }
+        IAnimation animationToPlay = createSlashPlayer(playable);
+        slicerAnimationLayer.replaceAnimationWithFade(
+                AbstractFadeModifier.standardFadeIn(ANIMATION_FADE_IN_TICKS, Ease.INOUTSINE),
+                animationToPlay,
+                true
+        );
+    }
+
+    /**
+     * 铁魔法 {@code SpellAnimations.ANIMATION_RESOURCE} 带 Mirror / 准星修正。
+     * 迅剑不在那一层播，但起手或其它逻辑可能仍往里塞过动画，这里硬清掉。
+     */
+    @SuppressWarnings("unchecked")
+    private static void clearIronSpellAnimationLayer(LocalPlayer player) {
+        ModifierLayer<IAnimation> ironAnimationLayer =
+                (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player)
+                        .get(SpellAnimations.ANIMATION_RESOURCE);
+        if (ironAnimationLayer != null) {
+            ironAnimationLayer.setAnimation(null);
+        }
+    }
+
+    /**
+     * 收招时清掉迅剑层，避免最后一帧粘住。
+     */
+    @SuppressWarnings("unchecked")
+    private static void clearSlicerAnimationLayer(LocalPlayer player) {
+        if (player == null) {
+            return;
+        }
+        ModifierLayer<IAnimation> slicerAnimationLayer =
+                (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player)
+                        .get(CARIAN_SLICER_ANIMATION_LAYER);
+        if (slicerAnimationLayer != null) {
+            slicerAnimationLayer.setAnimation(null);
+        }
+    }
+
+    /**
+     * PlayerAnimator 2.x 的注册 path 可能是 clip 名、gecko 长名或带目录的资源 path。
+     * 按精确名查找，找不到再扫本 mod 已注册动画，避免 {@code carian_slicer_1} 静默失败后直接播到 2。
+     */
+    private static IPlayable resolveSlashClip(int slashClipIndex) {
+        String wantedClipName = SLASH_CLIP_NAMES[slashClipIndex];
+        String otherClipName = SLASH_CLIP_NAMES[slashClipIndex ^ 1];
+        String[] candidatePaths = {
+                wantedClipName,
+                "animation.elden_ring_spells." + wantedClipName,
+                "elden_ring_spells." + wantedClipName,
+                "player_animation/" + wantedClipName,
+                "player_animations/" + wantedClipName
+        };
+        for (String candidatePath : candidatePaths) {
+            IPlayable playable = PlayerAnimationRegistry.getAnimation(
+                    ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, candidatePath)
+            );
+            if (playable != null) {
+                return playable;
+            }
+        }
+        Map<String, IPlayable> registeredClips =
+                PlayerAnimationRegistry.getModAnimations(EldenRingSpellsMod.MOD_ID);
+        IPlayable exactName = registeredClips.get(wantedClipName);
+        if (exactName != null) {
+            return exactName;
+        }
+        for (Map.Entry<String, IPlayable> entry : registeredClips.entrySet()) {
+            String registeredPath = entry.getKey();
+            if (!registeredPath.contains(wantedClipName) || registeredPath.contains(otherClipName)) {
+                continue;
+            }
+            return entry.getValue();
+        }
+        EldenRingSpellsMod.LOGGER.warn(
+                "Carian slicer clip {} not in PlayerAnimator registry. Have: {}",
+                wantedClipName,
+                registeredClips.keySet()
+        );
+        return null;
+    }
+
+    private static IAnimation createSlashPlayer(IPlayable playable) {
+        KeyframeAnimationPlayer keyframePlayer;
+        if (playable instanceof KeyframeAnimation keyframeAnimation) {
+            keyframePlayer = new KeyframeAnimationPlayer(keyframeAnimation);
+        } else {
+            IAnimation played = playable.playAnimation();
+            if (played instanceof KeyframeAnimationPlayer typedPlayer) {
+                keyframePlayer = typedPlayer;
+            } else {
+                return played;
+            }
+        }
+        keyframePlayer.setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL);
+        // 右臂开、左手/双手物品关：第一人称只看到斩击右臂，法术书仍藏着。
+        // 迅剑不走这里的「右手物品」开关，由 CarianSlicerHandLayer 自己画。
+        keyframePlayer.setFirstPersonConfiguration(new FirstPersonConfiguration(
+                true, false, false, false
+        ));
+        return keyframePlayer;
+    }
+
+    private static void resetAll() {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        clearSlicerAnimationLayer(localPlayer);
+        slashPlaybackActive = false;
+        slashSequenceIndex = 0;
+        ticksIntoCurrentSlash = 0;
+        skipLengthTickThisFrame = false;
+        stopChainingAfterCurrentSlash = false;
+        cancelPacketSent = false;
+    }
+
+    /**
+     * 只对正在施放迅剑的本地玩家还原移速。别人的输入事件不会进这里。
+     */
+    private static boolean shouldRestoreFullMoveSpeed(MovementInputUpdateEvent event) {
+        if (!(event.getEntity() instanceof LocalPlayer localPlayer)) {
+            return false;
+        }
+        if (localPlayer != Minecraft.getInstance().player) {
+            return false;
+        }
+        return isLocalPlayerCastingCarianSlicer();
     }
 
     private static boolean isLocalPlayerCastingCarianSlicer() {
@@ -75,146 +391,6 @@ public final class CarianSlicerClientHold {
                 && castingSpellId.equals(ModSpells.CARIAN_SLICER.get().getSpellId());
     }
 
-    /**
-     * 迅剑不是蓄力咒，把铁魔法那条剩余时间条藏掉。
-     */
-    @SubscribeEvent
-    public static void hideChargeBar(RenderGuiLayerEvent.Pre event) {
-        if (!event.getName().equals(CAST_BAR_LAYER_ID)) {
-            return;
-        }
-        if (isLocalPlayerCastingCarianSlicer()) {
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Post event) {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-        if (localPlayer != null) {
-            replaySlashAnimations(localPlayer);
-        }
-        if (localPlayer == null || !isLocalPlayerCastingCarianSlicer()) {
-            resetWatchState();
-            return;
-        }
-        if (!watchingCast) {
-            watchingCast = true;
-            cancelPacketSent = false;
-            holdKeyLatched = false;
-            ticksSinceCastStart = 0;
-        } else {
-            ticksSinceCastStart++;
-        }
-        if (isAnyCastHoldKeyPhysicallyDown()) {
-            holdKeyLatched = true;
-            return;
-        }
-        if (holdKeyLatched) {
-            sendCancelIfNeeded();
-            return;
-        }
-        if (ticksSinceCastStart >= CarianSlicerCastCurve.HOLD_CANCEL_GRACE_TICKS) {
-            sendCancelIfNeeded();
-        }
-    }
-
-    /**
-     * 附近每把迅剑换刀时，给持有者重播一次右手横斩。剑本身在身前左右挥，手臂只给一点右手动作。
-     */
-    private static void replaySlashAnimations(LocalPlayer localPlayer) {
-        AABB searchBox = localPlayer.getBoundingBox().inflate(32.0);
-        Set<Integer> seenSlicerIds = new HashSet<>();
-        for (CarianSlicerEntity slicerEntity : localPlayer.level().getEntitiesOfClass(
-                CarianSlicerEntity.class,
-                searchBox
-        )) {
-            if (slicerEntity.isFinishing()) {
-                continue;
-            }
-            Entity owner = slicerEntity.getOwner();
-            if (!(owner instanceof AbstractClientPlayer clientPlayer)) {
-                continue;
-            }
-            int slicerId = slicerEntity.getId();
-            int comboIndex = slicerEntity.getComboIndex();
-            seenSlicerIds.add(slicerId);
-            Integer lastPlayedComboIndex = lastPlayedComboBySlicerId.get(slicerId);
-            if (lastPlayedComboIndex != null && lastPlayedComboIndex == comboIndex) {
-                continue;
-            }
-            lastPlayedComboBySlicerId.put(slicerId, comboIndex);
-            playRightHandSlash(clientPlayer);
-        }
-        lastPlayedComboBySlicerId.keySet().removeIf(slicerId -> !seenSlicerIds.contains(slicerId));
-    }
-
-    /**
-     * 重播铁魔法单手横斩，只驱动右手。左右挥砍由身前的剑实体自己做，这里不镜像、不跟准星加俯仰。
-     */
-    @SuppressWarnings("unchecked")
-    private static void playRightHandSlash(AbstractClientPlayer player) {
-        ResourceLocation animationId = SpellAnimations.ONE_HANDED_HORIZONTAL_SWING_ANIMATION
-                .getForPlayer()
-                .orElse(null);
-        if (animationId == null) {
-            return;
-        }
-        Object rawAnimation = PlayerAnimationRegistry.getAnimation(animationId);
-        if (!(rawAnimation instanceof KeyframeAnimation keyframeAnimation)) {
-            return;
-        }
-        ModifierLayer<IAnimation> playerAnimationData =
-                (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player)
-                        .get(SpellAnimations.ANIMATION_RESOURCE);
-        if (playerAnimationData == null) {
-            return;
-        }
-        KeyframeAnimation rightArmOnly = keepRightArmOnly(keyframeAnimation);
-        KeyframeAnimationPlayer keyframePlayer = new KeyframeAnimationPlayer(rightArmOnly);
-        boolean showRightArm = ClientConfigs.SHOW_FIRST_PERSON_ARMS.get();
-        if (showRightArm) {
-            keyframePlayer.setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL);
-            keyframePlayer.setFirstPersonConfiguration(new FirstPersonConfiguration(
-                    true, false, false, false
-            ));
-        } else {
-            keyframePlayer.setFirstPersonMode(FirstPersonMode.DISABLED);
-        }
-        ModifierLayer<IAnimation> slashLayer = new ModifierLayer<>(keyframePlayer);
-        slashLayer.addModifierLast(new SpeedModifier(
-                CarianSlicerCastCurve.slashAnimationSpeed(CarianSlicerSpell.SLASH_CYCLE_TICKS)
-        ));
-        playerAnimationData.replaceAnimationWithFade(
-                AbstractFadeModifier.standardFadeIn(2, Ease.INOUTSINE),
-                slashLayer,
-                true
-        );
-    }
-
-    /**
-     * 关掉除 rightArm 以外的通道。原片的 left_arm / torso / legs 会和走路抢骨骼。
-     */
-    private static KeyframeAnimation keepRightArmOnly(KeyframeAnimation source) {
-        KeyframeAnimation.AnimationBuilder builder = source.mutableCopy();
-        for (var partEntry : builder.getBodyParts().entrySet()) {
-            if ("rightArm".equals(partEntry.getKey()) || "right_arm".equals(partEntry.getKey())) {
-                continue;
-            }
-            if (partEntry.getValue() != null) {
-                partEntry.getValue().setEnabled(false);
-            }
-        }
-        return builder.build();
-    }
-
-    private static void resetWatchState() {
-        watchingCast = false;
-        cancelPacketSent = false;
-        holdKeyLatched = false;
-        ticksSinceCastStart = 0;
-    }
-
     private static void sendCancelIfNeeded() {
         if (cancelPacketSent) {
             return;
@@ -223,10 +399,6 @@ public final class CarianSlicerClientHold {
         cancelPacketSent = true;
     }
 
-    /**
-     * 任一施法键的<strong>物理按下</strong>。读 {@link KeyMapping#getKey()}，跟玩家改键走，不写死 V。
-     * 卷轴/法杖：右键；魔法书：施法键（默认 V）；快捷施法 1–15：对应快捷键。
-     */
     private static boolean isAnyCastHoldKeyPhysicallyDown() {
         if (isKeyMappingPhysicallyDown(Minecraft.getInstance().options.keyUse)) {
             return true;

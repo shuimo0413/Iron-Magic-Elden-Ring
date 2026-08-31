@@ -65,7 +65,12 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     private final TrailHistoryBuffer clientTrailHistory = new TrailHistoryBuffer();
 
     /** 生成时记下的发射方向；悬停结束时若没有更好目标就用它。 */
-    private Vec3 storedLaunchDirection = new Vec3(0.0, 0.0, 1.0);
+    protected Vec3 storedLaunchDirection = new Vec3(0.0, 0.0, 1.0);
+
+    /**
+     * 真正射出的 tick。圆阵跟手阶段时长不固定，命中宽限 / 追踪延迟都用「射出后过了多久」，不要减凝结时长。
+     */
+    protected int launchedAtTick;
 
     @Nullable
     private UUID lockedTrackingTargetUuid;
@@ -129,9 +134,43 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     }
 
     /**
+     * 跟手渲染是否用「刃尖沿 {@link #hoverBladeTipWorldDirection()}」这套姿态。
+     * 魔法辉剑凝结仍走平躺；圆阵覆盖为 true，五把剑平行对准玩家准星。
+     */
+    public boolean usesOutwardHoverPose() {
+        return false;
+    }
+
+    /**
+     * 凝结 / 跟手阶段的剑模型缩放 0–1。射出后渲染器不再问这个。
+     */
+    public float renderHoverSwordScale(float ageTicks) {
+        return MagicGlintbladeCastCurve.swordScale(ageTicks, MagicGlintbladeSpell.HOVER_DURATION_TICKS);
+    }
+
+    /**
+     * 跟手 / 凝结刃尖世界方向。圆阵跟玩家准星；魔法辉剑用锁死的视线。
+     */
+    public Vec3 hoverBladeTipWorldDirection() {
+        return vortexFacing();
+    }
+
+    /**
+     * 客户端收到「已射出」同步时记下当前 tick，否则跟手很久再飞时
+     * {@link #ticksSinceLaunch()} 会把整段跟手算进飞行寿命，剑在客户端被立刻丢掉，看起来像瞬移打中。
+     */
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (level().isClientSide && DATA_LAUNCHED.equals(key) && hasLaunched()) {
+            this.launchedAtTick = tickCount;
+        }
+    }
+
+    /**
      * 把锁死的凝结朝向写回实体旋转，防止 {@code super.tick} / 零速度 atan2 把它拧成 0。
      */
-    private void applyLockedHoverRotation() {
+    protected void applyLockedHoverRotation() {
         float yawDegrees = hoverYawDegrees();
         float pitchDegrees = hoverPitchDegrees();
         setYRot(yawDegrees);
@@ -183,18 +222,18 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
                 getY(),
                 getZ(),
                 deltaMovement,
-                MagicGlintbladeSpell.TRAIL_PARTICLE_INTENSITY
+                trailParticleIntensity()
         );
     }
 
     @Override
     public void impactParticles(double impactX, double impactY, double impactZ) {
-        CarianFx.impact(level(), impactX, impactY, impactZ, MagicGlintbladeSpell.IMPACT_PARTICLE_INTENSITY);
+        CarianFx.impact(level(), impactX, impactY, impactZ, impactParticleIntensity());
     }
 
     @Override
     public float getSpeed() {
-        return MagicGlintbladeSpell.PROJECTILE_FLIGHT_SPEED;
+        return projectileFlightSpeed();
     }
 
     @Override
@@ -213,26 +252,121 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
             discard();
             return;
         }
-        if (tickCount >= MagicGlintbladeSpell.ENTITY_LIFETIME_TICKS) {
+        if (shouldDiscardForLifetime()) {
             discard();
             return;
         }
 
         if (!hasLaunched()) {
-            setDeltaMovement(Vec3.ZERO);
-            this.noPhysics = true;
-            super.tick();
-            applyLockedHoverRotation();
-            if (!level().isClientSide && MagicGlintbladeCastCurve.shouldLaunch(
-                    tickCount,
-                    MagicGlintbladeSpell.HOVER_DURATION_TICKS
-            )) {
-                launchTowardTargetOrLook();
-            }
+            tickBeforeLaunch();
             return;
         }
 
         super.tick();
+    }
+
+    /**
+     * 寿命到点就销毁。魔法辉剑用「生成起算」的总寿命；圆阵跟手 / 飞行分段算。
+     */
+    protected boolean shouldDiscardForLifetime() {
+        return tickCount >= entityLifetimeTicks();
+    }
+
+    /**
+     * 尚未射出：零速度 tick 弹道基类，再贴槽位。圆阵跟手在 {@link #snapHoverFollowPose()}。
+     */
+    protected void tickBeforeLaunch() {
+        if (!keepHovering()) {
+            if (!level().isClientSide) {
+                discard();
+            }
+            return;
+        }
+        setDeltaMovement(Vec3.ZERO);
+        this.noPhysics = true;
+        super.tick();
+        snapHoverFollowPose();
+        applyLockedHoverRotation();
+        if (!level().isClientSide && shouldLaunchNow()) {
+            launchTowardTargetOrLook();
+        }
+    }
+
+    /**
+     * 悬停是否还能继续。魔法辉剑一直 true；圆阵主人死了 / 换维就 false。
+     */
+    protected boolean keepHovering() {
+        return true;
+    }
+
+    /**
+     * {@code super.tick} 之后贴位置 / 朝向，这样 {@code xo/yo/zo} 仍是上一 tick，客户端插值跟得上转身。
+     * 魔法辉剑生成点已经钉死，这里空操作。
+     */
+    protected void snapHoverFollowPose() {
+    }
+
+    /**
+     * 这一 tick 是否该离手。魔法辉剑看凝结时长；圆阵看附近有没有可打的生物。
+     */
+    protected boolean shouldLaunchNow() {
+        return MagicGlintbladeCastCurve.shouldLaunch(
+                tickCount,
+                MagicGlintbladeSpell.HOVER_DURATION_TICKS
+        );
+    }
+
+    /** 实体总寿命（tick，含悬停）。圆阵覆盖为跟手上限。 */
+    protected int entityLifetimeTicks() {
+        return MagicGlintbladeSpell.ENTITY_LIFETIME_TICKS;
+    }
+
+    /** 发射后飞行速度（方块/tick）。 */
+    protected float projectileFlightSpeed() {
+        return MagicGlintbladeSpell.PROJECTILE_FLIGHT_SPEED;
+    }
+
+    /** 飞行后索敌半径（方块）。 */
+    protected double projectileTrackingRangeBlocks() {
+        return MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
+    }
+
+    /** 每 tick 最大转向（度）。 */
+    protected float projectileMaxTurnAngleDegreesPerTick() {
+        return MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
+    }
+
+    /** 射出后再直飞、不转向的 tick 数。 */
+    protected int projectileTrackingStartDelayTicks() {
+        return MagicGlintbladeSpell.PROJECTILE_TRACKING_START_DELAY_TICKS;
+    }
+
+    /** 索敌锥半角（度）。圆阵离手触发不走锥，飞行后仍用这个。 */
+    protected float projectileTrackingAcquireConeHalfAngleDegrees() {
+        return MagicGlintbladeSpell.PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES;
+    }
+
+    /** 射出后忽略方块命中的 tick 数。 */
+    protected int collisionGraceTicks() {
+        return MagicGlintbladeSpell.COLLISION_GRACE_TICKS;
+    }
+
+    protected float trailParticleIntensity() {
+        return MagicGlintbladeSpell.TRAIL_PARTICLE_INTENSITY;
+    }
+
+    protected float impactParticleIntensity() {
+        return MagicGlintbladeSpell.IMPACT_PARTICLE_INTENSITY;
+    }
+
+    /**
+     * 射出后经过的 tick。未射出时为 0。
+     */
+    protected int ticksSinceLaunch() {
+        if (!hasLaunched()) {
+            return 0;
+        }
+        return tickCount - launchedAtTick;
     }
 
     /**
@@ -257,7 +391,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     /**
      * 凝结结束：优先朝锥内最近合法目标飞，否则沿生成时视线。
      */
-    private void launchTowardTargetOrLook() {
+    protected void launchTowardTargetOrLook() {
         Vec3 shootDirection = storedLaunchDirection;
         LivingEntity launchTarget = findLaunchTarget();
         if (launchTarget != null) {
@@ -267,6 +401,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
             }
         }
         this.noPhysics = false;
+        this.launchedAtTick = tickCount;
         entityData.set(DATA_LAUNCHED, true);
         shoot(shootDirection);
         float yawDegrees = (float) (Mth.atan2(shootDirection.x, shootDirection.z) * Mth.RAD_TO_DEG);
@@ -287,9 +422,9 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         if (!hasLaunched()) {
             return;
         }
-        int ticksSinceLaunch = tickCount - MagicGlintbladeSpell.HOVER_DURATION_TICKS;
+        int elapsedTicksSinceLaunch = ticksSinceLaunch();
         boolean withinBlockCollisionGrace =
-                ticksSinceLaunch <= MagicGlintbladeSpell.COLLISION_GRACE_TICKS;
+                elapsedTicksSinceLaunch <= collisionGraceTicks();
         Vec3 startPosition = position();
         Vec3 destination = startPosition.add(getDeltaMovement());
         BlockHitResult blockCollision = level().clip(new ClipContext(
@@ -341,8 +476,8 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         if (!hasLaunched() || level().isClientSide) {
             return;
         }
-        int ticksSinceLaunch = tickCount - MagicGlintbladeSpell.HOVER_DURATION_TICKS;
-        if (ticksSinceLaunch < MagicGlintbladeSpell.PROJECTILE_TRACKING_START_DELAY_TICKS) {
+        int elapsedTicksSinceLaunch = ticksSinceLaunch();
+        if (elapsedTicksSinceLaunch < projectileTrackingStartDelayTicks()) {
             return;
         }
 
@@ -372,7 +507,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         );
         double angleBetweenDirectionsRadians = Math.acos(directionDotProduct);
         double maxTurnAngleRadians = Math.toRadians(
-                MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                projectileMaxTurnAngleDegreesPerTick()
         );
         float slerpInterpolationFactor = angleBetweenDirectionsRadians
                 < MagicGlintbladeSpell.PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS
@@ -393,10 +528,10 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     }
 
     @Nullable
-    private LivingEntity findLaunchTarget() {
+    protected LivingEntity findLaunchTarget() {
         Entity ownerEntity = getOwner();
         Vec3 searchOrigin = getBoundingBox().getCenter();
-        double trackingRange = MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
+        double trackingRange = projectileTrackingRangeBlocks();
         AABB searchBox = new AABB(searchOrigin, searchOrigin).inflate(trackingRange);
         LivingEntity bestTarget = null;
         double bestScore = Double.MAX_VALUE;
@@ -412,7 +547,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
                     -1.0,
                     1.0
             )));
-            if (angleDegrees > MagicGlintbladeSpell.PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES) {
+            if (angleDegrees > projectileTrackingAcquireConeHalfAngleDegrees()) {
                 continue;
             }
             double score = angleDegrees * 8.0 + distanceTo(candidate);
@@ -449,7 +584,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
                 ? getDeltaMovement().normalize()
                 : storedLaunchDirection;
         Vec3 searchOrigin = getBoundingBox().getCenter();
-        double trackingRange = MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
+        double trackingRange = projectileTrackingRangeBlocks();
         AABB searchBox = new AABB(searchOrigin, searchOrigin).inflate(trackingRange);
         LivingEntity bestTarget = null;
         double bestScore = Double.MAX_VALUE;
@@ -465,7 +600,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
                     -1.0,
                     1.0
             )));
-            if (angleDegrees > MagicGlintbladeSpell.PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES) {
+            if (angleDegrees > projectileTrackingAcquireConeHalfAngleDegrees()) {
                 continue;
             }
             double score = angleDegrees * 8.0 + distanceTo(candidate);
@@ -477,25 +612,32 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         return bestTarget;
     }
 
-    private boolean canTrackLivingEntity(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
+    protected boolean canTrackLivingEntity(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
+        if (!isValidCombatTarget(candidateEntity, ownerEntity)) {
+            return false;
+        }
+        double trackingRange = projectileTrackingRangeBlocks();
+        return distanceToSqr(candidateEntity) <= trackingRange * trackingRange;
+    }
+
+    /**
+     * 是否可以当作敌人：活着、可点选、不是主人或盟友。不含距离。
+     */
+    protected boolean isValidCombatTarget(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
         if (!candidateEntity.isAlive() || candidateEntity.isSpectator() || !candidateEntity.isPickable()) {
             return false;
         }
-        if (ownerEntity != null
-                && (candidateEntity == ownerEntity
-                || ownerEntity.isAlliedTo(candidateEntity)
-                || candidateEntity.isAlliedTo(ownerEntity))) {
-            return false;
-        }
-        double trackingRange = MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
-        return distanceToSqr(candidateEntity) <= trackingRange * trackingRange;
+        return ownerEntity == null
+                || (candidateEntity != ownerEntity
+                && !ownerEntity.isAlliedTo(candidateEntity)
+                && !candidateEntity.isAlliedTo(ownerEntity));
     }
 
     private boolean canContinueTrackingLivingEntity(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
         return canTrackLivingEntity(candidateEntity, ownerEntity);
     }
 
-    private static Vec3 aimPointOnTarget(LivingEntity target) {
+    protected static Vec3 aimPointOnTarget(LivingEntity target) {
         AABB box = target.getBoundingBox();
         return new Vec3(
                 box.getCenter().x,
@@ -538,7 +680,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         discard();
     }
 
-    private AbstractSpell damageSourceSpell() {
+    protected AbstractSpell damageSourceSpell() {
         return ModSpells.MAGIC_GLINTBLADE.get();
     }
 
@@ -561,6 +703,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         tag.putDouble("LaunchX", storedLaunchDirection.x);
         tag.putDouble("LaunchY", storedLaunchDirection.y);
         tag.putDouble("LaunchZ", storedLaunchDirection.z);
+        tag.putInt("LaunchedAtTick", launchedAtTick);
         if (lockedTrackingTargetUuid != null) {
             tag.putUUID("LockedTarget", lockedTrackingTargetUuid);
         }
@@ -579,6 +722,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
                 tag.getDouble("LaunchY"),
                 tag.getDouble("LaunchZ")
         );
+        this.launchedAtTick = tag.getInt("LaunchedAtTick");
         if (tag.hasUUID("LockedTarget")) {
             this.lockedTrackingTargetUuid = tag.getUUID("LockedTarget");
         }

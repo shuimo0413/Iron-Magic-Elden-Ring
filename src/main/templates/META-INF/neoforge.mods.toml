@@ -46,8 +46,8 @@ Adds Lands Between-themed spells and schools.
     # 'required' requires the mod to exist, 'optional' does not
     # 'incompatible' will prevent the game from loading when the mod exists, and 'discouraged' will show a warning
     type="required" #mandatory
-    # The version range of the dependency
-    versionRange="[${neo_version},)" #mandatory
+    # Player-facing floor (see gradle.properties neo_version_range). Keep this file ASCII: NightConfig reads UTF-8.
+    versionRange="${neo_version_range}" #mandatory
     # An ordering relationship for the dependency.
     # BEFORE - This mod is loaded BEFORE the dependency
     # AFTER - This mod is loaded AFTER the dependency

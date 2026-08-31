@@ -5,12 +5,15 @@ import io.redspace.ironsspellbooks.api.spells.ICastData;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 卡利亚迅剑一次按住吟唱的附加状态：绑住跟手的辉剑实体。
+ * 卡利亚迅剑一次吟唱绑定的服务端斩击实体。
  */
 public final class CarianSlicerCastData implements ICastData {
 
     @Nullable
     private CarianSlicerEntity slicerEntity;
+
+    public CarianSlicerCastData() {
+    }
 
     @Nullable
     public CarianSlicerEntity slicerEntity() {

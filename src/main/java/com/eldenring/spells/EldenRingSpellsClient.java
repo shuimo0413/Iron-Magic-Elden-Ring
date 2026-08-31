@@ -1,9 +1,12 @@
 package com.eldenring.spells;
 
+import com.eldenring.spells.client.CarianSlicerClientHold;
 import com.eldenring.spells.client.ClientEntityRenderers;
 import com.eldenring.spells.client.ClientItemModels;
 import com.eldenring.spells.client.ClientParticleProviders;
 import com.eldenring.spells.registry.ModBlocks;
+import dev.kosmx.playerAnim.api.layered.ModifierLayer;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -40,6 +43,12 @@ public class EldenRingSpellsClient {
             for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
                 ItemBlockRenderTypes.setRenderLayer(set.cluster.get(), RenderType.cutout());
             }
+            // 迅剑专用层：无 MirrorModifier / 准星跟臂，避免右→左被翻成左→右。
+            PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    CarianSlicerClientHold.CARIAN_SLICER_ANIMATION_LAYER,
+                    60,
+                    player -> new ModifierLayer<>()
+            );
         });
     }
 
@@ -61,5 +70,10 @@ public class EldenRingSpellsClient {
     @SubscribeEvent
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         ClientEntityRenderers.registerRenderers(event);
+    }
+
+    @SubscribeEvent
+    static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
+        ClientEntityRenderers.addPlayerLayers(event);
     }
 }

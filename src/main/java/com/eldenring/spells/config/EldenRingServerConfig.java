@@ -1,8 +1,8 @@
 package com.eldenring.spells.config;
 
 import com.eldenring.spells.particle.cometazur.CometAzurFx;
-import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CarianSlicerSpell;
+import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CometAzurSpell;
 import com.eldenring.spells.spell.CometSpell;
 import com.eldenring.spells.spell.CrystalBarrageSpell;
@@ -15,6 +15,7 @@ import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
+import com.eldenring.spells.spell.GlintbladePhalanxSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
 import com.eldenring.spells.spell.StarShowerSpell;
 import com.eldenring.spells.spell.StarlightSpell;
@@ -57,6 +58,7 @@ public final class EldenRingServerConfig {
     public static final CannonValues CANNON_OF_HAIMA;
     public static final CarianSlicerValues CARIAN_SLICER;
     public static final MagicGlintbladeValues MAGIC_GLINTBLADE;
+    public static final GlintbladePhalanxValues GLINTBLADE_PHALANX;
     public static final CrystalBarrageValues CRYSTAL_BARRAGE;
     public static final CrystalBurstValues CRYSTAL_BURST;
     public static final GlintstoneArcValues GLINTSTONE_ARC;
@@ -181,6 +183,7 @@ public final class EldenRingServerConfig {
         CANNON_OF_HAIMA = CannonValues.create(builder);
         CARIAN_SLICER = CarianSlicerValues.create(builder);
         MAGIC_GLINTBLADE = MagicGlintbladeValues.create(builder);
+        GLINTBLADE_PHALANX = GlintbladePhalanxValues.create(builder);
         CRYSTAL_BARRAGE = CrystalBarrageValues.create(builder);
         CRYSTAL_BURST = CrystalBurstValues.create(builder);
         GLINTSTONE_ARC = GlintstoneArcValues.create(builder);
@@ -309,6 +312,7 @@ public final class EldenRingServerConfig {
         CANNON_OF_HAIMA.apply();
         CARIAN_SLICER.apply();
         MAGIC_GLINTBLADE.apply();
+        GLINTBLADE_PHALANX.apply();
         CRYSTAL_BARRAGE.apply();
         CRYSTAL_BURST.apply();
         GLINTSTONE_ARC.apply();
@@ -974,26 +978,23 @@ public final class EldenRingServerConfig {
 
     public static final class CarianSlicerValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue slashDamage;
-        private final ModConfigSpec.DoubleValue slashRange;
-        private final ModConfigSpec.DoubleValue slashHalfAngle;
-        private final ModConfigSpec.DoubleValue slashKnockback;
-        private final ModConfigSpec.IntValue slashCycleTicks;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.DoubleValue slashRadiusBlocks;
+        private final ModConfigSpec.DoubleValue slashHalfAngleDegrees;
+        private final ModConfigSpec.DoubleValue slashKnockbackStrength;
 
         private CarianSlicerValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue slashDamage,
-                ModConfigSpec.DoubleValue slashRange,
-                ModConfigSpec.DoubleValue slashHalfAngle,
-                ModConfigSpec.DoubleValue slashKnockback,
-                ModConfigSpec.IntValue slashCycleTicks
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.DoubleValue slashRadiusBlocks,
+                ModConfigSpec.DoubleValue slashHalfAngleDegrees,
+                ModConfigSpec.DoubleValue slashKnockbackStrength
         ) {
             this.book = book;
-            this.slashDamage = slashDamage;
-            this.slashRange = slashRange;
-            this.slashHalfAngle = slashHalfAngle;
-            this.slashKnockback = slashKnockback;
-            this.slashCycleTicks = slashCycleTicks;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.slashRadiusBlocks = slashRadiusBlocks;
+            this.slashHalfAngleDegrees = slashHalfAngleDegrees;
+            this.slashKnockbackStrength = slashKnockbackStrength;
         }
 
         static CarianSlicerValues create(ModConfigSpec.Builder builder) {
@@ -1007,11 +1008,38 @@ public final class EldenRingServerConfig {
                             CarianSlicerSpell.SPELL_SPELL_POWER_PER_LEVEL,
                             CarianSlicerSpell.SPELL_CAST_TIME_TICKS
                     ),
-                    ConfigSpecHelper.floating(builder, "slash_damage_per_spell_power", "挥砍伤害 = 法强 × 本系数。", CarianSlicerSpell.SLASH_DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
-                    ConfigSpecHelper.floating(builder, "slash_range_blocks", "扇形半径（方块）。", CarianSlicerSpell.SLASH_RANGE_BLOCKS, 0.5, 16.0),
-                    ConfigSpecHelper.floating(builder, "slash_half_angle_degrees", "扇形半角（度）。", CarianSlicerSpell.SLASH_HALF_ANGLE_DEGREES, 5.0, 180.0),
-                    ConfigSpecHelper.floating(builder, "slash_knockback_strength", "击退强度。迅剑刻意偏低。", CarianSlicerSpell.SLASH_KNOCKBACK_STRENGTH, 0.0, 4.0),
-                    ConfigSpecHelper.integer(builder, "slash_cycle_ticks", "单刀周期（tick）。调大连斩更疏。", CarianSlicerSpell.SLASH_CYCLE_TICKS, 1, 40)
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "damage_per_spell_power",
+                            "每刀伤害 = 法强 × 本系数。连斩频率高，调大要小心。",
+                            CarianSlicerSpell.DAMAGE_PER_SPELL_POWER,
+                            0.0,
+                            20.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "slash_radius_blocks",
+                            "扇形攻击半径（方块）。调大 → 更远也能砍到。",
+                            CarianSlicerSpell.SLASH_RADIUS_BLOCKS,
+                            0.5,
+                            16.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "slash_half_angle_degrees",
+                            "扇形半角（度）。相对视线左右各半角；调大 → 侧面更容易命中。",
+                            CarianSlicerSpell.SLASH_HALF_ANGLE_DEGREES,
+                            5.0,
+                            180.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "slash_knockback_strength",
+                            "命中击退强度。调大 → 被砍的怪往后弹得更开。",
+                            CarianSlicerSpell.SLASH_KNOCKBACK_STRENGTH,
+                            0.0,
+                            8.0
+                    )
             );
             builder.pop();
             return values;
@@ -1023,11 +1051,10 @@ public final class EldenRingServerConfig {
             CarianSlicerSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
             CarianSlicerSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
             CarianSlicerSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            CarianSlicerSpell.SLASH_DAMAGE_PER_SPELL_POWER = slashDamage.get().floatValue();
-            CarianSlicerSpell.SLASH_RANGE_BLOCKS = slashRange.get().floatValue();
-            CarianSlicerSpell.SLASH_HALF_ANGLE_DEGREES = slashHalfAngle.get().floatValue();
-            CarianSlicerSpell.SLASH_KNOCKBACK_STRENGTH = slashKnockback.get();
-            CarianSlicerSpell.SLASH_CYCLE_TICKS = slashCycleTicks.get();
+            CarianSlicerSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            CarianSlicerSpell.SLASH_RADIUS_BLOCKS = slashRadiusBlocks.get().floatValue();
+            CarianSlicerSpell.SLASH_HALF_ANGLE_DEGREES = slashHalfAngleDegrees.get().floatValue();
+            CarianSlicerSpell.SLASH_KNOCKBACK_STRENGTH = slashKnockbackStrength.get();
         }
     }
 
@@ -1091,6 +1118,110 @@ public final class EldenRingServerConfig {
             MagicGlintbladeSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
             MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
             MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
+        }
+    }
+
+    /**
+     * 辉剑圆阵玩法键：蓝耗 / 单剑伤害 / 剑数 / 12 格触发 / 跟手寿命 / 射出后追踪。
+     */
+    public static final class GlintbladePhalanxValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.IntValue bladeCount;
+        private final ModConfigSpec.DoubleValue autoLaunchRangeBlocks;
+        private final ModConfigSpec.IntValue hoverLifetimeTicks;
+        private final HomingFlightKeys flight;
+
+        private GlintbladePhalanxValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.IntValue bladeCount,
+                ModConfigSpec.DoubleValue autoLaunchRangeBlocks,
+                ModConfigSpec.IntValue hoverLifetimeTicks,
+                HomingFlightKeys flight
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.bladeCount = bladeCount;
+            this.autoLaunchRangeBlocks = autoLaunchRangeBlocks;
+            this.hoverLifetimeTicks = hoverLifetimeTicks;
+            this.flight = flight;
+        }
+
+        static GlintbladePhalanxValues create(ModConfigSpec.Builder builder) {
+            builder.push("glintblade_phalanx");
+            SpellBookKeys book = SpellBookKeys.define(
+                    builder,
+                    GlintbladePhalanxSpell.SPELL_BASE_MANA_COST,
+                    GlintbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL,
+                    GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER,
+                    GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                    GlintbladePhalanxSpell.SPELL_CAST_TIME_TICKS
+            );
+            GlintbladePhalanxValues values = new GlintbladePhalanxValues(
+                    book,
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "damage_per_spell_power",
+                            "单剑命中伤害 = 法强 × 本系数。五把打满总伤约等于本系数 × 5。",
+                            GlintbladePhalanxSpell.DAMAGE_PER_SPELL_POWER,
+                            0.0,
+                            20.0
+                    ),
+                    ConfigSpecHelper.integer(
+                            builder,
+                            "blade_count",
+                            "半圆上的辉剑数量。辉剑圆阵默认 5。",
+                            GlintbladePhalanxSpell.BLADE_COUNT,
+                            1,
+                            16
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "auto_launch_range_blocks",
+                            "玩家周围多少格内有敌人就自动射出（方块）。",
+                            GlintbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS,
+                            1.0,
+                            64.0
+                    ),
+                    ConfigSpecHelper.integer(
+                            builder,
+                            "hover_lifetime_ticks",
+                            "一直没有敌人时跟手多久后消失（tick）。20 tick = 1 秒。",
+                            GlintbladePhalanxSpell.HOVER_LIFETIME_TICKS,
+                            20,
+                            2400
+                    ),
+                    HomingFlightKeys.define(builder, new HomingSeed(
+                            GlintbladePhalanxSpell.SPELL_BASE_MANA_COST,
+                            GlintbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL,
+                            GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER,
+                            GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            GlintbladePhalanxSpell.SPELL_CAST_TIME_TICKS,
+                            GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED,
+                            GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
+                            GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                            GlintbladePhalanxSpell.DAMAGE_PER_SPELL_POWER,
+                            null
+                    ), false)
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            GlintbladePhalanxSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            GlintbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
+            GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            GlintbladePhalanxSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            GlintbladePhalanxSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            GlintbladePhalanxSpell.BLADE_COUNT = bladeCount.get();
+            GlintbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS = autoLaunchRangeBlocks.get();
+            GlintbladePhalanxSpell.HOVER_LIFETIME_TICKS = hoverLifetimeTicks.get();
+            GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
+            GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
+            GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
         }
     }
 

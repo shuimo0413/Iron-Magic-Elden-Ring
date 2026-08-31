@@ -3,7 +3,8 @@
   "package": "com.eldenring.spells.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "ScrollModelMixin"
+    "ScrollModelMixin",
+    "HideHeldItemDuringCarianSlicerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

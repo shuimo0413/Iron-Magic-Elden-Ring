@@ -5,8 +5,7 @@ import com.eldenring.spells.client.render.FoundingRainDropRenderer;
 import com.eldenring.spells.client.render.FoundingRainNebulaRenderer;
 import com.eldenring.spells.client.render.StarlightRenderer;
 import com.eldenring.spells.client.render.TerraMagicaZoneRenderer;
-import com.eldenring.spells.client.render.carian.CarianSlicerRenderer;
-import com.eldenring.spells.client.render.carian.CarianSwordModels;
+import com.eldenring.spells.client.render.carian.CarianSlicerHandLayer;
 import com.eldenring.spells.client.render.carian.MagicGlintbladeModels;
 import com.eldenring.spells.client.render.carian.MagicGlintbladeRenderer;
 import com.eldenring.spells.client.render.glintstone.GlintstoneArcRenderer;
@@ -18,7 +17,11 @@ import com.eldenring.spells.client.render.haima.HaimaCannonRenderer;
 import com.eldenring.spells.client.render.haima.HaimaGavelModels;
 import com.eldenring.spells.client.render.haima.HaimaGavelRenderer;
 import com.eldenring.spells.registry.ModEntities;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 /**
@@ -47,10 +50,6 @@ public final class ClientEntityRenderers {
                 HaimaCannonModels::createCannonballLayer
         );
         event.registerLayerDefinition(
-                CarianSwordModels.SWORD_LAYER,
-                CarianSwordModels::createSwordLayer
-        );
-        event.registerLayerDefinition(
                 MagicGlintbladeModels.GLINTBLADE_LAYER,
                 MagicGlintbladeModels::createGlintbladeLayer
         );
@@ -76,8 +75,25 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.TERRA_MAGICA_ZONE.get(), TerraMagicaZoneRenderer::new);
         event.registerEntityRenderer(ModEntities.COMET_AZUR_JET.get(), CometAzurJetRenderer::new);
         event.registerEntityRenderer(ModEntities.GAVEL_OF_HAIMA.get(), HaimaGavelRenderer::new);
+        event.registerEntityRenderer(ModEntities.CARIAN_SLICER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.CANNON_OF_HAIMA.get(), HaimaCannonRenderer::new);
-        event.registerEntityRenderer(ModEntities.CARIAN_SLICER.get(), CarianSlicerRenderer::new);
         event.registerEntityRenderer(ModEntities.MAGIC_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
+        event.registerEntityRenderer(ModEntities.PHALANX_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
+    }
+
+    /**
+     * 宽/细手臂都挂迅剑层。该层继承 {@code PlayerItemInHandLayer}，
+     * PlayerAnimator 第一人称 pass 才不会把它滤掉，两种人称共用同一套握点。
+     */
+    public static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
+        for (PlayerSkin.Model skinModel : event.getSkins()) {
+            EntityRenderer<? extends Player> renderer = event.getSkin(skinModel);
+            if (renderer instanceof PlayerRenderer playerRenderer) {
+                playerRenderer.addLayer(new CarianSlicerHandLayer(
+                        playerRenderer,
+                        event.getContext().getItemInHandRenderer()
+                ));
+            }
+        }
     }
 }
