@@ -1,7 +1,6 @@
 package com.eldenring.spells.spell;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.spell.curve.GlintbladePhalanxCastCurve;
@@ -24,99 +23,88 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 辉剑圆阵（Glintblade Phalanx）：瞬时在头上铺五把跟手辉剑，附近有敌人就自动射出。
+ * 巨剑阵（Greatblade Phalanx）：头上三把放大辉剑，附近有敌人就自动射出。
  * <p>
- * 半圆生成走 {@link GlintbladePhalanxHelper}（卡利亚圆阵 / 巨剑阵复用同一圈，互相顶替）。
- * 剑模型复用魔法辉剑；跟手 / 12 格触发在 {@code PhalanxGlintbladeEntity}。
+ * 模型就是辉剑圆阵那把，原地乘 {@link GlintbladePhalanxCastCurve#GREATBLADE_SWORD_VISUAL_SCALE}。
+ * 与辉剑圆阵 / 卡利亚圆阵互斥，helper 会先清掉头上还没射出的旧剑。
  */
-public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
+public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
 
-    // —— 法术书 / 蓝耗 / 冷却 ——
-
-    /** 1 级蓝耗。五把剑比单发魔法辉剑贵一截。 */
-    public static int SPELL_BASE_MANA_COST = 22;
+    /** 1 级蓝耗。三把大剑比九把小剑更贵。 */
+    public static int SPELL_BASE_MANA_COST = 36;
 
     /** 每升 1 级额外蓝耗。 */
-    public static int SPELL_MANA_COST_PER_LEVEL = 4;
+    public static int SPELL_MANA_COST_PER_LEVEL = 6;
 
     /** 1 级法术强度基数。 */
-    public static int SPELL_BASE_SPELL_POWER = 12;
+    public static int SPELL_BASE_SPELL_POWER = 16;
 
     /** 每级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+    public static int SPELL_SPELL_POWER_PER_LEVEL = 3;
 
     /** 吟唱 tick。0 = 瞬时铺阵。 */
     public static int SPELL_CAST_TIME_TICKS = 0;
 
     /**
-     * 冷却（秒）。圆阵能挂一段时间，CD 要比单发辉剑长，避免无脑叠两圈。
+     * 冷却（秒）。单下更重，CD 比另外两圈圆阵更长。
      */
-    public static double SPELL_COOLDOWN_SECONDS = 4.0;
+    public static double SPELL_COOLDOWN_SECONDS = 6.0;
 
     /** 最大等级。 */
     public static int SPELL_MAX_LEVEL = 1;
 
     /**
      * 单剑命中伤害 = 法术强度 × 本系数。
-     * 调大 → 每把更痛（五把打满会很猛）；调小 → 更像骚扰阵。
+     * 三把打满总伤接近卡利亚圆阵，但每一击更肉。
      */
-    public static float DAMAGE_PER_SPELL_POWER = 0.72f;
+    public static float DAMAGE_PER_SPELL_POWER = 1.55f;
 
     /**
-     * 半圆上的辉剑数量。辉剑圆阵固定 5；卡利亚圆阵会走 helper 传更大的数。
-     * 调大 → 更密、总伤更高。
+     * 半圆上的大剑数量。巨剑阵固定 3。
      */
-    public static int BLADE_COUNT = 5;
+    public static int BLADE_COUNT = 3;
 
     /**
-     * 以玩家为圆心、多少格内出现可打生物就自动射出（方块）。用户指定 12。
-     * 调大 → 更早出手；调小 → 必须贴身才射。
+     * 以玩家为圆心、多少格内出现可打生物就自动射出（方块）。
      */
     public static double AUTO_LAUNCH_RANGE_BLOCKS = 12.0;
 
     /**
      * 一直没有敌人时跟手多久后自行消失（tick）。20 tick = 1 秒。
-     * 调大 → 阵留得更久；调小 → 更像短促护体。
      */
     public static int HOVER_LIFETIME_TICKS = 200;
 
-    // —— 飞行 / 追踪（射出之后，与魔法辉剑同一套手感）——
-
     /**
-     * 射出后飞行速度（方块/tick）。
-     * 调大 → 更难躲开；调小 → 更能看见剑飞过去。
+     * 射出后飞行速度（方块/tick）。大剑略慢于辉剑，更容易看见飞过去。
      */
-    public static float PROJECTILE_FLIGHT_SPEED = 0.82f;
+    public static float PROJECTILE_FLIGHT_SPEED = 0.70f;
 
     /**
-     * 射出后追踪索敌半径（方块）。触发距离是 {@link #AUTO_LAUNCH_RANGE_BLOCKS}，这条是飞出去还能追多远。
+     * 射出后追踪索敌半径（方块）。
      */
     public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 28.0;
 
     /**
-     * 每 tick 允许的最大转向角度（度）。
+     * 每 tick 允许的最大转向角度（度）。大剑转向比小辉剑钝一点。
      */
-    public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 5.5f;
-
-    /** 飞行光轨：与魔法辉剑同一套「剑划过」而不是彗星尾。 */
-    public static GlintstoneTrailStyle TRAIL_STYLE = MagicGlintbladeSpell.TRAIL_STYLE;
+    public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 4.5f;
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintblade_phalanx");
+            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "greatblade_phalanx");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.RARE)
+            .setMinRarity(SpellRarity.EPIC)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
-            .setMaxLevel(GlintbladePhalanxSpell.SPELL_MAX_LEVEL)
-            .setCooldownSeconds(GlintbladePhalanxSpell.SPELL_COOLDOWN_SECONDS)
+            .setMaxLevel(GreatbladePhalanxSpell.SPELL_MAX_LEVEL)
+            .setCooldownSeconds(GreatbladePhalanxSpell.SPELL_COOLDOWN_SECONDS)
             .build();
 
-    public GlintbladePhalanxSpell() {
-        this.manaCostPerLevel = GlintbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL;
-        this.castTime = GlintbladePhalanxSpell.SPELL_CAST_TIME_TICKS;
-        this.baseManaCost = GlintbladePhalanxSpell.SPELL_BASE_MANA_COST;
+    public GreatbladePhalanxSpell() {
+        this.manaCostPerLevel = GreatbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL;
+        this.baseSpellPower = GreatbladePhalanxSpell.SPELL_BASE_SPELL_POWER;
+        this.spellPowerPerLevel = GreatbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.castTime = GreatbladePhalanxSpell.SPELL_CAST_TIME_TICKS;
+        this.baseManaCost = GreatbladePhalanxSpell.SPELL_BASE_MANA_COST;
     }
 
     @Override
@@ -126,10 +114,10 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
                         "ui.irons_spellbooks.damage",
                         Utils.stringTruncation(getDamageAmount(spellLevel, caster), 2)
                 ),
-                Component.literal("×" + GlintbladePhalanxSpell.BLADE_COUNT),
+                Component.literal("×" + GreatbladePhalanxSpell.BLADE_COUNT),
                 Component.translatable(
                         "ui.elden_ring_spells.projectile_range",
-                        Utils.stringTruncation(GlintbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS, 1)
+                        Utils.stringTruncation(GreatbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS, 1)
                 )
         );
     }
@@ -177,15 +165,15 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
                     castingEntity,
                     new GlintbladePhalanxHelper.SpawnSpec(
                             this,
-                            GlintbladePhalanxSpell.BLADE_COUNT,
+                            GreatbladePhalanxSpell.BLADE_COUNT,
                             getDamageAmount(spellLevel, castingEntity),
-                            GlintbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS,
-                            GlintbladePhalanxSpell.HOVER_LIFETIME_TICKS,
+                            GreatbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS,
+                            GreatbladePhalanxSpell.HOVER_LIFETIME_TICKS,
                             GlintbladePhalanxCastCurve.ORBIT_RADIUS_BLOCKS,
-                            GlintbladePhalanxCastCurve.SWORD_VISUAL_SCALE,
-                            GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED,
-                            GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
-                            GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                            GlintbladePhalanxCastCurve.GREATBLADE_SWORD_VISUAL_SCALE,
+                            GreatbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED,
+                            GreatbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
+                            GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
                     )
             );
         }
@@ -193,6 +181,6 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * GlintbladePhalanxSpell.DAMAGE_PER_SPELL_POWER;
+        return getSpellPower(spellLevel, caster) * GreatbladePhalanxSpell.DAMAGE_PER_SPELL_POWER;
     }
 }

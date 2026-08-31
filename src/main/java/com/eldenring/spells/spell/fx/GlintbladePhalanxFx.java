@@ -33,7 +33,7 @@ public final class GlintbladePhalanxFx {
         if (swordScale <= 0.04f) {
             return;
         }
-        double visibleBladeLengthBlocks = 0.50 * swordScale;
+        double visibleBladeLengthBlocks = 0.50 * swordScale * bladeEntity.swordVisualScale();
         if (swordScale < 1.0f) {
             for (int sampleIndex = 0; sampleIndex < APPEAR_BLADE_SAMPLE_COUNT; sampleIndex++) {
                 double alongBlade = (sampleIndex + 0.4) / APPEAR_BLADE_SAMPLE_COUNT * visibleBladeLengthBlocks;

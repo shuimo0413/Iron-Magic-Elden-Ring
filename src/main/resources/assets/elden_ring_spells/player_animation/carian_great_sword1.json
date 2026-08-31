@@ -1,0 +1,67 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "carian_great_sword1": {
+      "loop": false,
+      "animation_length": 0.5,
+      "bones": {
+        "torso": {
+          "rotation": {
+            "0": {
+              "vector": [
+                0.0,
+                12.5,
+                0.0
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                0.0,
+                -17.5,
+                0.0
+              ],
+              "easing": "linear"
+            }
+          }
+        },
+        "rightArm": {
+          "rotation": {
+            "0": {
+              "vector": [
+                -70.7307,
+                55.0134,
+                21.147
+              ],
+              "easing": "linear"
+            },
+            "0.1667": {
+              "vector": [
+                -73.6229,
+                -6.1466,
+                -5.3196
+              ],
+              "easing": "linear"
+            },
+            "0.3333": {
+              "vector": [
+                -53.8852,
+                -61.6,
+                -36.2095
+              ],
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                62.3653,
+                -52.8149,
+                -160.8756
+              ],
+              "easing": "easeInOutSine"
+            }
+          }
+        }
+      }
+    }
+  }
+}

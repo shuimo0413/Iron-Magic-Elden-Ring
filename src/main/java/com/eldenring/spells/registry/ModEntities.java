@@ -2,6 +2,7 @@ package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.CannonOfHaimaProjectile;
+import com.eldenring.spells.entity.CarianGreatswordEntity;
 import com.eldenring.spells.entity.CarianSlicerEntity;
 import com.eldenring.spells.entity.CometProjectile;
 import com.eldenring.spells.entity.CometAzurJetEntity;
@@ -264,6 +265,18 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("carian_slicer"))
+            );
+
+    /**
+     * 卡利亚大剑：服务端斩击锚点，无渲染；跟施法者结算扇形伤害。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<CarianGreatswordEntity>> CARIAN_GREATSWORD =
+            ENTITIES.register("carian_greatsword", () ->
+                    EntityType.Builder.<CarianGreatswordEntity>of(CarianGreatswordEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("carian_greatsword"))
             );
 
     /**

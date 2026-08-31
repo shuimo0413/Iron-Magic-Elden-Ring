@@ -35,42 +35,31 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * 卡利亚迅剑客户端：交替播放 {@code carian_slicer_1}（第一刀）与 {@code carian_slicer_2}（第二刀）。
+ * 卡利亚大剑客户端：交替播放 {@code carian_great_sword1}（第一刀）与 {@code carian_great_sword2}（第二刀）。
  * <p>
- * 每刀 0.5 秒（10 tick），1.0× 速对齐 JSON 片长；上一刀播完才切下一刀。
- * 按下出第一刀，长按且仍按住施法键则连续交替。
- * 一旦某一刀已经起手，松手也要播完这一刀，再发 CancelCast；中途取消会让铁魔法清掉动画层。
- * <p>
- * 斩击只走本 mod 自己的 PlayerAnimator 层 {@link #CARIAN_SLICER_ANIMATION_LAYER}，上面不挂
- * 铁魔法的 {@code MirrorModifier} / 准星跟臂。铁魔法默认 ANIMATION 层在副手施法时会左右镜像
- *（旋转 Y/Z 取反），把 Blockbench 里「右手从右往左」翻成游戏里「从左往右」。
- * 迅剑剑和关键帧都写死右手，不能走那一层。起手时还会清掉铁魔法层上可能残留的动画，避免两层抢播。
- * <p>
- * 斩击期间按走路 / 冲刺原速移动：铁魔法会在 {@code MovementInputUpdateEvent} 把冲量乘到约 0.2，
- * 本类先记下未减速冲量，再在 {@link EventPriority#LOWEST} 写回去。
- * <p>
- * PlayerAnimator 2.x 用动画 JSON 内的 clip 名做 path，不是文件名。
- * 本类用 {@link EventPriority#LOWEST}，保证盖掉铁魔法 CONTINUOUS 可能先塞进默认层的挥击。
+ * 调度与迅剑相同：每刀 0.5 秒（10 tick），按下出第一刀，长按交替；松手也要播完当前刀再 CancelCast。
+ * 斩击走本 mod 专用层 {@link #CARIAN_GREATSWORD_ANIMATION_LAYER}，不挂铁魔法 Mirror / 准星修正。
+ * 手里的剑由 {@link com.eldenring.spells.client.render.carian.CarianGreatswordHandLayer} 用大剑自己的握点画。
  */
 @EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
-public final class CarianSlicerClientHold {
+public final class CarianGreatswordClientHold {
 
     private static final ResourceLocation CAST_BAR_LAYER_ID = IronsSpellbooks.id("cast_bar");
 
     /**
-     * 迅剑专用动画层。在 {@link com.eldenring.spells.EldenRingSpellsClient} 里注册，
+     * 大剑专用动画层。在 {@link com.eldenring.spells.EldenRingSpellsClient} 里注册，
      * 优先级高于铁魔法的 42，且不挂 Mirror / 准星修正。
      */
-    public static final ResourceLocation CARIAN_SLICER_ANIMATION_LAYER =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_slicer_animation");
+    public static final ResourceLocation CARIAN_GREATSWORD_ANIMATION_LAYER =
+            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_greatsword_animation");
 
     /**
-     * 下标 0 = 点按第一刀（资源 {@code carian_slicer_1}），1 = 连斩第二刀（{@code carian_slicer_2}）。
-     * 与 Blockbench {@code elden_ring_spells.carian_slicer_1} / {@code _2} 同名 1:1，不再导出对调。
+     * 下标 0 = 点按第一刀（资源 {@code carian_great_sword1}），1 = 连斩第二刀（{@code carian_great_sword2}）。
+     * 与 Blockbench {@code elden_ring_spells.carian_great_sword1} / {@code sword2} 同名 1:1。
      */
     private static final String[] SLASH_CLIP_NAMES = {
-            "carian_slicer_1",
-            "carian_slicer_2"
+            "carian_great_sword1",
+            "carian_great_sword2"
     };
 
     /**
@@ -86,7 +75,7 @@ public final class CarianSlicerClientHold {
     /** 是否正在跑某一刀的 0.5 秒计时（含松手后收完当前刀）。 */
     private static boolean slashPlaybackActive;
 
-    /** 0 = 点按第一刀（{@code carian_slicer_1}），1 = 连斩第二刀（{@code carian_slicer_2}）。 */
+    /** 0 = 点按第一刀（{@code carian_great_sword1}），1 = 连斩第二刀（{@code carian_great_sword2}）。 */
     private static int slashSequenceIndex;
 
     /** 当前刀已播放 tick（0 起计，满 {@link #SLASH_ANIMATION_LENGTH_TICKS} 才允许下一刀）。 */
@@ -109,7 +98,7 @@ public final class CarianSlicerClientHold {
     /** 铁魔法施法减速前的左右冲量。单位与 {@link #unslowedForwardImpulse} 相同（-1～1）。 */
     private static float unslowedLeftImpulse;
 
-    private CarianSlicerClientHold() {
+    private CarianGreatswordClientHold() {
     }
 
     /**
@@ -120,7 +109,7 @@ public final class CarianSlicerClientHold {
     }
 
     /**
-     * 当前是第几刀（0 = {@code carian_slicer_1}）。光轨在换刀时清空，避免两刀之间拉线。
+     * 当前是第几刀（0 = {@code carian_great_sword1}）。光轨在换刀时清空，避免两刀之间拉线。
      */
     public static int slashSequenceIndex() {
         return slashSequenceIndex;
@@ -156,7 +145,7 @@ public final class CarianSlicerClientHold {
         if (!event.getName().equals(CAST_BAR_LAYER_ID)) {
             return;
         }
-        if (isLocalPlayerCastingCarianSlicer()) {
+        if (isLocalPlayerCastingCarianGreatsword()) {
             event.setCanceled(true);
         }
     }
@@ -169,9 +158,9 @@ public final class CarianSlicerClientHold {
             return;
         }
 
-        boolean castingCarianSlicer = isLocalPlayerCastingCarianSlicer();
+        boolean castingCarianGreatsword = isLocalPlayerCastingCarianGreatsword();
 
-        if (castingCarianSlicer) {
+        if (castingCarianGreatsword) {
             if (!slashPlaybackActive) {
                 beginSlashSequence(localPlayer);
             }
@@ -195,7 +184,7 @@ public final class CarianSlicerClientHold {
             return;
         }
 
-        if (shouldChainIntoNextSlash(castingCarianSlicer)) {
+        if (shouldChainIntoNextSlash(castingCarianGreatsword)) {
             slashSequenceIndex++;
             ticksIntoCurrentSlash = 0;
             skipLengthTickThisFrame = true;
@@ -225,11 +214,11 @@ public final class CarianSlicerClientHold {
         stopChainingAfterCurrentSlash = !isAnyCastHoldKeyPhysicallyDown();
     }
 
-    private static boolean shouldChainIntoNextSlash(boolean castingCarianSlicer) {
+    private static boolean shouldChainIntoNextSlash(boolean castingCarianGreatsword) {
         if (stopChainingAfterCurrentSlash) {
             return false;
         }
-        if (!castingCarianSlicer) {
+        if (!castingCarianGreatsword) {
             return false;
         }
         return isAnyCastHoldKeyPhysicallyDown();
@@ -242,21 +231,20 @@ public final class CarianSlicerClientHold {
         if (playable == null) {
             return;
         }
-        // 清掉铁魔法默认层，防止 MirrorModifier 层上残留的同名 clip 和本层抢。
         clearIronSpellAnimationLayer(player);
 
-        ModifierLayer<IAnimation> slicerAnimationLayer =
+        ModifierLayer<IAnimation> greatswordAnimationLayer =
                 (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player)
-                        .get(CARIAN_SLICER_ANIMATION_LAYER);
-        if (slicerAnimationLayer == null) {
+                        .get(CARIAN_GREATSWORD_ANIMATION_LAYER);
+        if (greatswordAnimationLayer == null) {
             EldenRingSpellsMod.LOGGER.warn(
-                    "Carian slicer animation layer {} missing; was registerFactory called?",
-                    CARIAN_SLICER_ANIMATION_LAYER
+                    "Carian greatsword animation layer {} missing; was registerFactory called?",
+                    CARIAN_GREATSWORD_ANIMATION_LAYER
             );
             return;
         }
         IAnimation animationToPlay = createSlashPlayer(playable);
-        slicerAnimationLayer.replaceAnimationWithFade(
+        greatswordAnimationLayer.replaceAnimationWithFade(
                 AbstractFadeModifier.standardFadeIn(ANIMATION_FADE_IN_TICKS, Ease.INOUTSINE),
                 animationToPlay,
                 true
@@ -265,7 +253,7 @@ public final class CarianSlicerClientHold {
 
     /**
      * 铁魔法 {@code SpellAnimations.ANIMATION_RESOURCE} 带 Mirror / 准星修正。
-     * 迅剑不在那一层播，但起手或其它逻辑可能仍往里塞过动画，这里硬清掉。
+     * 大剑不在那一层播，但起手或其它逻辑可能仍往里塞过动画，这里硬清掉。
      */
     @SuppressWarnings("unchecked")
     private static void clearIronSpellAnimationLayer(LocalPlayer player) {
@@ -278,24 +266,24 @@ public final class CarianSlicerClientHold {
     }
 
     /**
-     * 收招时清掉迅剑层，避免最后一帧粘住。
+     * 收招时清掉大剑层，避免最后一帧粘住。
      */
     @SuppressWarnings("unchecked")
-    private static void clearSlicerAnimationLayer(LocalPlayer player) {
+    private static void clearGreatswordAnimationLayer(LocalPlayer player) {
         if (player == null) {
             return;
         }
-        ModifierLayer<IAnimation> slicerAnimationLayer =
+        ModifierLayer<IAnimation> greatswordAnimationLayer =
                 (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player)
-                        .get(CARIAN_SLICER_ANIMATION_LAYER);
-        if (slicerAnimationLayer != null) {
-            slicerAnimationLayer.setAnimation(null);
+                        .get(CARIAN_GREATSWORD_ANIMATION_LAYER);
+        if (greatswordAnimationLayer != null) {
+            greatswordAnimationLayer.setAnimation(null);
         }
     }
 
     /**
      * PlayerAnimator 2.x 的注册 path 可能是 clip 名、gecko 长名或带目录的资源 path。
-     * 按精确名查找，找不到再扫本 mod 已注册动画，避免 {@code carian_slicer_1} 静默失败后直接播到 2。
+     * 按精确名查找，找不到再扫本 mod 已注册动画，避免 {@code carian_great_sword1} 静默失败后直接播到 2。
      */
     private static IPlayable resolveSlashClip(int slashClipIndex) {
         String wantedClipName = SLASH_CLIP_NAMES[slashClipIndex];
@@ -329,7 +317,7 @@ public final class CarianSlicerClientHold {
             return entry.getValue();
         }
         EldenRingSpellsMod.LOGGER.warn(
-                "Carian slicer clip {} not in PlayerAnimator registry. Have: {}",
+                "Carian greatsword clip {} not in PlayerAnimator registry. Have: {}",
                 wantedClipName,
                 registeredClips.keySet()
         );
@@ -350,7 +338,7 @@ public final class CarianSlicerClientHold {
         }
         keyframePlayer.setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL);
         // 右臂开、左手/双手物品关：第一人称只看到斩击右臂，法术书仍藏着。
-        // 迅剑不走这里的「右手物品」开关，由 CarianSlicerHandLayer 自己画。
+        // 大剑不走这里的「右手物品」开关，由 CarianGreatswordHandLayer 自己画。
         keyframePlayer.setFirstPersonConfiguration(new FirstPersonConfiguration(
                 true, false, false, false
         ));
@@ -359,7 +347,7 @@ public final class CarianSlicerClientHold {
 
     private static void resetAll() {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
-        clearSlicerAnimationLayer(localPlayer);
+        clearGreatswordAnimationLayer(localPlayer);
         slashPlaybackActive = false;
         slashSequenceIndex = 0;
         ticksIntoCurrentSlash = 0;
@@ -369,7 +357,7 @@ public final class CarianSlicerClientHold {
     }
 
     /**
-     * 只对正在施放迅剑的本地玩家还原移速。别人的输入事件不会进这里。
+     * 只对正在施放大剑的本地玩家还原移速。别人的输入事件不会进这里。
      */
     private static boolean shouldRestoreFullMoveSpeed(MovementInputUpdateEvent event) {
         if (!(event.getEntity() instanceof LocalPlayer localPlayer)) {
@@ -378,16 +366,16 @@ public final class CarianSlicerClientHold {
         if (localPlayer != Minecraft.getInstance().player) {
             return false;
         }
-        return isLocalPlayerCastingCarianSlicer();
+        return isLocalPlayerCastingCarianGreatsword();
     }
 
-    private static boolean isLocalPlayerCastingCarianSlicer() {
+    private static boolean isLocalPlayerCastingCarianGreatsword() {
         if (!ClientMagicData.isCasting()) {
             return false;
         }
         String castingSpellId = ClientMagicData.getCastingSpellId();
         return castingSpellId != null
-                && castingSpellId.equals(ModSpells.CARIAN_SLICER.get().getSpellId());
+                && castingSpellId.equals(ModSpells.CARIAN_GREATSWORD.get().getSpellId());
     }
 
     private static void sendCancelIfNeeded() {

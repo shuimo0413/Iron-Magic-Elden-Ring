@@ -41,6 +41,18 @@ public final class GlintbladePhalanxCastCurve {
      */
     public static final int FLIGHT_LIFETIME_TICKS = 72;
 
+    /**
+     * 相对魔法辉剑网格的视觉倍率。辉剑圆阵 / 卡利亚圆阵都是 1。
+     * 巨剑阵用 {@link #GREATBLADE_SWORD_VISUAL_SCALE} 原地放大，不另做模型。
+     */
+    public static final float SWORD_VISUAL_SCALE = 1.0f;
+
+    /**
+     * 巨剑阵模型倍率。调大 → 三把剑更像「大剑」；调小 → 更接近辉剑圆阵。
+     * 只改渲染 / 命中外扩，不进 toml。
+     */
+    public static final float GREATBLADE_SWORD_VISUAL_SCALE = 1.9f;
+
     private GlintbladePhalanxCastCurve() {
     }
 

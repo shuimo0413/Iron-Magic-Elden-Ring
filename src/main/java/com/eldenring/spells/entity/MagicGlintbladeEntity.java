@@ -149,6 +149,13 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     }
 
     /**
+     * 相对魔法辉剑网格的视觉倍率。圆阵默认 1；巨剑阵覆盖为更大，渲染器原地放大。
+     */
+    public float renderSwordVisualScale() {
+        return 1.0f;
+    }
+
+    /**
      * 跟手 / 凝结刃尖世界方向。圆阵跟玩家准星；魔法辉剑用锁死的视线。
      */
     public Vec3 hoverBladeTipWorldDirection() {

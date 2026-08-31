@@ -58,6 +58,16 @@ public final class ModItems {
             () -> new Item(new Item.Properties())
     );
 
+    /**
+     * 卡利亚大剑视觉用物品：只给挥砍时画手里那把像素剑。
+     * 贴图像素与迅剑相同，模型 JSON / display 是大剑自己的，改 JSON 不会动迅剑。
+     * 不进创造栏。
+     */
+    public static final DeferredItem<Item> CARIAN_GREATSWORD_SWORD = ITEMS.register(
+            "carian_greatsword_sword",
+            () -> new Item(new Item.Properties())
+    );
+
     static {
         // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)
         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {

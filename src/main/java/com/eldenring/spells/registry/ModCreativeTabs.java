@@ -59,8 +59,11 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.createFilledScroll(ModSpells.GAVEL_OF_HAIMA, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.CANNON_OF_HAIMA, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_SLICER, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_GREATSWORD, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.MAGIC_GLINTBLADE, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTBLADE_PHALANX, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_PHALANX, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.GREATBLADE_PHALANX, 1));
                     })
                     .build());
 

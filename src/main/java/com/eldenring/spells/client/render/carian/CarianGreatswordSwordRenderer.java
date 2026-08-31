@@ -1,6 +1,6 @@
 package com.eldenring.spells.client.render.carian;
 
-import com.eldenring.spells.client.CarianSlicerHand;
+import com.eldenring.spells.client.CarianGreatswordHand;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -17,23 +17,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
 
 /**
- * 卡利亚迅剑手持网格：原版生成物（像素挤成立体薄片），但走自发光 RenderType。
- * <p>
- * {@link ItemRenderer#renderStatic} 用 {@code entity_translucent_cull} / cutout，光影（Iris、
- * Complementary 等）会把它编进受光实体缓冲，顶点 {@link LightTexture#FULL_BRIGHT} 被世界光照盖掉，
- * 夜里看起来就是一块不发光的铁。原版 {@code entity_translucent_emissive} 不采 lightmap，Iris 会映射到
- * 自发光 gbuffer，和魔法辉剑 / 海摩锤同一套。
- * <p>
- * 贴图必须绑 {@link InventoryMenu#BLOCK_ATLAS}：生成物 UV 是方块图集坐标，不能绑独立 PNG，
- * 否则会裁到整张图集上的错误一角。物品旁的 {@code carian_slicer_sword_e.png} 是 Iris / OptiFine
- * 自发光后缀图，给仍走物品图集采样的光影当发射贴图。
- * <p>
- * 手持必须走 {@code THIRD_PERSON_RIGHT_HAND}：贴图已改成竖直刃，JSON 的 Z 必须是 0，
- * 刃才沿手臂走斩击，而不是被原版 handheld 的 55° 拧向脚底。translation 仍用原版手持槽，
- * scale 为原版 0.85 的两倍。柄进掌心不要改 JSON 平移（那会在旋转前把整把剑抬离手背），
- * 而走 {@link #applyHandleIntoPalm} 沿刃轴滑。
+ * 卡利亚大剑手持网格：从迅剑渲染器拷出的独立副本。
+ * 贴图像素仍用迅剑 PNG，缩放 / 柄进掌心只读本类常量，改这里不会动迅剑。
  */
-public final class CarianSlicerSwordRenderer {
+public final class CarianGreatswordSwordRenderer {
 
     /**
      * 原版 {@code item/handheld} 第三人称缩放的两倍。必须和 JSON {@code scale} 相同，
@@ -58,7 +45,7 @@ public final class CarianSlicerSwordRenderer {
     private static final float HANDLE_ALONG_BLADE_BLOCKS =
             (GENERATED_MESH_CENTER_Y - HANDLE_LOCAL_Y) * THIRD_PERSON_DISPLAY_SCALE;
 
-    private CarianSlicerSwordRenderer() {
+    private CarianGreatswordSwordRenderer() {
     }
 
     /**
@@ -69,7 +56,7 @@ public final class CarianSlicerSwordRenderer {
             MultiBufferSource bufferSource,
             AbstractClientPlayer player
     ) {
-        ItemStack swordStack = CarianSlicerHand.swordStack();
+        ItemStack swordStack = CarianGreatswordHand.swordStack();
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         BakedModel bakedModel = itemRenderer.getModel(
                 swordStack,
@@ -106,7 +93,7 @@ public final class CarianSlicerSwordRenderer {
      * 第三人称右手物品姿态 + 生成物原点平移。光轨采样必须和网格走同一套，刃尖才会对上剑。
      */
     public static void applyHeldItemPose(PoseStack poseStack, AbstractClientPlayer player) {
-        ItemStack swordStack = CarianSlicerHand.swordStack();
+        ItemStack swordStack = CarianGreatswordHand.swordStack();
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         BakedModel bakedModel = itemRenderer.getModel(
                 swordStack,

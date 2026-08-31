@@ -177,6 +177,14 @@ public final class SpellBookStatReloader {
                 CarianSlicerSpell.SPELL_CAST_TIME_TICKS
         );
         apply(
+                ModSpells.CARIAN_GREATSWORD.get(),
+                CarianGreatswordSpell.SPELL_BASE_MANA_COST,
+                CarianGreatswordSpell.SPELL_MANA_COST_PER_LEVEL,
+                CarianGreatswordSpell.SPELL_BASE_SPELL_POWER,
+                CarianGreatswordSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                CarianGreatswordSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
                 ModSpells.MAGIC_GLINTBLADE.get(),
                 MagicGlintbladeSpell.SPELL_BASE_MANA_COST,
                 MagicGlintbladeSpell.SPELL_MANA_COST_PER_LEVEL,
@@ -191,6 +199,22 @@ public final class SpellBookStatReloader {
                 GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER,
                 GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL,
                 GlintbladePhalanxSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
+                ModSpells.CARIAN_PHALANX.get(),
+                CarianPhalanxSpell.SPELL_BASE_MANA_COST,
+                CarianPhalanxSpell.SPELL_MANA_COST_PER_LEVEL,
+                CarianPhalanxSpell.SPELL_BASE_SPELL_POWER,
+                CarianPhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                CarianPhalanxSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
+                ModSpells.GREATBLADE_PHALANX.get(),
+                GreatbladePhalanxSpell.SPELL_BASE_MANA_COST,
+                GreatbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL,
+                GreatbladePhalanxSpell.SPELL_BASE_SPELL_POWER,
+                GreatbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                GreatbladePhalanxSpell.SPELL_CAST_TIME_TICKS
         );
     }
 

@@ -5,6 +5,7 @@ import com.eldenring.spells.client.render.FoundingRainDropRenderer;
 import com.eldenring.spells.client.render.FoundingRainNebulaRenderer;
 import com.eldenring.spells.client.render.StarlightRenderer;
 import com.eldenring.spells.client.render.TerraMagicaZoneRenderer;
+import com.eldenring.spells.client.render.carian.CarianGreatswordHandLayer;
 import com.eldenring.spells.client.render.carian.CarianSlicerHandLayer;
 import com.eldenring.spells.client.render.carian.MagicGlintbladeModels;
 import com.eldenring.spells.client.render.carian.MagicGlintbladeRenderer;
@@ -76,20 +77,25 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.COMET_AZUR_JET.get(), CometAzurJetRenderer::new);
         event.registerEntityRenderer(ModEntities.GAVEL_OF_HAIMA.get(), HaimaGavelRenderer::new);
         event.registerEntityRenderer(ModEntities.CARIAN_SLICER.get(), NoopRenderer::new);
+        event.registerEntityRenderer(ModEntities.CARIAN_GREATSWORD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.CANNON_OF_HAIMA.get(), HaimaCannonRenderer::new);
         event.registerEntityRenderer(ModEntities.MAGIC_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.PHALANX_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
     }
 
     /**
-     * 宽/细手臂都挂迅剑层。该层继承 {@code PlayerItemInHandLayer}，
-     * PlayerAnimator 第一人称 pass 才不会把它滤掉，两种人称共用同一套握点。
+     * 宽/细手臂都挂迅剑层和大剑层。两层都继承 {@code PlayerItemInHandLayer}，
+     * PlayerAnimator 第一人称 pass 才不会把它滤掉。握点各自独立。
      */
     public static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
         for (PlayerSkin.Model skinModel : event.getSkins()) {
             EntityRenderer<? extends Player> renderer = event.getSkin(skinModel);
             if (renderer instanceof PlayerRenderer playerRenderer) {
                 playerRenderer.addLayer(new CarianSlicerHandLayer(
+                        playerRenderer,
+                        event.getContext().getItemInHandRenderer()
+                ));
+                playerRenderer.addLayer(new CarianGreatswordHandLayer(
                         playerRenderer,
                         event.getContext().getItemInHandRenderer()
                 ));

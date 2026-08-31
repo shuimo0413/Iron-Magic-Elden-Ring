@@ -69,9 +69,11 @@ public class MagicGlintbladeRenderer<T extends MagicGlintbladeEntity> extends En
         }
 
         float hoverAgeTicks = entity.tickCount + partialTicks;
-        float swordScale = entity.hasLaunched()
+        float appearScale = entity.hasLaunched()
                 ? 1.0f
                 : entity.renderHoverSwordScale(hoverAgeTicks);
+        // 巨剑阵把同一把网格原地放大；出现段仍走 0–1 缓出。
+        float swordScale = appearScale * entity.renderSwordVisualScale();
 
         poseStack.pushPose();
         if (!entity.hasLaunched()) {

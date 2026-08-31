@@ -11,11 +11,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 辉剑圆阵 / 卡利亚圆阵共用的「头上半圆」生成。
+ * 辉剑圆阵 / 卡利亚圆阵 / 巨剑阵共用的「头上半圆」生成。
  * <p>
  * 圆心是施法者眼睛（头），半圆落在水平朝向的正面平面上：
  * 从左肩（-90°）经过头顶（0°）到右肩（+90°）。
- * 头上同时只允许一圈跟手辉剑：辉剑圆阵 / 卡利亚圆阵 / 巨剑阵互相顶替，
+ * 头上同时只允许一圈跟手辉剑：三种圆阵互相顶替，连放同一咒也不会叠剑；
  * {@link #spawnHeadSemicircle} 会先清掉该施法者还没射出的旧剑。
  * {@code XxxSpell.onCast} 只调这一份，不要在 Spell 里自己算槽位。
  */
@@ -30,47 +30,55 @@ public final class GlintbladePhalanxHelper {
     }
 
     /**
-     * 在施法者头上刷一整圈辉剑，并播一次起手音。
+     * 一次圆阵生成要带上的玩法 + 视觉参数。
+     * Spell 填这份，helper 只负责清旧剑、排槽、刷实体。
      *
-     * @param level               服务端世界
-     * @param caster              施法者；剑会跟他的 yaw 转
-     * @param sourceSpell         命中伤害来源法术（辉剑圆阵 / 日后卡利亚圆阵）
-     * @param bladeCount          半圆上的剑数。5 = 辉剑圆阵；卡利亚圆阵会更大
-     * @param damagePerBlade      已算好的单剑伤害
-     * @param triggerRangeBlocks  玩家周围多少格内有敌人就自动射出（方块）
-     * @param hoverLifetimeTicks  一直没敌人则跟手多久后消失（tick）
-     * @param orbitRadiusBlocks   半圆半径（方块）。视觉，不进 toml
+     * @param sourceSpell                            命中伤害来源（辉剑圆阵 / 卡利亚圆阵 / 巨剑阵）
+     * @param bladeCount                             半圆上的剑数。5 / 9 / 3
+     * @param damagePerBlade                         已算好的单剑伤害
+     * @param triggerRangeBlocks                     玩家周围多少格内有敌人就自动射出（方块）
+     * @param hoverLifetimeTicks                     一直没敌人则跟手多久后消失（tick）
+     * @param orbitRadiusBlocks                      半圆半径（方块）。视觉，不进 toml
+     * @param swordVisualScale                       相对辉剑网格的倍率。巨剑阵 &gt; 1 原地放大
+     * @param projectileFlightSpeed                  射出后速度（方块/tick）
+     * @param projectileTrackingRangeBlocks          射出后还能追多远（方块）
+     * @param projectileMaxTurnAngleDegreesPerTick   每 tick 最大转向（度）
      */
-    public static void spawnHeadSemicircle(
-            Level level,
-            LivingEntity caster,
+    public record SpawnSpec(
             AbstractSpell sourceSpell,
             int bladeCount,
             float damagePerBlade,
             double triggerRangeBlocks,
             int hoverLifetimeTicks,
-            double orbitRadiusBlocks
+            double orbitRadiusBlocks,
+            float swordVisualScale,
+            float projectileFlightSpeed,
+            double projectileTrackingRangeBlocks,
+            float projectileMaxTurnAngleDegreesPerTick
     ) {
+    }
+
+    /**
+     * 在施法者头上刷一整圈辉剑，并播一次起手音。
+     * 会先清掉该施法者还在跟手的任意圆阵，所以三种圆阵互斥、同咒连放也不会叠剑。
+     */
+    public static void spawnHeadSemicircle(Level level, LivingEntity caster, SpawnSpec spawnSpec) {
         discardHoveringPhalanxBlades(level, caster);
-        int clampedBladeCount = Math.max(1, bladeCount);
+        int clampedBladeCount = Math.max(1, spawnSpec.bladeCount());
         for (int slotIndex = 0; slotIndex < clampedBladeCount; slotIndex++) {
             PhalanxGlintbladeEntity bladeEntity = new PhalanxGlintbladeEntity(level, caster);
             Vec3 slotPosition = slotWorldPosition(
                     caster,
                     slotIndex,
                     clampedBladeCount,
-                    orbitRadiusBlocks,
+                    spawnSpec.orbitRadiusBlocks(),
                     GlintbladePhalanxCastCurve.ORBIT_FORWARD_OFFSET_BLOCKS
             );
             bladeEntity.setPos(slotPosition);
             bladeEntity.configurePhalanx(
-                    sourceSpell,
+                    spawnSpec,
                     slotIndex,
-                    clampedBladeCount,
-                    damagePerBlade,
-                    triggerRangeBlocks,
-                    hoverLifetimeTicks,
-                    orbitRadiusBlocks
+                    clampedBladeCount
             );
             bladeEntity.setStoredLaunchDirection(caster.getLookAngle());
             bladeEntity.lockHoverFacing(caster.getYRot(), caster.getXRot());

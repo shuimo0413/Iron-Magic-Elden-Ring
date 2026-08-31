@@ -3,18 +3,23 @@ package com.eldenring.spells.entity;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModSpells;
 import com.eldenring.spells.spell.GlintbladePhalanxSpell;
+import com.eldenring.spells.spell.MagicGlintbladeSpell;
 import com.eldenring.spells.spell.curve.GlintbladePhalanxCastCurve;
 import com.eldenring.spells.spell.fx.GlintbladePhalanxFx;
 import com.eldenring.spells.spell.helper.GlintbladePhalanxHelper;
+import io.redspace.ironsspellbooks.api.registry.SpellRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -42,8 +47,19 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
     private static final EntityDataAccessor<Integer> DATA_ORBIT_RADIUS_HUNDREDTHS =
             SynchedEntityData.defineId(PhalanxGlintbladeEntity.class, EntityDataSerializers.INT);
 
+    /**
+     * 相对辉剑网格的视觉倍率 × 100。100 = 原尺寸，190 = 巨剑阵。
+     * 客户端渲染 / 命中外扩都读这份，避免服务端放大了客户端还是小剑。
+     */
+    private static final EntityDataAccessor<Integer> DATA_SWORD_VISUAL_SCALE_HUNDREDTHS =
+            SynchedEntityData.defineId(PhalanxGlintbladeEntity.class, EntityDataSerializers.INT);
+
     private double triggerRangeBlocks = GlintbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS;
     private int hoverLifetimeTicks = GlintbladePhalanxSpell.HOVER_LIFETIME_TICKS;
+    private float projectileFlightSpeed = GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED;
+    private double projectileTrackingRangeBlocks = GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
+    private float projectileMaxTurnAngleDegreesPerTick =
+            GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
     @Nullable
     private AbstractSpell damageSpell;
 
@@ -65,27 +81,32 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
                 DATA_ORBIT_RADIUS_HUNDREDTHS,
                 hundredthsFromBlocks(GlintbladePhalanxCastCurve.ORBIT_RADIUS_BLOCKS)
         );
+        builder.define(
+                DATA_SWORD_VISUAL_SCALE_HUNDREDTHS,
+                hundredthsFromScale(GlintbladePhalanxCastCurve.SWORD_VISUAL_SCALE)
+        );
     }
 
     /**
-     * 生成后写入圆阵参数。helper 调；卡利亚圆阵也会走这里。
+     * 生成后写入圆阵参数。helper 调；三种圆阵都走这里。
      */
     public void configurePhalanx(
-            AbstractSpell sourceSpell,
+            GlintbladePhalanxHelper.SpawnSpec spawnSpec,
             int slotIndex,
-            int bladeCount,
-            float damagePerBlade,
-            double triggerRangeBlocks,
-            int hoverLifetimeTicks,
-            double orbitRadiusBlocks
+            int bladeCount
     ) {
         entityData.set(DATA_SLOT_INDEX, Math.max(0, slotIndex));
         entityData.set(DATA_SLOT_COUNT, Math.max(1, bladeCount));
-        entityData.set(DATA_ORBIT_RADIUS_HUNDREDTHS, hundredthsFromBlocks(orbitRadiusBlocks));
-        this.triggerRangeBlocks = triggerRangeBlocks;
-        this.hoverLifetimeTicks = Math.max(1, hoverLifetimeTicks);
-        this.damageSpell = sourceSpell;
-        setDamage(damagePerBlade);
+        entityData.set(DATA_ORBIT_RADIUS_HUNDREDTHS, hundredthsFromBlocks(spawnSpec.orbitRadiusBlocks()));
+        entityData.set(DATA_SWORD_VISUAL_SCALE_HUNDREDTHS, hundredthsFromScale(spawnSpec.swordVisualScale()));
+        this.triggerRangeBlocks = spawnSpec.triggerRangeBlocks();
+        this.hoverLifetimeTicks = Math.max(1, spawnSpec.hoverLifetimeTicks());
+        this.projectileFlightSpeed = spawnSpec.projectileFlightSpeed();
+        this.projectileTrackingRangeBlocks = spawnSpec.projectileTrackingRangeBlocks();
+        this.projectileMaxTurnAngleDegreesPerTick = spawnSpec.projectileMaxTurnAngleDegreesPerTick();
+        this.damageSpell = spawnSpec.sourceSpell();
+        setDamage(spawnSpec.damagePerBlade());
+        refreshDimensions();
     }
 
     public int phalanxSlotIndex() {
@@ -98,6 +119,23 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
 
     public double orbitRadiusBlocks() {
         return entityData.get(DATA_ORBIT_RADIUS_HUNDREDTHS) / 100.0;
+    }
+
+    /**
+     * 相对辉剑网格的视觉倍率。100 分之一格同步，避免浮点在客户端对不上。
+     */
+    public float swordVisualScale() {
+        return entityData.get(DATA_SWORD_VISUAL_SCALE_HUNDREDTHS) / 100.0f;
+    }
+
+    @Override
+    public float renderSwordVisualScale() {
+        return swordVisualScale();
+    }
+
+    @Override
+    public float getHitDetectionInflation() {
+        return MagicGlintbladeSpell.HIT_DETECTION_INFLATION_BLOCKS * swordVisualScale();
     }
 
     @Override
@@ -123,7 +161,22 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
 
     @Override
     public GlintstoneTrailStyle trailStyle() {
-        return GlintbladePhalanxSpell.TRAIL_STYLE;
+        GlintstoneTrailStyle baseStyle = GlintbladePhalanxSpell.TRAIL_STYLE;
+        float visualScale = swordVisualScale();
+        if (visualScale <= 1.02f) {
+            return baseStyle;
+        }
+        return new GlintstoneTrailStyle(
+                baseStyle.lengthBlocks() * visualScale,
+                baseStyle.headHalfWidthBlocks() * visualScale,
+                baseStyle.tailHalfWidthBlocks() * visualScale,
+                baseStyle.sparkChance(),
+                baseStyle.moteChance(),
+                baseStyle.maximumHistoryPointCount(),
+                baseStyle.helixStyle(),
+                baseStyle.additiveCore(),
+                baseStyle.extraOuterVeil()
+        );
     }
 
     @Override
@@ -228,17 +281,17 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
 
     @Override
     protected float projectileFlightSpeed() {
-        return GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED;
+        return projectileFlightSpeed;
     }
 
     @Override
     protected double projectileTrackingRangeBlocks() {
-        return GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
+        return projectileTrackingRangeBlocks;
     }
 
     @Override
     protected float projectileMaxTurnAngleDegreesPerTick() {
-        return GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
+        return projectileMaxTurnAngleDegreesPerTick;
     }
 
     @Override
@@ -255,8 +308,12 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
         tag.putInt("SlotIndex", phalanxSlotIndex());
         tag.putInt("SlotCount", phalanxSlotCount());
         tag.putInt("OrbitRadiusHundredths", entityData.get(DATA_ORBIT_RADIUS_HUNDREDTHS));
+        tag.putInt("SwordScaleHundredths", entityData.get(DATA_SWORD_VISUAL_SCALE_HUNDREDTHS));
         tag.putDouble("TriggerRange", triggerRangeBlocks);
         tag.putInt("HoverLifetime", hoverLifetimeTicks);
+        tag.putFloat("FlightSpeed", projectileFlightSpeed);
+        tag.putDouble("TrackingRange", projectileTrackingRangeBlocks);
+        tag.putFloat("TurnAngle", projectileMaxTurnAngleDegreesPerTick);
         if (damageSpell != null) {
             tag.putString("DamageSpell", damageSpell.getSpellResource().toString());
         }
@@ -270,11 +327,50 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
         if (tag.contains("OrbitRadiusHundredths")) {
             entityData.set(DATA_ORBIT_RADIUS_HUNDREDTHS, tag.getInt("OrbitRadiusHundredths"));
         }
+        if (tag.contains("SwordScaleHundredths")) {
+            entityData.set(DATA_SWORD_VISUAL_SCALE_HUNDREDTHS, tag.getInt("SwordScaleHundredths"));
+        }
         this.triggerRangeBlocks = tag.getDouble("TriggerRange");
         this.hoverLifetimeTicks = Math.max(1, tag.getInt("HoverLifetime"));
+        if (tag.contains("FlightSpeed")) {
+            this.projectileFlightSpeed = tag.getFloat("FlightSpeed");
+        }
+        if (tag.contains("TrackingRange")) {
+            this.projectileTrackingRangeBlocks = tag.getDouble("TrackingRange");
+        }
+        if (tag.contains("TurnAngle")) {
+            this.projectileMaxTurnAngleDegreesPerTick = tag.getFloat("TurnAngle");
+        }
+        if (tag.contains("DamageSpell")) {
+            ResourceLocation spellId = ResourceLocation.tryParse(tag.getString("DamageSpell"));
+            if (spellId != null) {
+                this.damageSpell = SpellRegistry.getSpell(spellId);
+            }
+        }
+        refreshDimensions();
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (DATA_SWORD_VISUAL_SCALE_HUNDREDTHS.equals(key)) {
+            refreshDimensions();
+        }
+    }
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose) {
+        return super.getDimensions(pose).scale(swordVisualScale());
     }
 
     private static int hundredthsFromBlocks(double blocks) {
         return Mth.clamp((int) Math.round(blocks * 100.0), 1, 1000);
+    }
+
+    /**
+     * 视觉倍率写入同步整数。1.0 → 100；巨剑阵 1.9 → 190。
+     */
+    private static int hundredthsFromScale(float visualScale) {
+        return Mth.clamp((int) Math.round(visualScale * 100.0f), 10, 400);
     }
 }

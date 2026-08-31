@@ -1,6 +1,8 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.spell.CarianGreatswordSpell;
+import com.eldenring.spells.spell.CarianPhalanxSpell;
 import com.eldenring.spells.spell.CarianSlicerSpell;
 import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CometAzurSpell;
@@ -11,6 +13,7 @@ import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
 import com.eldenring.spells.spell.GavelOfHaimaSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
 import com.eldenring.spells.spell.GlintbladePhalanxSpell;
+import com.eldenring.spells.spell.GreatbladePhalanxSpell;
 import com.eldenring.spells.spell.GlintstoneArcSpell;
 import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
@@ -116,6 +119,10 @@ public final class ModSpells {
     public static final Supplier<AbstractSpell> CARIAN_SLICER =
             registerSpell(new CarianSlicerSpell());
 
+    /** 卡利亚大剑：按下第一刀，长按交替两段 0.5 秒大剑斩击；贴图/握点/光轨复用迅剑。 */
+    public static final Supplier<AbstractSpell> CARIAN_GREATSWORD =
+            registerSpell(new CarianGreatswordSpell());
+
     /** 魔法辉剑：身前悬停后追踪飞出。 */
     public static final Supplier<AbstractSpell> MAGIC_GLINTBLADE =
             registerSpell(new MagicGlintbladeSpell());
@@ -123,6 +130,14 @@ public final class ModSpells {
     /** 辉剑圆阵：头上五把跟手辉剑，附近有敌人自动射出。 */
     public static final Supplier<AbstractSpell> GLINTBLADE_PHALANX =
             registerSpell(new GlintbladePhalanxSpell());
+
+    /** 卡利亚圆阵：头上九把跟手辉剑；与另外两圈圆阵互斥。 */
+    public static final Supplier<AbstractSpell> CARIAN_PHALANX =
+            registerSpell(new CarianPhalanxSpell());
+
+    /** 巨剑阵：头上三把放大辉剑；与另外两圈圆阵互斥。 */
+    public static final Supplier<AbstractSpell> GREATBLADE_PHALANX =
+            registerSpell(new GreatbladePhalanxSpell());
 
     private ModSpells() {
     }

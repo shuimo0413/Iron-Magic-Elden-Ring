@@ -1,5 +1,6 @@
 package com.eldenring.spells;
 
+import com.eldenring.spells.client.CarianGreatswordClientHold;
 import com.eldenring.spells.client.CarianSlicerClientHold;
 import com.eldenring.spells.client.ClientEntityRenderers;
 import com.eldenring.spells.client.ClientItemModels;
@@ -43,9 +44,14 @@ public class EldenRingSpellsClient {
             for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
                 ItemBlockRenderTypes.setRenderLayer(set.cluster.get(), RenderType.cutout());
             }
-            // 迅剑专用层：无 MirrorModifier / 准星跟臂，避免右→左被翻成左→右。
+            // 迅剑 / 大剑专用层：无 MirrorModifier / 准星跟臂，避免右→左被翻成左→右。
             PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     CarianSlicerClientHold.CARIAN_SLICER_ANIMATION_LAYER,
+                    60,
+                    player -> new ModifierLayer<>()
+            );
+            PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    CarianGreatswordClientHold.CARIAN_GREATSWORD_ANIMATION_LAYER,
                     60,
                     player -> new ModifierLayer<>()
             );

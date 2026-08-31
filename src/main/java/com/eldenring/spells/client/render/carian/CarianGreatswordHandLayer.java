@@ -1,6 +1,6 @@
 package com.eldenring.spells.client.render.carian;
 
-import com.eldenring.spells.client.CarianSlicerHand;
+import com.eldenring.spells.client.CarianGreatswordHand;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.PlayerModel;
@@ -14,22 +14,17 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 把卡利亚迅剑画在玩家右手里。第一人称和第三人称共用这一层。
- * 卡利亚大剑有自己的 {@link CarianGreatswordHandLayer}，不要把大剑握点写回这里。
+ * 把卡利亚大剑画在玩家右手里。第一人称和第三人称共用这一层。
+ * 从迅剑层拷出来的独立副本：握点常量只影响大剑，改这里不会动迅剑。
  * <p>
  * PlayerAnimator 第一人称 {@code THIRD_PERSON_MODEL} 仍走 {@code PlayerRenderer}，
  * 但会把渲染层滤成只剩 {@link PlayerItemInHandLayer}。所以本类必须继承它，剑才会跟斩击骨骼走。
  * <p>
- * 不要走 {@code ItemInHandRenderer#renderItem}：第一人称 pass 里若关掉右手物品，
- * PlayerAnimator 会把那次调用取消，法术书和迅剑一起消失。网格由
- * {@link CarianSlicerSwordRenderer} 用自发光 RenderType 画，光影下才会亮。
- * <p>
  * 贴图是竖直剑（尖在上、柄在下），生成物局部 +Y 就是刃轴。握点对齐原版
- * {@code ItemInHandLayer} 右手变换（XP -90 后刃沿手臂）。竖贴图不要再套原版
- * {@code item/handheld} 的 Z=55：那是给 45° 斜剑贴图用的倾角，留着会把刃拧向脚底。
- * 柄进掌心由 {@link CarianSlicerSwordRenderer} 沿刃轴滑动；往下按进手心和薄片躺平在本层做。
+ * {@code ItemInHandLayer} 右手变换（XP -90 后刃沿手臂）。
+ * 柄进掌心由 {@link CarianGreatswordSwordRenderer} 沿刃轴滑动；往下按进手心和薄片躺平在本层做。
  */
-public class CarianSlicerHandLayer extends PlayerItemInHandLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+public class CarianGreatswordHandLayer extends PlayerItemInHandLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     /**
      * 原版 {@code ItemInHandLayer} 右手侧向偏移（方块）。正值往玩家外侧。
@@ -53,9 +48,10 @@ public class CarianSlicerHandLayer extends PlayerItemInHandLayer<AbstractClientP
 
     /**
      * 把立着的生成物薄片绕手臂轴躺平（度）。90 = 贴图面朝上，俯视能看见整把剑。
-     * 在掌心原点转，柄不会被甩出去。
+     * 必须和迅剑一样用 +45：JSON 的 translation 在这之后才套上，改成 -45 会把整把剑甩到身体侧面。
+     * 只调大剑，迅剑在 {@link CarianSlicerHandLayer}。
      */
-    private static final float BLADE_FLAT_ROLL_DEGREES = 45.0f;
+    private static final float BLADE_FLAT_ROLL_DEGREES = 90.0f;
 
     /**
      * 生成物 0–1 立方体里护手中心（刃根）。竖贴图，X=中线，Y 来自
@@ -77,7 +73,7 @@ public class CarianSlicerHandLayer extends PlayerItemInHandLayer<AbstractClientP
      */
     private static final float PLAYER_MODEL_FEET_OFFSET_BLOCKS = -1.501f;
 
-    public CarianSlicerHandLayer(
+    public CarianGreatswordHandLayer(
             RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer,
             ItemInHandRenderer itemInHandRenderer
     ) {
@@ -97,7 +93,7 @@ public class CarianSlicerHandLayer extends PlayerItemInHandLayer<AbstractClientP
             float netHeadYaw,
             float headPitch
     ) {
-        if (!CarianSlicerHand.shouldShowSword(player)) {
+        if (!CarianGreatswordHand.shouldShowSword(player)) {
             return;
         }
         renderSwordInRightHand(poseStack, bufferSource, player);
@@ -116,7 +112,7 @@ public class CarianSlicerHandLayer extends PlayerItemInHandLayer<AbstractClientP
         poseStack.pushPose();
         this.getParentModel().translateToHand(HumanoidArm.RIGHT, poseStack);
         applyVanillaRightHandItemSlot(poseStack);
-        CarianSlicerSwordRenderer.renderInRightHand(poseStack, bufferSource, player);
+        CarianGreatswordSwordRenderer.renderInRightHand(poseStack, bufferSource, player);
         poseStack.popPose();
     }
 
@@ -140,20 +136,20 @@ public class CarianSlicerHandLayer extends PlayerItemInHandLayer<AbstractClientP
         worldPoseStack.translate(0.0f, PLAYER_MODEL_FEET_OFFSET_BLOCKS, 0.0f);
         this.getParentModel().translateToHand(HumanoidArm.RIGHT, worldPoseStack);
         applyVanillaRightHandItemSlot(worldPoseStack);
-        CarianSlicerSwordRenderer.applyHeldItemPose(worldPoseStack, player);
-        Vec3 bladeRootWorld = CarianSlicerTrail.transformModelPoint(
+        CarianGreatswordSwordRenderer.applyHeldItemPose(worldPoseStack, player);
+        Vec3 bladeRootWorld = CarianGreatswordTrail.transformModelPoint(
                 worldPoseStack,
                 BLADE_ROOT_LOCAL_X,
                 BLADE_ROOT_LOCAL_Y,
                 BLADE_ROOT_LOCAL_Z
         );
-        Vec3 bladeTipWorld = CarianSlicerTrail.transformModelPoint(
+        Vec3 bladeTipWorld = CarianGreatswordTrail.transformModelPoint(
                 worldPoseStack,
                 BLADE_TIP_LOCAL_X,
                 BLADE_TIP_LOCAL_Y,
                 BLADE_TIP_LOCAL_Z
         );
-        CarianSlicerTrail.recordBladePose(player, bladeRootWorld, bladeTipWorld, partialTicks);
+        CarianGreatswordTrail.recordBladePose(player, bladeRootWorld, bladeTipWorld, partialTicks);
     }
 
     /**
