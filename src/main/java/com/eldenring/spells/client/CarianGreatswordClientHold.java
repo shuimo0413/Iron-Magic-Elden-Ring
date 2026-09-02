@@ -2,6 +2,7 @@ package com.eldenring.spells.client;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.spell.curve.CarianGreatswordCastCurve;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.api.IPlayable;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
@@ -37,7 +38,8 @@ import org.lwjgl.glfw.GLFW;
 /**
  * 卡利亚大剑客户端：交替播放 {@code carian_great_sword1}（第一刀）与 {@code carian_great_sword2}（第二刀）。
  * <p>
- * 调度与迅剑相同：每刀 0.5 秒（10 tick），按下出第一刀，长按交替；松手也要播完当前刀再 CancelCast。
+ * 每刀 0.5 秒（10 tick），播完后再空 0.5 秒才允许下一刀；按下出第一刀，长按交替。
+ * 点按只出一刀：当前刀播完即 CancelCast，不走进空档。松手也要播完当前刀再发取消包。
  * 斩击走本 mod 专用层 {@link #CARIAN_GREATSWORD_ANIMATION_LAYER}，不挂铁魔法 Mirror / 准星修正。
  * 手里的剑由 {@link com.eldenring.spells.client.render.carian.CarianGreatswordHandLayer} 用大剑自己的握点画。
  */
@@ -63,26 +65,23 @@ public final class CarianGreatswordClientHold {
     };
 
     /**
-     * 与 player_animation JSON {@code animation_length: 0.5} 对齐（10 tick = 0.5 秒）。
-     */
-    private static final int SLASH_ANIMATION_LENGTH_TICKS = 10;
-
-    /**
      * 刀与刀之间的淡入 tick。片长 0.5 秒时 4 tick 会占近半刀，用 2 tick 衔接。
      */
     private static final int ANIMATION_FADE_IN_TICKS = 2;
 
-    /** 是否正在跑某一刀的 0.5 秒计时（含松手后收完当前刀）。 */
+    /** 是否正在跑某一刀（含松手后收完当前刀，以及连斩前的收招空档）。 */
     private static boolean slashPlaybackActive;
 
     /** 0 = 点按第一刀（{@code carian_great_sword1}），1 = 连斩第二刀（{@code carian_great_sword2}）。 */
     private static int slashSequenceIndex;
 
-    /** 当前刀已播放 tick（0 起计，满 {@link #SLASH_ANIMATION_LENGTH_TICKS} 才允许下一刀）。 */
+    /**
+     * 当前周期已过 tick（0 起计）。
+     * 未满 {@link CarianGreatswordCastCurve#SLASH_DURATION_TICKS} 是挥砍；
+     * 满片长但未满 {@link CarianGreatswordCastCurve#SLASH_CYCLE_TICKS} 是收招空档；
+     * 满周期才允许下一刀。
+     */
     private static int ticksIntoCurrentSlash;
-
-    /** 起手这一 tick 不计入片长，避免少播最后一帧。 */
-    private static boolean skipLengthTickThisFrame;
 
     /** 松手后为 true：当前刀播完即停，不再交替。取消包也要等到这一刀结束才发。 */
     private static boolean stopChainingAfterCurrentSlash;
@@ -102,7 +101,7 @@ public final class CarianGreatswordClientHold {
     }
 
     /**
-     * 正在播某一刀（含松手后收完这一刀）。手里的剑跟这个窗口对齐。
+     * 正在播某一刀（含松手后收完这一刀，以及连斩前的 0.5 秒空档）。手里的剑跟这个窗口对齐。
      */
     public static boolean isSlashPlaybackActive() {
         return slashPlaybackActive;
@@ -173,21 +172,25 @@ public final class CarianGreatswordClientHold {
             return;
         }
 
-        if (skipLengthTickThisFrame) {
-            skipLengthTickThisFrame = false;
+        ticksIntoCurrentSlash++;
+
+        if (ticksIntoCurrentSlash < CarianGreatswordCastCurve.SLASH_DURATION_TICKS) {
             return;
         }
 
-        ticksIntoCurrentSlash++;
-
-        if (ticksIntoCurrentSlash < SLASH_ANIMATION_LENGTH_TICKS) {
+        if (ticksIntoCurrentSlash < CarianGreatswordCastCurve.SLASH_CYCLE_TICKS) {
+            // 当前刀已经播完：松手就立刻停，不必把 0.5 秒空档走完。
+            if (!shouldChainIntoNextSlash(castingCarianGreatsword)) {
+                sendCancelIfNeeded();
+                resetAll();
+            }
             return;
         }
 
         if (shouldChainIntoNextSlash(castingCarianGreatsword)) {
             slashSequenceIndex++;
-            ticksIntoCurrentSlash = 0;
-            skipLengthTickThisFrame = true;
+            // 这一 tick 算下一刀的第 1 帧，片长保持 10 tick，避免多拖一帧让服务端再砍一刀。
+            ticksIntoCurrentSlash = 1;
             playSlashAnimation(localPlayer, slashSequenceIndex);
             return;
         }
@@ -200,7 +203,6 @@ public final class CarianGreatswordClientHold {
         slashPlaybackActive = true;
         slashSequenceIndex = 0;
         ticksIntoCurrentSlash = 0;
-        skipLengthTickThisFrame = true;
         stopChainingAfterCurrentSlash = false;
         cancelPacketSent = false;
         playSlashAnimation(localPlayer, 0);
@@ -351,7 +353,6 @@ public final class CarianGreatswordClientHold {
         slashPlaybackActive = false;
         slashSequenceIndex = 0;
         ticksIntoCurrentSlash = 0;
-        skipLengthTickThisFrame = false;
         stopChainingAfterCurrentSlash = false;
         cancelPacketSent = false;
     }

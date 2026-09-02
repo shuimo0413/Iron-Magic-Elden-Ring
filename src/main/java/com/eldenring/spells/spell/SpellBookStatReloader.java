@@ -185,6 +185,14 @@ public final class SpellBookStatReloader {
                 CarianGreatswordSpell.SPELL_CAST_TIME_TICKS
         );
         apply(
+                ModSpells.CARIAN_PIERCER.get(),
+                CarianPiercerSpell.SPELL_BASE_MANA_COST,
+                CarianPiercerSpell.SPELL_MANA_COST_PER_LEVEL,
+                CarianPiercerSpell.SPELL_BASE_SPELL_POWER,
+                CarianPiercerSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                CarianPiercerSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
                 ModSpells.MAGIC_GLINTBLADE.get(),
                 MagicGlintbladeSpell.SPELL_BASE_MANA_COST,
                 MagicGlintbladeSpell.SPELL_MANA_COST_PER_LEVEL,

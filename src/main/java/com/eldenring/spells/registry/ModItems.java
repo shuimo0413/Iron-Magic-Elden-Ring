@@ -68,6 +68,15 @@ public final class ModItems {
             () -> new Item(new Item.Properties())
     );
 
+    /**
+     * 卡利亚贯刺视觉用物品：贴图从大剑拷出，模型 JSON / display 是贯刺自己的。
+     * 不进创造栏。
+     */
+    public static final DeferredItem<Item> CARIAN_PIERCER_SWORD = ITEMS.register(
+            "carian_piercer_sword",
+            () -> new Item(new Item.Properties())
+    );
+
     static {
         // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)
         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {

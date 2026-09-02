@@ -47,17 +47,26 @@ public final class CarianSlicerFx {
     }
 
     /**
-     * 本 tick 沿当前剑刃刷一层星星。
-     *
-     * @param hiltWorld     护手附近世界坐标
-     * @param tipWorld      刃尖世界坐标
-     * @param tipTravelSinceLastTick 上一 tick 到现在刃尖走过的位移（方块），用来判断是起手还是真正在砍
+     * 本 tick 沿当前剑刃刷一层星星。迅剑默认 3 点采样。
      */
     public static void spawnAlongSlash(
             Level level,
             Vec3 hiltWorld,
             Vec3 tipWorld,
             Vec3 tipTravelSinceLastTick
+    ) {
+        spawnAlongSlash(level, hiltWorld, tipWorld, tipTravelSinceLastTick, BLADE_SAMPLE_COUNT);
+    }
+
+    /**
+     * @param bladeSampleCount 沿刃细闪点数。大剑更长，用 5～6 才能铺满。
+     */
+    public static void spawnAlongSlash(
+            Level level,
+            Vec3 hiltWorld,
+            Vec3 tipWorld,
+            Vec3 tipTravelSinceLastTick,
+            int bladeSampleCount
     ) {
         if (!level.isClientSide) {
             return;
@@ -71,7 +80,7 @@ public final class CarianSlicerFx {
         Vec3 swingDirection = tipTravelBlocks > 1.0e-6
                 ? tipTravelSinceLastTick.normalize()
                 : Vec3.ZERO;
-        spawnStarsAlongBlade(level, hiltWorld, bladeOffset, swingDirection, fastSwing);
+        spawnStarsAlongBlade(level, hiltWorld, bladeOffset, swingDirection, fastSwing, bladeSampleCount);
     }
 
     /**
@@ -82,11 +91,13 @@ public final class CarianSlicerFx {
             Vec3 hiltWorld,
             Vec3 bladeOffset,
             Vec3 swingDirection,
-            boolean fastSwing
+            boolean fastSwing,
+            int bladeSampleCount
     ) {
+        int sampleCount = Math.max(1, bladeSampleCount);
         Vec3 starVelocity = swingDirection.scale(STAR_LINGER_VELOCITY_SCALE);
-        for (int sampleIndex = 0; sampleIndex < BLADE_SAMPLE_COUNT; sampleIndex++) {
-            float alongBlade = (sampleIndex + 0.35f) / BLADE_SAMPLE_COUNT;
+        for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++) {
+            float alongBlade = (sampleIndex + 0.35f) / sampleCount;
             Vec3 samplePosition = hiltWorld.add(bladeOffset.scale(alongBlade));
             level.addParticle(
                     ModParticles.CARIAN_GLINT.get(),
@@ -99,7 +110,7 @@ public final class CarianSlicerFx {
             );
         }
         Vec3 tipStarPosition = hiltWorld.add(bladeOffset.scale(
-                (BLADE_SAMPLE_COUNT - 0.65f) / BLADE_SAMPLE_COUNT
+                (sampleCount - 0.65f) / sampleCount
         ));
         level.addParticle(
                 ModParticles.CARIAN_MOTE.get(),

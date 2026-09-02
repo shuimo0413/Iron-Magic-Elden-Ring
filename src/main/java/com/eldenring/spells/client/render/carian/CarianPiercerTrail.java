@@ -1,7 +1,6 @@
 package com.eldenring.spells.client.render.carian;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import com.eldenring.spells.client.CarianGreatswordClientHold;
 import com.eldenring.spells.client.render.glintstone.GlintstoneTrailRenderTypes;
 import com.eldenring.spells.client.render.glintstone.GlintstoneTrailRenderer;
 import com.eldenring.spells.entity.GlintstoneTrailStyle;
@@ -17,7 +16,6 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -33,11 +31,11 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 /**
- * 卡利亚大剑挥砍光轨：从迅剑光轨拷出的独立副本。
- * 采样发生在 {@link CarianGreatswordHandLayer}。星星粒子仍走 {@link CarianSlicerFx}。
+ * 卡利亚贯刺挥砍光轨：从迅剑光轨拷出的独立副本。
+ * 采样发生在 {@link CarianPiercerHandLayer}。星星粒子仍走 {@link CarianSlicerFx}。
  */
 @EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
-public final class CarianGreatswordTrail {
+public final class CarianPiercerTrail {
 
     /**
      * 刃尖路径光带。长度 / 半宽单位方块；比迅剑更长更宽，跟上 7 格大剑。
@@ -83,7 +81,7 @@ public final class CarianGreatswordTrail {
 
     private static final Map<UUID, PlayerSlashTrail> TRAILS_BY_PLAYER = new HashMap<>();
 
-    private CarianGreatswordTrail() {
+    private CarianPiercerTrail() {
     }
 
     /**
@@ -174,7 +172,6 @@ public final class CarianGreatswordTrail {
         private long lastRecordGameTimeTicks = Long.MIN_VALUE;
         private long lastParticleGameTimeTicks = Long.MIN_VALUE;
         private float lastPartialTick = Float.NaN;
-        private int lastLocalSlashSequenceIndex = Integer.MIN_VALUE;
 
         private void record(
                 AbstractClientPlayer player,
@@ -188,7 +185,7 @@ public final class CarianGreatswordTrail {
                 return;
             }
 
-            if (shouldResetForNewSlash(player, bladeTipWorld)) {
+            if (shouldResetForNewSlash(bladeTipWorld)) {
                 bladeSamples.clear();
                 lastTipWorld = null;
                 lastTickTipWorld = null;
@@ -206,16 +203,7 @@ public final class CarianGreatswordTrail {
             lastPartialTick = partialTick;
         }
 
-        private boolean shouldResetForNewSlash(AbstractClientPlayer player, Vec3 bladeTipWorld) {
-            if (player instanceof LocalPlayer) {
-                int slashSequenceIndex = CarianGreatswordClientHold.slashSequenceIndex();
-                boolean sequenceChanged = lastLocalSlashSequenceIndex != Integer.MIN_VALUE
-                        && slashSequenceIndex != lastLocalSlashSequenceIndex;
-                lastLocalSlashSequenceIndex = slashSequenceIndex;
-                if (sequenceChanged) {
-                    return true;
-                }
-            }
+        private boolean shouldResetForNewSlash(Vec3 bladeTipWorld) {
             return lastTipWorld != null
                     && lastTipWorld.distanceTo(bladeTipWorld) > SLASH_RESET_DISTANCE_BLOCKS;
         }

@@ -29,27 +29,43 @@
           "rotation": {
             "0": {
               "vector": [
-                -9.5042,
-                -62.0843,
-                -79.2716
+                -90.0,
+                -90.0,
+                0.0
               ],
-              "easing": "easeInOutSine"
+              "easing": "linear"
+            },
+            "0.125": {
+              "vector": [
+                -90.0,
+                -45.0,
+                0.0
+              ],
+              "easing": "linear"
             },
             "0.25": {
               "vector": [
-                -62.4103,
-                4.434,
-                2.3134
+                -90.0,
+                0.0,
+                0.0
               ],
-              "easing": "easeInOutSine"
+              "easing": "linear"
             },
-            "0.4583": {
+            "0.375": {
               "vector": [
-                -74.0744,
-                41.2152,
-                10.4633
+                -90.0,
+                45.0,
+                0.0
               ],
-              "easing": "easeInOutSine"
+              "easing": "linear"
+            },
+            "0.5": {
+              "vector": [
+                -90.0,
+                90.0,
+                0.0
+              ],
+              "easing": "linear"
             }
           }
         }

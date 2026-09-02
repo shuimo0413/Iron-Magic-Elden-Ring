@@ -1,6 +1,6 @@
 package com.eldenring.spells.client.render.carian;
 
-import com.eldenring.spells.client.CarianGreatswordHand;
+import com.eldenring.spells.client.CarianPiercerHand;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.PlayerModel;
@@ -14,7 +14,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 把卡利亚大剑画在玩家右手里。第一人称和第三人称共用这一层。
+ * 把卡利亚贯刺画在玩家右手里。第一人称和第三人称共用这一层。
  * 从迅剑层拷出来的独立副本：握点常量只影响大剑，改这里不会动迅剑。
  * <p>
  * PlayerAnimator 第一人称 {@code THIRD_PERSON_MODEL} 仍走 {@code PlayerRenderer}，
@@ -22,9 +22,9 @@ import net.minecraft.world.phys.Vec3;
  * <p>
  * 贴图是竖直剑（尖在上、柄在下），生成物局部 +Y 就是刃轴。握点对齐原版
  * {@code ItemInHandLayer} 右手变换（XP -90 后刃沿手臂）。
- * 柄进掌心由 {@link CarianGreatswordSwordRenderer} 沿刃轴滑动；往下按进手心和薄片躺平在本层做。
+ * 柄进掌心由 {@link CarianPiercerSwordRenderer} 沿刃轴滑动；往下按进手心和薄片躺平在本层做。
  */
-public class CarianGreatswordHandLayer extends PlayerItemInHandLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+public class CarianPiercerHandLayer extends PlayerItemInHandLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
 
     /**
      * 原版 {@code ItemInHandLayer} 右手侧向偏移（方块）。正值往玩家外侧。
@@ -72,7 +72,7 @@ public class CarianGreatswordHandLayer extends PlayerItemInHandLayer<AbstractCli
      */
     private static final float PLAYER_MODEL_FEET_OFFSET_BLOCKS = -1.501f;
 
-    public CarianGreatswordHandLayer(
+    public CarianPiercerHandLayer(
             RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer,
             ItemInHandRenderer itemInHandRenderer
     ) {
@@ -92,7 +92,7 @@ public class CarianGreatswordHandLayer extends PlayerItemInHandLayer<AbstractCli
             float netHeadYaw,
             float headPitch
     ) {
-        if (!CarianGreatswordHand.shouldShowSword(player)) {
+        if (!CarianPiercerHand.shouldShowSword(player)) {
             return;
         }
         renderSwordInRightHand(poseStack, bufferSource, player);
@@ -111,7 +111,7 @@ public class CarianGreatswordHandLayer extends PlayerItemInHandLayer<AbstractCli
         poseStack.pushPose();
         this.getParentModel().translateToHand(HumanoidArm.RIGHT, poseStack);
         applyVanillaRightHandItemSlot(poseStack);
-        CarianGreatswordSwordRenderer.renderInRightHand(poseStack, bufferSource, player);
+        CarianPiercerSwordRenderer.renderInRightHand(poseStack, bufferSource, player);
         poseStack.popPose();
     }
 
@@ -135,20 +135,20 @@ public class CarianGreatswordHandLayer extends PlayerItemInHandLayer<AbstractCli
         worldPoseStack.translate(0.0f, PLAYER_MODEL_FEET_OFFSET_BLOCKS, 0.0f);
         this.getParentModel().translateToHand(HumanoidArm.RIGHT, worldPoseStack);
         applyVanillaRightHandItemSlot(worldPoseStack);
-        CarianGreatswordSwordRenderer.applyHeldItemPose(worldPoseStack, player);
-        Vec3 bladeRootWorld = CarianGreatswordTrail.transformModelPoint(
+        CarianPiercerSwordRenderer.applyHeldItemPose(worldPoseStack, player);
+        Vec3 bladeRootWorld = CarianPiercerTrail.transformModelPoint(
                 worldPoseStack,
                 BLADE_ROOT_LOCAL_X,
                 BLADE_ROOT_LOCAL_Y,
                 BLADE_ROOT_LOCAL_Z
         );
-        Vec3 bladeTipWorld = CarianGreatswordTrail.transformModelPoint(
+        Vec3 bladeTipWorld = CarianPiercerTrail.transformModelPoint(
                 worldPoseStack,
                 BLADE_TIP_LOCAL_X,
                 BLADE_TIP_LOCAL_Y,
                 BLADE_TIP_LOCAL_Z
         );
-        CarianGreatswordTrail.recordBladePose(player, bladeRootWorld, bladeTipWorld, partialTicks);
+        CarianPiercerTrail.recordBladePose(player, bladeRootWorld, bladeTipWorld, partialTicks);
     }
 
     /**

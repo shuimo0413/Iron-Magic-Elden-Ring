@@ -3,6 +3,7 @@ package com.eldenring.spells.config;
 import com.eldenring.spells.particle.cometazur.CometAzurFx;
 import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CarianGreatswordSpell;
+import com.eldenring.spells.spell.CarianPiercerSpell;
 import com.eldenring.spells.spell.CarianPhalanxSpell;
 import com.eldenring.spells.spell.CarianSlicerSpell;
 import com.eldenring.spells.spell.CometAzurSpell;
@@ -61,6 +62,7 @@ public final class EldenRingServerConfig {
     public static final CannonValues CANNON_OF_HAIMA;
     public static final CarianSlicerValues CARIAN_SLICER;
     public static final CarianSlicerValues CARIAN_GREATSWORD;
+    public static final CarianSlicerValues CARIAN_PIERCER;
     public static final MagicGlintbladeValues MAGIC_GLINTBLADE;
     public static final GlintbladePhalanxValues GLINTBLADE_PHALANX;
     public static final GlintbladePhalanxValues CARIAN_PHALANX;
@@ -198,6 +200,12 @@ public final class EldenRingServerConfig {
                 "carian_greatsword",
                 carianGreatswordSlashSeed(),
                 CarianSlicerValues::applyGreatsword
+        );
+        CARIAN_PIERCER = CarianSlicerValues.create(
+                builder,
+                "carian_piercer",
+                carianPiercerSlashSeed(),
+                CarianSlicerValues::applyPiercer
         );
         MAGIC_GLINTBLADE = MagicGlintbladeValues.create(builder);
         GLINTBLADE_PHALANX = GlintbladePhalanxValues.create(
@@ -349,6 +357,7 @@ public final class EldenRingServerConfig {
         CANNON_OF_HAIMA.apply();
         CARIAN_SLICER.apply();
         CARIAN_GREATSWORD.apply();
+        CARIAN_PIERCER.apply();
         MAGIC_GLINTBLADE.apply();
         GLINTBLADE_PHALANX.apply();
         CARIAN_PHALANX.apply();
@@ -1151,6 +1160,28 @@ public final class EldenRingServerConfig {
             CarianGreatswordSpell.SLASH_HALF_ANGLE_DEGREES = slashHalfAngleDegrees;
             CarianGreatswordSpell.SLASH_KNOCKBACK_STRENGTH = slashKnockbackStrength;
         }
+
+        static void applyPiercer(
+                int baseManaCost,
+                int manaCostPerLevel,
+                int baseSpellPower,
+                int spellPowerPerLevel,
+                int castTimeTicks,
+                float damagePerSpellPower,
+                float slashRadiusBlocks,
+                float slashHalfAngleDegrees,
+                double slashKnockbackStrength
+        ) {
+            CarianPiercerSpell.SPELL_BASE_MANA_COST = baseManaCost;
+            CarianPiercerSpell.SPELL_MANA_COST_PER_LEVEL = manaCostPerLevel;
+            CarianPiercerSpell.SPELL_BASE_SPELL_POWER = baseSpellPower;
+            CarianPiercerSpell.SPELL_SPELL_POWER_PER_LEVEL = spellPowerPerLevel;
+            CarianPiercerSpell.SPELL_CAST_TIME_TICKS = castTimeTicks;
+            CarianPiercerSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower;
+            CarianPiercerSpell.SLASH_RADIUS_BLOCKS = slashRadiusBlocks;
+            CarianPiercerSpell.SLASH_HALF_ANGLE_DEGREES = slashHalfAngleDegrees;
+            CarianPiercerSpell.SLASH_KNOCKBACK_STRENGTH = slashKnockbackStrength;
+        }
     }
 
     /**
@@ -1209,6 +1240,20 @@ public final class EldenRingServerConfig {
                 CarianGreatswordSpell.SLASH_RADIUS_BLOCKS,
                 CarianGreatswordSpell.SLASH_HALF_ANGLE_DEGREES,
                 CarianGreatswordSpell.SLASH_KNOCKBACK_STRENGTH
+        );
+    }
+
+    private static SlashSeed carianPiercerSlashSeed() {
+        return new SlashSeed(
+                CarianPiercerSpell.SPELL_BASE_MANA_COST,
+                CarianPiercerSpell.SPELL_MANA_COST_PER_LEVEL,
+                CarianPiercerSpell.SPELL_BASE_SPELL_POWER,
+                CarianPiercerSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                CarianPiercerSpell.SPELL_CAST_TIME_TICKS,
+                CarianPiercerSpell.DAMAGE_PER_SPELL_POWER,
+                CarianPiercerSpell.SLASH_RADIUS_BLOCKS,
+                CarianPiercerSpell.SLASH_HALF_ANGLE_DEGREES,
+                CarianPiercerSpell.SLASH_KNOCKBACK_STRENGTH
         );
     }
 

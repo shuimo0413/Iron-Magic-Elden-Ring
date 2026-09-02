@@ -1,6 +1,6 @@
 package com.eldenring.spells.client.render.carian;
 
-import com.eldenring.spells.client.CarianGreatswordHand;
+import com.eldenring.spells.client.CarianPiercerHand;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -17,10 +17,10 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.ClientHooks;
 
 /**
- * 卡利亚大剑手持网格：贴图与迅剑同一把像素剑（柄的定位不能改），只在柄枢轴上把刃拉长。
+ * 卡利亚贯刺手持网格：贴图与迅剑同一把像素剑（柄的定位不能改），只在柄枢轴上把刃拉长。
  * 缩放 / 柄进掌心 / 刃长只读本类常量，改这里不会动迅剑。
  */
-public final class CarianGreatswordSwordRenderer {
+public final class CarianPiercerSwordRenderer {
 
     /**
      * 第三人称手持缩放。必须和 JSON {@code scale} 相同，也必须和迅剑一样是 1.70，
@@ -51,7 +51,7 @@ public final class CarianGreatswordSwordRenderer {
     private static final float HANDLE_ALONG_BLADE_BLOCKS =
             (GENERATED_MESH_CENTER_Y - HANDLE_LOCAL_Y) * THIRD_PERSON_DISPLAY_SCALE;
 
-    private CarianGreatswordSwordRenderer() {
+    private CarianPiercerSwordRenderer() {
     }
 
     /**
@@ -62,7 +62,7 @@ public final class CarianGreatswordSwordRenderer {
             MultiBufferSource bufferSource,
             AbstractClientPlayer player
     ) {
-        ItemStack swordStack = CarianGreatswordHand.swordStack();
+        ItemStack swordStack = CarianPiercerHand.swordStack();
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         BakedModel bakedModel = itemRenderer.getModel(
                 swordStack,
@@ -99,7 +99,7 @@ public final class CarianGreatswordSwordRenderer {
      * 第三人称右手物品姿态 + 生成物原点平移。光轨采样必须和网格走同一套，刃尖才会对上剑。
      */
     public static void applyHeldItemPose(PoseStack poseStack, AbstractClientPlayer player) {
-        ItemStack swordStack = CarianGreatswordHand.swordStack();
+        ItemStack swordStack = CarianPiercerHand.swordStack();
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         BakedModel bakedModel = itemRenderer.getModel(
                 swordStack,

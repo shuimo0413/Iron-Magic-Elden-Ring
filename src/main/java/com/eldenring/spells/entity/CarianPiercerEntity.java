@@ -1,8 +1,8 @@
 package com.eldenring.spells.entity;
 
 import com.eldenring.spells.registry.ModEntities;
-import com.eldenring.spells.spell.combat.CarianGreatswordCombat;
-import com.eldenring.spells.spell.curve.CarianGreatswordCastCurve;
+import com.eldenring.spells.spell.combat.CarianPiercerCombat;
+import com.eldenring.spells.spell.curve.CarianPiercerCastCurve;
 import com.eldenring.spells.spell.fx.CarianSlicerFx;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.entity.mobs.AntiMagicSusceptible;
@@ -14,25 +14,25 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 
 /**
- * 卡利亚大剑服务端锚点：跟在施法者身上，按刀周期结算扇形伤害与斩击音。
+ * 卡利亚贯刺服务端锚点：跟在施法者身上，这一刺只结算一次扇形伤害。
  * <p>
  * 视觉剑 / 动画仍在客户端 Hold；本实体不渲染。tick 只问 Curve → Combat → Fx。
  * 斩击特效复用迅剑 {@link CarianSlicerFx}（命中音 + 沿刃星星）。
  */
-public class CarianGreatswordEntity extends Projectile implements AntiMagicSusceptible {
+public class CarianPiercerEntity extends Projectile implements AntiMagicSusceptible {
 
     private float slashDamage;
     private boolean stopRequested;
     private int stopRequestedAtAge = -1;
 
-    public CarianGreatswordEntity(EntityType<? extends CarianGreatswordEntity> entityType, Level level) {
+    public CarianPiercerEntity(EntityType<? extends CarianPiercerEntity> entityType, Level level) {
         super(entityType, level);
         this.noPhysics = true;
         this.setNoGravity(true);
     }
 
-    public CarianGreatswordEntity(Level level, LivingEntity caster, float slashDamage) {
-        this(ModEntities.CARIAN_GREATSWORD.get(), level);
+    public CarianPiercerEntity(Level level, LivingEntity caster, float slashDamage) {
+        this(ModEntities.CARIAN_PIERCER.get(), level);
         setOwner(caster);
         this.slashDamage = slashDamage;
         snapToOwner(caster);
@@ -40,11 +40,11 @@ public class CarianGreatswordEntity extends Projectile implements AntiMagicSusce
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        // 无客户端同步字段；斩击由 tickCount 驱动。
+        // 无客户端同步字段；突刺由 tickCount 驱动。
     }
 
     /**
-     * 吟唱结束：本刀命中窗跑完后再消失，避免 CancelCast 吃掉最后一刀伤害。
+     * 吟唱结束：命中窗跑完后再消失，避免 CancelCast 吃掉这一刺伤害。
      */
     public void requestStop() {
         if (this.stopRequested) {
@@ -68,44 +68,25 @@ public class CarianGreatswordEntity extends Projectile implements AntiMagicSusce
         }
         snapToOwner(livingOwner);
 
-        if (!level().isClientSide) {
-            if (this.stopRequested && isLeftoverSlashAfterStop()) {
-                discard();
-                return;
-            }
-            if (CarianGreatswordCastCurve.isHitTick(this.tickCount)) {
-                CarianGreatswordCombat.resolveSlash(this, level(), this.slashDamage);
-                CarianSlicerFx.playSlashSound(level(), livingOwner);
-            }
+        if (!level().isClientSide && CarianPiercerCastCurve.isHitTick(this.tickCount)) {
+            CarianPiercerCombat.resolveSlash(this, level(), this.slashDamage);
+            CarianSlicerFx.playSlashSound(level(), livingOwner);
         }
 
-        if (this.stopRequested) {
-            int ticksSinceStop = this.tickCount - this.stopRequestedAtAge;
-            boolean hitWindowAlreadyPassed =
-                    CarianGreatswordCastCurve.tickIntoCurrentSlash(this.tickCount)
-                            > CarianGreatswordCastCurve.HIT_TICK;
-            if (hitWindowAlreadyPassed || ticksSinceStop >= CarianGreatswordCastCurve.STOP_GRACE_TICKS) {
-                discard();
-            }
+        if (this.tickCount >= CarianPiercerCastCurve.SLASH_DURATION_TICKS) {
+            discard();
+            return;
         }
-    }
-
-    /**
-     * 客户端只在「当前刀播完」才发 CancelCast。包晚到时实体年龄可能已经走出本周期、
-     * 跨进下一刀，那一刀玩家没按，不能再结算伤害 / 音效。
-     */
-    private boolean isLeftoverSlashAfterStop() {
         if (!this.stopRequested) {
-            return false;
+            return;
         }
-        int slashIndexWhenStopped = CarianGreatswordCastCurve.slashSequenceIndex(this.stopRequestedAtAge);
-        int tickInSlashWhenStopped = CarianGreatswordCastCurve.tickIntoCurrentSlash(this.stopRequestedAtAge);
-        int slashIndexNow = CarianGreatswordCastCurve.slashSequenceIndex(this.tickCount);
-        if (slashIndexNow > slashIndexWhenStopped) {
-            return true;
+        int ticksSinceStop = this.tickCount - this.stopRequestedAtAge;
+        boolean hitWindowAlreadyPassed =
+                CarianPiercerCastCurve.tickIntoCurrentSlash(this.tickCount)
+                        > CarianPiercerCastCurve.HIT_TICK;
+        if (hitWindowAlreadyPassed || ticksSinceStop >= CarianPiercerCastCurve.STOP_GRACE_TICKS) {
+            discard();
         }
-        return slashIndexWhenStopped > 0
-                && tickInSlashWhenStopped < CarianGreatswordCastCurve.HIT_TICK;
     }
 
     private void snapToOwner(LivingEntity owner) {

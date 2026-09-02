@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "elden_ring_spells:item/carian_greatsword_sword"
+    "layer0": "elden_ring_spells:item/carian_piercer_sword"
   },
   "display": {
     "thirdperson_righthand": {

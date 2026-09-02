@@ -2,6 +2,7 @@ package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.spell.CarianGreatswordSpell;
+import com.eldenring.spells.spell.CarianPiercerSpell;
 import com.eldenring.spells.spell.CarianPhalanxSpell;
 import com.eldenring.spells.spell.CarianSlicerSpell;
 import com.eldenring.spells.spell.CannonOfHaimaSpell;
@@ -122,6 +123,10 @@ public final class ModSpells {
     /** 卡利亚大剑：按下第一刀，长按交替两段 0.5 秒大剑斩击；贴图/握点/光轨复用迅剑。 */
     public static final Supplier<AbstractSpell> CARIAN_GREATSWORD =
             registerSpell(new CarianGreatswordSpell());
+
+    /** 卡利亚贯刺：点按突刺一次；剑握点/贴图从大剑拷出。 */
+    public static final Supplier<AbstractSpell> CARIAN_PIERCER =
+            registerSpell(new CarianPiercerSpell());
 
     /** 魔法辉剑：身前悬停后追踪飞出。 */
     public static final Supplier<AbstractSpell> MAGIC_GLINTBLADE =

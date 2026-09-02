@@ -2,8 +2,8 @@ package com.eldenring.spells.spell;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.registry.ModSchools;
-import com.eldenring.spells.spell.data.CarianGreatswordCastData;
-import com.eldenring.spells.spell.helper.CarianGreatswordCasting;
+import com.eldenring.spells.spell.data.CarianPiercerCastData;
+import com.eldenring.spells.spell.helper.CarianPiercerCasting;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.CastSource;
@@ -26,21 +26,20 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 卡利亚大剑（Carian Greatsword）：按下出第一刀，长按交替
- * {@code carian_great_sword1} / {@code carian_great_sword2}。
- * 每一刀播完后空 0.5 秒才允许下一刀，避免两刀贴在一起。
+ * 卡利亚贯刺（Carian Piercer）：形成魔力大剑后向前突刺一次。
+ * 动作组是 Blockbench {@code elden_ring_spells.carian_puncture}（0.75 秒），
+ * 剑的握点 / 贴图从卡利亚大剑拷出独立副本，不共用那套类。
  * <p>
- * 客户端 PlayerAnimator 斩击动作；每刀 0.5 秒片长 + 0.5 秒收招空档，由
- * {@link com.eldenring.spells.client.CarianGreatswordClientHold} 调度。
- * 手里的像素剑由 {@link com.eldenring.spells.client.render.carian.CarianGreatswordHandLayer} 跟右手骨骼；
- * 贴图 / 握点 / 模型 JSON 是大剑自己的，比迅剑更长。
- * 挥砍光轨由 {@link com.eldenring.spells.client.render.carian.CarianGreatswordTrail} 跟剑走，
+ * 点按只出一刺，长按不会连刺。客户端 PlayerAnimator 由
+ * {@link com.eldenring.spells.client.CarianPiercerClientHold} 调度。
+ * 手里的像素剑由 {@link com.eldenring.spells.client.render.carian.CarianPiercerHandLayer} 跟右手骨骼。
+ * 光轨由 {@link com.eldenring.spells.client.render.carian.CarianPiercerTrail} 跟剑走，
  * 沿刃星星仍用 {@link com.eldenring.spells.spell.fx.CarianSlicerFx}。
- * 服务端斩击锚点 {@link com.eldenring.spells.entity.CarianGreatswordEntity} 按刀结算扇形伤害。
+ * 服务端锚点 {@link com.eldenring.spells.entity.CarianPiercerEntity} 结算一次扇形伤害。
  * 命中音走辉石蓄力起手（{@code spell_cast_start}），起手/收招仍静音。
- * 施法不吃铁魔法的约 0.2 倍移速惩罚，斩击期间按走路 / 冲刺原速移动。
+ * 施法不吃铁魔法的约 0.2 倍移速惩罚，突刺期间按走路 / 冲刺原速移动。
  */
-public class CarianGreatswordSpell extends EldenRingAbstractSpell {
+public class CarianPiercerSpell extends EldenRingAbstractSpell {
 
     /** 最大等级种子；运行时以铁魔法 JSON 为准。 */
     public static final int SPELL_MAX_LEVEL = 1;
@@ -48,7 +47,7 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
     /** 冷却（秒）。比迅剑略长，单刀更重。 */
     public static final double SPELL_COOLDOWN_SECONDS = 0.5;
 
-    /** 1 级基础法力消耗。CONTINUOUS 按住期间按铁魔法节奏扣蓝。 */
+    /** 1 级基础法力消耗。点按扣一次，不按住连扣。 */
     public static int SPELL_BASE_MANA_COST = 18;
 
     /** 每升一级额外法力消耗。 */
@@ -61,10 +60,10 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
     public static int SPELL_SPELL_POWER_PER_LEVEL = 3;
 
     /**
-     * 按住最长持续时间（tick）。CONTINUOUS 上限，不是单刀片长。
-     * 单刀片长 10 tick = 0.5 s，刀与刀之间再空 10 tick，写在 CastCurve / 客户端。
+     * 这一刺对应的 CONTINUOUS 上限（tick）。必须盖住 0.75 秒动画；
+     * 客户端播完会 CancelCast，长按也不会接第二刺。
      */
-    public static int SPELL_CAST_TIME_TICKS = 160;
+    public static int SPELL_CAST_TIME_TICKS = 15;
 
     /**
      * 每刀伤害 = 法强 × 本系数。调大 → 单刀更痛；大剑比迅剑更重，默认约两倍。
@@ -89,12 +88,12 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
 
     /** 点按第一刀 clip 名；由客户端专用层播放，不再走铁魔法 cast-start 动画层。 */
     public static final AnimationHolder OPENING_SLASH_ANIMATION = new AnimationHolder(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_great_sword1"),
+            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_puncture"),
             true
     );
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_greatsword");
+            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_piercer");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.UNCOMMON)
@@ -103,7 +102,7 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
             .setCooldownSeconds(SPELL_COOLDOWN_SECONDS)
             .build();
 
-    public CarianGreatswordSpell() {
+    public CarianPiercerSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
         this.baseSpellPower = SPELL_BASE_SPELL_POWER;
         this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
@@ -116,7 +115,7 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
         return defaultConfig;
     }
 
-    /** 按住连斩；松手后当前刀播完才 CancelCast，避免铁魔法中途清掉动画。 */
+    /** 点按只出一刺；松手后当前这一刺播完才 CancelCast，避免铁魔法中途清掉动画。 */
     @Override
     public CastType getCastType() {
         return CastType.CONTINUOUS;
@@ -128,7 +127,7 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
     }
 
     /**
-     * 连斩需要吃满每刀，取消无敌帧，否则第二刀会打不穿 i-frame。
+     * 取消无敌帧，避免和其它近战咒叠在同一帧时被 i-frame 吃掉。
      */
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
@@ -145,8 +144,7 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
                 Component.translatable(
                         "ui.irons_spellbooks.radius",
                         Utils.stringTruncation(SLASH_RADIUS_BLOCKS, 1)
-                ),
-                Component.translatable("ui.elden_ring_spells.hold_to_combo")
+                )
         );
     }
 
@@ -166,7 +164,7 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
     }
 
     /**
-     * 起手动画由 {@link com.eldenring.spells.client.CarianGreatswordClientHold} 在无镜像的专用层播放。
+     * 起手动画由 {@link com.eldenring.spells.client.CarianPiercerClientHold} 在无镜像的专用层播放。
      * 这里返回 none，避免铁魔法默认 ANIMATION 层（带 MirrorModifier）先播一遍把左右翻反。
      */
     @Override
@@ -193,14 +191,14 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
             @Nullable MagicData playerMagicData
     ) {
         if (!level.isClientSide && playerMagicData != null) {
-            CarianGreatswordCastData castData;
-            if (playerMagicData.getAdditionalCastData() instanceof CarianGreatswordCastData existingCastData) {
+            CarianPiercerCastData castData;
+            if (playerMagicData.getAdditionalCastData() instanceof CarianPiercerCastData existingCastData) {
                 castData = existingCastData;
             } else {
-                castData = new CarianGreatswordCastData();
+                castData = new CarianPiercerCastData();
                 playerMagicData.setAdditionalCastData(castData);
             }
-            CarianGreatswordCasting.ensureGreatswordEntity(
+            CarianPiercerCasting.ensurePiercerEntity(
                     level,
                     entity,
                     castData,
@@ -220,14 +218,14 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
         if (level.isClientSide || playerMagicData == null) {
             return;
         }
-        CarianGreatswordCastData castData;
-        if (playerMagicData.getAdditionalCastData() instanceof CarianGreatswordCastData existingCastData) {
+        CarianPiercerCastData castData;
+        if (playerMagicData.getAdditionalCastData() instanceof CarianPiercerCastData existingCastData) {
             castData = existingCastData;
         } else {
-            castData = new CarianGreatswordCastData();
+            castData = new CarianPiercerCastData();
             playerMagicData.setAdditionalCastData(castData);
         }
-        CarianGreatswordCasting.ensureGreatswordEntity(
+        CarianPiercerCasting.ensurePiercerEntity(
                 level,
                 entity,
                 castData,
@@ -243,7 +241,7 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
             CastSource castSource,
             MagicData playerMagicData
     ) {
-        // CONTINUOUS 真正结算在实体命中窗；此处只走基类扣蓝 / 冷却。
+        // 点按只出一刺；真正结算在实体命中窗。
         super.onCast(level, spellLevel, entity, castSource, playerMagicData);
     }
 
@@ -255,8 +253,8 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
             MagicData playerMagicData,
             boolean cancelled
     ) {
-        if (playerMagicData.getAdditionalCastData() instanceof CarianGreatswordCastData castData) {
-            CarianGreatswordCasting.requestStop(castData);
+        if (playerMagicData.getAdditionalCastData() instanceof CarianPiercerCastData castData) {
+            CarianPiercerCasting.requestStop(castData);
         }
         super.onServerCastComplete(level, spellLevel, entity, playerMagicData, cancelled);
     }

@@ -6,6 +6,7 @@ import com.eldenring.spells.client.render.FoundingRainNebulaRenderer;
 import com.eldenring.spells.client.render.StarlightRenderer;
 import com.eldenring.spells.client.render.TerraMagicaZoneRenderer;
 import com.eldenring.spells.client.render.carian.CarianGreatswordHandLayer;
+import com.eldenring.spells.client.render.carian.CarianPiercerHandLayer;
 import com.eldenring.spells.client.render.carian.CarianSlicerHandLayer;
 import com.eldenring.spells.client.render.carian.MagicGlintbladeModels;
 import com.eldenring.spells.client.render.carian.MagicGlintbladeRenderer;
@@ -78,13 +79,14 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.GAVEL_OF_HAIMA.get(), HaimaGavelRenderer::new);
         event.registerEntityRenderer(ModEntities.CARIAN_SLICER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.CARIAN_GREATSWORD.get(), NoopRenderer::new);
+        event.registerEntityRenderer(ModEntities.CARIAN_PIERCER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.CANNON_OF_HAIMA.get(), HaimaCannonRenderer::new);
         event.registerEntityRenderer(ModEntities.MAGIC_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.PHALANX_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
     }
 
     /**
-     * 宽/细手臂都挂迅剑层和大剑层。两层都继承 {@code PlayerItemInHandLayer}，
+     * 宽/细手臂都挂迅剑层、大剑层和贯刺层。三层都继承 {@code PlayerItemInHandLayer}，
      * PlayerAnimator 第一人称 pass 才不会把它滤掉。握点各自独立。
      */
     public static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
@@ -96,6 +98,10 @@ public final class ClientEntityRenderers {
                         event.getContext().getItemInHandRenderer()
                 ));
                 playerRenderer.addLayer(new CarianGreatswordHandLayer(
+                        playerRenderer,
+                        event.getContext().getItemInHandRenderer()
+                ));
+                playerRenderer.addLayer(new CarianPiercerHandLayer(
                         playerRenderer,
                         event.getContext().getItemInHandRenderer()
                 ));

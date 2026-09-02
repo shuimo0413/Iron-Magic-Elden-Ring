@@ -1,6 +1,7 @@
 package com.eldenring.spells;
 
 import com.eldenring.spells.client.CarianGreatswordClientHold;
+import com.eldenring.spells.client.CarianPiercerClientHold;
 import com.eldenring.spells.client.CarianSlicerClientHold;
 import com.eldenring.spells.client.ClientEntityRenderers;
 import com.eldenring.spells.client.ClientItemModels;
@@ -52,6 +53,11 @@ public class EldenRingSpellsClient {
             );
             PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     CarianGreatswordClientHold.CARIAN_GREATSWORD_ANIMATION_LAYER,
+                    60,
+                    player -> new ModifierLayer<>()
+            );
+            PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    CarianPiercerClientHold.CARIAN_PIERCER_ANIMATION_LAYER,
                     60,
                     player -> new ModifierLayer<>()
             );
