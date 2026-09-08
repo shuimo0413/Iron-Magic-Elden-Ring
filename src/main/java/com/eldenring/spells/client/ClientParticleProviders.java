@@ -2,6 +2,7 @@ package com.eldenring.spells.client;
 
 import com.eldenring.spells.particle.carian.CarianParticle;
 import com.eldenring.spells.particle.carian.CarianSlashParticle;
+import com.eldenring.spells.particle.gravity.GravityParticle;
 import com.eldenring.spells.particle.cometazur.CometAzurInboundParticle;
 import com.eldenring.spells.particle.cometazur.CometAzurJetEmitterParticle;
 import com.eldenring.spells.particle.cometazur.CometAzurShockwaveAccentParticle;
@@ -127,5 +128,15 @@ public final class ClientParticleProviders {
         event.registerSpriteSet(ModParticles.COMET_AZUR_SHOCKWAVE_RING.get(), CometAzurShockwaveDiscParticle.Provider::new);
         event.registerSpriteSet(ModParticles.COMET_AZUR_SHOCKWAVE_ACCENT.get(), CometAzurShockwaveAccentParticle.Provider::new);
         event.registerSpriteSet(ModParticles.COMET_AZUR_JET_SURROUND.get(), CometAzurJetEmitterParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.GRAVITY_CORE.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.CORE));
+        event.registerSpriteSet(ModParticles.GRAVITY_GLOW.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.GLOW));
+        event.registerSpriteSet(ModParticles.GRAVITY_MIST.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.MIST));
+        event.registerSpriteSet(ModParticles.GRAVITY_SPARK.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.SPARK));
+        event.registerSpriteSet(ModParticles.GRAVITY_MOTE.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.MOTE));
+        event.registerSpriteSet(ModParticles.GRAVITY_STREAK.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.STREAK));
+        event.registerSpriteSet(ModParticles.GRAVITY_VORTEX.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.VORTEX));
+        event.registerSpriteSet(ModParticles.GRAVITY_RING.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.RING));
+        event.registerSpriteSet(ModParticles.GRAVITY_FILAMENT.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.FILAMENT));
+        event.registerSpriteSet(ModParticles.GRAVITY_ECLIPSE.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.ECLIPSE));
     }
 }

@@ -20,6 +20,7 @@ import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
+import com.eldenring.spells.spell.GravityBallSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
 import com.eldenring.spells.spell.StarlightSpell;
 import com.eldenring.spells.spell.StarShowerSpell;
@@ -143,6 +144,10 @@ public final class ModSpells {
     /** 巨剑阵：头上三把放大辉剑；与另外两圈圆阵互斥。 */
     public static final Supplier<AbstractSpell> GREATBLADE_PHALANX =
             registerSpell(new GreatbladePhalanxSpell());
+
+    /** 重力球：直线紫球，命中后把敌人吸向施法者。 */
+    public static final Supplier<AbstractSpell> GRAVITY_BALL =
+            registerSpell(new GravityBallSpell());
 
     private ModSpells() {
     }

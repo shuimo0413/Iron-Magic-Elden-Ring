@@ -18,6 +18,7 @@ import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
+import com.eldenring.spells.spell.GravityBallSpell;
 import com.eldenring.spells.spell.GreatbladePhalanxSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
@@ -70,6 +71,7 @@ public final class EldenRingServerConfig {
     public static final CrystalBarrageValues CRYSTAL_BARRAGE;
     public static final CrystalBurstValues CRYSTAL_BURST;
     public static final GlintstoneArcValues GLINTSTONE_ARC;
+    public static final GravityBallValues GRAVITY_BALL;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -232,6 +234,7 @@ public final class EldenRingServerConfig {
         CRYSTAL_BARRAGE = CrystalBarrageValues.create(builder);
         CRYSTAL_BURST = CrystalBurstValues.create(builder);
         GLINTSTONE_ARC = GlintstoneArcValues.create(builder);
+        GRAVITY_BALL = GravityBallValues.create(builder);
 
         SPEC = builder.build();
     }
@@ -365,6 +368,7 @@ public final class EldenRingServerConfig {
         CRYSTAL_BARRAGE.apply();
         CRYSTAL_BURST.apply();
         GLINTSTONE_ARC.apply();
+        GRAVITY_BALL.apply();
     }
 
     private static void applyHoming(HomingValues values, HomingTarget target) {
@@ -1905,6 +1909,115 @@ public final class EldenRingServerConfig {
             GlintstoneArcSpell.ARC_START_HALF_WIDTH_BLOCKS = startHalfWidthBlocks.get().floatValue();
             GlintstoneArcSpell.ARC_MAX_HALF_WIDTH_BLOCKS = maxHalfWidthBlocks.get().floatValue();
             GlintstoneArcSpell.PROJECTILE_MAX_ENTITY_HITS = maxEntityHits.get();
+        }
+    }
+
+    /**
+     * 重力球：蓝耗 / 弹速 / 射程 / 命中半径 / 1 级拉取格数（无伤害）。
+     */
+    public static final class GravityBallValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue maxRangeBlocks;
+        private final ModConfigSpec.DoubleValue hitRadiusBlocks;
+        private final ModConfigSpec.DoubleValue pullBlocksAtLevel1;
+        private final ModConfigSpec.DoubleValue pullBlocksPerLevel;
+        private final ModConfigSpec.DoubleValue standOffBlocks;
+
+        private GravityBallValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue flightSpeed,
+                ModConfigSpec.DoubleValue maxRangeBlocks,
+                ModConfigSpec.DoubleValue hitRadiusBlocks,
+                ModConfigSpec.DoubleValue pullBlocksAtLevel1,
+                ModConfigSpec.DoubleValue pullBlocksPerLevel,
+                ModConfigSpec.DoubleValue standOffBlocks
+        ) {
+            this.book = book;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.hitRadiusBlocks = hitRadiusBlocks;
+            this.pullBlocksAtLevel1 = pullBlocksAtLevel1;
+            this.pullBlocksPerLevel = pullBlocksPerLevel;
+            this.standOffBlocks = standOffBlocks;
+        }
+
+        static GravityBallValues create(ModConfigSpec.Builder builder) {
+            builder.push("gravity_ball");
+            GravityBallValues values = new GravityBallValues(
+                    SpellBookKeys.define(
+                            builder,
+                            GravityBallSpell.SPELL_BASE_MANA_COST,
+                            GravityBallSpell.SPELL_MANA_COST_PER_LEVEL,
+                            GravityBallSpell.SPELL_BASE_SPELL_POWER,
+                            GravityBallSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            GravityBallSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_flight_speed",
+                            "弹道速度（方块/tick）。越大越难躲。",
+                            GravityBallSpell.PROJECTILE_FLIGHT_SPEED,
+                            0.05,
+                            8.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_max_range_blocks",
+                            "弹道最大射程（方块）。飞过这段距离后消失。默认 25。",
+                            GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS,
+                            1.0,
+                            128.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "hit_radius_blocks",
+                            "命中搜敌半径（方块）。落点球心范围内敌人被拉，无伤害。",
+                            GravityBallSpell.HIT_RADIUS_BLOCKS,
+                            0.5,
+                            32.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "suction_pull_blocks_at_level_1",
+                            "1 级最大拉取格数。距离≤此值拉到身前；更大则只拉近这么多格。",
+                            GravityBallSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1,
+                            0.0,
+                            64.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "suction_pull_blocks_per_level",
+                            "每升一级额外拉取格数。当前最大等级 1 时不生效。",
+                            GravityBallSpell.SUCTION_PULL_BLOCKS_PER_LEVEL,
+                            0.0,
+                            32.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "suction_stand_off_blocks",
+                            "拉到身前时停在施法者中心前多少格，避免嵌进碰撞箱。",
+                            GravityBallSpell.SUCTION_STAND_OFF_BLOCKS,
+                            0.25,
+                            8.0
+                    )
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            GravityBallSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            GravityBallSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            GravityBallSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
+            GravityBallSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            GravityBallSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            GravityBallSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            GravityBallSpell.HIT_RADIUS_BLOCKS = hitRadiusBlocks.get().floatValue();
+            GravityBallSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1 = pullBlocksAtLevel1.get();
+            GravityBallSpell.SUCTION_PULL_BLOCKS_PER_LEVEL = pullBlocksPerLevel.get();
+            GravityBallSpell.SUCTION_STAND_OFF_BLOCKS = standOffBlocks.get();
         }
     }
 }

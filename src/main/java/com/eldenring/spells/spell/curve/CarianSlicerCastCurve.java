@@ -13,8 +13,9 @@ public final class CarianSlicerCastCurve {
     public static final int SLASH_DURATION_TICKS = 10;
 
     /**
-     * 本刀结算伤害的 tick（从本刀第 0 tick 起算）。
-     * 约在挥砍中段；调小 → 出手更早结算，调大 → 更接近收招才打到人。
+     * 本刀结算伤害与斩击音的 tick（从本刀第 0 tick 起算）。
+     * 动作组 0～0.375 秒挥砍、0.375～0.5 秒收刀定格；4 落在挥砍中段。
+     * 调小 → 出手更早结算，调大 → 更接近收招才打到人。
      */
     public static final int HIT_TICK = 4;
 

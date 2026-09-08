@@ -81,16 +81,17 @@ public class CometSpell extends EldenRingAbstractSpell {
         public static float COMET_HEAD_GLOW_ALPHA = 1.0f;
 
         /**
-         * 帚星扫帚彗尾：更宽更长 + 外雾层 + 加法芯 + 五条螺旋细丝。
+         * 帚星扫帚彗尾：宽尾 + 外雾层 + 加法芯 + 五条螺旋细丝。
+         * 长度约 20 方块 / 40 点；再长会拖成半屏光带。
          */
         public static com.eldenring.spells.entity.GlintstoneTrailStyle TRAIL_STYLE =
                 new com.eldenring.spells.entity.GlintstoneTrailStyle(
-                        64.0,
+                        20.0,
                         0.280f,
                         0.055f,
                         0.14f,
                         0.05f,
-                        80,
+                        40,
                         new com.eldenring.spells.entity.GlintstoneTrailStyle.HelixStyle(5, 0.42f, 0.16f, 0.055f, 0.16f, 0.07f),
                         true,
                         true

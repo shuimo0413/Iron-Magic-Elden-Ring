@@ -109,10 +109,10 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
 
         /**
          * 毁灭流星曲线光轨：几何光束负责连续轨迹，粒子只做弹头点缀。
-         * spark / mote 低于单发彗星——12 连发会线性叠加，调大会糊成雾。
+         * 长度约 20 方块 / 40 点；spark / mote 低于单发彗星——12 连发会线性叠加，调大会糊成雾。
          */
         public static com.eldenring.spells.entity.GlintstoneTrailStyle TRAIL_STYLE =
-                new com.eldenring.spells.entity.GlintstoneTrailStyle(24.0, 0.050f, 0.011f, 0.10f, 0.05f, 48);
+                new com.eldenring.spells.entity.GlintstoneTrailStyle(20.0, 0.050f, 0.011f, 0.10f, 0.05f, 40);
 
         /**
          * 拖尾点缀强度倍率。只影响弹头附近光晕/星尘概率，不影响几何光束长宽。

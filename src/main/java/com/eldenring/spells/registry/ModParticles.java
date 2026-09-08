@@ -17,7 +17,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 /**
  * 本模组粒子类型注册。
  * 辉石系视觉统一经 {@link com.eldenring.spells.particle.glintstone.GlintstoneFx} 生成；
- * 卡利亚深蓝库经 {@link com.eldenring.spells.particle.carian.CarianFx} 生成。
+ * 卡利亚深蓝库经 {@link com.eldenring.spells.particle.carian.CarianFx} 生成；
+ * 重力紫色库经 {@link com.eldenring.spells.particle.gravity.GravityFx} 生成。
  */
 public final class ModParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES =
@@ -428,6 +429,48 @@ public final class ModParticles {
                     return CometAzurJetOptions.STREAM_CODEC;
                 }
             });
+
+    // --- 重力紫色粒子库：黑核 + 深紫 / 淡紫 / 电弧，见 GravityFx ---
+
+    /** 重力黑洞核。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_CORE =
+            PARTICLE_TYPES.register("gravity_core", () -> new SimpleParticleType(false));
+
+    /** 重力淡紫光晕。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_GLOW =
+            PARTICLE_TYPES.register("gravity_glow", () -> new SimpleParticleType(false));
+
+    /** 重力拖尾紫雾。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_MIST =
+            PARTICLE_TYPES.register("gravity_mist", () -> new SimpleParticleType(false));
+
+    /** 重力电弧裂纹。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_SPARK =
+            PARTICLE_TYPES.register("gravity_spark", () -> new SimpleParticleType(false));
+
+    /** 重力被吸入闪点（三帧）。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_MOTE =
+            PARTICLE_TYPES.register("gravity_mote", () -> new SimpleParticleType(false));
+
+    /** 重力飞行残影。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_STREAK =
+            PARTICLE_TYPES.register("gravity_streak", () -> new SimpleParticleType(false));
+
+    /** 重力漩涡盘。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_VORTEX =
+            PARTICLE_TYPES.register("gravity_vortex", () -> new SimpleParticleType(false));
+
+    /** 重力命中脉冲环。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_RING =
+            PARTICLE_TYPES.register("gravity_ring", () -> new SimpleParticleType(false));
+
+    /** 重力吸人暗丝。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_FILAMENT =
+            PARTICLE_TYPES.register("gravity_filament", () -> new SimpleParticleType(false));
+
+    /** 重力核外蚀环。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_ECLIPSE =
+            PARTICLE_TYPES.register("gravity_eclipse", () -> new SimpleParticleType(false));
 
     private ModParticles() {
     }

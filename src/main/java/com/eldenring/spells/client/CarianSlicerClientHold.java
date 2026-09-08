@@ -2,6 +2,7 @@ package com.eldenring.spells.client;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.spell.curve.CarianSlicerCastCurve;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.kosmx.playerAnim.api.IPlayable;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
@@ -37,7 +38,9 @@ import org.lwjgl.glfw.GLFW;
 /**
  * 卡利亚迅剑客户端：交替播放 {@code carian_slicer_1}（第一刀）与 {@code carian_slicer_2}（第二刀）。
  * <p>
- * 每刀 0.5 秒（10 tick），1.0× 速对齐 JSON 片长；上一刀播完才切下一刀。
+ * 每刀 0.5 秒（10 tick），与 JSON {@code animation_length} 以及服务端
+ * {@link CarianSlicerCastCurve#SLASH_DURATION_TICKS} 同一把尺子。斩击音按服务端 10 tick 一刀播，
+ * 客户端切 clip 也必须严格 10 tick，否则长按后音画会一刀偏一 tick。
  * 按下出第一刀，长按且仍按住施法键则连续交替。
  * 一旦某一刀已经起手，松手也要播完这一刀，再发 CancelCast；中途取消会让铁魔法清掉动画层。
  * <p>
@@ -74,12 +77,8 @@ public final class CarianSlicerClientHold {
     };
 
     /**
-     * 与 player_animation JSON {@code animation_length: 0.5} 对齐（10 tick = 0.5 秒）。
-     */
-    private static final int SLASH_ANIMATION_LENGTH_TICKS = 10;
-
-    /**
-     * 刀与刀之间的淡入 tick。片长 0.5 秒时 4 tick 会占近半刀，用 2 tick 衔接。
+     * 刀与刀之间的淡入 tick。新动作组 0.375～0.5 秒是收刀定格，2 tick 淡入刚好叠在这段上，
+     * 不要再加大，否则会吃掉下一刀起手。
      */
     private static final int ANIMATION_FADE_IN_TICKS = 2;
 
@@ -89,10 +88,16 @@ public final class CarianSlicerClientHold {
     /** 0 = 点按第一刀（{@code carian_slicer_1}），1 = 连斩第二刀（{@code carian_slicer_2}）。 */
     private static int slashSequenceIndex;
 
-    /** 当前刀已播放 tick（0 起计，满 {@link #SLASH_ANIMATION_LENGTH_TICKS} 才允许下一刀）。 */
+    /**
+     * 当前刀已播放 tick（0 起计，满 {@link CarianSlicerCastCurve#SLASH_DURATION_TICKS} 才允许下一刀）。
+     */
     private static int ticksIntoCurrentSlash;
 
-    /** 起手这一 tick 不计入片长，避免少播最后一帧。 */
+    /**
+     * 仅第一刀起手这一 tick 为 true：begin 之后同 tick 还会走到计数，不跳过会少播 1 帧。
+     * 连斩时切 clip 已经 {@code return}，不会再 ++，绝不能再跳下一 tick，否则每刀变成 11 tick，
+     * 服务端音效仍是 10 tick，长按后越来越不同步。
+     */
     private static boolean skipLengthTickThisFrame;
 
     /** 松手后为 true：当前刀播完即停，不再交替。取消包也要等到这一刀结束才发。 */
@@ -191,14 +196,13 @@ public final class CarianSlicerClientHold {
 
         ticksIntoCurrentSlash++;
 
-        if (ticksIntoCurrentSlash < SLASH_ANIMATION_LENGTH_TICKS) {
+        if (ticksIntoCurrentSlash < CarianSlicerCastCurve.SLASH_DURATION_TICKS) {
             return;
         }
 
         if (shouldChainIntoNextSlash(castingCarianSlicer)) {
             slashSequenceIndex++;
             ticksIntoCurrentSlash = 0;
-            skipLengthTickThisFrame = true;
             playSlashAnimation(localPlayer, slashSequenceIndex);
             return;
         }

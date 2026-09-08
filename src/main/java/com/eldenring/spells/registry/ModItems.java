@@ -1,9 +1,15 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.item.AstrologerStaffItem;
+import com.eldenring.spells.item.AzurGlintstoneStaffItem;
+import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
+import io.redspace.ironsspellbooks.item.SpellBook;
+import io.redspace.ironsspellbooks.item.weapons.AttributeContainer;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
@@ -20,10 +26,78 @@ import java.util.function.Supplier;
  * {@code ScrollModel} mixin 切到 {@code item/<spell>_scroll}。
  * <p>
  * 三色辉石碎片是学派触媒（Focus）：放入卷轴锻造台焦点槽，产出辉石咒。
+ * 星星法典 / 起源秘典是辉石学派魔法书，走铁魔法原生 {@link SpellBook}（Curios spellbook 槽）。
+ * 观星杖 / 亚兹勒的辉石杖是铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒（辉石强度 +10%）。
  */
 public final class ModItems {
     public static final DeferredRegister.Items ITEMS =
             DeferredRegister.createItems(EldenRingSpellsMod.MOD_ID);
+
+    /**
+     * 星星法典：辉石学派魔法书。
+     * <p>
+     * 套用铁魔法原生 {@link SpellBook}（与烈焰书同类），10 个法术槽；
+     * 装备后：辉石法术强度 +10%、最大法力 +200。
+     * 物品模型走铁魔法 {@code template_spell_book_model}；客户端注册
+     * {@code SpellBookCurioRenderer} 后腰侧显示立体书。
+     * 须加入 {@code curios:spellbook} 物品标签才能装进魔法书槽。
+     */
+    public static final DeferredItem<Item> STAR_CODEX = ITEMS.register(
+            "star_codex",
+            () -> new SpellBook(10).withSpellbookAttributes(
+                    new AttributeContainer(
+                            ModAttributes.GLINTSTONE_SPELL_POWER,
+                            0.10D,
+                            AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                    ),
+                    new AttributeContainer(
+                            AttributeRegistry.MAX_MANA,
+                            200.0D,
+                            AttributeModifier.Operation.ADD_VALUE
+                    )
+            )
+    );
+
+    /**
+     * 起源秘典：高阶辉石学派魔法书。
+     * <p>
+     * 与星星法典同用铁魔法 {@link SpellBook} 模板（10 槽、立体书模型）；
+     * 装备后：辉石法术强度 +30%、最大法力 +300。
+     * 配方暂留空；须加入 {@code curios:spellbook} 才能装进魔法书槽。
+     */
+    public static final DeferredItem<Item> ORIGIN_CODEX = ITEMS.register(
+            "origin_codex",
+            () -> new SpellBook(10).withSpellbookAttributes(
+                    new AttributeContainer(
+                            ModAttributes.GLINTSTONE_SPELL_POWER,
+                            0.30D,
+                            AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                    ),
+                    new AttributeContainer(
+                            AttributeRegistry.MAX_MANA,
+                            300.0D,
+                            AttributeModifier.Operation.ADD_VALUE
+                    )
+            )
+    );
+
+    /**
+     * 观星杖：铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
+     * 手持时可右键施法（与铁魔法魔杖相同）；辉石法术强度 +10%。
+     */
+    public static final DeferredItem<Item> ASTROLOGER_STAFF = ITEMS.register(
+            "astrologer_staff",
+            AstrologerStaffItem::new
+    );
+
+    /**
+     * 亚兹勒的辉石杖：铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
+     * 手持时可右键施法（与铁魔法魔杖相同）；辉石法术强度 +10%。
+     */
+    public static final DeferredItem<Item> AZUR_GLINTSTONE_STAFF = ITEMS.register(
+            "azur_glintstone_staff",
+            AzurGlintstoneStaffItem::new
+    );
 
     /**
      * 青色辉石碎片。学院系主色触媒，与 {@link ModTags#GLINTSTONE_FOCUS} 绑定。
@@ -78,10 +152,13 @@ public final class ModItems {
     );
 
     static {
-        // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)
+        // BlockItem 与方块同 id；必须在 ModBlocks / ModDecorBlocks 已向总线注册之后再 register(ITEMS)
         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
             ITEMS.registerSimpleBlockItem(set.crystalBlock);
             ITEMS.registerSimpleBlockItem(set.cluster);
+        }
+        for (ModDecorBlocks.CandelabraSet set : ModDecorBlocks.CANDELABRAS_BY_COLOR.values()) {
+            ITEMS.registerSimpleBlockItem(set.candelabra);
         }
     }
 

@@ -41,6 +41,7 @@ public final class ModAttributes {
                             1.0D, -100.0D, 100.0D
                     ).setSyncable(true));
 
+
     private ModAttributes() {
     }
 

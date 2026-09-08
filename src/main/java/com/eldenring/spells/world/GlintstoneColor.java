@@ -1,5 +1,6 @@
 package com.eldenring.spells.world;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.material.MapColor;
 
@@ -14,6 +15,9 @@ public enum GlintstoneColor implements StringRepresentable {
     CYAN("cyan", MapColor.DIAMOND),
     BLUE("blue", MapColor.COLOR_BLUE),
     PURPLE("purple", MapColor.COLOR_PURPLE);
+
+    /** 方块 codec / 数据包用，序列化成 {@code cyan}/{@code blue}/{@code purple}。 */
+    public static final Codec<GlintstoneColor> CODEC = StringRepresentable.fromEnum(GlintstoneColor::values);
 
     private final String idPrefix;
     private final MapColor mapColor;

@@ -14,6 +14,7 @@ import com.eldenring.spells.client.render.glintstone.GlintstoneArcRenderer;
 import com.eldenring.spells.client.render.glintstone.GlintstoneCometModels;
 import com.eldenring.spells.client.render.glintstone.GlintstoneProjectileRenderer;
 import com.eldenring.spells.client.render.glintstone.SpiralShardRenderer;
+import com.eldenring.spells.client.render.gravity.GravityBallRenderer;
 import com.eldenring.spells.client.render.haima.HaimaCannonModels;
 import com.eldenring.spells.client.render.haima.HaimaCannonRenderer;
 import com.eldenring.spells.client.render.haima.HaimaGavelModels;
@@ -83,6 +84,7 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.CANNON_OF_HAIMA.get(), HaimaCannonRenderer::new);
         event.registerEntityRenderer(ModEntities.MAGIC_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.PHALANX_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
+        event.registerEntityRenderer(ModEntities.GRAVITY_BALL.get(), GravityBallRenderer::new);
     }
 
     /**

@@ -19,6 +19,7 @@ import com.eldenring.spells.entity.PhalanxGlintbladeEntity;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
 import com.eldenring.spells.entity.GlintstoneStarProjectile;
 import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
+import com.eldenring.spells.entity.GravityBallProjectile;
 import com.eldenring.spells.entity.GreatGlintstoneShardProjectile;
 import com.eldenring.spells.entity.SpiralShardProjectile;
 import com.eldenring.spells.entity.StarShowerProjectile;
@@ -314,6 +315,18 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("phalanx_glintblade"))
+            );
+
+    /**
+     * 重力球：无追踪直线紫球。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<GravityBallProjectile>> GRAVITY_BALL =
+            ENTITIES.register("gravity_ball", () ->
+                    EntityType.Builder.<GravityBallProjectile>of(GravityBallProjectile::new, MobCategory.MISC)
+                            .sized(0.45f, 0.45f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("gravity_ball"))
             );
 
     private ModEntities() {

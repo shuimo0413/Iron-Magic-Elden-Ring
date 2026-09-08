@@ -33,12 +33,19 @@ public final class ModCreativeTabs {
                     .title(Component.translatable("itemGroup.elden_ring_spells"))
                     .icon(() -> ModItems.createFilledScroll(1))
                     .displayItems((params, output) -> {
+                        output.accept(ModItems.STAR_CODEX.get());
+                        output.accept(ModItems.ORIGIN_CODEX.get());
+                        output.accept(ModItems.ASTROLOGER_STAFF.get());
+                        output.accept(ModItems.AZUR_GLINTSTONE_STAFF.get());
                         output.accept(ModItems.CYAN_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());
                         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
                             output.accept(set.crystalBlock.get());
                             output.accept(set.cluster.get());
+                        }
+                        for (ModDecorBlocks.CandelabraSet set : ModDecorBlocks.CANDELABRAS_BY_COLOR.values()) {
+                            output.accept(set.candelabra.get());
                         }
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_PEBBLE, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.SWIFT_GLINTSTONE_SHARD, 1));
@@ -65,6 +72,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTBLADE_PHALANX, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_PHALANX, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GREATBLADE_PHALANX, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.GRAVITY_BALL, 1));
                     })
                     .build());
 

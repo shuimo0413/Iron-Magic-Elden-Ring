@@ -224,6 +224,14 @@ public final class SpellBookStatReloader {
                 GreatbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL,
                 GreatbladePhalanxSpell.SPELL_CAST_TIME_TICKS
         );
+        apply(
+                ModSpells.GRAVITY_BALL.get(),
+                GravityBallSpell.SPELL_BASE_MANA_COST,
+                GravityBallSpell.SPELL_MANA_COST_PER_LEVEL,
+                GravityBallSpell.SPELL_BASE_SPELL_POWER,
+                GravityBallSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                GravityBallSpell.SPELL_CAST_TIME_TICKS
+        );
     }
 
     private static void apply(

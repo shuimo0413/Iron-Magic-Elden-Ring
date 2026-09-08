@@ -63,16 +63,17 @@ public class GlintstoneCometSpell extends EldenRingAbstractSpell {
         public static float COMET_HEAD_GLOW_ALPHA = 1.0f;
 
         /**
-         * 辉石彗星：长尾 + 加法亮芯 + 两条螺旋细丝，开始读成彗星而不是大号魔砾。
+         * 辉石彗星：中等尾 + 加法亮芯 + 两条螺旋细丝，读成彗星而不是大号魔砾。
+         * 长度约 18 方块 / 36 点；介于大魔砾（12）与帚星（20）之间。
          */
         public static com.eldenring.spells.entity.GlintstoneTrailStyle TRAIL_STYLE =
                 new com.eldenring.spells.entity.GlintstoneTrailStyle(
-                        40.0,
+                        18.0,
                         0.155f,
                         0.032f,
                         0.16f,
                         0.06f,
-                        64,
+                        36,
                         new com.eldenring.spells.entity.GlintstoneTrailStyle.HelixStyle(2, 0.18f, 0.08f, 0.045f, 0.22f, 0.10f),
                         true,
                         false

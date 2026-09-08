@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "C",
+    "N",
+    "T"
+  ],
+  "key": {
+    "C": {
+      "item": "elden_ring_spells:blue_glintstone_cluster"
+    },
+    "N": {
+      "item": "minecraft:gold_nugget"
+    },
+    "T": {
+      "item": "minecraft:candle"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "elden_ring_spells:blue_glintstone_candelabra"
+  }
+}
