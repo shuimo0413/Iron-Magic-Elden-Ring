@@ -1,6 +1,7 @@
 package com.eldenring.spells.spell.helper;
 
 import com.eldenring.spells.entity.GravityBallProjectile;
+import com.eldenring.spells.spell.GravityBallSpell;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,6 +20,7 @@ import java.util.function.BiFunction;
  * <p>
  * 从眼睛沿视线前移到生成点，射线碰墙则收回墙前，再按弹体 AABB 厚度回退 / 轴向挪动，
  * 直到箱子不嵌块。不要把重力弹塞进 {@link GlintstoneCastHelper}。
+ * 重力球与碎星共用本 helper；玩法数字由调用方写入弹道字段。
  */
 public final class GravityCastHelper {
 
@@ -26,11 +28,11 @@ public final class GravityCastHelper {
     }
 
     /**
-     * 沿施法者视线生成一发重力球。
+     * 沿施法者视线生成一发重力球（重力球法术默认数值）。
      *
      * @param projectileFactory        通常写 {@code GravityBallProjectile::new}
      * @param spawnForwardOffsetBlocks 生成点相对眼睛、沿视线前移（方块）
-     * @param damageAmount             命中伤害；重力球固定传 0
+     * @param damageAmount             命中伤害；重力系固定传 0
      * @param pullDistanceBlocks       本级最大拉取格数
      * @param shootDirection           飞行方向，通常是视线
      */
@@ -43,6 +45,46 @@ public final class GravityCastHelper {
             double pullDistanceBlocks,
             Vec3 shootDirection
     ) {
+        return spawnAlongLook(
+                level,
+                castingEntity,
+                projectileFactory,
+                spawnForwardOffsetBlocks,
+                damageAmount,
+                pullDistanceBlocks,
+                shootDirection,
+                Vec3.ZERO,
+                GravityBallSpell.PROJECTILE_FLIGHT_SPEED,
+                GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS,
+                GravityBallSpell.HIT_RADIUS_BLOCKS,
+                GravityBallSpell.SUCTION_STAND_OFF_BLOCKS
+        );
+    }
+
+    /**
+     * 生成一发重力弹，并写入飞行 / 射程 / 命中半径 / 身前停距。
+     * 碎星齐射会传锥内方向与视线平面偏移。
+     *
+     * @param spawnLookPlaneOffset 生成点在垂直于视线平面上的偏移（方块）；单发传 {@link Vec3#ZERO}
+     * @param flightSpeed          飞行速度（方块/tick）
+     * @param maxRangeBlocks       最大射程（方块）
+     * @param hitRadiusBlocks      命中搜敌半径（方块）
+     * @param standOffBlocks       拉到身前时停在施法者中心前多少格
+     */
+    public static GravityBallProjectile spawnAlongLook(
+            Level level,
+            LivingEntity castingEntity,
+            BiFunction<Level, LivingEntity, GravityBallProjectile> projectileFactory,
+            double spawnForwardOffsetBlocks,
+            float damageAmount,
+            double pullDistanceBlocks,
+            Vec3 shootDirection,
+            Vec3 spawnLookPlaneOffset,
+            float flightSpeed,
+            double maxRangeBlocks,
+            float hitRadiusBlocks,
+            double standOffBlocks
+    ) {
         GravityBallProjectile projectile = projectileFactory.apply(level, castingEntity);
         Vec3 lookDirection = castingEntity.getLookAngle().normalize();
         Vec3 normalizedShootDirection = shootDirection.lengthSqr() > 1.0e-8
@@ -52,7 +94,8 @@ public final class GravityCastHelper {
         Vec3 eyePosition = castingEntity.getEyePosition();
         Vec3 desiredSpawnPosition = eyePosition
                 .subtract(0, projectile.getBbHeight() * 0.5, 0)
-                .add(lookDirection.scale(spawnForwardOffsetBlocks));
+                .add(lookDirection.scale(spawnForwardOffsetBlocks))
+                .add(spawnLookPlaneOffset);
 
         Vec3 spawnPosition = resolveSpawnPositionClearOfBlocks(
                 level,
@@ -80,6 +123,10 @@ public final class GravityCastHelper {
         projectile.setXRot(pitchDegrees);
         projectile.setDamage(damageAmount);
         projectile.setPullDistanceBlocks(pullDistanceBlocks);
+        projectile.setFlightSpeed(flightSpeed);
+        projectile.setMaxRangeBlocks(maxRangeBlocks);
+        projectile.setHitRadiusBlocks(hitRadiusBlocks);
+        projectile.setStandOffBlocks(standOffBlocks);
         level.addFreshEntity(projectile);
         return projectile;
     }

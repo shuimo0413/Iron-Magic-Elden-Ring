@@ -232,6 +232,14 @@ public final class SpellBookStatReloader {
                 GravityBallSpell.SPELL_SPELL_POWER_PER_LEVEL,
                 GravityBallSpell.SPELL_CAST_TIME_TICKS
         );
+        apply(
+                ModSpells.COLLAPSING_STARS.get(),
+                CollapsingStarsSpell.SPELL_BASE_MANA_COST,
+                CollapsingStarsSpell.SPELL_MANA_COST_PER_LEVEL,
+                CollapsingStarsSpell.SPELL_BASE_SPELL_POWER,
+                CollapsingStarsSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                CollapsingStarsSpell.SPELL_CAST_TIME_TICKS
+        );
     }
 
     private static void apply(

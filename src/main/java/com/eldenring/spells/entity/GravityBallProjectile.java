@@ -25,7 +25,8 @@ import java.util.Optional;
 /**
  * 重力球弹道：无追踪、无重力的直线紫球；无伤害，命中后按等级拉取格数吸敌。
  * <p>
- * 最大射程固定 {@link GravityBallSpell#PROJECTILE_MAX_RANGE_BLOCKS}（25 格）。
+ * 重力球与碎星共用本实体。飞行速度 / 射程 / 命中半径 / 身前停距 / 拉取格数
+ * 均在出手时写入实例字段，不再写死读某个 Spell 静态值。
  */
 public class GravityBallProjectile extends AbstractMagicProjectile {
 
@@ -42,12 +43,32 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
     private boolean hasResolvedImpact;
 
     /**
-     * 本发弹道的最大拉取格数（由施法等级写入）。默认 1 级 = 3。
+     * 本发弹道的最大拉取格数（由施法等级写入）。默认 1 级重力球 = 3。
      */
     private double pullDistanceBlocks = GravityBallSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1;
 
     /**
-     * 出手后已飞行的路程（方块）。用于 25 格射程截断。
+     * 飞行速度（方块/tick）。出手时由法术写入。
+     */
+    private float flightSpeed = GravityBallSpell.PROJECTILE_FLIGHT_SPEED;
+
+    /**
+     * 最大射程（方块）。飞过这段距离后 discard。
+     */
+    private double maxRangeBlocks = GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS;
+
+    /**
+     * 命中搜敌半径（方块）。
+     */
+    private float hitRadiusBlocks = GravityBallSpell.HIT_RADIUS_BLOCKS;
+
+    /**
+     * 拉到身前时停在施法者中心前多少格（方块）。
+     */
+    private double standOffBlocks = GravityBallSpell.SUCTION_STAND_OFF_BLOCKS;
+
+    /**
+     * 出手后已飞行的路程（方块）。用于射程截断。
      */
     private double traveledDistanceBlocks;
 
@@ -65,18 +86,54 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
         setNoGravity(true);
     }
 
-    /**
-     * 本发最大拉取格数（方块）。
-     */
+    /** 本发最大拉取格数（方块）。 */
     public double pullDistanceBlocks() {
         return pullDistanceBlocks;
     }
 
-    /**
-     * 出手时由法术写入本级拉取格数。
-     */
+    /** 出手时由法术写入本级拉取格数。 */
     public void setPullDistanceBlocks(double pullDistanceBlocks) {
         this.pullDistanceBlocks = Math.max(0.0, pullDistanceBlocks);
+    }
+
+    /** 飞行速度（方块/tick）。 */
+    public float flightSpeed() {
+        return flightSpeed;
+    }
+
+    /** 出手时由法术写入飞行速度。 */
+    public void setFlightSpeed(float flightSpeed) {
+        this.flightSpeed = Math.max(0.05f, flightSpeed);
+    }
+
+    /** 最大射程（方块）。 */
+    public double maxRangeBlocks() {
+        return maxRangeBlocks;
+    }
+
+    /** 出手时由法术写入最大射程。 */
+    public void setMaxRangeBlocks(double maxRangeBlocks) {
+        this.maxRangeBlocks = Math.max(1.0, maxRangeBlocks);
+    }
+
+    /** 命中搜敌半径（方块）。 */
+    public float hitRadiusBlocks() {
+        return hitRadiusBlocks;
+    }
+
+    /** 出手时由法术写入命中半径。 */
+    public void setHitRadiusBlocks(float hitRadiusBlocks) {
+        this.hitRadiusBlocks = Math.max(0.5f, hitRadiusBlocks);
+    }
+
+    /** 拉到身前时的停距（方块）。 */
+    public double standOffBlocks() {
+        return standOffBlocks;
+    }
+
+    /** 出手时由法术写入身前停距。 */
+    public void setStandOffBlocks(double standOffBlocks) {
+        this.standOffBlocks = Math.max(0.25, standOffBlocks);
     }
 
     @Override
@@ -91,7 +148,7 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
 
     @Override
     public float getSpeed() {
-        return GravityBallSpell.PROJECTILE_FLIGHT_SPEED;
+        return flightSpeed;
     }
 
     @Override
@@ -116,7 +173,7 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
             return;
         }
         traveledDistanceBlocks += position().distanceTo(positionBeforeTick);
-        if (traveledDistanceBlocks >= GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS) {
+        if (traveledDistanceBlocks >= maxRangeBlocks) {
             discard();
         }
     }
@@ -204,6 +261,10 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
     protected void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putDouble("PullDistanceBlocks", pullDistanceBlocks);
+        tag.putFloat("FlightSpeed", flightSpeed);
+        tag.putDouble("MaxRangeBlocks", maxRangeBlocks);
+        tag.putFloat("HitRadiusBlocks", hitRadiusBlocks);
+        tag.putDouble("StandOffBlocks", standOffBlocks);
         tag.putDouble("TraveledDistanceBlocks", traveledDistanceBlocks);
     }
 
@@ -211,6 +272,18 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         pullDistanceBlocks = tag.getDouble("PullDistanceBlocks");
+        if (tag.contains("FlightSpeed")) {
+            flightSpeed = tag.getFloat("FlightSpeed");
+        }
+        if (tag.contains("MaxRangeBlocks")) {
+            maxRangeBlocks = tag.getDouble("MaxRangeBlocks");
+        }
+        if (tag.contains("HitRadiusBlocks")) {
+            hitRadiusBlocks = tag.getFloat("HitRadiusBlocks");
+        }
+        if (tag.contains("StandOffBlocks")) {
+            standOffBlocks = tag.getDouble("StandOffBlocks");
+        }
         traveledDistanceBlocks = tag.getDouble("TraveledDistanceBlocks");
     }
 }

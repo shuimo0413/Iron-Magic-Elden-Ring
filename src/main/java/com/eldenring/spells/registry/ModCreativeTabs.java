@@ -73,6 +73,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_PHALANX, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GREATBLADE_PHALANX, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GRAVITY_BALL, 1));
+                        output.accept(ModItems.createFilledScroll(ModSpells.COLLAPSING_STARS, 1));
                     })
                     .build());
 

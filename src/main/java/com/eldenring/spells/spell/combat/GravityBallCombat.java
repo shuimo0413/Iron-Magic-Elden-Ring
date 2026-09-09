@@ -1,7 +1,6 @@
 package com.eldenring.spells.spell.combat;
 
 import com.eldenring.spells.entity.GravityBallProjectile;
-import com.eldenring.spells.spell.GravityBallSpell;
 import io.redspace.ironsspellbooks.damage.DamageSources;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -19,8 +18,9 @@ import net.minecraft.world.phys.Vec3;
 /**
  * 重力球命中：无伤害；按本级拉取格数把范围内敌人拉向施法者。
  * <p>
- * 距离 ≤ 拉取格数 → 直接拉到身前（停在 stand-off）；
+ * 距离 ≤ 拉取格数 → 直接拉到身前（停在弹道上的 stand-off）；
  * 距离更大 → 只沿 3D 连线朝施法者移动拉取格数（可上下拉）。
+ * 命中半径 / 身前停距读自弹道实例（重力球与碎星共用本 Combat）。
  * <p>
  * 挡墙 / 挡顶 / 挡地用胸口细射线（不用整箱扫路径，避免贴地大怪被地面判死）；
  * 落点若仍嵌块则只向上抬出，再不行沿拉取方向回退。
@@ -79,7 +79,7 @@ public final class GravityBallCombat {
             return;
         }
 
-        float hitRadiusBlocks = GravityBallSpell.HIT_RADIUS_BLOCKS;
+        float hitRadiusBlocks = gravityBallProjectile.hitRadiusBlocks();
         double hitRadiusSquared = hitRadiusBlocks * hitRadiusBlocks;
         double verticalHalfHeight = hitRadiusBlocks * HIT_VERTICAL_HALF_HEIGHT_FRACTION;
         double pullBlocks = Math.max(0.0, gravityBallProjectile.pullDistanceBlocks());
@@ -101,7 +101,13 @@ public final class GravityBallCombat {
             if (closestDistanceSquared > hitRadiusSquared) {
                 continue;
             }
-            pullTargetTowardCaster(level, livingOwner, target, pullBlocks);
+            pullTargetTowardCaster(
+                    level,
+                    livingOwner,
+                    target,
+                    pullBlocks,
+                    gravityBallProjectile.standOffBlocks()
+            );
         }
     }
 
@@ -113,7 +119,8 @@ public final class GravityBallCombat {
             Level level,
             LivingEntity caster,
             LivingEntity target,
-            double pullBlocks
+            double pullBlocks,
+            double standOffBlocks
     ) {
         if (pullBlocks <= 1.0e-6) {
             return;
@@ -128,7 +135,6 @@ public final class GravityBallCombat {
         }
         Vec3 pullDirection = towardCaster.scale(1.0 / distanceBlocks);
 
-        double standOffBlocks = GravityBallSpell.SUCTION_STAND_OFF_BLOCKS;
         Vec3 desiredCenter;
         if (distanceBlocks <= pullBlocks) {
             desiredCenter = casterCenter.subtract(pullDirection.scale(standOffBlocks));

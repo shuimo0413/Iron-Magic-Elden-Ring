@@ -21,6 +21,7 @@ import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
 import com.eldenring.spells.spell.GravityBallSpell;
+import com.eldenring.spells.spell.CollapsingStarsSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
 import com.eldenring.spells.spell.StarlightSpell;
 import com.eldenring.spells.spell.StarShowerSpell;
@@ -148,6 +149,10 @@ public final class ModSpells {
     /** 重力球：直线紫球，命中后把敌人吸向施法者。 */
     public static final Supplier<AbstractSpell> GRAVITY_BALL =
             registerSpell(new GravityBallSpell());
+
+    /** 碎星：向前锥面散射多发重力球，拉取距离随等级变长。 */
+    public static final Supplier<AbstractSpell> COLLAPSING_STARS =
+            registerSpell(new CollapsingStarsSpell());
 
     private ModSpells() {
     }

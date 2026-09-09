@@ -6,6 +6,7 @@ import com.eldenring.spells.spell.CarianGreatswordSpell;
 import com.eldenring.spells.spell.CarianPiercerSpell;
 import com.eldenring.spells.spell.CarianPhalanxSpell;
 import com.eldenring.spells.spell.CarianSlicerSpell;
+import com.eldenring.spells.spell.CollapsingStarsSpell;
 import com.eldenring.spells.spell.CometAzurSpell;
 import com.eldenring.spells.spell.CometSpell;
 import com.eldenring.spells.spell.CrystalBarrageSpell;
@@ -72,6 +73,7 @@ public final class EldenRingServerConfig {
     public static final CrystalBurstValues CRYSTAL_BURST;
     public static final GlintstoneArcValues GLINTSTONE_ARC;
     public static final GravityBallValues GRAVITY_BALL;
+    public static final CollapsingStarsValues COLLAPSING_STARS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -235,6 +237,7 @@ public final class EldenRingServerConfig {
         CRYSTAL_BURST = CrystalBurstValues.create(builder);
         GLINTSTONE_ARC = GlintstoneArcValues.create(builder);
         GRAVITY_BALL = GravityBallValues.create(builder);
+        COLLAPSING_STARS = CollapsingStarsValues.create(builder);
 
         SPEC = builder.build();
     }
@@ -369,6 +372,7 @@ public final class EldenRingServerConfig {
         CRYSTAL_BURST.apply();
         GLINTSTONE_ARC.apply();
         GRAVITY_BALL.apply();
+        COLLAPSING_STARS.apply();
     }
 
     private static void applyHoming(HomingValues values, HomingTarget target) {
@@ -2018,6 +2022,139 @@ public final class EldenRingServerConfig {
             GravityBallSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1 = pullBlocksAtLevel1.get();
             GravityBallSpell.SUCTION_PULL_BLOCKS_PER_LEVEL = pullBlocksPerLevel.get();
             GravityBallSpell.SUCTION_STAND_OFF_BLOCKS = standOffBlocks.get();
+        }
+    }
+
+    /**
+     * 碎星：蓝耗 / 齐射发数 / 散射半角 / 弹速 / 射程 / 命中半径 / 拉取格数（无伤害）。
+     */
+    public static final class CollapsingStarsValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.IntValue projectileCount;
+        private final ModConfigSpec.DoubleValue scatterHalfAngleDegrees;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue maxRangeBlocks;
+        private final ModConfigSpec.DoubleValue hitRadiusBlocks;
+        private final ModConfigSpec.DoubleValue pullBlocksAtLevel1;
+        private final ModConfigSpec.DoubleValue pullBlocksPerLevel;
+        private final ModConfigSpec.DoubleValue standOffBlocks;
+
+        private CollapsingStarsValues(
+                SpellBookKeys book,
+                ModConfigSpec.IntValue projectileCount,
+                ModConfigSpec.DoubleValue scatterHalfAngleDegrees,
+                ModConfigSpec.DoubleValue flightSpeed,
+                ModConfigSpec.DoubleValue maxRangeBlocks,
+                ModConfigSpec.DoubleValue hitRadiusBlocks,
+                ModConfigSpec.DoubleValue pullBlocksAtLevel1,
+                ModConfigSpec.DoubleValue pullBlocksPerLevel,
+                ModConfigSpec.DoubleValue standOffBlocks
+        ) {
+            this.book = book;
+            this.projectileCount = projectileCount;
+            this.scatterHalfAngleDegrees = scatterHalfAngleDegrees;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.hitRadiusBlocks = hitRadiusBlocks;
+            this.pullBlocksAtLevel1 = pullBlocksAtLevel1;
+            this.pullBlocksPerLevel = pullBlocksPerLevel;
+            this.standOffBlocks = standOffBlocks;
+        }
+
+        static CollapsingStarsValues create(ModConfigSpec.Builder builder) {
+            builder.push("collapsing_stars");
+            CollapsingStarsValues values = new CollapsingStarsValues(
+                    SpellBookKeys.define(
+                            builder,
+                            CollapsingStarsSpell.SPELL_BASE_MANA_COST,
+                            CollapsingStarsSpell.SPELL_MANA_COST_PER_LEVEL,
+                            CollapsingStarsSpell.SPELL_BASE_SPELL_POWER,
+                            CollapsingStarsSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            CollapsingStarsSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.integer(
+                            builder,
+                            "projectile_count",
+                            "一次齐射的重力球数量。调大扇面更密。",
+                            CollapsingStarsSpell.PROJECTILE_COUNT,
+                            1,
+                            32
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "scatter_half_angle_degrees",
+                            "散射锥半角（度）。调大更散。",
+                            CollapsingStarsSpell.SCATTER_HALF_ANGLE_DEGREES,
+                            1.0,
+                            90.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_flight_speed",
+                            "弹道速度（方块/tick）。越大越难躲。",
+                            CollapsingStarsSpell.PROJECTILE_FLIGHT_SPEED,
+                            0.05,
+                            8.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_max_range_blocks",
+                            "弹道最大射程（方块）。飞过这段距离后消失。",
+                            CollapsingStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS,
+                            1.0,
+                            128.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "hit_radius_blocks",
+                            "命中搜敌半径（方块）。落点球心范围内敌人被拉，无伤害。",
+                            CollapsingStarsSpell.HIT_RADIUS_BLOCKS,
+                            0.5,
+                            32.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "suction_pull_blocks_at_level_1",
+                            "1 级最大拉取格数。距离≤此值拉到身前；更大则只拉近这么多格。",
+                            CollapsingStarsSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1,
+                            0.0,
+                            64.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "suction_pull_blocks_per_level",
+                            "每升一级额外拉取格数。",
+                            CollapsingStarsSpell.SUCTION_PULL_BLOCKS_PER_LEVEL,
+                            0.0,
+                            32.0
+                    ),
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "suction_stand_off_blocks",
+                            "拉到身前时停在施法者中心前多少格，避免嵌进碰撞箱。",
+                            CollapsingStarsSpell.SUCTION_STAND_OFF_BLOCKS,
+                            0.25,
+                            8.0
+                    )
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            CollapsingStarsSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            CollapsingStarsSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            CollapsingStarsSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
+            CollapsingStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CollapsingStarsSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            CollapsingStarsSpell.PROJECTILE_COUNT = projectileCount.get();
+            CollapsingStarsSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
+            CollapsingStarsSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            CollapsingStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            CollapsingStarsSpell.HIT_RADIUS_BLOCKS = hitRadiusBlocks.get().floatValue();
+            CollapsingStarsSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1 = pullBlocksAtLevel1.get();
+            CollapsingStarsSpell.SUCTION_PULL_BLOCKS_PER_LEVEL = pullBlocksPerLevel.get();
+            CollapsingStarsSpell.SUCTION_STAND_OFF_BLOCKS = standOffBlocks.get();
         }
     }
 }
