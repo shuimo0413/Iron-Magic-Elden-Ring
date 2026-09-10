@@ -42,9 +42,9 @@ import java.util.Optional;
 public class CrystalBarrageSpell extends EldenRingAbstractSpell {
 
     /**
-     * 最大等级种子。运行时以铁魔法 JSON 为准。法环辉石咒固定 1 级。
+     * 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。
      */
-    public static final int SPELL_MAX_LEVEL = 1;
+    public static final int SPELL_MAX_LEVEL = 10;
 
     /**
      * 冷却（秒）。连射本身已经靠按住维持，松手后再按要有一点空窗。
@@ -56,18 +56,18 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
      * 1 级基础法力消耗。CONTINUOUS 约每 10 tick 进 {@link #onCast} 扣一次。
      * 调大 → 按住连射更吃蓝。
      */
-    public static int SPELL_BASE_MANA_COST = 8;
+    public static int SPELL_BASE_MANA_COST = 12;
 
     /** 每升一级额外法力消耗。当前定死 1 级。 */
-    public static int SPELL_MANA_COST_PER_LEVEL = 2;
+    public static int SPELL_MANA_COST_PER_LEVEL = 1;
 
     /**
      * 1 级基础法术强度。单片伤害 = {@link #getSpellPower} × {@link #SPELL_DAMAGE_PER_SPELL_POWER}。
      */
-    public static int SPELL_BASE_SPELL_POWER = 8;
+    public static float SPELL_BASE_SPELL_POWER = 3;
 
     /** 每升一级额外法术强度。当前定死 1 级。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 0.5f;
 
     /**
      * 按住最长持续时间（tick）。20 tick = 1 秒；160 ≈ 8 秒。
@@ -79,7 +79,7 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
      * 单片伤害系数：最终伤害 = 法术强度 × 本值。
      * 调大 → 单片更疼，连射 DPS 一起涨。连射很密，默认比迅魔砾单发低。
      */
-    public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.22f;
+    public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
 
     /**
      * 碎片飞行速度（方块/tick）。比迅魔砾略慢，短射程里还能看清散射。
@@ -163,7 +163,7 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "crystal_barrage");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.UNCOMMON)
+            .setMinRarity(SpellRarity.COMMON)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(SPELL_MAX_LEVEL)
             .setCooldownSeconds(SPELL_COOLDOWN_SECONDS)
@@ -171,8 +171,8 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
 
     public CrystalBarrageSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }
@@ -330,6 +330,6 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
 
     /** 当前等级下单片碎片命中伤害。 */
     public float getShardDamage(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

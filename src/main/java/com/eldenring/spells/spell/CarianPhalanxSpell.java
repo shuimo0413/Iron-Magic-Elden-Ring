@@ -31,16 +31,16 @@ import java.util.Optional;
 public class CarianPhalanxSpell extends EldenRingAbstractSpell {
 
     /** 1 级蓝耗。九把剑比辉剑圆阵更贵。 */
-    public static int SPELL_BASE_MANA_COST = 28;
+    public static int SPELL_BASE_MANA_COST = 40;
 
     /** 每升 1 级额外蓝耗。 */
-    public static int SPELL_MANA_COST_PER_LEVEL = 5;
+    public static int SPELL_MANA_COST_PER_LEVEL = 3;
 
     /** 1 级法术强度基数。 */
-    public static int SPELL_BASE_SPELL_POWER = 12;
+    public static float SPELL_BASE_SPELL_POWER = 6;
 
     /** 每级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 0.5f;
 
     /** 吟唱 tick。0 = 瞬时铺阵。 */
     public static int SPELL_CAST_TIME_TICKS = 0;
@@ -51,13 +51,13 @@ public class CarianPhalanxSpell extends EldenRingAbstractSpell {
     public static double SPELL_COOLDOWN_SECONDS = 4.5;
 
     /** 最大等级。 */
-    public static int SPELL_MAX_LEVEL = 1;
+    public static int SPELL_MAX_LEVEL = 5;
 
     /**
      * 单剑命中伤害 = 法术强度 × 本系数。
      * 单把比辉剑圆阵弱一截，九把打满总伤仍更高。
      */
-    public static float DAMAGE_PER_SPELL_POWER = 0.52f;
+    public static float DAMAGE_PER_SPELL_POWER = 1.0f;
 
     /**
      * 半圆上的辉剑数量。卡利亚圆阵固定 9。
@@ -93,7 +93,7 @@ public class CarianPhalanxSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_phalanx");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.EPIC)
+            .setMinRarity(SpellRarity.RARE)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(CarianPhalanxSpell.SPELL_MAX_LEVEL)
             .setCooldownSeconds(CarianPhalanxSpell.SPELL_COOLDOWN_SECONDS)
@@ -101,8 +101,8 @@ public class CarianPhalanxSpell extends EldenRingAbstractSpell {
 
     public CarianPhalanxSpell() {
         this.manaCostPerLevel = CarianPhalanxSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = CarianPhalanxSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = CarianPhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(CarianPhalanxSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(CarianPhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = CarianPhalanxSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = CarianPhalanxSpell.SPELL_BASE_MANA_COST;
     }
@@ -181,6 +181,6 @@ public class CarianPhalanxSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * CarianPhalanxSpell.DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(CarianPhalanxSpell.SPELL_BASE_SPELL_POWER, CarianPhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, CarianPhalanxSpell.DAMAGE_PER_SPELL_POWER);
     }
 }

@@ -39,22 +39,22 @@ import java.util.Optional;
 public class CarianSlicerSpell extends EldenRingAbstractSpell {
 
     /** 最大等级种子；运行时以铁魔法 JSON 为准。 */
-    public static final int SPELL_MAX_LEVEL = 1;
+    public static final int SPELL_MAX_LEVEL = 10;
 
     /** 冷却（秒）。 */
     public static final double SPELL_COOLDOWN_SECONDS = 0.35;
 
     /** 1 级基础法力消耗。CONTINUOUS 按住期间按铁魔法节奏扣蓝。 */
-    public static int SPELL_BASE_MANA_COST = 8;
+    public static int SPELL_BASE_MANA_COST = 12;
 
     /** 每升一级额外法力消耗。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 2;
 
     /** 1 级基础法术强度。 */
-    public static int SPELL_BASE_SPELL_POWER = 12;
+    public static float SPELL_BASE_SPELL_POWER = 5;
 
     /** 每升一级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
 
     /**
      * 按住最长持续时间（tick）。CONTINUOUS 上限，不是单刀片长。
@@ -65,7 +65,7 @@ public class CarianSlicerSpell extends EldenRingAbstractSpell {
     /**
      * 每刀伤害 = 法强 × 本系数。调大 → 单刀更痛；连斩频率高，不宜过大。
      */
-    public static float DAMAGE_PER_SPELL_POWER = 0.55f;
+    public static float DAMAGE_PER_SPELL_POWER = 1.0f;
 
     /**
      * 扇形攻击半径（方块）。调大 → 更远也能砍到；搜箱与角度判定共用。
@@ -100,8 +100,8 @@ public class CarianSlicerSpell extends EldenRingAbstractSpell {
 
     public CarianSlicerSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }
@@ -147,7 +147,7 @@ public class CarianSlicerSpell extends EldenRingAbstractSpell {
 
     /** 单刀结算伤害。 */
     public float getSlashDamage(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, DAMAGE_PER_SPELL_POWER);
     }
 
     @Override

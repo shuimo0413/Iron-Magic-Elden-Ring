@@ -379,8 +379,8 @@ public final class EldenRingServerConfig {
         target.accept(
                 values.baseManaCost.get(),
                 values.manaCostPerLevel.get(),
-                values.baseSpellPower.get(),
-                values.spellPowerPerLevel.get(),
+                values.baseSpellPower.get().floatValue(),
+                values.spellPowerPerLevel.get().floatValue(),
                 values.castTimeTicks.get(),
                 values.projectileFlightSpeed.get().floatValue(),
                 values.projectileTrackingRangeBlocks.get(),
@@ -394,8 +394,8 @@ public final class EldenRingServerConfig {
         target.accept(
                 values.baseManaCost.get(),
                 values.manaCostPerLevel.get(),
-                values.baseSpellPower.get(),
-                values.spellPowerPerLevel.get(),
+                values.baseSpellPower.get().floatValue(),
+                values.spellPowerPerLevel.get().floatValue(),
                 values.castTimeTicks.get(),
                 values.projectileFlightSpeed.get().floatValue(),
                 values.projectileTrackingRangeBlocks.get(),
@@ -409,8 +409,8 @@ public final class EldenRingServerConfig {
     private record HomingSeed(
             int baseMana,
             int manaPerLevel,
-            int basePower,
-            int powerPerLevel,
+            float basePower,
+            float powerPerLevel,
             int castTime,
             float flightSpeed,
             double trackingRange,
@@ -423,8 +423,8 @@ public final class EldenRingServerConfig {
     private record VolleySeed(
             int baseMana,
             int manaPerLevel,
-            int basePower,
-            int powerPerLevel,
+            float basePower,
+            float powerPerLevel,
             int castTime,
             float flightSpeed,
             double trackingRange,
@@ -440,8 +440,8 @@ public final class EldenRingServerConfig {
         void accept(
                 int mana,
                 int manaPer,
-                int power,
-                int powerPer,
+                float power,
+                float powerPer,
                 int castTime,
                 float speed,
                 double range,
@@ -456,8 +456,8 @@ public final class EldenRingServerConfig {
         void accept(
                 int mana,
                 int manaPer,
-                int power,
-                int powerPer,
+                float power,
+                float powerPer,
                 int castTime,
                 float speed,
                 double range,
@@ -474,8 +474,8 @@ public final class EldenRingServerConfig {
     public static final class HomingValues {
         public final ModConfigSpec.IntValue baseManaCost;
         public final ModConfigSpec.IntValue manaCostPerLevel;
-        public final ModConfigSpec.IntValue baseSpellPower;
-        public final ModConfigSpec.IntValue spellPowerPerLevel;
+        public final ModConfigSpec.DoubleValue baseSpellPower;
+        public final ModConfigSpec.DoubleValue spellPowerPerLevel;
         public final ModConfigSpec.IntValue castTimeTicks;
         public final ModConfigSpec.DoubleValue projectileFlightSpeed;
         public final ModConfigSpec.DoubleValue projectileTrackingRangeBlocks;
@@ -525,8 +525,8 @@ public final class EldenRingServerConfig {
     public static final class VolleyValues {
         public final ModConfigSpec.IntValue baseManaCost;
         public final ModConfigSpec.IntValue manaCostPerLevel;
-        public final ModConfigSpec.IntValue baseSpellPower;
-        public final ModConfigSpec.IntValue spellPowerPerLevel;
+        public final ModConfigSpec.DoubleValue baseSpellPower;
+        public final ModConfigSpec.DoubleValue spellPowerPerLevel;
         public final ModConfigSpec.IntValue castTimeTicks;
         public final ModConfigSpec.DoubleValue projectileFlightSpeed;
         public final ModConfigSpec.DoubleValue projectileTrackingRangeBlocks;
@@ -577,23 +577,23 @@ public final class EldenRingServerConfig {
     private record SpellBookKeys(
             ModConfigSpec.IntValue baseManaCost,
             ModConfigSpec.IntValue manaCostPerLevel,
-            ModConfigSpec.IntValue baseSpellPower,
-            ModConfigSpec.IntValue spellPowerPerLevel,
+            ModConfigSpec.DoubleValue baseSpellPower,
+            ModConfigSpec.DoubleValue spellPowerPerLevel,
             ModConfigSpec.IntValue castTimeTicks
     ) {
         static SpellBookKeys define(
                 ModConfigSpec.Builder builder,
                 int baseMana,
                 int manaPer,
-                int basePower,
-                int powerPer,
+                float basePower,
+                float powerPer,
                 int castTime
         ) {
             return new SpellBookKeys(
                     ConfigSpecHelper.integer(builder, "base_mana_cost", "1 级基础蓝耗。铁魔法还会再乘 JSON 里的 manaMultiplier。", baseMana, 0, 10_000),
                     ConfigSpecHelper.integer(builder, "mana_cost_per_level", "每升 1 级额外蓝耗。", manaPer, 0, 10_000),
-                    ConfigSpecHelper.integer(builder, "base_spell_power", "1 级法术强度基数，再乘伤害系数才是伤。", basePower, 0, 10_000),
-                    ConfigSpecHelper.integer(builder, "spell_power_per_level", "每级额外法术强度。", powerPer, 0, 10_000),
+                    ConfigSpecHelper.floating(builder, "base_spell_power", "1 级攻击力/法强（表值，可小数）；伤害系数 1.0 时即最终伤害。", basePower, 0.0, 10_000.0),
+                    ConfigSpecHelper.floating(builder, "spell_power_per_level", "每级额外攻击力（可 0.5 / 1.5）。", powerPer, 0.0, 10_000.0),
                     ConfigSpecHelper.integer(builder, "cast_time_ticks", "吟唱时长（tick）。0=瞬时；CONTINUOUS 则是最长按住时间。", castTime, 0, 20_000)
             );
         }
@@ -662,8 +662,8 @@ public final class EldenRingServerConfig {
         void apply() {
             SpiralShardSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             SpiralShardSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            SpiralShardSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            SpiralShardSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            SpiralShardSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            SpiralShardSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             SpiralShardSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             SpiralShardSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
             SpiralShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
@@ -725,8 +725,8 @@ public final class EldenRingServerConfig {
         void apply() {
             FoundingRainOfStarsSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             FoundingRainOfStarsSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            FoundingRainOfStarsSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            FoundingRainOfStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            FoundingRainOfStarsSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            FoundingRainOfStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             FoundingRainOfStarsSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             FoundingRainOfStarsSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
             FoundingRainOfStarsSpell.RAIN_DROPS_PER_TICK = rainDropsPerTick.get();
@@ -790,8 +790,8 @@ public final class EldenRingServerConfig {
         void apply() {
             StarlightSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             StarlightSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            StarlightSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            StarlightSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             StarlightSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             StarlightSpell.STAR_DURATION_TICKS = starDurationTicks.get();
             StarlightSpell.LIGHT_LEVEL = lightLevel.get();
@@ -842,8 +842,8 @@ public final class EldenRingServerConfig {
         void apply() {
             TerraMagicaSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             TerraMagicaSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            TerraMagicaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            TerraMagicaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            TerraMagicaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            TerraMagicaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             TerraMagicaSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             TerraMagicaSpell.ZONE_RADIUS_BLOCKS = zoneRadiusBlocks.get().floatValue();
             TerraMagicaSpell.ZONE_BASE_DURATION_TICKS = zoneBaseDurationTicks.get();
@@ -900,8 +900,8 @@ public final class EldenRingServerConfig {
         void apply() {
             CometAzurSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             CometAzurSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CometAzurSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            CometAzurSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CometAzurSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            CometAzurSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             CometAzurSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             CometAzurSpell.STARTUP_DURATION_TICKS = startupDurationTicks.get();
             CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS = jetBeamMaxRangeBlocks.get();
@@ -964,8 +964,8 @@ public final class EldenRingServerConfig {
         void apply() {
             GavelOfHaimaSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             GavelOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            GavelOfHaimaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            GavelOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            GavelOfHaimaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            GavelOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             GavelOfHaimaSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             GavelOfHaimaSpell.DIRECT_HIT_DAMAGE_PER_SPELL_POWER = directHitDamage.get().floatValue();
             GavelOfHaimaSpell.SHOCKWAVE_DAMAGE_PER_SPELL_POWER = shockwaveDamage.get().floatValue();
@@ -1023,8 +1023,8 @@ public final class EldenRingServerConfig {
         void apply() {
             CannonOfHaimaSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             CannonOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CannonOfHaimaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            CannonOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CannonOfHaimaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            CannonOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             CannonOfHaimaSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             CannonOfHaimaSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
             CannonOfHaimaSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadius.get().floatValue();
@@ -1115,8 +1115,8 @@ public final class EldenRingServerConfig {
             applyTarget.accept(
                     book.baseManaCost.get(),
                     book.manaCostPerLevel.get(),
-                    book.baseSpellPower.get(),
-                    book.spellPowerPerLevel.get(),
+                    book.baseSpellPower.get().floatValue(),
+                    book.spellPowerPerLevel.get().floatValue(),
                     book.castTimeTicks.get(),
                     damagePerSpellPower.get().floatValue(),
                     slashRadiusBlocks.get().floatValue(),
@@ -1128,8 +1128,8 @@ public final class EldenRingServerConfig {
         static void applySlicer(
                 int baseManaCost,
                 int manaCostPerLevel,
-                int baseSpellPower,
-                int spellPowerPerLevel,
+                float baseSpellPower,
+                float spellPowerPerLevel,
                 int castTimeTicks,
                 float damagePerSpellPower,
                 float slashRadiusBlocks,
@@ -1150,8 +1150,8 @@ public final class EldenRingServerConfig {
         static void applyGreatsword(
                 int baseManaCost,
                 int manaCostPerLevel,
-                int baseSpellPower,
-                int spellPowerPerLevel,
+                float baseSpellPower,
+                float spellPowerPerLevel,
                 int castTimeTicks,
                 float damagePerSpellPower,
                 float slashRadiusBlocks,
@@ -1172,8 +1172,8 @@ public final class EldenRingServerConfig {
         static void applyPiercer(
                 int baseManaCost,
                 int manaCostPerLevel,
-                int baseSpellPower,
-                int spellPowerPerLevel,
+                float baseSpellPower,
+                float spellPowerPerLevel,
                 int castTimeTicks,
                 float damagePerSpellPower,
                 float slashRadiusBlocks,
@@ -1198,8 +1198,8 @@ public final class EldenRingServerConfig {
     private record SlashSeed(
             int baseManaCost,
             int manaCostPerLevel,
-            int baseSpellPower,
-            int spellPowerPerLevel,
+            float baseSpellPower,
+            float spellPowerPerLevel,
             int castTimeTicks,
             float damagePerSpellPower,
             float slashRadiusBlocks,
@@ -1213,8 +1213,8 @@ public final class EldenRingServerConfig {
         void accept(
                 int baseManaCost,
                 int manaCostPerLevel,
-                int baseSpellPower,
-                int spellPowerPerLevel,
+                float baseSpellPower,
+                float spellPowerPerLevel,
                 int castTimeTicks,
                 float damagePerSpellPower,
                 float slashRadiusBlocks,
@@ -1317,8 +1317,8 @@ public final class EldenRingServerConfig {
         void apply() {
             MagicGlintbladeSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             MagicGlintbladeSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            MagicGlintbladeSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            MagicGlintbladeSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            MagicGlintbladeSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            MagicGlintbladeSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             MagicGlintbladeSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             MagicGlintbladeSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
             MagicGlintbladeSpell.HOVER_DURATION_TICKS = hoverDurationTicks.get();
@@ -1430,8 +1430,8 @@ public final class EldenRingServerConfig {
             applyTarget.accept(
                     book.baseManaCost.get(),
                     book.manaCostPerLevel.get(),
-                    book.baseSpellPower.get(),
-                    book.spellPowerPerLevel.get(),
+                    book.baseSpellPower.get().floatValue(),
+                    book.spellPowerPerLevel.get().floatValue(),
                     book.castTimeTicks.get(),
                     damagePerSpellPower.get().floatValue(),
                     bladeCount.get(),
@@ -1446,8 +1446,8 @@ public final class EldenRingServerConfig {
         private static void applyGlintblade(
                 int mana,
                 int manaPer,
-                int power,
-                int powerPer,
+                float power,
+                float powerPer,
                 int castTime,
                 float damage,
                 int blades,
@@ -1474,8 +1474,8 @@ public final class EldenRingServerConfig {
         private static void applyCarian(
                 int mana,
                 int manaPer,
-                int power,
-                int powerPer,
+                float power,
+                float powerPer,
                 int castTime,
                 float damage,
                 int blades,
@@ -1502,8 +1502,8 @@ public final class EldenRingServerConfig {
         private static void applyGreatblade(
                 int mana,
                 int manaPer,
-                int power,
-                int powerPer,
+                float power,
+                float powerPer,
                 int castTime,
                 float damage,
                 int blades,
@@ -1531,8 +1531,8 @@ public final class EldenRingServerConfig {
     private record PhalanxSeed(
             int baseMana,
             int manaPerLevel,
-            int basePower,
-            int powerPerLevel,
+            float basePower,
+            float powerPerLevel,
             int castTime,
             float damage,
             int bladeCount,
@@ -1549,8 +1549,8 @@ public final class EldenRingServerConfig {
         void accept(
                 int mana,
                 int manaPer,
-                int power,
-                int powerPer,
+                float power,
+                float powerPer,
                 int castTime,
                 float damage,
                 int bladeCount,
@@ -1699,8 +1699,8 @@ public final class EldenRingServerConfig {
         void apply() {
             CrystalBarrageSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             CrystalBarrageSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CrystalBarrageSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            CrystalBarrageSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CrystalBarrageSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            CrystalBarrageSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             CrystalBarrageSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             CrystalBarrageSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
             CrystalBarrageSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
@@ -1796,8 +1796,8 @@ public final class EldenRingServerConfig {
         void apply() {
             CrystalBurstSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             CrystalBurstSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CrystalBurstSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            CrystalBurstSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CrystalBurstSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            CrystalBurstSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             CrystalBurstSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             CrystalBurstSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
             CrystalBurstSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
@@ -1904,8 +1904,8 @@ public final class EldenRingServerConfig {
         void apply() {
             GlintstoneArcSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             GlintstoneArcSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            GlintstoneArcSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            GlintstoneArcSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            GlintstoneArcSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            GlintstoneArcSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             GlintstoneArcSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             GlintstoneArcSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
             GlintstoneArcSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
@@ -2013,8 +2013,8 @@ public final class EldenRingServerConfig {
         void apply() {
             GravityBallSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             GravityBallSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            GravityBallSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            GravityBallSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            GravityBallSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            GravityBallSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             GravityBallSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             GravityBallSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
             GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
@@ -2144,8 +2144,8 @@ public final class EldenRingServerConfig {
         void apply() {
             CollapsingStarsSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
             CollapsingStarsSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CollapsingStarsSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get();
-            CollapsingStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get();
+            CollapsingStarsSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            CollapsingStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
             CollapsingStarsSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
             CollapsingStarsSpell.PROJECTILE_COUNT = projectileCount.get();
             CollapsingStarsSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();

@@ -32,17 +32,17 @@ import java.util.Optional;
  */
 public class GavelOfHaimaSpell extends EldenRingAbstractSpell {
 
-    public static final int SPELL_MAX_LEVEL = 1;
+    public static final int SPELL_MAX_LEVEL = 5;
     public static final double SPELL_COOLDOWN_SECONDS = 3.5;
 
-    public static int SPELL_BASE_MANA_COST = 28;
+    public static int SPELL_BASE_MANA_COST = 30;
     public static int SPELL_MANA_COST_PER_LEVEL = 4;
-    public static int SPELL_BASE_SPELL_POWER = 16;
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+    public static float SPELL_BASE_SPELL_POWER = 14;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 2;
     public static int SPELL_CAST_TIME_TICKS = 0;
 
-    public static float DIRECT_HIT_DAMAGE_PER_SPELL_POWER = 1.15f;
-    public static float SHOCKWAVE_DAMAGE_PER_SPELL_POWER = 0.92f;
+    public static float DIRECT_HIT_DAMAGE_PER_SPELL_POWER = 1.0f;
+    public static float SHOCKWAVE_DAMAGE_PER_SPELL_POWER = 0.8f;
     public static float DIRECT_HIT_RADIUS_BLOCKS = 1.45f;
     public static float SHOCKWAVE_RADIUS_BLOCKS = 3.6f;
     public static double DIRECT_HIT_KNOCKBACK_STRENGTH = 0.48;
@@ -61,8 +61,8 @@ public class GavelOfHaimaSpell extends EldenRingAbstractSpell {
 
     public GavelOfHaimaSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }
@@ -147,10 +147,10 @@ public class GavelOfHaimaSpell extends EldenRingAbstractSpell {
     }
 
     private float getDirectHitDamage(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * DIRECT_HIT_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, DIRECT_HIT_DAMAGE_PER_SPELL_POWER);
     }
 
     private float getShockwaveDamage(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * SHOCKWAVE_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, SHOCKWAVE_DAMAGE_PER_SPELL_POWER);
     }
 }

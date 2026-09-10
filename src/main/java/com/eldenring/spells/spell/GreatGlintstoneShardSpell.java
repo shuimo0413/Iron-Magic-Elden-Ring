@@ -75,13 +75,13 @@ public class GreatGlintstoneShardSpell extends EldenRingAbstractSpell {
 
         public static int SPELL_BASE_MANA_COST = 14;
         public static int SPELL_MANA_COST_PER_LEVEL = 3;
-        public static int SPELL_BASE_SPELL_POWER = 14;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+        public static float SPELL_BASE_SPELL_POWER = 8;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 2;
         public static int SPELL_CAST_TIME_TICKS = 0;
         public static double SPELL_COOLDOWN_SECONDS = 0.85;
-        /** 最大等级。法环辉石咒固定 1 级。 */
-        public static int SPELL_MAX_LEVEL = 1;
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.78f;
+        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+        public static int SPELL_MAX_LEVEL = 7;
+        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.75;
 
     /** 注册 ID：{@code elden_ring_spells:great_glintstone_shard}。 */
@@ -98,8 +98,8 @@ public class GreatGlintstoneShardSpell extends EldenRingAbstractSpell {
     public GreatGlintstoneShardSpell() {
         this.baseManaCost = GreatGlintstoneShardSpell.SPELL_BASE_MANA_COST;
         this.manaCostPerLevel = GreatGlintstoneShardSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = GreatGlintstoneShardSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = GreatGlintstoneShardSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(GreatGlintstoneShardSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(GreatGlintstoneShardSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = GreatGlintstoneShardSpell.SPELL_CAST_TIME_TICKS;
     }
 
@@ -162,7 +162,6 @@ public class GreatGlintstoneShardSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity)
-                * GreatGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(GreatGlintstoneShardSpell.SPELL_BASE_SPELL_POWER, GreatGlintstoneShardSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, GreatGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

@@ -40,13 +40,13 @@ import java.util.Optional;
  */
 public class CometAzurSpell extends EldenRingAbstractSpell {
 
-    public static final int SPELL_MAX_LEVEL = 5;
+    public static final int SPELL_MAX_LEVEL = 3;
     public static final double SPELL_COOLDOWN_SECONDS = 1.2;
 
-    public static int SPELL_BASE_MANA_COST = 10;
-    public static int SPELL_MANA_COST_PER_LEVEL = 2;
-    public static int SPELL_BASE_SPELL_POWER = 8;
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+    public static int SPELL_BASE_MANA_COST = 25;
+    public static int SPELL_MANA_COST_PER_LEVEL = 5;
+    public static float SPELL_BASE_SPELL_POWER = 5;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
     public static int SPELL_CAST_TIME_TICKS = 400;
 
     /** 蓄力漩涡时长（tick）。40 = 2 秒。 */
@@ -58,7 +58,7 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
     /** 喷流伤害结算间隔（tick）。 */
     public static int JET_BEAM_DAMAGE_INTERVAL_TICKS = 4;
     /** 每次喷流结算伤害 = 法强 × 本系数。 */
-    public static float JET_BEAM_DAMAGE_PER_SPELL_POWER = 0.55f;
+    public static float JET_BEAM_DAMAGE_PER_SPELL_POWER = 1.0f;
 
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "comet_azur");
@@ -73,8 +73,8 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
     public CometAzurSpell() {
         this.baseManaCost = SPELL_BASE_MANA_COST;
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
     }
 
@@ -98,7 +98,7 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
     }
 
     public float getDamage(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * JET_BEAM_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, JET_BEAM_DAMAGE_PER_SPELL_POWER);
     }
 
     @Override

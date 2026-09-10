@@ -133,20 +133,20 @@ public class SpiralShardSpell extends EldenRingAbstractSpell {
         // 法术数值
         // -------------------------------------------------------------------------
 
-        public static int SPELL_BASE_MANA_COST = 10;
-        public static int SPELL_MANA_COST_PER_LEVEL = 2;
-        public static int SPELL_BASE_SPELL_POWER = 10;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+        public static int SPELL_BASE_MANA_COST = 18;
+        public static int SPELL_MANA_COST_PER_LEVEL = 3;
+        public static float SPELL_BASE_SPELL_POWER = 6;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
         public static int SPELL_CAST_TIME_TICKS = 0;
         public static double SPELL_COOLDOWN_SECONDS = 0.75;
-        /** 最大等级。法环辉石咒固定 1 级。 */
-        public static int SPELL_MAX_LEVEL = 1;
+        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+        public static int SPELL_MAX_LEVEL = 7;
 
         /**
          * 命中伤害系数（任一彗星命中即结算并销毁整对）。
          * 最终伤害 = spellPower × 本系数。
          */
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.58f;
+        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
 
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.60;
 
@@ -155,7 +155,7 @@ public class SpiralShardSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "spiral_shard");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.UNCOMMON)
+            .setMinRarity(SpellRarity.RARE)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(SpiralShardSpell.SPELL_MAX_LEVEL)
             .setCooldownSeconds(SpiralShardSpell.SPELL_COOLDOWN_SECONDS)
@@ -163,8 +163,8 @@ public class SpiralShardSpell extends EldenRingAbstractSpell {
 
     public SpiralShardSpell() {
         this.manaCostPerLevel = SpiralShardSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SpiralShardSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SpiralShardSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SpiralShardSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SpiralShardSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SpiralShardSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SpiralShardSpell.SPELL_BASE_MANA_COST;
     }
@@ -229,6 +229,6 @@ public class SpiralShardSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity) * SpiralShardSpell.SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SpiralShardSpell.SPELL_BASE_SPELL_POWER, SpiralShardSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, SpiralShardSpell.SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

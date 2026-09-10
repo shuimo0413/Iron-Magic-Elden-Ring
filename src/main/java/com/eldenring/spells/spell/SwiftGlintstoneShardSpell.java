@@ -97,14 +97,14 @@ public class SwiftGlintstoneShardSpell extends EldenRingAbstractSpell {
         // -------------------------------------------------------------------------
 
         public static int SPELL_BASE_MANA_COST = 6;
-        public static int SPELL_MANA_COST_PER_LEVEL = 1;
-        public static int SPELL_BASE_SPELL_POWER = 8;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+        public static int SPELL_MANA_COST_PER_LEVEL = 2;
+        public static float SPELL_BASE_SPELL_POWER = 4;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 0.5f;
         public static int SPELL_CAST_TIME_TICKS = 0;
         public static double SPELL_COOLDOWN_SECONDS = 0.25;
-        /** 最大等级。法环辉石咒固定 1 级。 */
-        public static int SPELL_MAX_LEVEL = 1;
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.42f;
+        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+        public static int SPELL_MAX_LEVEL = 10;
+        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.55;
 
     /** 注册 ID：{@code elden_ring_spells:swift_glintstone_shard}。 */
@@ -120,8 +120,8 @@ public class SwiftGlintstoneShardSpell extends EldenRingAbstractSpell {
 
     public SwiftGlintstoneShardSpell() {
         this.manaCostPerLevel = SwiftGlintstoneShardSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SwiftGlintstoneShardSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SwiftGlintstoneShardSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SwiftGlintstoneShardSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SwiftGlintstoneShardSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SwiftGlintstoneShardSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SwiftGlintstoneShardSpell.SPELL_BASE_MANA_COST;
     }
@@ -182,7 +182,6 @@ public class SwiftGlintstoneShardSpell extends EldenRingAbstractSpell {
 
     /** 命中伤害 = 法术强度 × {@link SwiftGlintstoneShardSpell#SPELL_DAMAGE_PER_SPELL_POWER}。 */
     private float getDamageAmount(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity)
-                * SwiftGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SwiftGlintstoneShardSpell.SPELL_BASE_SPELL_POWER, SwiftGlintstoneShardSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, SwiftGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

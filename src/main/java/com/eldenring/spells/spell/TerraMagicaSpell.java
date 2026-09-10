@@ -54,10 +54,10 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
          * 1 级基础法术强度。本法定死 +30% 伤害，不参与伤害公式；
          * 仍保留字段以便铁魔法 UI / 等级曲线有合法 power 输入。
          */
-        public static int SPELL_BASE_SPELL_POWER = 1;
+        public static float SPELL_BASE_SPELL_POWER = 1;
 
         /** 每升一级额外法术强度（本法定死加成，不参与伤害）。 */
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 0;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 0;
 
         /**
          * 吟唱时间（tick）。大于 0 → {@code CastType.LONG}，给落阵一点仪式感。
@@ -172,8 +172,8 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
 
     public TerraMagicaSpell() {
         this.manaCostPerLevel = TerraMagicaSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = TerraMagicaSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = TerraMagicaSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(TerraMagicaSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(TerraMagicaSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = TerraMagicaSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = TerraMagicaSpell.SPELL_BASE_MANA_COST;
     }

@@ -86,13 +86,13 @@ public class GlintstoneCometSpell extends EldenRingAbstractSpell {
 
         public static int SPELL_BASE_MANA_COST = 18;
         public static int SPELL_MANA_COST_PER_LEVEL = 3;
-        public static int SPELL_BASE_SPELL_POWER = 16;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+        public static float SPELL_BASE_SPELL_POWER = 10;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 2;
         public static int SPELL_CAST_TIME_TICKS = 0;
         public static double SPELL_COOLDOWN_SECONDS = 1.2;
-        /** 最大等级。法环辉石咒固定 1 级。 */
-        public static int SPELL_MAX_LEVEL = 1;
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.95f;
+        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+        public static int SPELL_MAX_LEVEL = 7;
+        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.8;
 
     /** 注册 ID：{@code elden_ring_spells:glintstone_comet}。 */
@@ -109,8 +109,8 @@ public class GlintstoneCometSpell extends EldenRingAbstractSpell {
     public GlintstoneCometSpell() {
         this.baseManaCost = GlintstoneCometSpell.SPELL_BASE_MANA_COST;
         this.manaCostPerLevel = GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = GlintstoneCometSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = GlintstoneCometSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(GlintstoneCometSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(GlintstoneCometSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = GlintstoneCometSpell.SPELL_CAST_TIME_TICKS;
     }
 
@@ -170,6 +170,6 @@ public class GlintstoneCometSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity) * GlintstoneCometSpell.SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(GlintstoneCometSpell.SPELL_BASE_SPELL_POWER, GlintstoneCometSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, GlintstoneCometSpell.SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

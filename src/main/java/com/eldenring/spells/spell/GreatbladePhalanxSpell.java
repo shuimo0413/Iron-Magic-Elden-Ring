@@ -31,16 +31,16 @@ import java.util.Optional;
 public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
 
     /** 1 级蓝耗。三把大剑比九把小剑更贵。 */
-    public static int SPELL_BASE_MANA_COST = 36;
+    public static int SPELL_BASE_MANA_COST = 40;
 
     /** 每升 1 级额外蓝耗。 */
-    public static int SPELL_MANA_COST_PER_LEVEL = 6;
+    public static int SPELL_MANA_COST_PER_LEVEL = 4;
 
     /** 1 级法术强度基数。 */
-    public static int SPELL_BASE_SPELL_POWER = 16;
+    public static float SPELL_BASE_SPELL_POWER = 8;
 
     /** 每级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 3;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
 
     /** 吟唱 tick。0 = 瞬时铺阵。 */
     public static int SPELL_CAST_TIME_TICKS = 0;
@@ -51,13 +51,13 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
     public static double SPELL_COOLDOWN_SECONDS = 6.0;
 
     /** 最大等级。 */
-    public static int SPELL_MAX_LEVEL = 1;
+    public static int SPELL_MAX_LEVEL = 5;
 
     /**
      * 单剑命中伤害 = 法术强度 × 本系数。
      * 三把打满总伤接近卡利亚圆阵，但每一击更肉。
      */
-    public static float DAMAGE_PER_SPELL_POWER = 1.55f;
+    public static float DAMAGE_PER_SPELL_POWER = 1.0f;
 
     /**
      * 半圆上的大剑数量。巨剑阵固定 3。
@@ -93,7 +93,7 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "greatblade_phalanx");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.EPIC)
+            .setMinRarity(SpellRarity.RARE)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(GreatbladePhalanxSpell.SPELL_MAX_LEVEL)
             .setCooldownSeconds(GreatbladePhalanxSpell.SPELL_COOLDOWN_SECONDS)
@@ -101,8 +101,8 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
 
     public GreatbladePhalanxSpell() {
         this.manaCostPerLevel = GreatbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = GreatbladePhalanxSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = GreatbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(GreatbladePhalanxSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(GreatbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = GreatbladePhalanxSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = GreatbladePhalanxSpell.SPELL_BASE_MANA_COST;
     }
@@ -181,6 +181,6 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * GreatbladePhalanxSpell.DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(GreatbladePhalanxSpell.SPELL_BASE_SPELL_POWER, GreatbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, GreatbladePhalanxSpell.DAMAGE_PER_SPELL_POWER);
     }
 }

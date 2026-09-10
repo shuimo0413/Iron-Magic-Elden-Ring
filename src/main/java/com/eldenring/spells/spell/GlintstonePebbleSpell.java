@@ -125,16 +125,16 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
         // -------------------------------------------------------------------------
 
         /** 1 级基础法力消耗。 */
-        public static int SPELL_BASE_MANA_COST = 8;
+        public static int SPELL_BASE_MANA_COST = 10;
 
         /** 每升一级额外法力消耗。 */
         public static int SPELL_MANA_COST_PER_LEVEL = 2;
 
         /** 1 级基础法术强度（参与伤害公式）。 */
-        public static int SPELL_BASE_SPELL_POWER = 10;
+        public static float SPELL_BASE_SPELL_POWER = 6;
 
         /** 每升一级额外法术强度。 */
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
 
         /** 吟唱时间（tick）。0 = 瞬时施法，贴近法环可移动连发。 */
         public static int SPELL_CAST_TIME_TICKS = 0;
@@ -142,8 +142,8 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
         /** 冷却时间（秒）。 */
         public static double SPELL_COOLDOWN_SECONDS = 0.5;
 
-        /** 最大等级。法环辉石咒固定 1 级。 */
-        public static int SPELL_MAX_LEVEL = 1;
+        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+        public static int SPELL_MAX_LEVEL = 10;
 
 
         /**
@@ -161,9 +161,9 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
         public static float IMPACT_PARTICLE_INTENSITY = 1.25f;
 
         /**
-         * 最终伤害 = {@code getSpellPower(level, caster) * SPELL_DAMAGE_PER_SPELL_POWER}。
+         * 最终伤害 = 表攻击力 × 施法者法强倍率 × {@code SPELL_DAMAGE_PER_SPELL_POWER}（对齐数值表后系数为 1.0）。
          */
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.55f;
+        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
 
         /**
          * 施法瞬间粒子爆发相对眼睛位置、沿视线方向的前移距离（方块）。
@@ -200,8 +200,8 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
      */
     public GlintstonePebbleSpell() {
         this.manaCostPerLevel = GlintstonePebbleSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = GlintstonePebbleSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = GlintstonePebbleSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(GlintstonePebbleSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(GlintstonePebbleSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = GlintstonePebbleSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = GlintstonePebbleSpell.SPELL_BASE_MANA_COST;
     }
@@ -273,6 +273,6 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
      * {@link #getSpellPower} 已含等级、装备、魔法之境等全局加成。
      */
     private float getDamageAmount(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity) * GlintstonePebbleSpell.SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(GlintstonePebbleSpell.SPELL_BASE_SPELL_POWER, GlintstonePebbleSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, GlintstonePebbleSpell.SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

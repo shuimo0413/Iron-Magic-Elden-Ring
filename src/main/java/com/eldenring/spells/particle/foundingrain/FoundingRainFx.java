@@ -142,8 +142,8 @@ public final class FoundingRainFx {
 
         public static int SPELL_BASE_MANA_COST = 48;
         public static int SPELL_MANA_COST_PER_LEVEL = 8;
-        public static int SPELL_BASE_SPELL_POWER = 10;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+        public static float SPELL_BASE_SPELL_POWER = 10;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
 
         /**
          * 吟唱时长（tick）。本阶段先瞬时出手，好单独看星云→升空；以后若改蓄力再调。

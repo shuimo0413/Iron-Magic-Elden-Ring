@@ -30,9 +30,9 @@ import java.util.List;
 public class GlintstoneArcSpell extends EldenRingAbstractSpell {
 
     /**
-     * 最大等级种子。运行时以铁魔法 JSON 为准。法环辉石咒固定 1 级。
+     * 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。
      */
-    public static final int SPELL_MAX_LEVEL = 1;
+    public static final int SPELL_MAX_LEVEL = 10;
 
     /**
      * 冷却（秒）。弯弧清群便宜，松手后再按要有一点空窗。
@@ -52,10 +52,10 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
     /**
      * 1 级基础法术强度。单次命中伤害 = {@link #getSpellPower} × {@link #SPELL_DAMAGE_PER_SPELL_POWER}。
      */
-    public static int SPELL_BASE_SPELL_POWER = 10;
+    public static float SPELL_BASE_SPELL_POWER = 5;
 
     /** 每升一级额外法术强度。当前定死 1 级。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
 
     /**
      * 吟唱时长（tick）。0 = 瞬时，按下去就出刃，不锁站位。
@@ -67,7 +67,7 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
      * 弯弧能穿一排，单发略低于魔砾，吃满穿透才会明显高于单发弹。
      * 调大 → 每人更疼，清群总伤一起涨。
      */
-    public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.52f;
+    public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
 
     /**
      * 弯弧飞行速度（方块/tick）。比魔砾略快，让横向拉开能看清但不要瞬移。
@@ -137,8 +137,8 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
 
     public GlintstoneArcSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }
@@ -220,6 +220,6 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
 
     /** 当前等级下弯弧命中一次的伤害。 */
     public float getArcDamage(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

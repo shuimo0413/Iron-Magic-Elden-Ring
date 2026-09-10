@@ -42,7 +42,7 @@ import java.util.Optional;
 public class CarianPiercerSpell extends EldenRingAbstractSpell {
 
     /** 最大等级种子；运行时以铁魔法 JSON 为准。 */
-    public static final int SPELL_MAX_LEVEL = 1;
+    public static final int SPELL_MAX_LEVEL = 7;
 
     /** 冷却（秒）。比迅剑略长，单刀更重。 */
     public static final double SPELL_COOLDOWN_SECONDS = 0.5;
@@ -54,10 +54,10 @@ public class CarianPiercerSpell extends EldenRingAbstractSpell {
     public static int SPELL_MANA_COST_PER_LEVEL = 3;
 
     /** 1 级基础法术强度。 */
-    public static int SPELL_BASE_SPELL_POWER = 16;
+    public static float SPELL_BASE_SPELL_POWER = 8;
 
     /** 每升一级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 3;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
 
     /**
      * 这一刺对应的 CONTINUOUS 上限（tick）。必须盖住 0.75 秒动画；
@@ -68,7 +68,7 @@ public class CarianPiercerSpell extends EldenRingAbstractSpell {
     /**
      * 每刀伤害 = 法强 × 本系数。调大 → 单刀更痛；大剑比迅剑更重，默认约两倍。
      */
-    public static float DAMAGE_PER_SPELL_POWER = 1.15f;
+    public static float DAMAGE_PER_SPELL_POWER = 1.0f;
 
     /**
      * 扇形攻击半径（方块）。调大 → 更远也能砍到；搜箱与角度判定共用。
@@ -96,7 +96,7 @@ public class CarianPiercerSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_piercer");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.UNCOMMON)
+            .setMinRarity(SpellRarity.RARE)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(SPELL_MAX_LEVEL)
             .setCooldownSeconds(SPELL_COOLDOWN_SECONDS)
@@ -104,8 +104,8 @@ public class CarianPiercerSpell extends EldenRingAbstractSpell {
 
     public CarianPiercerSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }
@@ -150,7 +150,7 @@ public class CarianPiercerSpell extends EldenRingAbstractSpell {
 
     /** 单刀结算伤害。 */
     public float getSlashDamage(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, DAMAGE_PER_SPELL_POWER);
     }
 
     @Override

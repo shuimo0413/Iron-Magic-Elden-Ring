@@ -142,8 +142,8 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
 
         public static int SPELL_BASE_MANA_COST = 55;
         public static int SPELL_MANA_COST_PER_LEVEL = 8;
-        public static int SPELL_BASE_SPELL_POWER = 10;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+        public static float SPELL_BASE_SPELL_POWER = 4;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 1.5f;
 
         /**
          * 吟唱时长（tick）。瞬时施法固定为 0。
@@ -151,11 +151,11 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
         public static int SPELL_CAST_TIME_TICKS = 0;
 
         public static double SPELL_COOLDOWN_SECONDS = 6.0;
-        /** 最大等级。法环辉石咒固定 1 级。 */
-        public static int SPELL_MAX_LEVEL = 1;
+        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+        public static int SPELL_MAX_LEVEL = 3;
 
         /** 单发伤害系数；总输出约 = 系数 × 法强 × 8。 */
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.36f;
+        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
 
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.70;
 
@@ -164,7 +164,7 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "stars_of_ruin");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.EPIC)
+            .setMinRarity(SpellRarity.LEGENDARY)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(StarsOfRuinSpell.SPELL_MAX_LEVEL)
             .setCooldownSeconds(StarsOfRuinSpell.SPELL_COOLDOWN_SECONDS)
@@ -172,8 +172,8 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
 
     public StarsOfRuinSpell() {
         this.manaCostPerLevel = StarsOfRuinSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = StarsOfRuinSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = StarsOfRuinSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(StarsOfRuinSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(StarsOfRuinSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = StarsOfRuinSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = StarsOfRuinSpell.SPELL_BASE_MANA_COST;
     }
@@ -248,7 +248,6 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmountPerProjectile(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity)
-                * StarsOfRuinSpell.SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(StarsOfRuinSpell.SPELL_BASE_SPELL_POWER, StarsOfRuinSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, StarsOfRuinSpell.SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

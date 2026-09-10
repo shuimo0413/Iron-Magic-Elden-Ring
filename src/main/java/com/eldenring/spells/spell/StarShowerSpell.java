@@ -105,17 +105,17 @@ public class StarShowerSpell extends EldenRingAbstractSpell {
         public static float IMPACT_PARTICLE_INTENSITY = 1.05f;
         public static float CAST_BURST_PARTICLE_INTENSITY = 1.35f;
 
-        public static int SPELL_BASE_MANA_COST = 22;
-        public static int SPELL_MANA_COST_PER_LEVEL = 3;
-        public static int SPELL_BASE_SPELL_POWER = 9;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+        public static int SPELL_BASE_MANA_COST = 26;
+        public static int SPELL_MANA_COST_PER_LEVEL = 2;
+        public static float SPELL_BASE_SPELL_POWER = 3;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
         public static int SPELL_CAST_TIME_TICKS = 0;
         public static double SPELL_COOLDOWN_SECONDS = 2.5;
-        /** 最大等级。法环辉石咒固定 1 级。 */
-        public static int SPELL_MAX_LEVEL = 1;
+        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+        public static int SPELL_MAX_LEVEL = 7;
 
         /** 单发伤害系数；总输出约 = 系数 × 法强 × 6。 */
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.30f;
+        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
 
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.65;
 
@@ -132,8 +132,8 @@ public class StarShowerSpell extends EldenRingAbstractSpell {
 
     public StarShowerSpell() {
         this.manaCostPerLevel = StarShowerSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = StarShowerSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = StarShowerSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(StarShowerSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(StarShowerSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = StarShowerSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = StarShowerSpell.SPELL_BASE_MANA_COST;
     }
@@ -195,7 +195,6 @@ public class StarShowerSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmountPerProjectile(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity)
-                * StarShowerSpell.SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(StarShowerSpell.SPELL_BASE_SPELL_POWER, StarShowerSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, StarShowerSpell.SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

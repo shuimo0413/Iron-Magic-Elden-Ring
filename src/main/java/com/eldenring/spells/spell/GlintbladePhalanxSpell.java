@@ -34,16 +34,16 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
     // —— 法术书 / 蓝耗 / 冷却 ——
 
     /** 1 级蓝耗。五把剑比单发魔法辉剑贵一截。 */
-    public static int SPELL_BASE_MANA_COST = 22;
+    public static int SPELL_BASE_MANA_COST = 32;
 
     /** 每升 1 级额外蓝耗。 */
-    public static int SPELL_MANA_COST_PER_LEVEL = 4;
+    public static int SPELL_MANA_COST_PER_LEVEL = 3;
 
     /** 1 级法术强度基数。 */
-    public static int SPELL_BASE_SPELL_POWER = 12;
+    public static float SPELL_BASE_SPELL_POWER = 5;
 
     /** 每级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 0.5f;
 
     /** 吟唱 tick。0 = 瞬时铺阵。 */
     public static int SPELL_CAST_TIME_TICKS = 0;
@@ -54,13 +54,13 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
     public static double SPELL_COOLDOWN_SECONDS = 4.0;
 
     /** 最大等级。 */
-    public static int SPELL_MAX_LEVEL = 1;
+    public static int SPELL_MAX_LEVEL = 7;
 
     /**
      * 单剑命中伤害 = 法术强度 × 本系数。
      * 调大 → 每把更痛（五把打满会很猛）；调小 → 更像骚扰阵。
      */
-    public static float DAMAGE_PER_SPELL_POWER = 0.72f;
+    public static float DAMAGE_PER_SPELL_POWER = 1.0f;
 
     /**
      * 半圆上的辉剑数量。辉剑圆阵固定 5；卡利亚圆阵会走 helper 传更大的数。
@@ -105,7 +105,7 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintblade_phalanx");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.RARE)
+            .setMinRarity(SpellRarity.UNCOMMON)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(GlintbladePhalanxSpell.SPELL_MAX_LEVEL)
             .setCooldownSeconds(GlintbladePhalanxSpell.SPELL_COOLDOWN_SECONDS)
@@ -113,8 +113,8 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
 
     public GlintbladePhalanxSpell() {
         this.manaCostPerLevel = GlintbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = GlintbladePhalanxSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = GlintbladePhalanxSpell.SPELL_BASE_MANA_COST;
     }
@@ -193,6 +193,6 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * GlintbladePhalanxSpell.DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(GlintbladePhalanxSpell.SPELL_BASE_SPELL_POWER, GlintbladePhalanxSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, GlintbladePhalanxSpell.DAMAGE_PER_SPELL_POWER);
     }
 }

@@ -38,16 +38,16 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
     // —— 法术书 / 蓝耗 / 冷却 ——
 
         /** 1 级蓝耗。高于迅剑、低于大魔砾。 */
-        public static int SPELL_BASE_MANA_COST = 16;
+        public static int SPELL_BASE_MANA_COST = 12;
 
         /** 每升 1 级额外蓝耗。 */
-        public static int SPELL_MANA_COST_PER_LEVEL = 3;
+        public static int SPELL_MANA_COST_PER_LEVEL = 2;
 
         /** 1 级法术强度基数。 */
-        public static int SPELL_BASE_SPELL_POWER = 14;
+        public static float SPELL_BASE_SPELL_POWER = 7;
 
         /** 每级额外法术强度。 */
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
 
         /** 吟唱 tick。0 = 瞬时生成漩涡，剑在实体上凝结。 */
         public static int SPELL_CAST_TIME_TICKS = 0;
@@ -58,13 +58,13 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         public static double SPELL_COOLDOWN_SECONDS = 1.15;
 
         /** 最大等级。 */
-        public static int SPELL_MAX_LEVEL = 1;
+        public static int SPELL_MAX_LEVEL = 10;
 
         /**
          * 命中伤害 = 法术强度 × 本系数。
          * 调大 → 单剑更痛；辉剑本职是「延迟追踪」，单发应略强于迅剑。
          */
-        public static float DAMAGE_PER_SPELL_POWER = 1.08f;
+        public static float DAMAGE_PER_SPELL_POWER = 1.0f;
 
         // —— 悬停生成点（相对眼睛）——
 
@@ -193,7 +193,7 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "magic_glintblade");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.UNCOMMON)
+            .setMinRarity(SpellRarity.COMMON)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(MagicGlintbladeSpell.SPELL_MAX_LEVEL)
             .setCooldownSeconds(MagicGlintbladeSpell.SPELL_COOLDOWN_SECONDS)
@@ -201,8 +201,8 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
 
     public MagicGlintbladeSpell() {
         this.manaCostPerLevel = MagicGlintbladeSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = MagicGlintbladeSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = MagicGlintbladeSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(MagicGlintbladeSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(MagicGlintbladeSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = MagicGlintbladeSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = MagicGlintbladeSpell.SPELL_BASE_MANA_COST;
     }
@@ -293,6 +293,6 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * MagicGlintbladeSpell.DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(MagicGlintbladeSpell.SPELL_BASE_SPELL_POWER, MagicGlintbladeSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, MagicGlintbladeSpell.DAMAGE_PER_SPELL_POWER);
     }
 }

@@ -246,8 +246,8 @@ public final class SpellBookStatReloader {
             AbstractSpell spell,
             int baseManaCost,
             int manaCostPerLevel,
-            int baseSpellPower,
-            int spellPowerPerLevel,
+            float baseSpellPower,
+            float spellPowerPerLevel,
             int castTimeTicks
     ) {
         if (spell instanceof EldenRingAbstractSpell eldenRingSpell) {

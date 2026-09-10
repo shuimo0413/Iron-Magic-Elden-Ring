@@ -30,8 +30,8 @@ public final class CometAzurFx {
          */
         public static int SPELL_BASE_MANA_COST = 10;
         public static int SPELL_MANA_COST_PER_LEVEL = 2;
-        public static int SPELL_BASE_SPELL_POWER = 8;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+        public static float SPELL_BASE_SPELL_POWER = 8;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 2;
 
         /**
          * CONTINUOUS 最长按住时间（tick）。含 2 秒蓄力，剩下的是以后喷流能持续的上限。

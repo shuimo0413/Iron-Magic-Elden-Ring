@@ -41,16 +41,16 @@ public class CollapsingStarsSpell extends EldenRingAbstractSpell {
     public static final double SPELL_COOLDOWN_SECONDS = 4.0;
 
     /** 1 级蓝耗。齐射控场，高于单发重力球。 */
-    public static int SPELL_BASE_MANA_COST = 28;
+    public static int SPELL_BASE_MANA_COST = 22;
 
     /** 每升 1 级额外蓝耗。 */
-    public static int SPELL_MANA_COST_PER_LEVEL = 4;
+    public static int SPELL_MANA_COST_PER_LEVEL = 3;
 
     /** 1 级法术强度基数（本咒不造成伤害，保留给铁魔法面板 / 将来扩展）。 */
-    public static int SPELL_BASE_SPELL_POWER = 10;
+    public static float SPELL_BASE_SPELL_POWER = 0;
 
     /** 每级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 0;
 
     /** 吟唱 tick。0 = 瞬时。 */
     public static int SPELL_CAST_TIME_TICKS = 0;
@@ -114,8 +114,8 @@ public class CollapsingStarsSpell extends EldenRingAbstractSpell {
 
     public CollapsingStarsSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }

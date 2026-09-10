@@ -37,20 +37,20 @@ import java.util.Optional;
  */
 public class CannonOfHaimaSpell extends EldenRingAbstractSpell {
 
-    public static final int SPELL_MAX_LEVEL = 1;
+    public static final int SPELL_MAX_LEVEL = 5;
     public static final double SPELL_COOLDOWN_SECONDS = 4.5;
 
     /** 1 级蓝耗。高于大槌：远程范围弹更贵。 */
-    public static int SPELL_BASE_MANA_COST = 36;
+    public static int SPELL_BASE_MANA_COST = 30;
 
     /** 每升 1 级额外蓝耗。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 4;
 
     /** 1 级法术强度基数。 */
-    public static int SPELL_BASE_SPELL_POWER = 18;
+    public static float SPELL_BASE_SPELL_POWER = 14;
 
     /** 每级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 2;
 
     /**
      * 蓄力时长（tick）。20 = 1 秒，对应法环海摩炮弹前摇。
@@ -62,7 +62,7 @@ public class CannonOfHaimaSpell extends EldenRingAbstractSpell {
      * 爆炸伤害 = 法强 × 本系数。
      * 调大 → 单发清群更痛；应对标大槌冲击波之上、帚星之下。
      */
-    public static float DAMAGE_PER_SPELL_POWER = 1.22f;
+    public static float DAMAGE_PER_SPELL_POWER = 1.0f;
 
     /**
      * 爆炸半径（方块）。范围内所有敌对生物受伤。
@@ -159,8 +159,8 @@ public class CannonOfHaimaSpell extends EldenRingAbstractSpell {
 
     public CannonOfHaimaSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }
@@ -261,6 +261,6 @@ public class CannonOfHaimaSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity caster) {
-        return getSpellPower(spellLevel, caster) * DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, caster, DAMAGE_PER_SPELL_POWER);
     }
 }

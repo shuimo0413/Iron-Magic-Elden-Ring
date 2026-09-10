@@ -102,15 +102,15 @@ public class CometSpell extends EldenRingAbstractSpell {
         public static float IMPACT_PARTICLE_INTENSITY = 1.80f;
         public static float CAST_BURST_PARTICLE_INTENSITY = 2.1f;
 
-        public static int SPELL_BASE_MANA_COST = 24;
+        public static int SPELL_BASE_MANA_COST = 20;
         public static int SPELL_MANA_COST_PER_LEVEL = 4;
-        public static int SPELL_BASE_SPELL_POWER = 18;
-        public static int SPELL_SPELL_POWER_PER_LEVEL = 2;
+        public static float SPELL_BASE_SPELL_POWER = 15;
+        public static float SPELL_SPELL_POWER_PER_LEVEL = 3;
         public static int SPELL_CAST_TIME_TICKS = 0;
         public static double SPELL_COOLDOWN_SECONDS = 1.6;
-        /** 最大等级。法环辉石咒固定 1 级。 */
-        public static int SPELL_MAX_LEVEL = 1;
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.15f;
+        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+        public static int SPELL_MAX_LEVEL = 5;
+        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.9;
 
     /** 注册 ID：{@code elden_ring_spells:comet}。语言键 / 图标 path 也是 {@code comet}。 */
@@ -118,7 +118,7 @@ public class CometSpell extends EldenRingAbstractSpell {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "comet");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
-            .setMinRarity(SpellRarity.RARE)
+            .setMinRarity(SpellRarity.EPIC)
             .setSchoolResource(ModSchools.GLINTSTONE_RESOURCE)
             .setMaxLevel(CometSpell.SPELL_MAX_LEVEL)
             .setCooldownSeconds(CometSpell.SPELL_COOLDOWN_SECONDS)
@@ -127,8 +127,8 @@ public class CometSpell extends EldenRingAbstractSpell {
     public CometSpell() {
         this.baseManaCost = CometSpell.SPELL_BASE_MANA_COST;
         this.manaCostPerLevel = CometSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = CometSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = CometSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(CometSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(CometSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = CometSpell.SPELL_CAST_TIME_TICKS;
     }
 
@@ -192,6 +192,6 @@ public class CometSpell extends EldenRingAbstractSpell {
     }
 
     private float getDamageAmount(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity) * CometSpell.SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(CometSpell.SPELL_BASE_SPELL_POWER, CometSpell.SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, CometSpell.SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }

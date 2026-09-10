@@ -23,27 +23,27 @@ import java.util.List;
  * <p>
  * <strong>无伤害</strong>。命中实体或方块后，把落点半径内敌人拉向施法者：
  * 距离 ≤ 本级拉取格数 → 直接拉到身前；距离更大 → 只沿连线拉近该格数。
- * 当前最大等级 1，1 级拉取 3 格；弹道最大射程固定 25 格。
+ * 1 级拉取 3 格；最大等级见 SPELL_MAX_LEVEL；弹道最大射程固定 25 格。
  * <p>
  * 玩法数字默认值在本类静态字段，由 {@code EldenRingServerConfig} 的 {@code gravity_ball} 段覆盖。
  * 视觉写死在 {@link com.eldenring.spells.particle.gravity.GravityFx} / Renderer。
  */
 public class GravityBallSpell extends EldenRingAbstractSpell {
 
-    public static final int SPELL_MAX_LEVEL = 1;
+    public static final int SPELL_MAX_LEVEL = 5;
     public static final double SPELL_COOLDOWN_SECONDS = 3.0;
 
     /** 1 级蓝耗。无伤控场，略低于旧版带伤数值。 */
-    public static int SPELL_BASE_MANA_COST = 14;
+    public static int SPELL_BASE_MANA_COST = 18;
 
     /** 每升 1 级额外蓝耗。 */
-    public static int SPELL_MANA_COST_PER_LEVEL = 2;
+    public static int SPELL_MANA_COST_PER_LEVEL = 3;
 
     /** 1 级法术强度基数（本咒不造成伤害，保留给铁魔法面板 / 将来扩展）。 */
-    public static int SPELL_BASE_SPELL_POWER = 10;
+    public static float SPELL_BASE_SPELL_POWER = 0;
 
     /** 每级额外法术强度。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 0;
 
     /** 吟唱 tick。0 = 瞬时。 */
     public static int SPELL_CAST_TIME_TICKS = 0;
@@ -69,7 +69,7 @@ public class GravityBallSpell extends EldenRingAbstractSpell {
     public static double SUCTION_PULL_BLOCKS_AT_LEVEL_1 = 3.0;
 
     /**
-     * 每升一级额外拉取格数。当前最大等级 1，暂不生效；以后升上限时调这个。
+     * 每升一级额外拉取格数。每级叠加拉取距离；与 SPELL_MAX_LEVEL 一起生效。
      */
     public static double SUCTION_PULL_BLOCKS_PER_LEVEL = 1.0;
 
@@ -105,8 +105,8 @@ public class GravityBallSpell extends EldenRingAbstractSpell {
 
     public GravityBallSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }

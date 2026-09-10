@@ -29,18 +29,18 @@ import java.util.List;
 public class StarlightSpell extends EldenRingAbstractSpell {
 
     /** 1 级蓝耗。照明工具咒，低于魔砾。 */
-    public static int SPELL_BASE_MANA_COST = 12;
+    public static int SPELL_BASE_MANA_COST = 20;
 
     /** 每升 1 级额外蓝耗。本咒默认 1 级，留给 toml。 */
-    public static int SPELL_MANA_COST_PER_LEVEL = 2;
+    public static int SPELL_MANA_COST_PER_LEVEL = 0;
 
     /**
      * 1 级法术强度。不参与伤害；仍保留以便铁魔法 UI / 等级曲线合法。
      */
-    public static int SPELL_BASE_SPELL_POWER = 1;
+    public static float SPELL_BASE_SPELL_POWER = 0;
 
     /** 每级额外法术强度。本咒不打伤害，默认 0。 */
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 0;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 0;
 
     /** 吟唱 tick。0 = 瞬时出星。 */
     public static int SPELL_CAST_TIME_TICKS = 0;
@@ -77,8 +77,8 @@ public class StarlightSpell extends EldenRingAbstractSpell {
 
     public StarlightSpell() {
         this.manaCostPerLevel = StarlightSpell.SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = StarlightSpell.SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(StarlightSpell.SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = StarlightSpell.SPELL_CAST_TIME_TICKS;
         this.baseManaCost = StarlightSpell.SPELL_BASE_MANA_COST;
     }

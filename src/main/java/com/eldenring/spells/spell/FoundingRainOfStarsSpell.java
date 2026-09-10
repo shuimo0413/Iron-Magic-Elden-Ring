@@ -30,17 +30,17 @@ import com.eldenring.spells.particle.foundingrain.FoundingRainFx;
  */
 public class FoundingRainOfStarsSpell extends EldenRingAbstractSpell {
 
-    public static final int SPELL_MAX_LEVEL = 1;
+    public static final int SPELL_MAX_LEVEL = 3;
     public static final double SPELL_COOLDOWN_SECONDS = 8.0;
 
-    public static int SPELL_BASE_MANA_COST = 48;
-    public static int SPELL_MANA_COST_PER_LEVEL = 8;
-    public static int SPELL_BASE_SPELL_POWER = 10;
-    public static int SPELL_SPELL_POWER_PER_LEVEL = 1;
+    public static int SPELL_BASE_MANA_COST = 50;
+    public static int SPELL_MANA_COST_PER_LEVEL = 10;
+    public static float SPELL_BASE_SPELL_POWER = 6;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
     public static int SPELL_CAST_TIME_TICKS = 0;
 
     /** 每次雨幕结算伤害 = 法强 × 本系数。 */
-    public static float SPELL_DAMAGE_PER_SPELL_POWER = 0.5f;
+    public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
     /** 每 tick 落下的雨针数量。 */
     public static int RAIN_DROPS_PER_TICK = 8;
     /** 雨针下落速度（方块/tick）。 */
@@ -65,8 +65,8 @@ public class FoundingRainOfStarsSpell extends EldenRingAbstractSpell {
 
     public FoundingRainOfStarsSpell() {
         this.manaCostPerLevel = SPELL_MANA_COST_PER_LEVEL;
-        this.baseSpellPower = SPELL_BASE_SPELL_POWER;
-        this.spellPowerPerLevel = SPELL_SPELL_POWER_PER_LEVEL;
+        this.baseSpellPower = Math.round(SPELL_BASE_SPELL_POWER);
+        this.spellPowerPerLevel = Math.round(SPELL_SPELL_POWER_PER_LEVEL);
         this.castTime = SPELL_CAST_TIME_TICKS;
         this.baseManaCost = SPELL_BASE_MANA_COST;
     }
@@ -137,7 +137,6 @@ public class FoundingRainOfStarsSpell extends EldenRingAbstractSpell {
      * 雨幕每次结算的伤害 = 铁魔法法术强度 × 伤害系数。站在云下会连续挨打。
      */
     private float getDamageAmountPerRainDrop(int spellLevel, LivingEntity castingEntity) {
-        return getSpellPower(spellLevel, castingEntity)
-                * SPELL_DAMAGE_PER_SPELL_POWER;
+        return damageFromTableAttack(SPELL_BASE_SPELL_POWER, SPELL_SPELL_POWER_PER_LEVEL, spellLevel, castingEntity, SPELL_DAMAGE_PER_SPELL_POWER);
     }
 }
