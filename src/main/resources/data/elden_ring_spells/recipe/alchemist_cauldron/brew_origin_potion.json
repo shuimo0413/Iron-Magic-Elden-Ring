@@ -1,0 +1,22 @@
+{
+  "type": "irons_spellbooks:alchemist_cauldron_brew",
+  "base_fluid": {
+    "amount": 250,
+    "components": {
+      "irons_spellbooks:potion_bottle_type": "regular",
+      "minecraft:potion_contents": {
+        "potion": "minecraft:awkward"
+      }
+    },
+    "id": "irons_spellbooks:potion"
+  },
+  "input": {
+    "item": "elden_ring_spells:origin_crystal"
+  },
+  "results": [
+    {
+      "amount": 250,
+      "id": "elden_ring_spells:origin_potion"
+    }
+  ]
+}

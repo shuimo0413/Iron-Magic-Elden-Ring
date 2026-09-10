@@ -3,6 +3,7 @@ package com.eldenring.spells.registry;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.item.AstrologerStaffItem;
 import com.eldenring.spells.item.AzurGlintstoneStaffItem;
+import com.eldenring.spells.item.OriginPotionItem;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
@@ -121,6 +122,31 @@ public final class ModItems {
     public static final DeferredItem<Item> PURPLE_GLINTSTONE_SHARD = ITEMS.register(
             "purple_glintstone_shard",
             () -> new Item(new Item.Properties())
+    );
+
+    /**
+     * 起源晶体：八辉石晶簇围下界之星合成；投入炼药锅与粗制药水炼成起源药剂。
+     */
+    public static final DeferredItem<Item> ORIGIN_CRYSTAL = ITEMS.register(
+            "origin_crystal",
+            () -> new Item(new Item.Properties())
+    );
+
+    /**
+     * 起源辉石：喝下起源药剂死亡后在原地悬浮掉落；不可合成。
+     */
+    public static final DeferredItem<Item> ORIGIN_GLINTSTONE = ITEMS.register(
+            "origin_glintstone",
+            () -> new Item(new Item.Properties())
+    );
+
+    /**
+     * 起源药剂：炼药锅装瓶产物；饮用后代码处死并掉落起源辉石；恒带附魔光。
+     * 堆叠上限 16，与铁魔法 elixir 接近。
+     */
+    public static final DeferredItem<Item> ORIGIN_POTION = ITEMS.register(
+            "origin_potion",
+            () -> new OriginPotionItem(new Item.Properties().stacksTo(16))
     );
 
     /**

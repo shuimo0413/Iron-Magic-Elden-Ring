@@ -1,0 +1,14 @@
+{
+  "type": "irons_spellbooks:alchemist_cauldron_empty",
+  "fluid": {
+    "amount": 250,
+    "id": "elden_ring_spells:origin_potion"
+  },
+  "input": {
+    "item": "minecraft:glass_bottle"
+  },
+  "result": {
+    "count": 1,
+    "id": "elden_ring_spells:origin_potion"
+  }
+}
