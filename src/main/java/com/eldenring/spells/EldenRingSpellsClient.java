@@ -8,6 +8,7 @@ import com.eldenring.spells.client.ClientItemModels;
 import com.eldenring.spells.client.ClientParticleProviders;
 import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModDecorBlocks;
+import com.eldenring.spells.registry.ModFluids;
 import com.eldenring.spells.registry.ModItems;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
@@ -16,6 +17,7 @@ import io.redspace.ironsspellbooks.render.SpellBookCurioRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -25,6 +27,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -78,11 +81,33 @@ public class EldenRingSpellsClient {
 
     /**
      * 观星杖 / 亚兹勒的辉石杖复用铁魔法法杖握持姿势（抬臂），否则会像普通物品一样僵硬下垂。
+     * 起源药剂流体：水贴图 + 青色染色，供炼药锅罐内显示。
      */
     @SubscribeEvent
     static void registerClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerItem(new ClientStaffItemExtensions(), ModItems.ASTROLOGER_STAFF.get());
         event.registerItem(new ClientStaffItemExtensions(), ModItems.AZUR_GLINTSTONE_STAFF.get());
+
+        // 0xAARRGGBB：不透明青（对齐碎片 mid #2FADA2）
+        final int originPotionTintArgb = 0xFF2FADA2;
+        final ResourceLocation waterStill = ResourceLocation.withDefaultNamespace("block/water_still");
+        final ResourceLocation waterFlow = ResourceLocation.withDefaultNamespace("block/water_flow");
+        event.registerFluidType(new IClientFluidTypeExtensions() {
+            @Override
+            public int getTintColor() {
+                return originPotionTintArgb;
+            }
+
+            @Override
+            public ResourceLocation getStillTexture() {
+                return waterStill;
+            }
+
+            @Override
+            public ResourceLocation getFlowingTexture() {
+                return waterFlow;
+            }
+        }, ModFluids.ORIGIN_POTION_TYPE.get());
     }
 
     @SubscribeEvent

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CCC",
+    "CNC",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "tag": "elden_ring_spells:glintstone_clusters"
+    },
+    "N": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "elden_ring_spells:origin_crystal"
+  }
+}

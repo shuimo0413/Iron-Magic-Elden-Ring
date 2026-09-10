@@ -40,6 +40,9 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.CYAN_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());
+                        output.accept(ModItems.ORIGIN_CRYSTAL.get());
+                        output.accept(ModItems.ORIGIN_POTION.get());
+                        output.accept(ModItems.ORIGIN_GLINTSTONE.get());
                         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
                             output.accept(set.crystalBlock.get());
                             output.accept(set.cluster.get());
