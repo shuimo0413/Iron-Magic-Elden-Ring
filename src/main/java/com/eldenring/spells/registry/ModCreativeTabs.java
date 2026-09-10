@@ -47,9 +47,6 @@ public final class ModCreativeTabs {
                             output.accept(set.crystalBlock.get());
                             output.accept(set.cluster.get());
                         }
-                        for (ModDecorBlocks.CandelabraSet set : ModDecorBlocks.CANDELABRAS_BY_COLOR.values()) {
-                            output.accept(set.candelabra.get());
-                        }
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_PEBBLE, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.SWIFT_GLINTSTONE_SHARD, 1));
                         output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_ARC, 1));

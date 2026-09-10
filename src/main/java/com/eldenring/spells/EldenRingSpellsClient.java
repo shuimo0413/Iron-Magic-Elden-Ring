@@ -7,7 +7,6 @@ import com.eldenring.spells.client.ClientEntityRenderers;
 import com.eldenring.spells.client.ClientItemModels;
 import com.eldenring.spells.client.ClientParticleProviders;
 import com.eldenring.spells.registry.ModBlocks;
-import com.eldenring.spells.registry.ModDecorBlocks;
 import com.eldenring.spells.registry.ModFluids;
 import com.eldenring.spells.registry.ModItems;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
@@ -53,9 +52,6 @@ public class EldenRingSpellsClient {
         event.enqueueWork(() -> {
             for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
                 ItemBlockRenderTypes.setRenderLayer(set.cluster.get(), RenderType.cutout());
-            }
-            for (ModDecorBlocks.CandelabraSet set : ModDecorBlocks.CANDELABRAS_BY_COLOR.values()) {
-                ItemBlockRenderTypes.setRenderLayer(set.candelabra.get(), RenderType.cutout());
             }
             // 星星法典 / 起源秘典：复用铁魔法 SpellBookCurioRenderer，腰侧显示立体书模型
             CuriosRendererRegistry.register(ModItems.STAR_CODEX.get(), SpellBookCurioRenderer::new);

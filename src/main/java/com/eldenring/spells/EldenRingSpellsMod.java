@@ -4,7 +4,6 @@ import com.eldenring.spells.config.EldenRingConfigs;
 import com.eldenring.spells.registry.ModAttributes;
 import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModCreativeTabs;
-import com.eldenring.spells.registry.ModDecorBlocks;
 import com.eldenring.spells.registry.ModEffects;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModFeatures;
@@ -34,7 +33,6 @@ public class EldenRingSpellsMod {
         ModEffects.register(modEventBus);
         // 方块必须先于物品：BlockItem 依赖方块 DeferredHolder
         ModBlocks.register(modEventBus);
-        ModDecorBlocks.register(modEventBus);
         ModFluids.register(modEventBus);
         ModItems.register(modEventBus);
         ModFeatures.register(modEventBus);

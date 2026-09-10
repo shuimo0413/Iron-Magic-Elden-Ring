@@ -180,13 +180,10 @@ public final class ModItems {
     );
 
     static {
-        // BlockItem 与方块同 id；必须在 ModBlocks / ModDecorBlocks 已向总线注册之后再 register(ITEMS)
+        // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)
         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
             ITEMS.registerSimpleBlockItem(set.crystalBlock);
             ITEMS.registerSimpleBlockItem(set.cluster);
-        }
-        for (ModDecorBlocks.CandelabraSet set : ModDecorBlocks.CANDELABRAS_BY_COLOR.values()) {
-            ITEMS.registerSimpleBlockItem(set.candelabra);
         }
     }
 

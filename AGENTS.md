@@ -36,7 +36,6 @@ src/main/java/com/eldenring/spells/
   EldenRingSpellsClient.java   # 客户端（粒子 Provider / 实体渲染）
   registry/ModItems.java       # 物品 DeferredRegister
   registry/ModBlocks.java      # 辉石水晶簇 / 水晶块
-  registry/ModDecorBlocks.java # 三色辉石烛台
   registry/ModFeatures.java    # 辉石矿洞 Feature 类型
   registry/ModParticles.java   # 粒子 DeferredRegister
   registry/ModEntities.java    # 弹道等实体 DeferredRegister
@@ -167,7 +166,6 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 - [x] 辉石迅魔砾 / 辉石大魔砾 / 辉石流星 / 帚星（共用 `AbstractGlintstoneProjectile`）
 - [x] 辉石碎片 Focus 已替换紫水晶
 - [x] 三色辉石矿物方块（水晶簇 / 水晶块，不生长、无建材、无矿石）
-- [x] 三色辉石烛台（青 / 蓝 / 紫三臂烛台，Blockbench 建模 + 装饰方块注册）
 - [x] 辉石矿洞 Feature（三色等概率、一洞一色；无矿石矿脉）
 - [x] 法术解耦（删 Tuning、瘦 toml、Curve/Combat/Fx）：见 `法术解耦架构.md`
 - [ ] 卡利亚迅剑：第一刀右臂抬不到玩家正右方 90°。上一轮修改用户判定全部错误，见 `卡利亚迅剑话题交接.md`
