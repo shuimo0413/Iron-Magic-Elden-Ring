@@ -26,7 +26,8 @@ import java.util.function.Supplier;
  * {@link ISpellContainer} 里，因此抄写台可以直接抄。外观由客户端
  * {@code ScrollModel} mixin 切到 {@code item/<spell>_scroll}。
  * <p>
- * 三色辉石碎片是学派触媒（Focus）：放入卷轴锻造台焦点槽，产出辉石咒。
+ * 三色辉石碎片与起源辉石是学派触媒（Focus）：放入卷轴锻造台焦点槽可抄对应辉石咒
+ *（见 {@link com.eldenring.spells.recipe.GlintstoneScrollRecipes}；取出成品时消耗焦点）。
  * 星星法典 / 起源秘典是辉石学派魔法书，走铁魔法原生 {@link SpellBook}（Curios spellbook 槽）。
  * 观星杖 / 亚兹勒的辉石杖是铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒（辉石强度 +10%）。
  */
@@ -101,7 +102,7 @@ public final class ModItems {
     );
 
     /**
-     * 青色辉石碎片。学院系主色触媒，与 {@link ModTags#GLINTSTONE_FOCUS} 绑定。
+     * 青色辉石碎片。学院弹道 / 场地 / 海摩等咒的抄写材料（焦点槽，抄成消耗）。
      */
     public static final DeferredItem<Item> CYAN_GLINTSTONE_SHARD = ITEMS.register(
             "cyan_glintstone_shard",
@@ -109,7 +110,7 @@ public final class ModItems {
     );
 
     /**
-     * 蓝色辉石碎片。更深的亚兹勒蓝触媒，与青色/紫色同样可作为辉石焦点。
+     * 蓝色辉石碎片。卡利亚近战 / 辉剑阵等咒的抄写材料（焦点槽，抄成消耗）。
      */
     public static final DeferredItem<Item> BLUE_GLINTSTONE_SHARD = ITEMS.register(
             "blue_glintstone_shard",
@@ -117,7 +118,7 @@ public final class ModItems {
     );
 
     /**
-     * 紫色辉石碎片。夜紫触媒，与青色/蓝色同样可作为辉石焦点。
+     * 紫色辉石碎片。重力系咒的抄写材料（焦点槽，抄成消耗）。
      */
     public static final DeferredItem<Item> PURPLE_GLINTSTONE_SHARD = ITEMS.register(
             "purple_glintstone_shard",
@@ -134,6 +135,7 @@ public final class ModItems {
 
     /**
      * 起源辉石：喝下起源药剂死亡后在原地悬浮掉落；不可合成。
+     * 亦为毁灭流星 / 创星雨 / 彗星亚兹勒的抄写材料（焦点槽，抄成消耗）。
      */
     public static final DeferredItem<Item> ORIGIN_GLINTSTONE = ITEMS.register(
             "origin_glintstone",

@@ -11,8 +11,9 @@ import net.minecraft.world.item.Item;
  */
 public final class ModTags {
     /**
-     * 辉石学派触媒：放入铁魔法卷轴锻造台「焦点」槽时，产出辉石系卷轴。
-     * 包含青 / 蓝 / 紫三色辉石碎片（见数据包 tags），不含紫水晶。
+     * 辉石学派触媒：放入铁魔法卷轴锻造台「焦点」槽时可抄辉石系卷轴。
+     * 含青 / 蓝 / 紫碎片与起源辉石（见数据包 tags）；具体哪颗对应哪些咒见
+     * {@link com.eldenring.spells.recipe.GlintstoneScrollRecipes}。不含紫水晶。
      */
     public static final TagKey<Item> GLINTSTONE_FOCUS = ItemTags.create(
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_focus")

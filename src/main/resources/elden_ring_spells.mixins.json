@@ -2,9 +2,15 @@
   "required": true,
   "package": "com.eldenring.spells.mixin",
   "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ScrollForgeMenuMixin"
+  ],
   "client": [
     "ScrollModelMixin",
-    "HideHeldItemDuringCarianSlicerMixin"
+    "HideHeldItemDuringCarianSlicerMixin",
+    "ScrollForgeScreenMixin",
+    "ScrollForgeSpellCardAccessor",
+    "ScreenRemoveWidgetInvoker"
   ],
   "injectors": {
     "defaultRequire": 1
