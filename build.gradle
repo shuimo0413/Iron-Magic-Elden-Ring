@@ -66,6 +66,16 @@ repositories {
         name = "Sinytra"
         url = "https://maven.su5ed.dev/releases"
     }
+    maven {
+        // JEI（BlameJared，官方托管）
+        name = "BlameJared"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        // JEI 镜像兜底
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
 }
 
 base {
@@ -177,6 +187,8 @@ dependencies {
     localRuntime "maven.modrinth:freecam:${freecam_version}"
     localRuntime "maven.modrinth:mafglib:${mafglib_version}"
     localRuntime "maven.modrinth:tweakerge:${tweakerge_version}"
+    // JEI：物品浏览器；仅开发运行，不 compileOnly（暂无 JEI API 插件代码）
+    localRuntime "mezz.jei:jei-1.21.1-neoforge:${jei_version}"
 
     // 完整包装 jar，由 syncShaderMods 丢进 run/mods。transitive=false：FFAPI 已打在钠外壳的 JarJar 里
     shaderMods("net.caffeinemc:sodium-neoforge:${sodium_version}") { transitive = false }

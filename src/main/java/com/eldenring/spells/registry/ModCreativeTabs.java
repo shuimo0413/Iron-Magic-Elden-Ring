@@ -1,6 +1,7 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -15,10 +16,13 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * 只保留本模组创造栏「艾尔登法环法术」。
- * 里面是铁魔法通用卷轴（可抄写）；铁魔法自己的「法术卷轴」栏会把辉石咒再塞一遍，这里去掉以免两份。
+ * 里面是铁魔法通用卷轴（可抄写）；每道咒按 {@code minLevel..maxLevel} 全等级塞入，
+ * 创造搜索才能找到高等级卷轴（与铁魔法「法术卷轴」栏行为一致）。
+ * 铁魔法自己的「法术卷轴」栏会把辉石咒再塞一遍，这里去掉以免两份。
  */
 public final class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
@@ -47,33 +51,33 @@ public final class ModCreativeTabs {
                             output.accept(set.crystalBlock.get());
                             output.accept(set.cluster.get());
                         }
-                        output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_PEBBLE, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.SWIFT_GLINTSTONE_SHARD, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_ARC, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.CRYSTAL_BURST, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.CRYSTAL_BARRAGE, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.GREAT_GLINTSTONE_SHARD, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_COMET, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.GLINTSTONE_STARS, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.STAR_SHOWER, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.STARS_OF_RUIN, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.FOUNDING_RAIN_OF_STARS, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.COMET, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.SPIRAL_SHARD, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.STARLIGHT, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.TERRA_MAGICA, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.COMET_AZUR, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.GAVEL_OF_HAIMA, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.CANNON_OF_HAIMA, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_SLICER, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_GREATSWORD, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_PIERCER, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.MAGIC_GLINTBLADE, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.GLINTBLADE_PHALANX, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.CARIAN_PHALANX, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.GREATBLADE_PHALANX, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.GRAVITY_BALL, 1));
-                        output.accept(ModItems.createFilledScroll(ModSpells.COLLAPSING_STARS, 1));
+                        acceptAllScrollLevels(output, ModSpells.GLINTSTONE_PEBBLE);
+                        acceptAllScrollLevels(output, ModSpells.SWIFT_GLINTSTONE_SHARD);
+                        acceptAllScrollLevels(output, ModSpells.GLINTSTONE_ARC);
+                        acceptAllScrollLevels(output, ModSpells.CRYSTAL_BURST);
+                        acceptAllScrollLevels(output, ModSpells.CRYSTAL_BARRAGE);
+                        acceptAllScrollLevels(output, ModSpells.GREAT_GLINTSTONE_SHARD);
+                        acceptAllScrollLevels(output, ModSpells.GLINTSTONE_COMET);
+                        acceptAllScrollLevels(output, ModSpells.GLINTSTONE_STARS);
+                        acceptAllScrollLevels(output, ModSpells.STAR_SHOWER);
+                        acceptAllScrollLevels(output, ModSpells.STARS_OF_RUIN);
+                        acceptAllScrollLevels(output, ModSpells.FOUNDING_RAIN_OF_STARS);
+                        acceptAllScrollLevels(output, ModSpells.COMET);
+                        acceptAllScrollLevels(output, ModSpells.SPIRAL_SHARD);
+                        acceptAllScrollLevels(output, ModSpells.STARLIGHT);
+                        acceptAllScrollLevels(output, ModSpells.TERRA_MAGICA);
+                        acceptAllScrollLevels(output, ModSpells.COMET_AZUR);
+                        acceptAllScrollLevels(output, ModSpells.GAVEL_OF_HAIMA);
+                        acceptAllScrollLevels(output, ModSpells.CANNON_OF_HAIMA);
+                        acceptAllScrollLevels(output, ModSpells.CARIAN_SLICER);
+                        acceptAllScrollLevels(output, ModSpells.CARIAN_GREATSWORD);
+                        acceptAllScrollLevels(output, ModSpells.CARIAN_PIERCER);
+                        acceptAllScrollLevels(output, ModSpells.MAGIC_GLINTBLADE);
+                        acceptAllScrollLevels(output, ModSpells.GLINTBLADE_PHALANX);
+                        acceptAllScrollLevels(output, ModSpells.CARIAN_PHALANX);
+                        acceptAllScrollLevels(output, ModSpells.GREATBLADE_PHALANX);
+                        acceptAllScrollLevels(output, ModSpells.GRAVITY_BALL);
+                        acceptAllScrollLevels(output, ModSpells.COLLAPSING_STARS);
                     })
                     .build());
 
@@ -83,6 +87,20 @@ public final class ModCreativeTabs {
     public static void register(IEventBus modEventBus) {
         CREATIVE_TABS.register(modEventBus);
         modEventBus.addListener(EventPriority.LOW, ModCreativeTabs::hideGlintstoneScrollsFromIronsTab);
+    }
+
+    /**
+     * 与铁魔法 {@code CreativeTabRegistry} 相同：从 {@link AbstractSpell#getMinLevel()}
+     * 到 {@link AbstractSpell#getMaxLevel()} 逐级生成通用卷轴，写入创造栏与搜索。
+     */
+    private static void acceptAllScrollLevels(
+            CreativeModeTab.Output output,
+            Supplier<AbstractSpell> spellSupplier
+    ) {
+        AbstractSpell spell = spellSupplier.get();
+        for (int spellLevel = spell.getMinLevel(); spellLevel <= spell.getMaxLevel(); spellLevel++) {
+            output.accept(ModItems.createFilledScroll(spellSupplier, spellLevel));
+        }
     }
 
     /**

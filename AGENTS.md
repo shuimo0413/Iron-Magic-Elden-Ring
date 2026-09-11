@@ -1,4 +1,4 @@
-# Elden Ring Spells — AI / 开发说明
+# Iron's Spells 'n Spellbooks: Elden Ring — AI / 开发说明
 
 面向后续 AI 与人类协作者的项目说明书。改代码前先读本文件与 `.cursor/rules/`。
 
@@ -8,8 +8,8 @@
 
 ## 项目是什么
 
-- **名称**：Elden Ring Spells（法环主题铁魔法扩展）
-- **Mod ID**：`elden_ring_spells`
+- **名称**：Iron's Spells 'n Spellbooks: Elden Ring（中文：Iron的法术与魔法书：艾尔登法环）
+- **Mod ID**：`elden_ring_spells`（内部 ID，勿随意改）
 - **包名**：`com.eldenring.spells`
 - **目标**：在 [Iron's Spells 'n Spellbooks](https://iron.wiki/developers/) 之上新增艾尔登法环风格法术 / 学派等内容
 - **不是**：独立魔法系统；不要绕开铁魔法去自研一套施法管线

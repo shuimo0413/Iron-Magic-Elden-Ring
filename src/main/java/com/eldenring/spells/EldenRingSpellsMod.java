@@ -45,6 +45,6 @@ public class EldenRingSpellsMod {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        LOGGER.info("Elden Ring Spells addon loaded (Iron's Spells dependency OK).");
+        LOGGER.info("Iron's Spells 'n Spellbooks: Elden Ring loaded (Iron's Spells dependency OK).");
     }
 }

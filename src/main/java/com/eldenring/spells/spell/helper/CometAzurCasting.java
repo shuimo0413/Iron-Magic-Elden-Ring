@@ -1,7 +1,6 @@
 package com.eldenring.spells.spell.helper;
 
 import com.eldenring.spells.entity.CometAzurJetEntity;
-import com.eldenring.spells.particle.cometazur.CometAzurFx;
 import com.eldenring.spells.spell.data.CometAzurCastData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -9,7 +8,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 彗星亚兹勒施法期辅助：下落判定、锁死施法者、补刷喷流实体。
+ * 彗星亚兹勒施法期辅助：起手支撑判定、锁死施法者、补刷喷流实体。
  * <p>
  * {@code CometAzurSpell} 只保留铁魔法生命周期回调；这些细节不进 Spell 本体。
  */
@@ -19,21 +18,18 @@ public final class CometAzurCasting {
     }
 
     /**
-     * 竖直速度明显朝下，或已经积了坠落距离，就算下落。
-     * 站地 / 攀爬 / 水中 / 创造飞行不算；鞘翅滑翔算下落。
+     * 无支撑腾空（跳跃上升 / 下落 / 鞘翅滑翔 / 被击飞）时禁止起手，否则锁位会钉在半空。
+     * 站地 / 攀爬 / 水中 / 乘骑 / 主动飞行（创造或多数模组的 {@code abilities.flying}）允许。
+     * 不用 {@code mayfly}：那只表示「能开飞」，落地后也可能仍为 true。
      */
-    public static boolean isCasterFalling(LivingEntity entity) {
+    public static boolean isUnsupportedAirborne(LivingEntity entity) {
         if (entity.onGround() || entity.onClimbable() || entity.isInWater() || entity.isPassenger()) {
             return false;
         }
         if (entity instanceof Player player && player.getAbilities().flying) {
             return false;
         }
-        if (entity.isFallFlying()) {
-            return true;
-        }
-        return entity.getDeltaMovement().y < CometAzurFx.CAST_FALLING_Y_VELOCITY_THRESHOLD_BLOCKS_PER_TICK
-                || entity.fallDistance > CometAzurFx.CAST_FALLING_MIN_DISTANCE_BLOCKS;
+        return true;
     }
 
     /**

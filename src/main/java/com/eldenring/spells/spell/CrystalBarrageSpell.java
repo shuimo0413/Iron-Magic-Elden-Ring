@@ -238,7 +238,7 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
     }
 
     /**
-     * 下落、地面走动时拒绝起手；创造飞行 / 站立可以。起手后由锁位钉死。
+     * 无支撑腾空、地面走动时拒绝起手；站立 / 主动飞行可以。起手后由锁位钉死。
      */
     @Override
     public boolean checkPreCastConditions(
@@ -247,8 +247,8 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
             LivingEntity entity,
             MagicData playerMagicData
     ) {
-        if (CometAzurCasting.isCasterFalling(entity)) {
-            sendRefuseMessage(entity, "ui.elden_ring_spells.crystal_barrage_cannot_cast_falling");
+        if (CometAzurCasting.isUnsupportedAirborne(entity)) {
+            sendRefuseMessage(entity, "ui.elden_ring_spells.crystal_barrage_cannot_cast_airborne");
             return false;
         }
         if (CrystalBarrageCasting.isCasterWalkingOnGround(entity)) {

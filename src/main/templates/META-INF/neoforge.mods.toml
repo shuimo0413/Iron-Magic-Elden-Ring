@@ -30,11 +30,12 @@ version="${mod_version}" #mandatory
 displayName="${mod_name}" #mandatory
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors="Elden Ring Spells Team"
+authors="Iron's Spells 'n Spellbooks: Elden Ring Team"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Iron's Spells 'n Spellbooks addon inspired by Elden Ring.
+Iron's Spells 'n Spellbooks: Elden Ring
+An Iron's Spells 'n Spellbooks addon inspired by Elden Ring.
 Adds Lands Between-themed spells and schools.
 '''
 

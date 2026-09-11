@@ -78,7 +78,7 @@ public final class EldenRingServerConfig {
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
         builder.comment(
-                "Elden Ring Spells 玩法数值。进世界后由服务端同步。",
+                "Iron's Spells 'n Spellbooks: Elden Ring 玩法数值。进世界后由服务端同步。",
                 "冷却 / 最大等级 / 启用 / 蓝耗倍率 / 法强倍率请改铁魔法 JSON：",
                 "  config/irons_spellbooks_spell_config/elden_ring_spells/<法术id>.json",
                 "指令：/ironsSpellbooks generate_file elden_ring_spells:glintstone_pebble full",

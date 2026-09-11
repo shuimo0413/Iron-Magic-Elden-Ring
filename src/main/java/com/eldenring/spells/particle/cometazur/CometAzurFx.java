@@ -40,17 +40,6 @@ public final class CometAzurFx {
         public static int SPELL_CAST_TIME_TICKS = 400;
 
         /**
-         * 判定「正在下落、禁止起手」的竖直速度阈值（方块 / tick）。必须为负。
-         * 比这个更朝下就不能放，避免半空按下被钉死；跳跃上升和顶点附近（速度接近 0）仍可空放。
-         */
-        public static double CAST_FALLING_Y_VELOCITY_THRESHOLD_BLOCKS_PER_TICK = -0.10;
-
-        /**
-         * 坠落距离超过这个值也算下落（方块）。走下半级台阶那种一点点不算。
-         */
-        public static float CAST_FALLING_MIN_DISTANCE_BLOCKS = 0.35f;
-
-        /**
          * 蓄力 / 对数螺线汇聚时长（tick）。20 tick = 1 秒，40 = 2 秒。
          * 这段结束之后才进入喷流（ribbon 星河柱 + 周围粒子）。
          */

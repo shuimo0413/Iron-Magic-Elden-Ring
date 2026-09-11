@@ -1,10 +1,10 @@
 
 
-# Elden Ring Spells（法环 · 铁魔法扩展）
+# Iron's Spells 'n Spellbooks: Elden Ring（Iron的法术与魔法书：艾尔登法环）
 
 Minecraft **1.21.1** / **NeoForge** 扩展模组。依赖 [Iron's Spells 'n Spellbooks](https://iron.wiki/developers/)，在铁魔法施法管线上加《艾尔登法环》风格法术、辉石学派与地下辉石矿洞。
 
-模组 ID：`elden_ring_spells`  
+模组 ID：`elden_ring_spells`（内部 ID，勿随意改）  
 当前版本：`1.0.0`
 
 > 这不是独立魔法系统。按键、扣蓝、冷却、法术书仍走铁魔法；本模组只补「出手之后干什么」。

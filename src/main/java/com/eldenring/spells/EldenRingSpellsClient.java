@@ -45,7 +45,7 @@ public class EldenRingSpellsClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         EldenRingSpellsMod.LOGGER.info(
-                "Elden Ring Spells client ready. Player={}",
+                "Iron's Spells 'n Spellbooks: Elden Ring client ready. Player={}",
                 Minecraft.getInstance().getUser().getName()
         );
         // 十字面片水晶必须走 cutout，否则透明像素会糊成黑块

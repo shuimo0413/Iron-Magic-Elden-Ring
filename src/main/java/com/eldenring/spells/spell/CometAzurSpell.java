@@ -130,7 +130,7 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
     }
 
     /**
-     * 地面、跳跃上升、创造飞行可以起手；正在下落则拒绝，否则会被钉在半空。
+     * 站地 / 攀爬 / 水中 / 乘骑 / 主动飞行可起手；无支撑腾空（含跳跃上升）拒绝，否则会被钉在半空。
      */
     @Override
     public boolean checkPreCastConditions(
@@ -139,12 +139,12 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
             LivingEntity entity,
             MagicData playerMagicData
     ) {
-        if (!CometAzurCasting.isCasterFalling(entity)) {
+        if (!CometAzurCasting.isUnsupportedAirborne(entity)) {
             return true;
         }
         if (entity instanceof ServerPlayer serverPlayer) {
             serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(
-                    Component.translatable("ui.elden_ring_spells.comet_azur_cannot_cast_falling")
+                    Component.translatable("ui.elden_ring_spells.comet_azur_cannot_cast_airborne")
                             .withStyle(ChatFormatting.RED)
             ));
         }

@@ -194,7 +194,7 @@ public final class ModItems {
      * 生成一张铁魔法通用卷轴并写入指定法术。
      *
      * @param spell      要写入的法术
-     * @param spellLevel 法术等级（从 1 起；目前辉石咒最高 1 级）
+     * @param spellLevel 法术等级（从 {@link AbstractSpell#getMinLevel()} 到 {@link AbstractSpell#getMaxLevel()}）
      */
     public static ItemStack createFilledScroll(Supplier<AbstractSpell> spell, int spellLevel) {
         ItemStack stack = new ItemStack(ItemRegistry.SCROLL.get());
