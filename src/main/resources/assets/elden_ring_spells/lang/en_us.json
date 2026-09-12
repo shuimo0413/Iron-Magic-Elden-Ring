@@ -116,5 +116,7 @@
   "entity.elden_ring_spells.phalanx_glintblade": "Glintblade Phalanx",
   "subtitles.elden_ring_spells.spell_cast": "Fires a magic projectile",
   "subtitles.elden_ring_spells.spell_cast_start": "Charges a spell",
-  "structure.elden_ring_spells.star_observation_platform": "Star Observation Platform"
+  "structure.elden_ring_spells.star_observation_platform": "Star Observation Platform",
+  "tooltip.elden_ring_spells.azur_mana_cost": "+%s%% Mana Cost",
+  "tooltip.elden_ring_spells.azur_mainhand": "While held in the main hand; mana-free casts remain free."
 }

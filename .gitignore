@@ -45,3 +45,6 @@ __pycache__/
 
 ### Local Iron's Spellbooks reference (do not publish) ###
 工具链/*
+!工具链/equipment-gametest.init.gradle
+!工具链/validate_staff_models.mjs
+!工具链/make_equipment_test_fixture.mjs

@@ -4,6 +4,7 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.item.AstrologerStaffItem;
 import com.eldenring.spells.item.AzurGlintstoneStaffItem;
 import com.eldenring.spells.item.OriginPotionItem;
+import com.eldenring.spells.config.EldenRingServerConfig;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
@@ -13,6 +14,7 @@ import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -39,22 +41,23 @@ public final class ModItems {
      * 星星法典：辉石学派魔法书。
      * <p>
      * 套用铁魔法原生 {@link SpellBook}（与烈焰书同类），10 个法术槽；
-     * 装备后：辉石法术强度 +10%、最大法力 +200。
+     * 装备后：辉石法术强度 +15%、最大法力 +250。
      * 物品模型走铁魔法 {@code template_spell_book_model}；客户端注册
      * {@code SpellBookCurioRenderer} 后腰侧显示立体书。
      * 须加入 {@code curios:spellbook} 物品标签才能装进魔法书槽。
      */
     public static final DeferredItem<Item> STAR_CODEX = ITEMS.register(
             "star_codex",
-            () -> new SpellBook(10).withSpellbookAttributes(
+            () -> new SpellBook(EldenRingServerConfig.STAR_CODEX_BASE_SLOTS,
+                    new Item.Properties().rarity(Rarity.RARE)).withSpellbookAttributes(
                     new AttributeContainer(
                             ModAttributes.GLINTSTONE_SPELL_POWER,
-                            0.10D,
+                            EldenRingServerConfig.STAR_CODEX_GLINTSTONE_POWER_BONUS,
                             AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                     ),
                     new AttributeContainer(
                             AttributeRegistry.MAX_MANA,
-                            200.0D,
+                            EldenRingServerConfig.STAR_CODEX_MAX_MANA_BONUS,
                             AttributeModifier.Operation.ADD_VALUE
                     )
             )
@@ -63,21 +66,22 @@ public final class ModItems {
     /**
      * 起源秘典：高阶辉石学派魔法书。
      * <p>
-     * 与星星法典同用铁魔法 {@link SpellBook} 模板（10 槽、立体书模型）；
-     * 装备后：辉石法术强度 +30%、最大法力 +300。
-     * 配方暂留空；须加入 {@code curios:spellbook} 才能装进魔法书槽。
+     * 与星星法典同用铁魔法 {@link SpellBook} 模板（12 槽、立体书模型）；
+     * 装备后：辉石法术强度 +35%、最大法力 +400。
+     * 用起源晶体和传说墨水在锻造台升级星星法典，保留原书法术与扩容；需 {@code curios:spellbook} 标签。
      */
     public static final DeferredItem<Item> ORIGIN_CODEX = ITEMS.register(
             "origin_codex",
-            () -> new SpellBook(10).withSpellbookAttributes(
+            () -> new SpellBook(EldenRingServerConfig.ORIGIN_CODEX_BASE_SLOTS,
+                    new Item.Properties().rarity(Rarity.EPIC)).withSpellbookAttributes(
                     new AttributeContainer(
                             ModAttributes.GLINTSTONE_SPELL_POWER,
-                            0.30D,
+                            EldenRingServerConfig.ORIGIN_CODEX_GLINTSTONE_POWER_BONUS,
                             AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                     ),
                     new AttributeContainer(
                             AttributeRegistry.MAX_MANA,
-                            300.0D,
+                            EldenRingServerConfig.ORIGIN_CODEX_MAX_MANA_BONUS,
                             AttributeModifier.Operation.ADD_VALUE
                     )
             )
@@ -94,7 +98,7 @@ public final class ModItems {
 
     /**
      * 亚兹勒的辉石杖：铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
-     * 手持时可右键施法（与铁魔法魔杖相同）；辉石法术强度 +10%。
+     * 主手可右键施法；辉石强度 +10%，额外吟唱属性与蓝耗由服务端配置决定。
      */
     public static final DeferredItem<Item> AZUR_GLINTSTONE_STAFF = ITEMS.register(
             "azur_glintstone_staff",

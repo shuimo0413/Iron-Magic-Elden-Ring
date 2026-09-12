@@ -2,6 +2,7 @@ package com.eldenring.spells.config;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.spell.SpellBookStatReloader;
+import com.eldenring.spells.item.AzurStaffBalance;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.config.ModConfig;
@@ -30,6 +31,13 @@ public final class EldenRingConfigs {
 
     private static void onModConfig(ModConfigEvent event) {
         ModConfig config = event.getConfig();
+        // Unloading 已清除底层配置；此时读取 ConfigValue 会导致退出世界异常。
+        if (event instanceof ModConfigEvent.Unloading) {
+            if (config.getSpec() == EldenRingServerConfig.SPEC) {
+                AzurStaffBalance.resetDefaults();
+            }
+            return;
+        }
         if (config.getSpec() == EldenRingServerConfig.SPEC) {
             EldenRingServerConfig.apply();
             SpellBookStatReloader.reloadAll();

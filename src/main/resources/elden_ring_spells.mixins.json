@@ -3,14 +3,21 @@
   "package": "com.eldenring.spells.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ScrollForgeMenuMixin"
+    "ScrollForgeMenuMixin",
+    "AzurMagicDataMixin",
+    "AzurSpellManaMixin",
+    "AzurContinuousManaMixin"
   ],
   "client": [
     "ScrollModelMixin",
     "HideHeldItemDuringCarianSlicerMixin",
     "ScrollForgeScreenMixin",
     "ScrollForgeSpellCardAccessor",
-    "ScreenRemoveWidgetInvoker"
+    "ScreenRemoveWidgetInvoker",
+    "AzurSpellWheelCostMixin",
+    "AzurTooltipCostMixin",
+    "AzurClientUseCostMixin",
+    "AzurInscriptionCostMixin"
   ],
   "injectors": {
     "defaultRequire": 1

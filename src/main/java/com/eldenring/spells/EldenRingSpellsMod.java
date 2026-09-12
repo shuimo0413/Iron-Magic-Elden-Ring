@@ -1,6 +1,7 @@
 package com.eldenring.spells;
 
 import com.eldenring.spells.config.EldenRingConfigs;
+import com.eldenring.spells.network.AzurStaffSettingsPayload;
 import com.eldenring.spells.registry.ModAttributes;
 import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModCreativeTabs;
@@ -13,6 +14,7 @@ import com.eldenring.spells.registry.ModParticles;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.registry.ModRecipes;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -35,6 +37,7 @@ public class EldenRingSpellsMod {
         ModBlocks.register(modEventBus);
         ModFluids.register(modEventBus);
         ModItems.register(modEventBus);
+        ModRecipes.register(modEventBus);
         ModFeatures.register(modEventBus);
         ModParticles.register(modEventBus);
         ModSounds.register(modEventBus);
@@ -42,6 +45,7 @@ public class EldenRingSpellsMod {
         ModSpells.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(AzurStaffSettingsPayload::register);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
