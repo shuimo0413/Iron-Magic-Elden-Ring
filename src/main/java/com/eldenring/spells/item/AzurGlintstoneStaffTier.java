@@ -44,6 +44,7 @@ public final class AzurGlintstoneStaffTier implements IronsWeaponTier {
 
     @Override
     public AttributeContainer[] getAdditionalAttributes() {
+        // Reloadable all-school cast speed is supplied by AzurStaffBalance's item attribute event.
         return new AttributeContainer[]{
                 new AttributeContainer(
                         ModAttributes.GLINTSTONE_SPELL_POWER,

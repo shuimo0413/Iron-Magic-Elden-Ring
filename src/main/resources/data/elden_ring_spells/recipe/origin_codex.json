@@ -1,0 +1,7 @@
+{
+  "type": "elden_ring_spells:equipment_upgrade",
+  "template": {"item": "irons_spellbooks:legendary_ink"},
+  "base": {"item": "elden_ring_spells:star_codex"},
+  "addition": {"item": "elden_ring_spells:origin_crystal"},
+  "result": {"id": "elden_ring_spells:origin_codex", "count": 1}
+}

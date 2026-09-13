@@ -1,0 +1,7 @@
+{
+  "type": "elden_ring_spells:equipment_upgrade",
+  "template": {"item": "irons_spellbooks:rare_ink"},
+  "base": {"item": "irons_spellbooks:diamond_spell_book"},
+  "addition": {"item": "elden_ring_spells:cyan_glintstone_block"},
+  "result": {"id": "elden_ring_spells:star_codex", "count": 1}
+}

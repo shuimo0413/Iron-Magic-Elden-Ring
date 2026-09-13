@@ -1,5 +1,6 @@
 package com.eldenring.spells.config;
 
+import com.eldenring.spells.item.AzurStaffBalance;
 import com.eldenring.spells.particle.cometazur.CometAzurFx;
 import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CarianGreatswordSpell;
@@ -46,6 +47,16 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public final class EldenRingServerConfig {
 
     public static final ModConfigSpec SPEC;
+
+    // Book defaults are fixed at item registration; changing these requires a restart.
+    public static final int STAR_CODEX_BASE_SLOTS = 10;
+    public static final int ORIGIN_CODEX_BASE_SLOTS = 12;
+    public static final double STAR_CODEX_GLINTSTONE_POWER_BONUS = 0.15D;
+    public static final double STAR_CODEX_MAX_MANA_BONUS = 250.0D;
+    public static final double ORIGIN_CODEX_GLINTSTONE_POWER_BONUS = 0.35D;
+    public static final double ORIGIN_CODEX_MAX_MANA_BONUS = 400.0D;
+    public static final ModConfigSpec.DoubleValue AZUR_CAST_TIME_REDUCTION;
+    public static final ModConfigSpec.DoubleValue AZUR_MANA_COST_MULTIPLIER;
 
     public static final HomingValues GLINTSTONE_PEBBLE;
     public static final HomingValues SWIFT_GLINTSTONE_SHARD;
@@ -239,6 +250,15 @@ public final class EldenRingServerConfig {
         GRAVITY_BALL = GravityBallValues.create(builder);
         COLLAPSING_STARS = CollapsingStarsValues.create(builder);
 
+        builder.push("equipment").push("azur_staff");
+        AZUR_CAST_TIME_REDUCTION = builder
+                .comment("Main-hand casting-speed bonus for all spell schools. Refreshed on config reload.")
+                .defineInRange("castTimeReduction", AzurStaffBalance.DEFAULT_CAST_TIME_REDUCTION, 0.0D, 1.0D);
+        AZUR_MANA_COST_MULTIPLIER = builder
+                .comment("All-school mana multiplier while held in the main hand; retained for an active cast.")
+                .defineInRange("manaCostMultiplier", AzurStaffBalance.DEFAULT_MANA_COST_MULTIPLIER, 1.0D, 10.0D);
+        builder.pop(2);
+
         SPEC = builder.build();
     }
 
@@ -249,6 +269,7 @@ public final class EldenRingServerConfig {
      * 把 toml 写回各 Spell 运行时字段。视觉 / 动画常量保持 Java 默认。
      */
     public static void apply() {
+        AzurStaffBalance.configure(AZUR_CAST_TIME_REDUCTION.get(), AZUR_MANA_COST_MULTIPLIER.get());
         applyHoming(GLINTSTONE_PEBBLE, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
             GlintstonePebbleSpell.SPELL_BASE_MANA_COST = mana;
             GlintstonePebbleSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;

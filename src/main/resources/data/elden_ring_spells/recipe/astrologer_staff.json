@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [" CG", " SI", "S  "],
+  "key": {
+    "C": {"item": "elden_ring_spells:cyan_glintstone_shard"},
+    "G": {"tag": "c:ingots/gold"},
+    "S": {"tag": "c:rods/wooden"},
+    "I": {"tag": "c:ingots/iron"}
+  },
+  "result": {"id": "elden_ring_spells:astrologer_staff", "count": 1}
+}

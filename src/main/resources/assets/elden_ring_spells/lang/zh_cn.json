@@ -116,5 +116,7 @@
   "entity.elden_ring_spells.phalanx_glintblade": "辉剑圆阵",
   "subtitles.elden_ring_spells.spell_cast": "飞弹射出",
   "subtitles.elden_ring_spells.spell_cast_start": "蓄力施法",
-  "structure.elden_ring_spells.star_observation_platform": "观星台"
+  "structure.elden_ring_spells.star_observation_platform": "观星台",
+  "tooltip.elden_ring_spells.azur_mana_cost": "法力消耗 +%s%%",
+  "tooltip.elden_ring_spells.azur_mainhand": "仅主手持有时生效；原本不消耗法力的施法仍然免费。"
 }
