@@ -48,6 +48,7 @@ public class EldenRingSpellsClient {
                 "Iron's Spells 'n Spellbooks: Elden Ring client ready. Player={}",
                 Minecraft.getInstance().getUser().getName()
         );
+        event.enqueueWork(com.eldenring.spells.client.TrackingIgnoreGuiOpener::tryRegisterMalilibConfigScreen);
         // 十字面片水晶必须走 cutout，否则透明像素会糊成黑块
         event.enqueueWork(() -> {
             for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {

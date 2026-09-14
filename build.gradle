@@ -185,6 +185,8 @@ dependencies {
     // 开发客户端工具：只进 runClient，不打进本模组 jar
     // freecam_version 是 Modrinth version id（NeoForge 构建），不要改成 1.3.0+mc1.21.1
     localRuntime "maven.modrinth:freecam:${freecam_version}"
+    // MaFgLib：编译可选接入 malilib 风格配置 GUI（右上角模组切换）；运行时有则用，无则回退简易屏
+    compileOnly "maven.modrinth:mafglib:${mafglib_version}"
     localRuntime "maven.modrinth:mafglib:${mafglib_version}"
     localRuntime "maven.modrinth:tweakerge:${tweakerge_version}"
     // JEI：物品浏览器；仅开发运行，不 compileOnly（暂无 JEI API 插件代码）

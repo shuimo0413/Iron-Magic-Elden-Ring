@@ -1,6 +1,7 @@
 package com.eldenring.spells.entity;
 
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
+import com.eldenring.spells.tracking.TrackingTargetFilter;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.DamageSources;
@@ -560,6 +561,9 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
                 && (candidateEntity == ownerEntity
                 || ownerEntity.isAlliedTo(candidateEntity)
                 || candidateEntity.isAlliedTo(ownerEntity))) {
+            return false;
+        }
+        if (!TrackingTargetFilter.allowsTracking(ownerEntity, candidateEntity)) {
             return false;
         }
 

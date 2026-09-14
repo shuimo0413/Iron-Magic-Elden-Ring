@@ -2,6 +2,8 @@ package com.eldenring.spells;
 
 import com.eldenring.spells.config.EldenRingConfigs;
 import com.eldenring.spells.network.AzurStaffSettingsPayload;
+import com.eldenring.spells.network.TrackingIgnorePrefsPayload;
+import com.eldenring.spells.registry.ModAttachments;
 import com.eldenring.spells.registry.ModAttributes;
 import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModCreativeTabs;
@@ -30,6 +32,7 @@ public class EldenRingSpellsMod {
     public EldenRingSpellsMod(IEventBus modEventBus, ModContainer modContainer) {
         
         EldenRingConfigs.register(modContainer, modEventBus);
+        ModAttachments.register(modEventBus);
         ModAttributes.register(modEventBus);
         ModSchools.register(modEventBus);
         ModEffects.register(modEventBus);
@@ -46,6 +49,7 @@ public class EldenRingSpellsMod {
         ModCreativeTabs.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener(AzurStaffSettingsPayload::register);
+        modEventBus.addListener(TrackingIgnorePrefsPayload::register);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

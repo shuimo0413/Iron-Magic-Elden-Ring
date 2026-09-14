@@ -79,3 +79,11 @@ Adds Lands Between-themed spells and schools.
     versionRange="[1.21.1-1.1.0,)"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # 可选：有 MaFgLib（malilib NeoForge 移植）时，追踪排除走 Tweakerge 同款配置界面（右上角可切换模组）
+    modId="mafglib"
+    type="optional"
+    versionRange="[0.4.3,)"
+    ordering="AFTER"
+    side="CLIENT"

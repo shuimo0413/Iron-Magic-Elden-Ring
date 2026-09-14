@@ -6,6 +6,7 @@ import com.eldenring.spells.registry.ModSpells;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
 import com.eldenring.spells.spell.curve.MagicGlintbladeCastCurve;
 import com.eldenring.spells.spell.fx.MagicGlintbladeFx;
+import com.eldenring.spells.tracking.TrackingTargetFilter;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.DamageSources;
@@ -634,10 +635,13 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         if (!candidateEntity.isAlive() || candidateEntity.isSpectator() || !candidateEntity.isPickable()) {
             return false;
         }
-        return ownerEntity == null
-                || (candidateEntity != ownerEntity
-                && !ownerEntity.isAlliedTo(candidateEntity)
-                && !candidateEntity.isAlliedTo(ownerEntity));
+        if (ownerEntity != null
+                && (candidateEntity == ownerEntity
+                || ownerEntity.isAlliedTo(candidateEntity)
+                || candidateEntity.isAlliedTo(ownerEntity))) {
+            return false;
+        }
+        return TrackingTargetFilter.allowsTracking(ownerEntity, candidateEntity);
     }
 
     private boolean canContinueTrackingLivingEntity(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
