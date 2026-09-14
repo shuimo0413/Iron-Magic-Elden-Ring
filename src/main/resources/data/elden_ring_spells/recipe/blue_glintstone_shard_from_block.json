@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "elden_ring_spells:blue_glintstone_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "elden_ring_spells:blue_glintstone_shard"
+  }
+}

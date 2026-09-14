@@ -82,9 +82,10 @@ public class CarianPiercerSpell extends EldenRingAbstractSpell {
     public static float SLASH_HALF_ANGLE_DEGREES = 85.0f;
 
     /**
-     * 命中击退强度。调大 → 被砍的怪往后弹得更开。
+     * 命中击退强度（约等于被推开的格数量级）。调大 → 被刺中的怪往后弹得更开。
+     * 默认 1.0 ≈ 推开约 1 格。
      */
-    public static double SLASH_KNOCKBACK_STRENGTH = 0.4;
+    public static double SLASH_KNOCKBACK_STRENGTH = 1.0;
 
     /** 点按第一刀 clip 名；由客户端专用层播放，不再走铁魔法 cast-start 动画层。 */
     public static final AnimationHolder OPENING_SLASH_ANIMATION = new AnimationHolder(
