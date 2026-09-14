@@ -3,6 +3,7 @@ package com.eldenring.spells.client.render.glintstone;
 import com.eldenring.spells.entity.GlintstoneArcProjectile;
 import com.eldenring.spells.entity.GlintstoneVisualStyle;
 import com.eldenring.spells.spell.combat.GlintstoneArcCombat;
+import com.eldenring.spells.spell.combat.GlintstoneArcCombat.ArcBasis;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.LightTexture;
@@ -19,8 +20,9 @@ import org.joml.Matrix4f;
 /**
  * 辉石弯弧：几层左右对称的月牙，从小到大套在一起，读成一圈圈水波。
  * <p>
- * 几何在水平面里对中轴线镜像；每层月牙是一堵矮墙（有高度），第三人称才看得见，
- * 不会变成贴地薄片的侧棱。贴图用平滑光晕，不用月牙 PNG——那种图铺在分段四边形上会切成竖条。
+ * 几何在飞行局部平面（forward × right）里对中轴线镜像；每层月牙是一堵矮墙（沿局部 up），
+ * 第三人称才看得见，不会变成贴地薄片的侧棱。抬头/低头施法时整片跟着俯仰。
+ * 贴图用平滑光晕，不用月牙 PNG——那种图铺在分段四边形上会切成竖条。
  */
 public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectile> {
 
@@ -60,7 +62,7 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
     private static final int CRESCENT_SEGMENT_COUNT = 24;
 
     /**
-     * 略抬离地面（方块），减少贴地 z-fight。
+     * 略沿局部 up 抬离刃面（方块），减少与方块表面的 z-fight。
      */
     private static final float ARC_LIFT_BLOCKS = 0.06f;
 
@@ -88,8 +90,7 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
             return;
         }
 
-        Vec3 horizontalForward = GlintstoneArcCombat.horizontalForward(entity.resolveFlightDirection());
-        Vec3 horizontalRight = GlintstoneArcCombat.horizontalRight(horizontalForward);
+        ArcBasis arcBasis = ArcBasis.fromFlightDirection(entity.resolveFlightDirection());
         float maxRadiusBlocks = GlintstoneArcCombat.crescentOuterRadius(halfWidthBlocks);
         float halfAngleRadians = (float) Math.toRadians(GlintstoneArcCombat.CRESCENT_HALF_ANGLE_DEGREES);
 
@@ -105,8 +106,7 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
             drawSymmetricCrescent(
                     matrix,
                     consumer,
-                    horizontalForward,
-                    horizontalRight,
+                    arcBasis,
                     maxRadiusBlocks,
                     layerRadiusBlocks,
                     bellyThicknessBlocks,
@@ -126,8 +126,7 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
     private static void drawSymmetricCrescent(
             Matrix4f matrix,
             VertexConsumer consumer,
-            Vec3 horizontalForward,
-            Vec3 horizontalRight,
+            ArcBasis arcBasis,
             float sharedCenterRadiusBlocks,
             float layerRadiusBlocks,
             float bellyThicknessBlocks,
@@ -143,8 +142,7 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
             float angleEnd = Mth.lerp(tEnd, -halfAngleRadians, halfAngleRadians);
 
             CrescentSlice startSlice = crescentSlice(
-                    horizontalForward,
-                    horizontalRight,
+                    arcBasis,
                     sharedCenterRadiusBlocks,
                     layerRadiusBlocks,
                     bellyThicknessBlocks,
@@ -153,8 +151,7 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
                     halfAngleRadians
             );
             CrescentSlice endSlice = crescentSlice(
-                    horizontalForward,
-                    horizontalRight,
+                    arcBasis,
                     sharedCenterRadiusBlocks,
                     layerRadiusBlocks,
                     bellyThicknessBlocks,
@@ -180,10 +177,10 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
 
     /**
      * 某一角度上的月牙切片。厚度按 {@code 1 - (θ/α)²} 在弧顶最胖、两尖收细，左右同一公式所以对称。
+     * 高度与抬升沿局部 up，使整片弯弧跟随飞行俯仰。
      */
     private static CrescentSlice crescentSlice(
-            Vec3 horizontalForward,
-            Vec3 horizontalRight,
+            ArcBasis arcBasis,
             float sharedCenterRadiusBlocks,
             float layerRadiusBlocks,
             float bellyThicknessBlocks,
@@ -203,17 +200,18 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
         float innerRadiusBlocks = Math.max(0.08f, layerRadiusBlocks - thicknessBlocks);
 
         Vec3 outer = ringPoint(
-                horizontalForward, horizontalRight, angleRadians, layerRadiusBlocks, sharedCenterRadiusBlocks
+                arcBasis, angleRadians, layerRadiusBlocks, sharedCenterRadiusBlocks
         );
         Vec3 inner = ringPoint(
-                horizontalForward, horizontalRight, angleRadians, innerRadiusBlocks, sharedCenterRadiusBlocks
+                arcBasis, angleRadians, innerRadiusBlocks, sharedCenterRadiusBlocks
         );
-        Vec3 up = new Vec3(0.0, heightBlocks, 0.0);
+        Vec3 liftOffset = arcBasis.up().scale(ARC_LIFT_BLOCKS);
+        Vec3 heightOffset = arcBasis.up().scale(heightBlocks);
         return new CrescentSlice(
-                inner.add(0.0, ARC_LIFT_BLOCKS, 0.0),
-                outer.add(0.0, ARC_LIFT_BLOCKS, 0.0),
-                inner.add(0.0, ARC_LIFT_BLOCKS, 0.0).add(up),
-                outer.add(0.0, ARC_LIFT_BLOCKS, 0.0).add(up)
+                inner.add(liftOffset),
+                outer.add(liftOffset),
+                inner.add(liftOffset).add(heightOffset),
+                outer.add(liftOffset).add(heightOffset)
         );
     }
 
@@ -221,15 +219,14 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
      * 共用圆心（实体后方 {@code sharedCenterRadius}）上的一点。{@code angle=0} 在射向中轴上。
      */
     private static Vec3 ringPoint(
-            Vec3 horizontalForward,
-            Vec3 horizontalRight,
+            ArcBasis arcBasis,
             float angleRadians,
             float pointRadiusBlocks,
             float sharedCenterRadiusBlocks
     ) {
         double alongForward = Math.cos(angleRadians) * pointRadiusBlocks - sharedCenterRadiusBlocks;
         double alongRight = Math.sin(angleRadians) * pointRadiusBlocks;
-        return horizontalForward.scale(alongForward).add(horizontalRight.scale(alongRight));
+        return arcBasis.forward().scale(alongForward).add(arcBasis.right().scale(alongRight));
     }
 
     private static void drawQuad(

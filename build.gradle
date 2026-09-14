@@ -190,6 +190,10 @@ dependencies {
     // JEI：物品浏览器；仅开发运行，不 compileOnly（暂无 JEI API 插件代码）
     localRuntime "mezz.jei:jei-1.21.1-neoforge:${jei_version}"
 
+    // 车万女仆 + 万法皆通：开发客户端测女仆施法；不 compileOnly（暂无女仆 API 联动代码）
+    localRuntime "maven.modrinth:touhou-little-maid:${touhou_little_maid_version}"
+    localRuntime "maven.modrinth:touhou-little-maid-spell:${touhou_little_maid_spell_version}"
+
     // 完整包装 jar，由 syncShaderMods 丢进 run/mods。transitive=false：FFAPI 已打在钠外壳的 JarJar 里
     shaderMods("net.caffeinemc:sodium-neoforge:${sodium_version}") { transitive = false }
     shaderMods("maven.modrinth:iris:${iris_version}") { transitive = false }

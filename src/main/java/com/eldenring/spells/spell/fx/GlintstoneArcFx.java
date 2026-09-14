@@ -4,6 +4,7 @@ import com.eldenring.spells.entity.GlintstoneArcProjectile;
 import com.eldenring.spells.registry.ModParticles;
 import com.eldenring.spells.spell.GlintstoneArcSpell;
 import com.eldenring.spells.spell.combat.GlintstoneArcCombat;
+import com.eldenring.spells.spell.combat.GlintstoneArcCombat.ArcBasis;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -13,6 +14,7 @@ import net.minecraft.world.phys.Vec3;
  * 辉石弯弧特效：沿对称月牙点缀青色雾气 / 辉光，以及穿透火花、消散碎裂。
  * <p>
  * 密度写死，不进 toml。不要走彗星拖尾，否则俯视会看成一串竖条。
+ * 采样走 {@link ArcBasis}，与 Renderer / 命中同一局部平面，抬头低头粒子仍贴在刃上。
  */
 public final class GlintstoneArcFx {
 
@@ -20,6 +22,11 @@ public final class GlintstoneArcFx {
      * 客户端每 tick 沿水波采样的点数。调大 → 弧上雾更密。
      */
     private static final int TRAIL_SAMPLE_COUNT = 6;
+
+    /**
+     * 粒子相对刃面沿局部 up 的抬升（方块），避免粒子埋进几何矮墙。
+     */
+    private static final double TRAIL_LIFT_ALONG_UP_BLOCKS = 0.12;
 
     /**
      * 穿透命中时飞出的碎晶数量。只要一小撮，证明「穿过去了」而不是整条刃炸开。
@@ -60,12 +67,12 @@ public final class GlintstoneArcFx {
         if (flightDirection.lengthSqr() < 1.0e-8) {
             return;
         }
-        Vec3 horizontalForward = GlintstoneArcCombat.horizontalForward(flightDirection);
-        Vec3 horizontalRight = GlintstoneArcCombat.horizontalRight(horizontalForward);
+        ArcBasis arcBasis = ArcBasis.fromFlightDirection(flightDirection);
         float halfWidthBlocks = arcProjectile.currentHalfWidthBlocks(0.0f);
         float outerRadiusBlocks = GlintstoneArcCombat.crescentOuterRadius(halfWidthBlocks);
         float halfAngleRadians = (float) Math.toRadians(GlintstoneArcCombat.CRESCENT_HALF_ANGLE_DEGREES);
         Vec3 origin = arcProjectile.position();
+        Vec3 liftOffset = arcBasis.up().scale(TRAIL_LIFT_ALONG_UP_BLOCKS);
         for (int sampleIndex = 0; sampleIndex < TRAIL_SAMPLE_COUNT; sampleIndex++) {
             if (level.random.nextFloat() > 0.45f) {
                 continue;
@@ -78,9 +85,9 @@ public final class GlintstoneArcFx {
             double alongForward = Math.cos(angleRadians) * outerRadiusBlocks - outerRadiusBlocks;
             double alongRight = Math.sin(angleRadians) * outerRadiusBlocks;
             Vec3 samplePosition = origin
-                    .add(horizontalForward.scale(alongForward))
-                    .add(horizontalRight.scale(alongRight))
-                    .add(0.0, 0.12, 0.0);
+                    .add(arcBasis.forward().scale(alongForward))
+                    .add(arcBasis.right().scale(alongRight))
+                    .add(liftOffset);
             if (level.random.nextBoolean()) {
                 level.addParticle(
                         ModParticles.GLINTSTONE_MIST.get(),

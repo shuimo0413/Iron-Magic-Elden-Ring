@@ -48,3 +48,6 @@ __pycache__/
 !工具链/equipment-gametest.init.gradle
 !工具链/validate_staff_models.mjs
 !工具链/make_equipment_test_fixture.mjs
+
+### Local demo media (do not publish) ###
+演示图片/

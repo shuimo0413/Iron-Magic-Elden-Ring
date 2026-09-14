@@ -25,8 +25,8 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 | Minecraft | 1.21.1 |
 | NeoForge | ≥ 21.1.200（开发编译用 21.1.248） |
 | JDK | **21**（不要用 24） |
-| Iron's Spells 'n Spellbooks | 1.21.1-3.16.2 及以上 |
-| Iron's Spellbooks Lib | 1.21.1-2.1.0 及以上 |
+| Iron's Spells 'n Spellbooks | 1.21.1-3.16.1 及以上（开发编译用 3.16.2） |
+| Iron's Spellbooks Lib | 1.21.1-1.1.0 及以上（3.16.1 用 1.1.0；3.16.2+ 用 2.1.0） |
 
 运行时还会拉 Curios、GeckoLib、PlayerAnimator（铁魔法自己的依赖）。把本模组 jar 和铁魔法一起放进 `mods/` 即可。
 

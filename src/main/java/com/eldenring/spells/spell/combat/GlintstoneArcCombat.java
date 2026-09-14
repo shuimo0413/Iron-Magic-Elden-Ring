@@ -16,15 +16,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 辉石弯弧命中：贴地对称月牙水波的水平判定盒（半宽随距离变大）。
+ * 辉石弯弧命中：随飞行方向倾斜的对称月牙定向盒（半宽随距离变大）。
  * <p>
  * MC 实体 AABB 不会跟着朝向转，所以碰撞箱只做追踪占位，真正打人走这里。
  * 垂直半高 / 前后厚度写死；半宽读 {@link GlintstoneArcSpell} 运行时字段。
+ * 坐标系由 {@link ArcBasis} 提供，平视时与旧「贴地水平」一致，抬头/低头时整片弯弧跟着俯仰。
  */
 public final class GlintstoneArcCombat {
 
     /**
-     * 弯弧相对飞行平面的垂直半高（方块）。调大 → 略抬头/低头也能刮到；调小 → 必须对准躯干。
+     * 弯弧相对飞行平面的垂直半高（方块）。调大 → 略偏离刃面也能刮到；调小 → 必须对准刃面。
      */
     public static final float ARC_VERTICAL_HALF_HEIGHT_BLOCKS = 0.55f;
 
@@ -44,6 +45,11 @@ public final class GlintstoneArcCombat {
      */
     public static final float CRESCENT_HALF_ANGLE_DEGREES = 65.0f;
 
+    /**
+     * 叉积长度平方低于此值视为退化（近乎垂直仰视/俯视），改用备用参考轴。
+     */
+    private static final double BASIS_DEGENERATE_LENGTH_SQR = 1.0e-8;
+
     private GlintstoneArcCombat() {
     }
 
@@ -57,9 +63,7 @@ public final class GlintstoneArcCombat {
             Vec3 pathEnd,
             float halfWidthBlocks
     ) {
-        Vec3 flightDirection = arcProjectile.resolveFlightDirection();
-        Vec3 horizontalForward = horizontalForward(flightDirection);
-        Vec3 horizontalRight = horizontalRight(horizontalForward);
+        ArcBasis arcBasis = ArcBasis.fromFlightDirection(arcProjectile.resolveFlightDirection());
         Vec3 pathMidpoint = pathStart.add(pathEnd).scale(0.5);
         double movementLength = pathStart.distanceTo(pathEnd);
         double forwardHalfThickness = ARC_FORWARD_HALF_THICKNESS_BLOCKS + movementLength * 0.5;
@@ -72,8 +76,7 @@ public final class GlintstoneArcCombat {
             if (!isInsideArcVolume(
                     target,
                     pathMidpoint,
-                    horizontalForward,
-                    horizontalRight,
+                    arcBasis,
                     halfWidthBlocks,
                     forwardHalfThickness
             )) {
@@ -94,21 +97,20 @@ public final class GlintstoneArcCombat {
     }
 
     /**
-     * 目标中心落到贴地弯弧盒内（水平前向 / 水平右侧 / 世界 Y）。
+     * 目标中心落到随飞行方向倾斜的弯弧盒内（局部前向 / 右侧 / 上）。
      */
     private static boolean isInsideArcVolume(
             Entity target,
             Vec3 volumeCenter,
-            Vec3 horizontalForward,
-            Vec3 horizontalRight,
+            ArcBasis arcBasis,
             float halfWidthBlocks,
             double forwardHalfThickness
     ) {
         Vec3 targetCenter = target.getBoundingBox().getCenter();
         Vec3 towardTarget = targetCenter.subtract(volumeCenter);
-        double alongForward = towardTarget.dot(horizontalForward);
-        double alongRight = towardTarget.dot(horizontalRight);
-        double alongUp = towardTarget.y;
+        double alongForward = towardTarget.dot(arcBasis.forward());
+        double alongRight = towardTarget.dot(arcBasis.right());
+        double alongUp = towardTarget.dot(arcBasis.up());
 
         double targetRadius = Math.max(target.getBbWidth(), target.getBbHeight()) * 0.5 + HIT_INFLATION_BLOCKS;
         return Math.abs(alongForward) <= forwardHalfThickness + targetRadius
@@ -117,29 +119,48 @@ public final class GlintstoneArcCombat {
     }
 
     /**
-     * 贴地水波用的水平前向：丢掉俯仰，只保留水平射击方向。
-     * 近乎垂直仰视/俯视时水平分量退化，回退到 +Z。
-     */
-    public static Vec3 horizontalForward(Vec3 flightDirection) {
-        Vec3 flattened = new Vec3(flightDirection.x, 0.0, flightDirection.z);
-        if (flattened.lengthSqr() < 1.0e-8) {
-            return new Vec3(0.0, 0.0, 1.0);
-        }
-        return flattened.normalize();
-    }
-
-    /**
-     * 水平右侧：世界 +Y 叉水平前向，得到 (forwardZ, 0, -forwardX)。
-     */
-    public static Vec3 horizontalRight(Vec3 horizontalForward) {
-        return new Vec3(horizontalForward.z, 0.0, -horizontalForward.x);
-    }
-
-    /**
      * 月牙外半径（方块）。半角处左右尖端的横向距离 = 半宽，
      * 所以 {@code R = halfWidth / sin(半角)}。
      */
     public static float crescentOuterRadius(float halfWidthBlocks) {
         return halfWidthBlocks / Mth.sin((float) Math.toRadians(CRESCENT_HALF_ANGLE_DEGREES));
+    }
+
+    /**
+     * 弯弧局部正交基：月牙在 (forward, right) 平面展开，矮墙高度沿 up。
+     * <p>
+     * 平视时与旧水平基一致（up ≈ 世界 +Y）；抬头/低头时整片跟着俯仰。
+     * 近乎垂直时 worldUp×forward 退化，改用世界 +X 作参考，避免 NaN。
+     */
+    public record ArcBasis(Vec3 forward, Vec3 right, Vec3 up) {
+
+        /**
+         * 由完整飞行方向（含俯仰）建基。零向量回退到 +Z。
+         */
+        public static ArcBasis fromFlightDirection(Vec3 flightDirection) {
+            Vec3 forward = flightDirection.lengthSqr() > BASIS_DEGENERATE_LENGTH_SQR
+                    ? flightDirection.normalize()
+                    : new Vec3(0.0, 0.0, 1.0);
+
+            Vec3 worldUp = new Vec3(0.0, 1.0, 0.0);
+            Vec3 right = worldUp.cross(forward);
+            if (right.lengthSqr() < BASIS_DEGENERATE_LENGTH_SQR) {
+                // 近乎竖直仰视/俯视：世界 +Y 与 forward 共线，改用 +X 作参考。
+                right = new Vec3(1.0, 0.0, 0.0).cross(forward);
+            }
+            if (right.lengthSqr() < BASIS_DEGENERATE_LENGTH_SQR) {
+                right = new Vec3(0.0, 0.0, 1.0);
+            } else {
+                right = right.normalize();
+            }
+
+            Vec3 up = forward.cross(right);
+            if (up.lengthSqr() < BASIS_DEGENERATE_LENGTH_SQR) {
+                up = worldUp;
+            } else {
+                up = up.normalize();
+            }
+            return new ArcBasis(forward, right, up);
+        }
     }
 }
