@@ -19,10 +19,8 @@ public final class CarianGreatswordCombat {
 
     /**
      * 斩击竖直半高（方块）。以施法者身体中心为基准，上下各这么多；
-     * 目标碰撞箱与该带有重叠即算高度命中。调大 → 更高 / 更矮的怪也容易砍到。
-     * 默认 1.8：面前约一人高（±1.8）都能吃到伤害，不被视线俯仰的三维锥角误伤。
      */
-    public static final float SLASH_VERTICAL_HALF_HEIGHT_BLOCKS = 1.8f;
+    public static final float SLASH_VERTICAL_HALF_HEIGHT_BLOCKS = 0.8f;
 
     private CarianGreatswordCombat() {
     }
