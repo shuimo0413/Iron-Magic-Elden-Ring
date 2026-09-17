@@ -3,6 +3,7 @@ package com.eldenring.spells.registry;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.item.AstrologerStaffItem;
 import com.eldenring.spells.item.AzurGlintstoneStaffItem;
+import com.eldenring.spells.item.CelestialMageArmorItem;
 import com.eldenring.spells.item.OriginPotionItem;
 import com.eldenring.spells.config.EldenRingServerConfig;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
@@ -12,6 +13,7 @@ import io.redspace.ironsspellbooks.item.SpellBook;
 import io.redspace.ironsspellbooks.item.weapons.AttributeContainer;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -106,6 +108,42 @@ public final class ModItems {
     );
 
     /**
+     * 星辰法师套装：每件提供铁魔法原生学派护甲同级的护甲值、125 最大法力、
+     * 10% 辉石法术强度与 5% 通用法术强度；长袍额外拥有一个可灌注法术槽。
+     */
+    public static final DeferredItem<Item> CELESTIAL_MAGE_HAT = ITEMS.register(
+            "celestial_mage_hat",
+            () -> new CelestialMageArmorItem(
+                    ArmorItem.Type.HELMET,
+                    celestialMageProperties(ArmorItem.Type.HELMET)
+            )
+    );
+
+    public static final DeferredItem<Item> CELESTIAL_MAGE_ROBE = ITEMS.register(
+            "celestial_mage_robe",
+            () -> new CelestialMageArmorItem(
+                    ArmorItem.Type.CHESTPLATE,
+                    celestialMageProperties(ArmorItem.Type.CHESTPLATE)
+            )
+    );
+
+    public static final DeferredItem<Item> CELESTIAL_MAGE_LEGGINGS = ITEMS.register(
+            "celestial_mage_leggings",
+            () -> new CelestialMageArmorItem(
+                    ArmorItem.Type.LEGGINGS,
+                    celestialMageProperties(ArmorItem.Type.LEGGINGS)
+            )
+    );
+
+    public static final DeferredItem<Item> CELESTIAL_MAGE_BOOTS = ITEMS.register(
+            "celestial_mage_boots",
+            () -> new CelestialMageArmorItem(
+                    ArmorItem.Type.BOOTS,
+                    celestialMageProperties(ArmorItem.Type.BOOTS)
+            )
+    );
+
+    /**
      * 青色辉石碎片。学院弹道 / 场地 / 海摩等咒的抄写材料（焦点槽，抄成消耗）。
      */
     public static final DeferredItem<Item> CYAN_GLINTSTONE_SHARD = ITEMS.register(
@@ -192,6 +230,13 @@ public final class ModItems {
     }
 
     private ModItems() {
+    }
+
+    private static Item.Properties celestialMageProperties(ArmorItem.Type armorType) {
+        return new Item.Properties()
+                .stacksTo(1)
+                .rarity(Rarity.RARE)
+                .durability(armorType.getDurability(37));
     }
 
     /**

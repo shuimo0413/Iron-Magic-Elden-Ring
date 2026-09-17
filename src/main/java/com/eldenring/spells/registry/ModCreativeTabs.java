@@ -41,6 +41,10 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ORIGIN_CODEX.get());
                         output.accept(ModItems.ASTROLOGER_STAFF.get());
                         output.accept(ModItems.AZUR_GLINTSTONE_STAFF.get());
+                        output.accept(ModItems.CELESTIAL_MAGE_HAT.get());
+                        output.accept(ModItems.CELESTIAL_MAGE_ROBE.get());
+                        output.accept(ModItems.CELESTIAL_MAGE_LEGGINGS.get());
+                        output.accept(ModItems.CELESTIAL_MAGE_BOOTS.get());
                         output.accept(ModItems.CYAN_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());

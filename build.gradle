@@ -177,6 +177,7 @@ dependencies {
     // Runtime deps required by Iron's Spells (also needed to compile AbstractSpell / Curios refs)
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
     localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    compileOnly "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
     localRuntime "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
     // 迅剑连斩要按刀镜像重播 PlayerAnimator 动作，编译期就要看见这些类
     compileOnly "dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}"
