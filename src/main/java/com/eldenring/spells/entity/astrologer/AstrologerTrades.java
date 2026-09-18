@@ -95,6 +95,9 @@ public final class AstrologerTrades {
         if (random.nextFloat() < 0.25f) {
             offers.add(sellItem(new ItemStack(ItemRegistry.INK_RARE.get()), 14, 20, 4, random));
         }
+        offers.add(sellItem(new ItemStack(ModItems.PRIMAL_GLINTSTONE_BLADE.get()), 32, 64, 1, random));
+
+        
 
         if (random.nextFloat() < 0.55f) {
             offers.add(sellItem(new ItemStack(ModItems.ASTROLOGER_STAFF.get()), 28, 36, 1, random));
@@ -249,7 +252,6 @@ public final class AstrologerTrades {
                 || item == ModItems.ORIGIN_GLINTSTONE.get()
                 || item == ModItems.ORIGIN_POTION.get()
                 || item == ModItems.ORIGIN_CODEX.get()
-                || item == ModItems.AZUR_GLINTSTONE_STAFF.get()
-                || item == ModItems.PRIMAL_GLINTSTONE_BLADE.get();
+                || item == ModItems.AZUR_GLINTSTONE_STAFF.get();
     }
 }

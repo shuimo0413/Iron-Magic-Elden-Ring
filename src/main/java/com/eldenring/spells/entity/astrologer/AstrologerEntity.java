@@ -67,7 +67,6 @@ public class AstrologerEntity extends NeutralWizard implements IMerchantWizard {
     private long lastRestockGameTime;
     private int numberOfRestocksToday;
     private long lastRestockCheckDayTime;
-    private boolean homeInitialized;
 
     public AstrologerEntity(EntityType<? extends AbstractSpellCastingMob> entityType, Level level) {
         super(entityType, level);
@@ -119,7 +118,6 @@ public class AstrologerEntity extends NeutralWizard implements IMerchantWizard {
     ) {
         RandomSource random = Utils.random;
         this.populateDefaultEquipmentSlots(random, difficulty);
-        this.ensureHomeRestriction();
         return super.finalizeSpawn(level, difficulty, reason, spawnData);
     }
 
@@ -135,24 +133,6 @@ public class AstrologerEntity extends NeutralWizard implements IMerchantWizard {
         this.setDropChance(EquipmentSlot.FEET, 0.0F);
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        if (!this.level().isClientSide) {
-            this.ensureHomeRestriction();
-        }
-    }
-
-    /**
-     * 以实际落地位置建立活动中心，结构旋转后仍正确。
-     */
-    private void ensureHomeRestriction() {
-        if (this.homeInitialized || this.level().isClientSide) {
-            return;
-        }
-        this.restrictTo(this.blockPosition(), Math.round(PATROL_RADIUS_BLOCKS));
-        this.homeInitialized = true;
-    }
 
     public static AttributeSupplier.Builder prepareAttributes() {
         return LivingEntity.createLivingAttributes()
@@ -274,13 +254,11 @@ public class AstrologerEntity extends NeutralWizard implements IMerchantWizard {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         serializeMerchant(tag, this.offers, this.lastRestockGameTime, this.numberOfRestocksToday);
-        tag.putBoolean("HomeInitialized", this.homeInitialized);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         deserializeMerchant(tag, loadedOffers -> this.offers = loadedOffers);
-        this.homeInitialized = tag.getBoolean("HomeInitialized");
     }
 }

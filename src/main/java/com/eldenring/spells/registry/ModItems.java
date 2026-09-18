@@ -240,8 +240,8 @@ public final class ModItems {
             "astrologer_spawn_egg",
             () -> new DeferredSpawnEggItem(
                     ModEntities.ASTROLOGER,
-                    0x2A1A4A,
-                    0xE8C84A,
+                    0x4B237A,
+                    0xFFD85A,
                     new Item.Properties()
             )
     );
