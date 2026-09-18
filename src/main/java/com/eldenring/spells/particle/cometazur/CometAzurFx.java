@@ -770,7 +770,7 @@ public final class CometAzurFx {
     }
 
     /**
-     * 在锁定喷流口刷一圈星河套管（星云体积 + 螺旋星团 + 闪星），朝向用出手时钉死的 yaw/pitch。
+     * 在当前喷流口刷一圈星河套管（星云体积 + 螺旋星团 + 闪星），朝向随施法者视线实时更新。
      */
     public static void spawnJetSurround(Level level, CometAzurCastData castData) {
         if (level.isClientSide || castData == null) {

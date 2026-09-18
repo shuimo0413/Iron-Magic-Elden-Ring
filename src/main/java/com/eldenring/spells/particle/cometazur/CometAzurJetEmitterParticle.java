@@ -1,11 +1,10 @@
 package com.eldenring.spells.particle.cometazur;
 
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.particle.NoRenderParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -16,7 +15,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
  * 喷流口发射器：服务端每圈只同步这一颗，客户端再铺星云 / 星系 / 闪星三层。
  * 自己不画。
  */
-public class CometAzurJetEmitterParticle extends TextureSheetParticle {
+public class CometAzurJetEmitterParticle extends NoRenderParticle {
 
     /** 贴着激光的星云纹理：小、亮、加法。 */
     private static final CometAzurJetSurroundParticle.Kind[] NEBULA_KINDS = {
@@ -84,7 +83,6 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
         this.hasPhysics = false;
         this.gravity = 0.0f;
         this.lifetime = 2;
-        this.quadSize = 0.001f;
         this.alpha = 0.0f;
     }
 
@@ -306,7 +304,7 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
     }
 
     /**
-     * 从喷流口沿锁定朝向扫到最大射程，碰到实心方块就截断。
+     * 从当前喷流口沿同步朝向扫到最大射程，碰到实心方块就截断。
      * 与 {@code CometAzurJetEntity#refreshBeamLength} 同一套 COLLIDER 射线。
      */
     private float clipSolidAlongBlocks() {
@@ -324,11 +322,6 @@ public class CometAzurJetEmitterParticle extends TextureSheetParticle {
             return CometAzurFx.JET_PARTICLE_MAX_ALONG_BLOCKS;
         }
         return (float) mouthWorld.distanceTo(blockHit.getLocation());
-    }
-
-    @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.NO_RENDER;
     }
 
     @Override

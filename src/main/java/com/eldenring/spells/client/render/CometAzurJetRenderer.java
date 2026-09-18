@@ -22,7 +22,7 @@ import com.eldenring.spells.particle.cometazur.CometAzurFx;
 /**
  * 彗星亚兹勒星河喷流。
  * <p>
- * 本体是口部圆球 + 沿锁定朝向的墨绿圆柱管。
+ * 本体是口部圆球 + 沿同步朝向的墨绿圆柱管。
  * 细丝带中轴波纹，周围粒子换成星云 / 星团 / 闪星套管，读成喷射而出的星河。
  */
 public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {

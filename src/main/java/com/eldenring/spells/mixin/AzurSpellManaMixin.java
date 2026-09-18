@@ -1,7 +1,7 @@
 package com.eldenring.spells.mixin;
 
-import com.eldenring.spells.item.AzurManaCostPolicy;
-import com.eldenring.spells.item.AzurStaffBalance;
+import com.eldenring.spells.spell.cost.SpellManaCostCalculator;
+import com.eldenring.spells.spell.cost.SpellManaCostPolicy;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.redspace.ironsspellbooks.api.events.SpellOnCastEvent;
@@ -29,15 +29,19 @@ public abstract class AzurSpellManaMixin {
     private int eldenRingSpells$checkAzurCost(int original, @Local(argsOnly = true) Player player,
                                             @Local(argsOnly = true) CastSource source,
                                             @Local(argsOnly = true) MagicData data) {
-        return AzurStaffBalance.manaCost(original, player, source, (AbstractSpell) (Object) this, data, false);
+        return SpellManaCostCalculator.manaCost(
+                original, player, source, (AbstractSpell) (Object) this, data, false
+        );
     }
 
     @ModifyExpressionValue(method = "castSpell", at = @At(value = "INVOKE",
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))
     private int eldenRingSpells$chargeAzurCost(int original, @Local(argsOnly = true) ServerPlayer player,
                                              @Local(argsOnly = true) CastSource source) {
-        return AzurStaffBalance.manaCost(original, player, source, (AbstractSpell) (Object) this,
-                MagicData.getPlayerMagicData(player), true);
+        return SpellManaCostCalculator.manaCost(
+                original, player, source, (AbstractSpell) (Object) this,
+                MagicData.getPlayerMagicData(player), true
+        );
     }
 
     @Inject(method = "castSpell", at = @At(value = "INVOKE",
@@ -47,12 +51,12 @@ public abstract class AzurSpellManaMixin {
                                                @Local SpellOnCastEvent event) {
         AbstractSpell spell = (AbstractSpell) (Object) this;
         MagicData data = MagicData.getPlayerMagicData(player);
-        if (AzurStaffBalance.multiplier(player, data, spell, true) <= 1.0D) {
+        if (SpellManaCostCalculator.multiplier(player, data, spell, true) <= 1.0D) {
             return;
         }
         // This branch is entered only when native code will pay mana. All event listeners have run,
         // and native creative/source/recast exemptions have already been checked.
-        if (!AzurManaCostPolicy.canPay(data.getMana(), event.getManaCost(), true)) {
+        if (!SpellManaCostPolicy.canPay(data.getMana(), event.getManaCost(), true)) {
             player.displayClientMessage(Component.translatable("ui.irons_spellbooks.cast_error_mana",
                     spell.getDisplayName(player)).withStyle(ChatFormatting.RED), true);
             // Earlier continuous pulses have already cast. An unpaid last pulse must not erase cooldown.

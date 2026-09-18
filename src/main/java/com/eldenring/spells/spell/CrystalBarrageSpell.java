@@ -6,7 +6,6 @@ import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.spell.data.CrystalBarrageCastData;
-import com.eldenring.spells.spell.helper.CometAzurCasting;
 import com.eldenring.spells.spell.helper.CrystalBarrageCasting;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -17,12 +16,9 @@ import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.api.util.AnimationHolder;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.SpellDamageSource;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,7 +33,7 @@ import java.util.Optional;
  * <p>
  * {@link CastType#CONTINUOUS}：按住施法键连续散射辉石碎片；松开立刻停刷（客户端发 CancelCast）。
  * 碎片抄迅魔砾彗星头 / 光轨，但不追踪，直线飞，射程短；撞敌或飞满射程会碎裂消失。
- * 地面走动、下落时不能起手；起手后钉死站位（参考彗星亚兹勒），视线仍可转。
+ * 地面与空中均可起手；施法期间可按潜行速度移动、跳跃和转向扫射。
  */
 public class CrystalBarrageSpell extends EldenRingAbstractSpell {
 
@@ -113,12 +109,6 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
      * 出手闪光相对生成点再沿视线前移（方块）。只给本段吟唱第一发用。
      */
     public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.45;
-
-    /**
-     * 地面走动判定：水平速度超过这个值（方块/tick）就拒绝起手。
-     * 站立抖动远小于此；步行 / 冲刺会超过。
-     */
-    public static double CAST_REFUSE_HORIZONTAL_SPEED_BLOCKS_PER_TICK = 0.08;
 
     public static double PROJECTILE_MINIMUM_SPEED_FOR_HOMING = 1.0e-4;
     public static double PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS = 1.0e-5;
@@ -238,36 +228,7 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
     }
 
     /**
-     * 无支撑腾空、地面走动时拒绝起手；站立 / 主动飞行可以。起手后由锁位钉死。
-     */
-    @Override
-    public boolean checkPreCastConditions(
-            Level level,
-            int spellLevel,
-            LivingEntity entity,
-            MagicData playerMagicData
-    ) {
-        if (CometAzurCasting.isUnsupportedAirborne(entity)) {
-            sendRefuseMessage(entity, "ui.elden_ring_spells.crystal_barrage_cannot_cast_airborne");
-            return false;
-        }
-        if (CrystalBarrageCasting.isCasterWalkingOnGround(entity)) {
-            sendRefuseMessage(entity, "ui.elden_ring_spells.crystal_barrage_cannot_cast_moving");
-            return false;
-        }
-        return true;
-    }
-
-    private static void sendRefuseMessage(LivingEntity entity, String translationKey) {
-        if (entity instanceof ServerPlayer serverPlayer) {
-            serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(
-                    Component.translatable(translationKey).withStyle(ChatFormatting.RED)
-            ));
-        }
-    }
-
-    /**
-     * 刚按下：记下脚底、刷头顶点缀。碎片从 {@link #onServerCastTick} 开始刷，这里不要 new 弹。
+     * 刚按下：刷头顶点缀。碎片从 {@link #onServerCastTick} 开始刷，这里不要 new 弹。
      */
     @Override
     public void onServerPreCast(
@@ -277,16 +238,15 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
             @Nullable MagicData playerMagicData
     ) {
         if (!level.isClientSide && playerMagicData != null) {
-            CrystalBarrageCastData castData = new CrystalBarrageCastData(entity.position());
+            CrystalBarrageCastData castData = new CrystalBarrageCastData();
             playerMagicData.setAdditionalCastData(castData);
-            CrystalBarrageCasting.applyCasterPositionLock(entity, castData);
             AcademySigilFx.spawnAboveHead(level, entity);
         }
         super.onServerPreCast(level, spellLevel, entity, playerMagicData);
     }
 
     /**
-     * 每个吟唱 tick：钉死站位，按间隔刷一发散射碎片。
+     * 每个吟唱 tick：按间隔沿当前视线刷一发散射碎片。
      */
     @Override
     public void onServerCastTick(
@@ -301,7 +261,6 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
         if (!(playerMagicData.getAdditionalCastData() instanceof CrystalBarrageCastData castData)) {
             return;
         }
-        CrystalBarrageCasting.applyCasterPositionLock(entity, castData);
         if (!castData.tryConsumeSpawnInterval()) {
             return;
         }

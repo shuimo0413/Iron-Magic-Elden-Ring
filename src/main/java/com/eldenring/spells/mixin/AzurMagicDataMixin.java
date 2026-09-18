@@ -1,7 +1,7 @@
 package com.eldenring.spells.mixin;
 
 import com.eldenring.spells.item.AzurCastCostData;
-import com.eldenring.spells.item.AzurStaffBalance;
+import com.eldenring.spells.spell.cost.SpellManaCostCalculator;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.CastSource;
@@ -19,21 +19,21 @@ public abstract class AzurMagicDataMixin implements AzurCastCostData {
     private ServerPlayer serverPlayer;
 
     @Unique
-    private double eldenRingSpells$azurMultiplier = 1.0D;
+    private double eldenRingSpells$manaCostMultiplier = 1.0D;
 
     @Inject(method = "initiateCast", at = @At("HEAD"))
-    private void eldenRingSpells$snapshotAzur(AbstractSpell spell, int level, int duration,
-                                            CastSource source, String slot, CallbackInfo ci) {
-        eldenRingSpells$azurMultiplier = AzurStaffBalance.currentMultiplier(serverPlayer);
+    private void eldenRingSpells$snapshotManaCost(AbstractSpell spell, int level, int duration,
+                                                  CastSource source, String slot, CallbackInfo ci) {
+        eldenRingSpells$manaCostMultiplier = SpellManaCostCalculator.currentMultiplier(serverPlayer);
     }
 
     @Inject(method = "resetCastingState", at = @At("HEAD"))
-    private void eldenRingSpells$clearAzur(CallbackInfo ci) {
-        eldenRingSpells$azurMultiplier = 1.0D;
+    private void eldenRingSpells$clearManaCost(CallbackInfo ci) {
+        eldenRingSpells$manaCostMultiplier = 1.0D;
     }
 
     @Override
-    public double eldenRingSpells$getAzurMultiplier() {
-        return eldenRingSpells$azurMultiplier;
+    public double eldenRingSpells$getManaCostMultiplier() {
+        return eldenRingSpells$manaCostMultiplier;
     }
 }

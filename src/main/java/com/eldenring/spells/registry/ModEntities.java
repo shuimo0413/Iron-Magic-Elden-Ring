@@ -1,6 +1,7 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.entity.astrologer.AstrologerEntity;
 import com.eldenring.spells.entity.CannonOfHaimaProjectile;
 import com.eldenring.spells.entity.CarianGreatswordEntity;
 import com.eldenring.spells.entity.CarianPiercerEntity;
@@ -327,6 +328,17 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("gravity_ball"))
+            );
+
+    /**
+     * 观星者：中立辉石商人法师。仅随观星台结构或生成蛋出现，不自然刷新。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<AstrologerEntity>> ASTROLOGER =
+            ENTITIES.register("astrologer", () ->
+                    EntityType.Builder.of(AstrologerEntity::new, MobCategory.CREATURE)
+                            .sized(0.6f, 1.8f)
+                            .clientTrackingRange(64)
+                            .build(id("astrologer"))
             );
 
     private ModEntities() {

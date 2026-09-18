@@ -1,6 +1,6 @@
 package com.eldenring.spells.mixin;
 
-import com.eldenring.spells.client.AzurStaffClientCosts;
+import com.eldenring.spells.client.SpellManaCostClientCosts;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -16,13 +16,13 @@ public abstract class AzurTooltipCostMixin {
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))
     private static int eldenRingSpells$activeAzurCost(AbstractSpell spell, int level, Operation<Integer> original,
                                                     @Local(argsOnly = true) CastSource source) {
-        return AzurStaffClientCosts.manaCost(original.call(spell, level), spell, source);
+        return SpellManaCostClientCosts.manaCost(original.call(spell, level), spell, source);
     }
 
     @WrapOperation(method = "formatScrollTooltip", at = @At(value = "INVOKE",
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))
     private static int eldenRingSpells$scrollAzurCost(AbstractSpell spell, int level, Operation<Integer> original) {
         // Scroll tooltips advertise the spell's cost when inscribed, not the consumable's free cast.
-        return AzurStaffClientCosts.manaCost(original.call(spell, level), spell, CastSource.SPELLBOOK);
+        return SpellManaCostClientCosts.manaCost(original.call(spell, level), spell, CastSource.SPELLBOOK);
     }
 }

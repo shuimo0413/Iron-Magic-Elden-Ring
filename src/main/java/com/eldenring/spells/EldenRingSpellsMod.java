@@ -8,6 +8,7 @@ import com.eldenring.spells.registry.ModAttributes;
 import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModCreativeTabs;
 import com.eldenring.spells.registry.ModEffects;
+import com.eldenring.spells.registry.ModEntityAttributes;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModFeatures;
 import com.eldenring.spells.registry.ModFluids;
@@ -45,6 +46,7 @@ public class EldenRingSpellsMod {
         ModParticles.register(modEventBus);
         ModSounds.register(modEventBus);
         ModEntities.register(modEventBus);
+        ModEntityAttributes.register(modEventBus);
         ModSpells.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
         modEventBus.addListener(this::commonSetup);

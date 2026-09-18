@@ -2,11 +2,7 @@ package com.eldenring.spells.item;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.network.AzurStaffSettingsPayload;
-import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
-import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
-import io.redspace.ironsspellbooks.api.spells.CastSource;
-import io.redspace.ironsspellbooks.config.ServerConfigs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,24 +45,6 @@ public final class AzurStaffBalance {
 
     public static double currentMultiplier(Player player) {
         return isMainhandAzur(player) ? manaCostMultiplier() : 1.0D;
-    }
-
-    public static boolean chargesMana(Player player, CastSource source, AbstractSpell spell, MagicData data) {
-        return AzurManaCostPolicy.chargesMana(source.consumesMana(),
-                data.getPlayerRecasts().hasRecastForSpell(spell.getSpellId()), player.isCreative(),
-                ServerConfigs.CREATIVE_MANA_COST.get());
-    }
-
-    public static double multiplier(Player player, MagicData data, AbstractSpell spell, boolean activeCast) {
-        double started = activeCast && data.isCasting() && spell.getSpellId().equals(data.getCastingSpellId())
-                ? ((AzurCastCostData) data).eldenRingSpells$getAzurMultiplier() : 1.0D;
-        return AzurManaCostPolicy.effectiveMultiplier(isMainhandAzur(player), manaCostMultiplier(), started);
-    }
-
-    public static int manaCost(int original, Player player, CastSource source, AbstractSpell spell,
-                               MagicData data, boolean activeCast) {
-        return AzurManaCostPolicy.apply(original, multiplier(player, data, spell, activeCast),
-                chargesMana(player, source, spell, data));
     }
 
     public static AttributeModifier castSpeedModifier() {

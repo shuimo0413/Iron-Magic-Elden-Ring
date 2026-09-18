@@ -6,6 +6,7 @@ import com.eldenring.spells.item.AzurGlintstoneStaffItem;
 import com.eldenring.spells.item.CelestialMageArmorItem;
 import com.eldenring.spells.item.OriginPotionItem;
 import com.eldenring.spells.config.EldenRingServerConfig;
+import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeItem;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -219,6 +221,29 @@ public final class ModItems {
     public static final DeferredItem<Item> CARIAN_PIERCER_SWORD = ITEMS.register(
             "carian_piercer_sword",
             () -> new Item(new Item.Properties())
+    );
+
+    /**
+     * 源辉石刀：Curios 护符。降低 15% 最大生命值，并减少 25% 全学派蓝耗。
+     */
+    public static final DeferredItem<Item> PRIMAL_GLINTSTONE_BLADE = ITEMS.register(
+            "primal_glintstone_blade",
+            () -> new PrimalGlintstoneBladeItem(
+                    new Item.Properties().rarity(Rarity.EPIC)
+            )
+    );
+
+    /**
+     * 观星者生成蛋：供旧存档补放与调试。主体色深紫、高亮金星。
+     */
+    public static final DeferredItem<Item> ASTROLOGER_SPAWN_EGG = ITEMS.register(
+            "astrologer_spawn_egg",
+            () -> new DeferredSpawnEggItem(
+                    ModEntities.ASTROLOGER,
+                    0x2A1A4A,
+                    0xE8C84A,
+                    new Item.Properties()
+            )
     );
 
     static {

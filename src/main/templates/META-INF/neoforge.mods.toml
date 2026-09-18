@@ -68,15 +68,15 @@ Adds Lands Between-themed spells and schools.
 [[dependencies.${mod_id}]]
     modId="irons_spellbooks"
     type="required"
-    versionRange="[1.21.1-3.16.1,)"
+    versionRange="[1.21.1-3.16.2,)"
     ordering="AFTER"
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    # 与 irons_spellbooks 下限对齐：3.16.1 配对 1.1.0；3.16.2+ 才升到 2.1.0。勿再硬卡 2.1.0，否则 3.16.1 整合包装不上。
+    # 与 irons_spellbooks 下限对齐：观星者依赖 3.16.2 非稳定商人/施法基类。
     modId="irons_lib"
     type="required"
-    versionRange="[1.21.1-1.1.0,)"
+    versionRange="[1.21.1-2.1.0,)"
     ordering="AFTER"
     side="BOTH"
 

@@ -1,6 +1,6 @@
 package com.eldenring.spells.mixin;
 
-import com.eldenring.spells.item.AzurStaffBalance;
+import com.eldenring.spells.spell.cost.SpellManaCostCalculator;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -18,7 +18,8 @@ public abstract class AzurContinuousManaMixin {
     private int eldenRingSpells$continuousAzurCost(AbstractSpell spell, int level, Operation<Integer> original,
                                                   @Local(argsOnly = true) Player player) {
         MagicData data = MagicData.getPlayerMagicData(player);
-        return AzurStaffBalance.manaCost(original.call(spell, level), player, data.getCastSource(), spell,
-                data, true);
+        return SpellManaCostCalculator.manaCost(
+                original.call(spell, level), player, data.getCastSource(), spell, data, true
+        );
     }
 }

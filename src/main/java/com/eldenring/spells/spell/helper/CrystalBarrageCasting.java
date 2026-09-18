@@ -2,15 +2,13 @@ package com.eldenring.spells.spell.helper;
 
 import com.eldenring.spells.entity.CrystalBarrageShardProjectile;
 import com.eldenring.spells.spell.CrystalBarrageSpell;
-import com.eldenring.spells.spell.data.CrystalBarrageCastData;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 结晶连弹施法期辅助：锁死站位、在视线锥里散射刷碎片。
+ * 结晶连弹施法期辅助：在当前视线锥里散射刷碎片。
  * <p>
  * {@code CrystalBarrageSpell} 只保留铁魔法生命周期回调；清障 / 随机锥方向不进 Spell 本体。
  */
@@ -23,16 +21,6 @@ public final class CrystalBarrageCasting {
     private static final double SPAWN_LOOK_PLANE_JITTER_BLOCKS = 0.10;
 
     private CrystalBarrageCasting() {
-    }
-
-    /**
-     * 把施法者钉在出手脚底并清零速度。不改 yaw/pitch，散射仍跟准星走。
-     */
-    public static void applyCasterPositionLock(LivingEntity entity, CrystalBarrageCastData castData) {
-        Vec3 feet = castData.lockedFeetPosition();
-        entity.setDeltaMovement(Vec3.ZERO);
-        entity.hurtMarked = true;
-        entity.setPos(feet.x, feet.y, feet.z);
     }
 
     /**
@@ -118,17 +106,4 @@ public final class CrystalBarrageCasting {
         return right.scale(rightOffsetBlocks).add(planeUp.scale(upOffsetBlocks));
     }
 
-    /**
-     * 地面走动 / 冲刺时水平速度明显大于站立抖动。创造飞行不算「走动」。
-     */
-    public static boolean isCasterWalkingOnGround(LivingEntity entity) {
-        if (!entity.onGround()) {
-            return false;
-        }
-        if (entity instanceof Player player && player.getAbilities().flying) {
-            return false;
-        }
-        return entity.getDeltaMovement().horizontalDistance()
-                > CrystalBarrageSpell.CAST_REFUSE_HORIZONTAL_SPEED_BLOCKS_PER_TICK;
-    }
 }

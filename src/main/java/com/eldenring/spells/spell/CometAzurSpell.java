@@ -8,17 +8,12 @@ import com.eldenring.spells.spell.data.CometAzurCastData;
 import com.eldenring.spells.spell.helper.CometAzurCasting;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
-import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
-import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.damage.SpellDamageSource;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,8 +30,8 @@ import java.util.Optional;
  * 施法键含卷轴/法杖右键、魔法书施法键（默认 V，跟玩家改键）、快捷施法。
  * 魔法书点按起手时键会先弹起，不能把「没按住」立刻当成松手，否则蓄力一闪就停。
  * 铁魔法本体的 CONTINUOUS 默认会一直喷到时间/蓝耗尽，所以本类额外监听松手。
- * 地面、跳跃上升、创造飞行可以起手；正在下落则拒绝（否则会被钉在半空）。
- * 整段吟唱锁死移动与视角；前 {@link #STARTUP_DURATION_TICKS} tick 蓄力，随后喷流沿出手朝向直线延伸。
+ * 地面与空中均可起手；整段吟唱可按潜行速度移动、跳跃和转向。
+ * 前 {@link #STARTUP_DURATION_TICKS} tick 蓄力，随后喷流实时跟随施法者位置与视线。
  */
 public class CometAzurSpell extends EldenRingAbstractSpell {
 
@@ -129,28 +124,6 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
         return Optional.empty();
     }
 
-    /**
-     * 站地 / 攀爬 / 水中 / 乘骑 / 主动飞行可起手；无支撑腾空（含跳跃上升）拒绝，否则会被钉在半空。
-     */
-    @Override
-    public boolean checkPreCastConditions(
-            Level level,
-            int spellLevel,
-            LivingEntity entity,
-            MagicData playerMagicData
-    ) {
-        if (!CometAzurCasting.isUnsupportedAirborne(entity)) {
-            return true;
-        }
-        if (entity instanceof ServerPlayer serverPlayer) {
-            serverPlayer.connection.send(new ClientboundSetActionBarTextPacket(
-                    Component.translatable("ui.elden_ring_spells.comet_azur_cannot_cast_airborne")
-                            .withStyle(ChatFormatting.RED)
-            ));
-        }
-        return false;
-    }
-
     @Override
     public void onServerPreCast(
             Level level,
@@ -160,14 +133,12 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
     ) {
         if (!level.isClientSide && playerMagicData != null) {
             CometAzurCastData castData = new CometAzurCastData(
-                    entity.position(),
                     CometAzurFx.vortexCenterInFrontOf(entity),
                     CometAzurFx.jetMouthInFrontOf(entity),
                     entity.getYRot(),
                     entity.getXRot()
             );
             playerMagicData.setAdditionalCastData(castData);
-            CometAzurCasting.applyCasterLock(entity, castData);
             CometAzurFx.spawnStartupVortex(level, entity);
         }
         super.onServerPreCast(level, spellLevel, entity, playerMagicData);
@@ -187,8 +158,7 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
             return;
         }
 
-        // 蓄力阶段也锁：不能边蓄力边走位 / 扭头。
-        CometAzurCasting.applyCasterLock(entity, castData);
+        CometAzurCasting.updateCastState(entity, castData);
 
         int elapsedCastTicks = playerMagicData.getCastDuration() - playerMagicData.getCastDurationRemaining();
         if (elapsedCastTicks < STARTUP_DURATION_TICKS) {

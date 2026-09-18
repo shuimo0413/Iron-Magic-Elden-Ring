@@ -25,7 +25,7 @@ import java.util.List;
  * 结晶散射（Crystal Burst）。
  * <p>
  * {@link CastType#INSTANT}：一次出手同时打出一捧不追踪的辉石碎片，沿面前锥面散射。
- * 可边走边放（不像结晶连弹那样钉死站位）。碎片抄迅魔砾彗星头 / 光轨，射程短，
+ * 可边走边放。碎片抄迅魔砾彗星头 / 光轨，射程短，
  * 撞敌或飞满射程会碎裂消失。
  */
 public class CrystalBurstSpell extends EldenRingAbstractSpell {

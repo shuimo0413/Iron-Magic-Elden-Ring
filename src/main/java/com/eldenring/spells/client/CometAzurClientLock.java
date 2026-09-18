@@ -9,7 +9,6 @@ import io.redspace.ironsspellbooks.player.KeyMappings;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,10 +19,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * 客户端：施放彗星亚兹勒时锁死移动输入与视角。
+ * 客户端：施放彗星亚兹勒时把移动输入限制为潜行速度，并处理松键取消。
  * <p>
- * 铁魔法本身只把施法移速乘到约 0.2；本类在之后把冲量清零，并把 yaw/pitch 钉回出手瞬间。
- * 角度在进入吟唱的第一帧捕获，与服务端 {@code onServerPreCast} 基本一致。
+ * 本事件以最低优先级运行，在铁魔法施法减速后把方向输入校正为原版潜行的 30%。
  * <p>
  * 松手停喷流：铁魔法 CONTINUOUS 默认会喷到时间/蓝耗尽，所以要自己发取消包。
  * 不能用 {@link KeyMapping#isDown()} 判断魔法书施法键——铁魔法 {@code consume()} 之后
@@ -40,9 +38,7 @@ public final class CometAzurClientLock {
      * 本段吟唱是否已经见过施法键处于按下。见过之后松开才发取消；从没见过说明是点按起手。
      */
     private static boolean holdKeyLatched;
-    private static float lockedYawDegrees;
-    private static float lockedPitchDegrees;
-    private static Vec3 lockedFeetPosition = Vec3.ZERO;
+    private static final float SNEAK_MOVEMENT_INPUT_SCALE = 0.3f;
 
     private CometAzurClientLock() {
     }
@@ -67,9 +63,15 @@ public final class CometAzurClientLock {
         if (!isLocalPlayerCastingCometAzur()) {
             return;
         }
-        event.getInput().forwardImpulse = 0.0f;
-        event.getInput().leftImpulse = 0.0f;
-        event.getInput().jumping = false;
+        float largestInput = Math.max(
+                Math.abs(event.getInput().forwardImpulse),
+                Math.abs(event.getInput().leftImpulse)
+        );
+        if (largestInput > 0.0f) {
+            float correctionScale = SNEAK_MOVEMENT_INPUT_SCALE / largestInput;
+            event.getInput().forwardImpulse *= correctionScale;
+            event.getInput().leftImpulse *= correctionScale;
+        }
     }
 
     @SubscribeEvent
@@ -87,21 +89,15 @@ public final class CometAzurClientLock {
             lockActive = true;
             cancelPacketSent = false;
             holdKeyLatched = false;
-            lockedYawDegrees = localPlayer.getYRot();
-            lockedPitchDegrees = localPlayer.getXRot();
-            lockedFeetPosition = localPlayer.position();
-            applyLookAndPositionLock(localPlayer);
         }
+        localPlayer.setSprinting(false);
         if (isAnyCastHoldKeyPhysicallyDown()) {
             holdKeyLatched = true;
-            applyLookAndPositionLock(localPlayer);
             return;
         }
         if (holdKeyLatched) {
             sendCancelIfNeeded();
-            return;
         }
-        applyLookAndPositionLock(localPlayer);
     }
 
     private static void resetLockState() {
@@ -158,16 +154,4 @@ public final class CometAzurClientLock {
         return InputConstants.isKeyDown(windowHandle, key.getValue());
     }
 
-    private static void applyLookAndPositionLock(LocalPlayer localPlayer) {
-        localPlayer.setDeltaMovement(Vec3.ZERO);
-        localPlayer.setPos(lockedFeetPosition.x, lockedFeetPosition.y, lockedFeetPosition.z);
-        localPlayer.setYRot(lockedYawDegrees);
-        localPlayer.setXRot(lockedPitchDegrees);
-        localPlayer.yRotO = lockedYawDegrees;
-        localPlayer.xRotO = lockedPitchDegrees;
-        localPlayer.yHeadRot = lockedYawDegrees;
-        localPlayer.yHeadRotO = lockedYawDegrees;
-        localPlayer.yBodyRot = lockedYawDegrees;
-        localPlayer.yBodyRotO = lockedYawDegrees;
-    }
 }

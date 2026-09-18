@@ -1,6 +1,11 @@
 package com.eldenring.spells.item;
 
-/** Pure cost arithmetic shared by runtime code and the offline regression test. */
+import com.eldenring.spells.spell.cost.SpellManaCostPolicy;
+
+/**
+ * 旧测试兼容入口；运行时代码使用通用的 {@link SpellManaCostPolicy}。
+ */
+@Deprecated
 public final class AzurManaCostPolicy {
     private AzurManaCostPolicy() {
     }
@@ -11,19 +16,14 @@ public final class AzurManaCostPolicy {
 
     public static boolean chargesMana(boolean consumesMana, boolean recast, boolean creative,
                                       boolean creativeConsumesMana) {
-        return consumesMana && !recast && (!creative || creativeConsumesMana);
+        return SpellManaCostPolicy.chargesMana(consumesMana, recast, creative, creativeConsumesMana);
     }
 
     public static int apply(int original, double multiplier, boolean chargesMana) {
-        if (!chargesMana || original <= 0 || multiplier <= 1.0D) {
-            return original;
-        }
-        // Do not round a binary floating-point value infinitesimally above an integer up twice.
-        double scaled = Math.ceil(Math.nextDown(original * multiplier));
-        return (int) Math.min(Integer.MAX_VALUE, Math.max(original, scaled));
+        return SpellManaCostPolicy.apply(original, multiplier, chargesMana);
     }
 
     public static boolean canPay(float mana, int cost, boolean chargesMana) {
-        return !chargesMana || mana >= cost;
+        return SpellManaCostPolicy.canPay(mana, cost, chargesMana);
     }
 }

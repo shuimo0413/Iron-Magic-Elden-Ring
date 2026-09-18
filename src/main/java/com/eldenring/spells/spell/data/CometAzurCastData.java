@@ -8,46 +8,46 @@ import org.jetbrains.annotations.Nullable;
 /**
  * 彗星亚兹勒一次吟唱的附加状态。
  * <p>
- * 出手瞬间钉死：脚底坐标、蓄力漩涡中心、喷流口、朝向。整段吟唱（含蓄力）不能移动 / 转视角，
- * 喷流与周围粒子都沿这套锁定朝向直线延伸，不再跟手拐弯。
+ * 蓄力漩涡中心、喷流口与朝向会在每个施法 tick 按施法者当前位置和视线更新，
+ * 喷流、周围粒子及伤害判定共用这套实时状态。
  * 喷流口在玩家面前，与蓄力漩涡可以不在同一点。
  */
 public final class CometAzurCastData implements ICastData {
 
-    private final Vec3 lockedFeetPosition;
-    private final Vec3 vortexCenter;
-    private final Vec3 jetMouthWorld;
-    private final float yawDegrees;
-    private final float pitchDegrees;
+    private Vec3 vortexCenter;
+    private Vec3 jetMouthWorld;
+    private float yawDegrees;
+    private float pitchDegrees;
     private boolean chargeShockwaveSpawned;
     @Nullable
     private CometAzurJetEntity jetEntity;
 
     public CometAzurCastData(
-            Vec3 lockedFeetPosition,
             Vec3 vortexCenter,
             Vec3 jetMouthWorld,
             float yawDegrees,
             float pitchDegrees
     ) {
-        this.lockedFeetPosition = lockedFeetPosition;
         this.vortexCenter = vortexCenter;
         this.jetMouthWorld = jetMouthWorld;
         this.yawDegrees = yawDegrees;
         this.pitchDegrees = pitchDegrees;
     }
 
-    /** 出手时脚底世界坐标；每 tick 把施法者钉回这里。 */
-    public Vec3 lockedFeetPosition() {
-        return lockedFeetPosition;
+    /** 更新当前施法位置与朝向，供喷流实体、粒子和伤害判定共同读取。 */
+    public void updateAim(Vec3 vortexCenter, Vec3 jetMouthWorld, float yawDegrees, float pitchDegrees) {
+        this.vortexCenter = vortexCenter;
+        this.jetMouthWorld = jetMouthWorld;
+        this.yawDegrees = yawDegrees;
+        this.pitchDegrees = pitchDegrees;
     }
 
-    /** 蓄力漩涡 / 涟漪中心（出手时算死）。 */
+    /** 当前蓄力漩涡 / 涟漪中心。 */
     public Vec3 vortexCenter() {
         return vortexCenter;
     }
 
-    /** 星河喷流口（玩家面前，出手时算死）。 */
+    /** 当前星河喷流口（玩家面前）。 */
     public Vec3 jetMouthWorld() {
         return jetMouthWorld;
     }
@@ -60,8 +60,8 @@ public final class CometAzurCastData implements ICastData {
         return pitchDegrees;
     }
 
-    /** 锁定朝向的单位前向向量。 */
-    public Vec3 lockedLookDirection() {
+    /** 当前朝向的单位前向向量。 */
+    public Vec3 lookDirection() {
         return Vec3.directionFromRotation(this.pitchDegrees, this.yawDegrees);
     }
 

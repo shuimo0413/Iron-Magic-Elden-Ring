@@ -1,6 +1,6 @@
 package com.eldenring.spells.mixin;
 
-import com.eldenring.spells.client.AzurStaffClientCosts;
+import com.eldenring.spells.client.SpellManaCostClientCosts;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -14,6 +14,8 @@ public abstract class AzurInscriptionCostMixin {
     @WrapOperation(method = "renderLorePage", at = @At(value = "INVOKE",
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))
     private int eldenRingSpells$inscriptionAzurCost(AbstractSpell spell, int level, Operation<Integer> original) {
-        return AzurStaffClientCosts.manaCost(original.call(spell, level), spell, CastSource.SPELLBOOK);
+        return SpellManaCostClientCosts.manaCost(
+                original.call(spell, level), spell, CastSource.SPELLBOOK
+        );
     }
 }

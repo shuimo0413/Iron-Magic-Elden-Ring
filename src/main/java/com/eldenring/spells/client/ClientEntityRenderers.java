@@ -1,5 +1,6 @@
 package com.eldenring.spells.client;
 
+import com.eldenring.spells.client.render.astrologer.AstrologerRenderer;
 import com.eldenring.spells.client.render.CometAzurJetRenderer;
 import com.eldenring.spells.client.render.FoundingRainDropRenderer;
 import com.eldenring.spells.client.render.FoundingRainNebulaRenderer;
@@ -85,6 +86,7 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.MAGIC_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.PHALANX_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.GRAVITY_BALL.get(), GravityBallRenderer::new);
+        event.registerEntityRenderer(ModEntities.ASTROLOGER.get(), AstrologerRenderer::new);
     }
 
     /**

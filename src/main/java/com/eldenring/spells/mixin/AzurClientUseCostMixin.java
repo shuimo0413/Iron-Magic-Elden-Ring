@@ -1,6 +1,6 @@
 package com.eldenring.spells.mixin;
 
-import com.eldenring.spells.client.AzurStaffClientCosts;
+import com.eldenring.spells.client.SpellManaCostClientCosts;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -16,6 +16,8 @@ public abstract class AzurClientUseCostMixin {
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))
     private static int eldenRingSpells$clientUseAzurCost(AbstractSpell spell, int level, Operation<Integer> original,
                                                        @Local SpellSelectionManager.SelectionOption selection) {
-        return AzurStaffClientCosts.manaCost(original.call(spell, level), spell, selection.getCastSource());
+        return SpellManaCostClientCosts.manaCost(
+                original.call(spell, level), spell, selection.getCastSource()
+        );
     }
 }

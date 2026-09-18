@@ -9,7 +9,6 @@ import io.redspace.ironsspellbooks.player.KeyMappings;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,9 +19,9 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * 客户端：施放结晶连弹时锁死移动输入与脚底位置，但允许转视角扫射。
+ * 客户端：施放结晶连弹时把移动输入限制为潜行速度，并处理松键取消。
  * <p>
- * 铁魔法本身只把施法移速乘到约 0.2；本类在之后把冲量清零，并把脚钉回出手瞬间。
+ * 本事件以最低优先级运行，在铁魔法施法减速后把方向输入校正为原版潜行的 30%。
  * 松手停连射：铁魔法 CONTINUOUS 默认会射到时间/蓝耗尽，所以要自己发取消包。
  * 不能用 {@link KeyMapping#isDown()} 判断魔法书施法键——铁魔法 {@code consume()} 之后
  * 这个标志经常是 false。改为读当前绑定的物理键（GLFW）。
@@ -38,7 +37,7 @@ public final class CrystalBarrageClientLock {
      * 本段吟唱是否已经见过施法键处于按下。见过之后松开才发取消；从没见过说明是点按起手。
      */
     private static boolean holdKeyLatched;
-    private static Vec3 lockedFeetPosition = Vec3.ZERO;
+    private static final float SNEAK_MOVEMENT_INPUT_SCALE = 0.3f;
 
     private CrystalBarrageClientLock() {
     }
@@ -63,9 +62,15 @@ public final class CrystalBarrageClientLock {
         if (!isLocalPlayerCastingCrystalBarrage()) {
             return;
         }
-        event.getInput().forwardImpulse = 0.0f;
-        event.getInput().leftImpulse = 0.0f;
-        event.getInput().jumping = false;
+        float largestInput = Math.max(
+                Math.abs(event.getInput().forwardImpulse),
+                Math.abs(event.getInput().leftImpulse)
+        );
+        if (largestInput > 0.0f) {
+            float correctionScale = SNEAK_MOVEMENT_INPUT_SCALE / largestInput;
+            event.getInput().forwardImpulse *= correctionScale;
+            event.getInput().leftImpulse *= correctionScale;
+        }
     }
 
     @SubscribeEvent
@@ -83,19 +88,15 @@ public final class CrystalBarrageClientLock {
             lockActive = true;
             cancelPacketSent = false;
             holdKeyLatched = false;
-            lockedFeetPosition = localPlayer.position();
-            applyPositionLock(localPlayer);
         }
+        localPlayer.setSprinting(false);
         if (isAnyCastHoldKeyPhysicallyDown()) {
             holdKeyLatched = true;
-            applyPositionLock(localPlayer);
             return;
         }
         if (holdKeyLatched) {
             sendCancelIfNeeded();
-            return;
         }
-        applyPositionLock(localPlayer);
     }
 
     private static void resetLockState() {
@@ -152,8 +153,4 @@ public final class CrystalBarrageClientLock {
         return InputConstants.isKeyDown(windowHandle, key.getValue());
     }
 
-    private static void applyPositionLock(LocalPlayer localPlayer) {
-        localPlayer.setDeltaMovement(Vec3.ZERO);
-        localPlayer.setPos(lockedFeetPosition.x, lockedFeetPosition.y, lockedFeetPosition.z);
-    }
 }
