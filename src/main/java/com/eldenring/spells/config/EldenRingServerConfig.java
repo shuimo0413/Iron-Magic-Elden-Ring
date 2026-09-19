@@ -60,6 +60,7 @@ public final class EldenRingServerConfig {
     public static final ModConfigSpec.DoubleValue AZUR_MANA_COST_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION;
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION;
+    public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS;
 
     public static final HomingValues GLINTSTONE_PEBBLE;
     public static final HomingValues SWIFT_GLINTSTONE_SHARD;
@@ -269,6 +270,9 @@ public final class EldenRingServerConfig {
         PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION = builder
                 .comment("All-school mana-cost reduction while equipped. 0.25 means 25 percent.")
                 .defineInRange("manaCostReduction", 0.25D, 0.0D, 0.95D);
+        PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS = builder
+                .comment("All-school spell-power bonus while equipped. 0.07 means 7 percent.")
+                .defineInRange("spellPowerBonus", 0.07D, 0.0D, 10.0D);
         builder.pop(2);
 
         SPEC = builder.build();
@@ -284,7 +288,8 @@ public final class EldenRingServerConfig {
         AzurStaffBalance.configure(AZUR_CAST_TIME_REDUCTION.get(), AZUR_MANA_COST_MULTIPLIER.get());
         PrimalGlintstoneBladeEffect.configure(
                 PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION.get(),
-                PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION.get()
+                PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION.get(),
+                PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS.get()
         );
         applyHoming(GLINTSTONE_PEBBLE, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
             GlintstonePebbleSpell.SPELL_BASE_MANA_COST = mana;

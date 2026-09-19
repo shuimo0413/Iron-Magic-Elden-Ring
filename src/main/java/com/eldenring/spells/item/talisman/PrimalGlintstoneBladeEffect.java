@@ -10,22 +10,29 @@ import top.theillusivec4.curios.api.CuriosApi;
 public final class PrimalGlintstoneBladeEffect {
     private static volatile double maxHealthReduction;
     private static volatile double manaCostReduction;
+    private static volatile double spellPowerBonus;
 
     private PrimalGlintstoneBladeEffect() {
     }
 
-    public static void configure(double configuredMaxHealthReduction, double configuredManaCostReduction) {
+    public static void configure(double configuredMaxHealthReduction, double configuredManaCostReduction, double configuredSpellPowerBonus) {
         maxHealthReduction = configuredMaxHealthReduction;
         manaCostReduction = configuredManaCostReduction;
+        spellPowerBonus = configuredSpellPowerBonus;
     }
 
     public static void reset() {
         maxHealthReduction = 0.0D;
         manaCostReduction = 0.0D;
+        spellPowerBonus = 0.0D;
     }
 
     public static double maxHealthReduction() {
         return maxHealthReduction;
+    }
+
+    public static double spellPowerBonus() {
+        return spellPowerBonus;
     }
 
     public static double currentManaCostMultiplier(Player player) {

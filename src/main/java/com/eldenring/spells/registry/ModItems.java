@@ -6,6 +6,7 @@ import com.eldenring.spells.item.AzurGlintstoneStaffItem;
 import com.eldenring.spells.item.CelestialMageArmorItem;
 import com.eldenring.spells.item.OriginPotionItem;
 import com.eldenring.spells.config.EldenRingServerConfig;
+import com.eldenring.spells.item.talisman.MageSphereItem;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeItem;
 import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -230,6 +231,17 @@ public final class ModItems {
             "primal_glintstone_blade",
             () -> new PrimalGlintstoneBladeItem(
                     new Item.Properties().rarity(Rarity.EPIC)
+            )
+    );
+
+    /**
+     * 魔法师球护符：Curios 护符。佩戴时全局法术强度 +5%（铁魔法 {@code SPELL_POWER}）。
+     * 须加入 {@code curios:charm} 物品标签才能装进护符槽。
+     */
+    public static final DeferredItem<Item> MAGE_SPHERE = ITEMS.register(
+            "mage_sphere",
+            () -> new MageSphereItem(
+                    new Item.Properties().rarity(Rarity.UNCOMMON)
             )
     );
 

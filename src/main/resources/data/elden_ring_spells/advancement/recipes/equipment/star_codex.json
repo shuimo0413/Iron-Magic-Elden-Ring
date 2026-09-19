@@ -1,4 +1,4 @@
-{
+﻿{
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_material": {
@@ -6,7 +6,7 @@
       "conditions": {
         "items": [
           {
-            "items": "irons_spellbooks:diamond_spell_book"
+            "items": "irons_spellbooks:rotten_spell_book"
           }
         ]
       }

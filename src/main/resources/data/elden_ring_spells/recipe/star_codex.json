@@ -1,7 +1,24 @@
-{
-  "type": "elden_ring_spells:equipment_upgrade",
-  "template": {"item": "irons_spellbooks:rare_ink"},
-  "base": {"item": "irons_spellbooks:diamond_spell_book"},
-  "addition": {"item": "elden_ring_spells:cyan_glintstone_block"},
-  "result": {"id": "elden_ring_spells:star_codex", "count": 1}
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " AB",
+    "ACA",
+    "BA "
+  ],
+  "key": {
+    "A": {
+      "tag": "elden_ring_spells:glintstone_focus"
+    },
+    "B": {
+      "item": "irons_spellbooks:arcane_ingot"
+    },
+    "C": {
+      "item": "irons_spellbooks:rotten_spell_book"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "elden_ring_spells:star_codex"
+  }
 }
