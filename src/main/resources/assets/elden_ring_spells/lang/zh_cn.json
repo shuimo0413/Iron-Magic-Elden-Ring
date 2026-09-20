@@ -60,7 +60,7 @@
   "item.elden_ring_spells.celestial_mage_boots": "星辰法师长靴",
   "item.elden_ring_spells.astrologer_spawn_egg": "观星者刷怪蛋",
   "item.elden_ring_spells.primal_glintstone_blade": "源辉石刀",
-  "tooltip.elden_ring_spells.primal_glintstone_blade.effect": "法术蓝耗 -25%；最大生命值 -15%,法术攻击力 +7%",
+  "tooltip.elden_ring_spells.primal_glintstone_blade.effect": "法术蓝耗 -25%；最大生命值 -15%；法术攻击力 +7%",
   "tooltip.elden_ring_spells.primal_glintstone_blade.lore_1": "古老的魔法师为了将源辉石化成自己的灵魂，",
   "tooltip.elden_ring_spells.primal_glintstone_blade.lore_2": "会用这把刀划开心脏，接着步入死亡。",
   "item.elden_ring_spells.mage_sphere": "魔法师球护符",

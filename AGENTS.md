@@ -22,8 +22,8 @@
 | 加载器 | NeoForge `21.1.244`（见 `gradle.properties` 的 `neo_version`） |
 | JDK | **必须 21**（`org.gradle.java.home` 已指向本机 Microsoft JDK 21） |
 | 构建 | Gradle Wrapper + ModDevGradle（`net.neoforged.moddev`） |
-| 铁魔法 | `irons_spellbooks` 运行时 ≥ `1.21.1-3.16.1`；开发编译 / runClient 用 `1.21.1-3.16.2`（`gradle.properties`） |
-| Iron's Lib | 运行时 ≥ `1.21.1-1.1.0`（3.16.1 配对）；开发用 `1.21.1-2.1.0`（对齐 3.16.2） |
+| 铁魔法 | `irons_spellbooks` 运行时 / 开发编译 ≥ `1.21.1-3.16.1`（`gradle.properties`） |
+| Iron's Lib | 运行时 / 开发 ≥ `1.21.1-1.1.0`（对齐 3.16.1） |
 | 运行时连带 | Curios、GeckoLib、PlayerAnimator（版本写在 `gradle.properties`） |
 
 版本号只改 `gradle.properties`，不要在多处硬编码散落副本（`neoforge.mods.toml` 里依赖范围若写死版本，升级时一并改）。
