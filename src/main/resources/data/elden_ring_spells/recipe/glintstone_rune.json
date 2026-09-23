@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "SBS",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "tag": "elden_ring_spells:glintstone_shards"
+    },
+    "B": {
+      "item": "irons_spellbooks:blank_rune"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "elden_ring_spells:glintstone_rune"
+  }
+}

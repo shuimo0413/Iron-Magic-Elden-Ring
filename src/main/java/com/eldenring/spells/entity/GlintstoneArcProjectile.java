@@ -40,9 +40,6 @@ public class GlintstoneArcProjectile extends AbstractGlintstoneProjectile {
     public static final GlintstoneTrailStyle TRAIL_STYLE =
             new GlintstoneTrailStyle(4.0, 0.040f, 0.010f, 0.14f, 0.04f, 12);
 
-    /** 出手后忽略方块命中的 tick 数，避免出生略嵌实心块时立刻销毁。 */
-    private static final int COLLISION_GRACE_TICKS = 4;
-
     /**
      * 已经结算过的实体 UUID。弯弧穿人但不对同一目标连打。
      */
@@ -96,14 +93,13 @@ public class GlintstoneArcProjectile extends AbstractGlintstoneProjectile {
     }
 
     /**
-     * 定向盒命中 + 中心射线撞墙。宽限期内仍检测实体，但不结算方块。
+     * 定向盒命中 + 中心射线撞墙。实体与方块同 tick 结算（生成清障见 CastHelper）。
      */
     @Override
     public void handleHitDetection() {
         if (this.isRemoved()) {
             return;
         }
-        boolean withinBlockCollisionGrace = tickCount <= COLLISION_GRACE_TICKS;
         Vec3 pathStart = position();
         Vec3 pathEnd = pathStart.add(getDeltaMovement());
         float halfWidthBlocks = currentHalfWidthBlocks(0.0f);
@@ -143,8 +139,7 @@ public class GlintstoneArcProjectile extends AbstractGlintstoneProjectile {
             }
         }
 
-        if (!withinBlockCollisionGrace
-                && collidesWithBlocks()
+        if (collidesWithBlocks()
                 && blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
                 && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {

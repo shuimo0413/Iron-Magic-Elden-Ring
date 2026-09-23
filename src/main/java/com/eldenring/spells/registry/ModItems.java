@@ -208,6 +208,15 @@ public final class ModItems {
     );
 
     /**
+     * 辉石符文：辉石学派材料符文，与铁魔法学派符文同级。
+     * 合成：八个辉石碎片（青/蓝/紫均可）围一圈，中间放空白符文。
+     */
+    public static final DeferredItem<Item> GLINTSTONE_RUNE = ITEMS.register(
+            "glintstone_rune",
+            () -> new Item(new Item.Properties())
+    );
+
+    /**
      * 起源晶体：八辉石晶簇围下界之星合成；投入炼药锅与粗制药水炼成起源药剂。
      */
     public static final DeferredItem<Item> ORIGIN_CRYSTAL = ITEMS.register(

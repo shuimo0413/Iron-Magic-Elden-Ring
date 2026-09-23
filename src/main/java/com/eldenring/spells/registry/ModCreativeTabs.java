@@ -53,6 +53,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.CYAN_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());
+                        output.accept(ModItems.GLINTSTONE_RUNE.get());
                         output.accept(ModItems.ORIGIN_CRYSTAL.get());
                         output.accept(ModItems.ORIGIN_POTION.get());
                         output.accept(ModItems.ORIGIN_GLINTSTONE.get());

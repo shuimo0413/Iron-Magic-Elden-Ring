@@ -354,11 +354,6 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         return MagicGlintbladeSpell.PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES;
     }
 
-    /** 射出后忽略方块命中的 tick 数。 */
-    protected int collisionGraceTicks() {
-        return MagicGlintbladeSpell.COLLISION_GRACE_TICKS;
-    }
-
     protected float trailParticleIntensity() {
         return MagicGlintbladeSpell.TRAIL_PARTICLE_INTENSITY;
     }
@@ -430,9 +425,6 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         if (!hasLaunched()) {
             return;
         }
-        int elapsedTicksSinceLaunch = ticksSinceLaunch();
-        boolean withinBlockCollisionGrace =
-                elapsedTicksSinceLaunch <= collisionGraceTicks();
         Vec3 startPosition = position();
         Vec3 destination = startPosition.add(getDeltaMovement());
         BlockHitResult blockCollision = level().clip(new ClipContext(
@@ -470,8 +462,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
             }
         }
 
-        if (!withinBlockCollisionGrace
-                && collidesWithBlocks()
+        if (collidesWithBlocks()
                 && blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
                 && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {

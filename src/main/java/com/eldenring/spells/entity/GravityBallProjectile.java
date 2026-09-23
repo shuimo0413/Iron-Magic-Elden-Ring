@@ -31,11 +31,6 @@ import java.util.Optional;
 public class GravityBallProjectile extends AbstractMagicProjectile {
 
     /**
-     * 出手后忽略方块命中的 tick 数，避免出生略嵌实心块时立刻销毁。
-     */
-    private static final int BLOCK_COLLISION_GRACE_TICKS = 4;
-
-    /**
      * 命中射线相对目标碰撞箱的外扩（方块）。
      */
     private static final float HIT_DETECTION_INFLATION_BLOCKS = 0.35f;
@@ -188,9 +183,12 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
                 && Double.isFinite(motion.z);
     }
 
+    /**
+     * 实体 / 方块同 tick 结算。生成清障由 {@link com.eldenring.spells.spell.helper.GravityCastHelper} 负责，
+     * 不再用「前 N tick 忽略方块」（否则头几格会穿墙）。
+     */
     @Override
     public void handleHitDetection() {
-        boolean withinBlockCollisionGrace = tickCount <= BLOCK_COLLISION_GRACE_TICKS;
         Vec3 startPosition = position();
         Vec3 destination = startPosition.add(getDeltaMovement());
         BlockHitResult blockCollision = level().clip(new ClipContext(
@@ -221,8 +219,7 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
             }
         }
 
-        if (!withinBlockCollisionGrace
-                && blockCollision.getType() != HitResult.Type.MISS
+        if (blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
                 && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {
             onHit(blockCollision);

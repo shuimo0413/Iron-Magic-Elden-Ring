@@ -131,12 +131,6 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         public static double TRACKING_AIM_HEIGHT_FRACTION = 0.68;
 
         /**
-         * 发射后忽略<strong>方块</strong>命中的 tick 数，避免刚加速嵌块立刻销毁。
-         * 实体命中从发射当 tick 就检测（主人已排除），否则贴身目标会被穿过去。
-         */
-        public static int COLLISION_GRACE_TICKS = 2;
-
-        /**
          * 实体总寿命（含悬停）。到期 discard。
          */
         public static int ENTITY_LIFETIME_TICKS = 90;
