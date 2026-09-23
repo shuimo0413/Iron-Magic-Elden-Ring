@@ -1,6 +1,7 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.item.AstrologerArmorItem;
 import com.eldenring.spells.item.AstrologerStaffItem;
 import com.eldenring.spells.item.AzurGlintstoneStaffItem;
 import com.eldenring.spells.item.CelestialMageArmorItem;
@@ -111,6 +112,42 @@ public final class ModItems {
     );
 
     /**
+     * 观星者套装：观星者 NPC 默认穿着。每件提供铁魔法原生学派护甲同级的护甲值、
+     * 125 最大法力、10% 辉石法术强度与 5% 通用法术强度；长袍额外拥有一个可灌注法术槽。
+     */
+    public static final DeferredItem<Item> ASTROLOGER_HAT = ITEMS.register(
+            "astrologer_hat",
+            () -> new AstrologerArmorItem(
+                    ArmorItem.Type.HELMET,
+                    schoolArmorProperties(ArmorItem.Type.HELMET)
+            )
+    );
+
+    public static final DeferredItem<Item> ASTROLOGER_ROBE = ITEMS.register(
+            "astrologer_robe",
+            () -> new AstrologerArmorItem(
+                    ArmorItem.Type.CHESTPLATE,
+                    schoolArmorProperties(ArmorItem.Type.CHESTPLATE)
+            )
+    );
+
+    public static final DeferredItem<Item> ASTROLOGER_LEGGINGS = ITEMS.register(
+            "astrologer_leggings",
+            () -> new AstrologerArmorItem(
+                    ArmorItem.Type.LEGGINGS,
+                    schoolArmorProperties(ArmorItem.Type.LEGGINGS)
+            )
+    );
+
+    public static final DeferredItem<Item> ASTROLOGER_BOOTS = ITEMS.register(
+            "astrologer_boots",
+            () -> new AstrologerArmorItem(
+                    ArmorItem.Type.BOOTS,
+                    schoolArmorProperties(ArmorItem.Type.BOOTS)
+            )
+    );
+
+    /**
      * 星辰法师套装：每件提供铁魔法原生学派护甲同级的护甲值、125 最大法力、
      * 10% 辉石法术强度与 5% 通用法术强度；长袍额外拥有一个可灌注法术槽。
      */
@@ -118,7 +155,7 @@ public final class ModItems {
             "celestial_mage_hat",
             () -> new CelestialMageArmorItem(
                     ArmorItem.Type.HELMET,
-                    celestialMageProperties(ArmorItem.Type.HELMET)
+                    schoolArmorProperties(ArmorItem.Type.HELMET)
             )
     );
 
@@ -126,7 +163,7 @@ public final class ModItems {
             "celestial_mage_robe",
             () -> new CelestialMageArmorItem(
                     ArmorItem.Type.CHESTPLATE,
-                    celestialMageProperties(ArmorItem.Type.CHESTPLATE)
+                    schoolArmorProperties(ArmorItem.Type.CHESTPLATE)
             )
     );
 
@@ -134,7 +171,7 @@ public final class ModItems {
             "celestial_mage_leggings",
             () -> new CelestialMageArmorItem(
                     ArmorItem.Type.LEGGINGS,
-                    celestialMageProperties(ArmorItem.Type.LEGGINGS)
+                    schoolArmorProperties(ArmorItem.Type.LEGGINGS)
             )
     );
 
@@ -142,7 +179,7 @@ public final class ModItems {
             "celestial_mage_boots",
             () -> new CelestialMageArmorItem(
                     ArmorItem.Type.BOOTS,
-                    celestialMageProperties(ArmorItem.Type.BOOTS)
+                    schoolArmorProperties(ArmorItem.Type.BOOTS)
             )
     );
 
@@ -269,7 +306,8 @@ public final class ModItems {
     private ModItems() {
     }
 
-    private static Item.Properties celestialMageProperties(ArmorItem.Type armorType) {
+    /** 观星者 / 星辰法师共用学派护甲耐久与稀有度。 */
+    private static Item.Properties schoolArmorProperties(ArmorItem.Type armorType) {
         return new Item.Properties()
                 .stacksTo(1)
                 .rarity(Rarity.RARE)

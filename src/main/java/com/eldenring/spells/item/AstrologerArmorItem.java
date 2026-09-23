@@ -12,11 +12,10 @@ import net.neoforged.api.distmarker.OnlyIn;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
 
 /**
- * 星辰法师套装（设计图版宽檐帽 / 面具 / 蓝金长袍）。
- * 沿用铁魔法学派护甲材质、胸甲灌注槽与属性构建逻辑。
+ * 观星者套装。观星者 NPC 默认穿着；属性与学派护甲同级，长袍带灌注槽。
  */
-public final class CelestialMageArmorItem extends ImbuableChestplateArmorItem {
-    public CelestialMageArmorItem(ArmorItem.Type armorType, Properties properties) {
+public final class AstrologerArmorItem extends ImbuableChestplateArmorItem {
+    public AstrologerArmorItem(ArmorItem.Type armorType, Properties properties) {
         super(
                 ArmorMaterialRegistry.SCHOOL,
                 armorType,
@@ -26,15 +25,15 @@ public final class CelestialMageArmorItem extends ImbuableChestplateArmorItem {
     }
 
     /**
-     * 四个部位共用星辰法师模型；铁魔法渲染器按装备槽控制对应骨骼显隐。
+     * 四个部位共用观星者模型；铁魔法渲染器按装备槽控制对应骨骼显隐。
      */
     @Override
     @OnlyIn(Dist.CLIENT)
     public GeoArmorRenderer<?> supplyRenderer() {
         return new GenericCustomArmorRenderer<>(
-                new GenericArmorModel<CelestialMageArmorItem>(
+                new GenericArmorModel<AstrologerArmorItem>(
                         EldenRingSpellsMod.MOD_ID,
-                        "celestial_mage"
+                        "astrologer"
                 )
         );
     }

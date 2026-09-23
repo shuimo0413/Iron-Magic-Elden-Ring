@@ -123,10 +123,10 @@ public class AstrologerEntity extends NeutralWizard implements IMerchantWizard {
 
     @Override
     protected void populateDefaultEquipmentSlots(RandomSource random, DifficultyInstance difficulty) {
-        this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.CELESTIAL_MAGE_HAT.get()));
-        this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.CELESTIAL_MAGE_ROBE.get()));
-        this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(ModItems.CELESTIAL_MAGE_LEGGINGS.get()));
-        this.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.CELESTIAL_MAGE_BOOTS.get()));
+        this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.ASTROLOGER_HAT.get()));
+        this.setItemSlot(EquipmentSlot.CHEST, new ItemStack(ModItems.ASTROLOGER_ROBE.get()));
+        this.setItemSlot(EquipmentSlot.LEGS, new ItemStack(ModItems.ASTROLOGER_LEGGINGS.get()));
+        this.setItemSlot(EquipmentSlot.FEET, new ItemStack(ModItems.ASTROLOGER_BOOTS.get()));
         this.setDropChance(EquipmentSlot.HEAD, 0.0F);
         this.setDropChance(EquipmentSlot.CHEST, 0.0F);
         this.setDropChance(EquipmentSlot.LEGS, 0.0F);
@@ -216,9 +216,13 @@ public class AstrologerEntity extends NeutralWizard implements IMerchantWizard {
 
     @Override
     public MerchantOffers getOffers() {
+        boolean hardcoreMode = this.level().getLevelData().isHardcore();
         if (this.offers == null) {
-            this.offers = AstrologerTrades.createOffers(this.random);
+            this.offers = AstrologerTrades.createOffers(this.random, hardcoreMode);
             this.setLastRestockGameTime(this.level().getGameTime());
+        } else if (!this.level().isClientSide) {
+            // 旧存档商人在极限世界可能还没有起源辉石槽，打开交易时补上
+            AstrologerTrades.ensureHardcoreOriginGlintstoneOffer(this.offers, hardcoreMode);
         }
         return this.offers;
     }

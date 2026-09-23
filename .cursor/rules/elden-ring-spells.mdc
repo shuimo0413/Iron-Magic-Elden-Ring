@@ -50,7 +50,7 @@ alwaysApply: true
 
 - **所有离线工具 / 生成脚本 / 像素画源数据统一放 `工具链/`**
 - **禁止**再往 `tools/`、`像素画/` 等旧目录写新文件
-- 画布固定 **32×32或64*64**（JSON 的 `width` / `height` 均为 `32或64`）
+- 画布无特殊要求则默认16*16
 - 格式：`name`、`width`、`height`、`pixels`（每项含 `x`/`y`/`rgba`）
 - 用 `工具链/render_pixel_art.py` 导出 PNG，再拷到 `assets/elden_ring_spells/textures/...`
 - 不要默认用 16×16 或 64×64，除非用户明确要求其他尺寸

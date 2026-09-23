@@ -26,6 +26,7 @@ import java.util.function.Supplier;
  * 观星者交易构造：显式白名单 + 起源防御拒绝。
  * <p>
  * 不依赖抄写配方，不读取实体实例状态。新增法术默认不售，必须人工加入白名单。
+ * 例外：极限模式下允许以「1 下界之星 + 64 绿宝石」售卖起源辉石（药剂献祭无法回档）。
  */
 public final class AstrologerTrades {
 
@@ -72,9 +73,18 @@ public final class AstrologerTrades {
     }
 
     /**
-     * 生成一次库存。调用方负责持久化；本方法不碰实体字段。
+     * 极限模式下起源辉石交易：每次补货可用次数。
+     * 调大 → 同一补货周期内可多买几颗；调小 → 更稀缺。
      */
-    public static MerchantOffers createOffers(RandomSource random) {
+    private static final int HARDCORE_ORIGIN_GLINTSTONE_MAX_USES = 1;
+
+    /**
+     * 生成一次库存。调用方负责持久化；本方法不碰实体字段。
+     *
+     * @param hardcoreMode 当前世界是否极限模式；为 true 时追加起源辉石双代价报价
+     *                     （药剂献祭在极限下无法回档，用下界之星门槛替代）
+     */
+    public static MerchantOffers createOffers(RandomSource random, boolean hardcoreMode) {
         MerchantOffers offers = new MerchantOffers();
 
         offers.addAll(createFillerOffers(random, 2));
@@ -97,8 +107,6 @@ public final class AstrologerTrades {
         }
         offers.add(sellItem(new ItemStack(ModItems.PRIMAL_GLINTSTONE_BLADE.get()), 32, 64, 1, random));
 
-        
-
         if (random.nextFloat() < 0.55f) {
             offers.add(sellItem(new ItemStack(ModItems.ASTROLOGER_STAFF.get()), 28, 36, 1, random));
         }
@@ -108,7 +116,43 @@ public final class AstrologerTrades {
 
         offers.removeIf(Objects::isNull);
         offers.removeIf(AstrologerTrades::violatesOriginDenylist);
+        // 故意放在拒绝列表过滤之后：极限模式才允许售卖起源辉石
+        if (hardcoreMode) {
+            offers.add(createHardcoreOriginGlintstoneOffer());
+        }
         return offers;
+    }
+
+    /**
+     * 若已是极限世界但库存里还没有起源辉石报价（旧存档 / 升级前生成的商人），补一条。
+     * 非极限或已有该报价时不做任何事。
+     */
+    public static void ensureHardcoreOriginGlintstoneOffer(MerchantOffers offers, boolean hardcoreMode) {
+        if (!hardcoreMode || offers == null) {
+            return;
+        }
+        for (MerchantOffer offer : offers) {
+            if (offer != null && offer.getResult().is(ModItems.ORIGIN_GLINTSTONE.get())) {
+                return;
+            }
+        }
+        offers.add(createHardcoreOriginGlintstoneOffer());
+    }
+
+    /**
+     * 极限模式专用：1 下界之星 + 64 绿宝石 → 1 起源辉石。
+     * 不走 {@link #sellItem}，以免被起源物品拒绝列表拦掉。
+     */
+    private static MerchantOffer createHardcoreOriginGlintstoneOffer() {
+        return new MerchantOffer(
+                new ItemCost(Items.NETHER_STAR, 1),
+                Optional.of(new ItemCost(Items.EMERALD, 64)),
+                new ItemStack(ModItems.ORIGIN_GLINTSTONE.get()),
+                0,
+                HARDCORE_ORIGIN_GLINTSTONE_MAX_USES,
+                20,
+                0.05f
+        );
     }
 
     private static List<MerchantOffer> createFillerOffers(RandomSource random, int count) {
