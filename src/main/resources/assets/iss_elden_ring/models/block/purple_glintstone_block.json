@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "iss_elden_ring:block/purple_glintstone_block"
+  }
+}

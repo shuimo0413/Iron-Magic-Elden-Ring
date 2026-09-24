@@ -33,9 +33,9 @@ import java.util.Optional;
 public class GavelOfHaimaSpell extends EldenRingAbstractSpell {
 
     public static final int SPELL_MAX_LEVEL = 5;
-    public static final double SPELL_COOLDOWN_SECONDS = 3.5;
+    public static final double SPELL_COOLDOWN_SECONDS = 2.0;
 
-    public static int SPELL_BASE_MANA_COST = 30;
+    public static int SPELL_BASE_MANA_COST = 35;
     public static int SPELL_MANA_COST_PER_LEVEL = 4;
     public static float SPELL_BASE_SPELL_POWER = 14;
     public static float SPELL_SPELL_POWER_PER_LEVEL = 2;
@@ -48,7 +48,7 @@ public class GavelOfHaimaSpell extends EldenRingAbstractSpell {
     public static double DIRECT_HIT_KNOCKBACK_STRENGTH = 0.48;
     public static double SHOCKWAVE_KNOCKBACK_STRENGTH = 0.32;
 
-    /** 注册 ID：{@code elden_ring_spells:gavel_of_haima}。 */
+    /** 注册 ID：{@code iss_elden_ring:gavel_of_haima}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "gavel_of_haima");
 
@@ -75,7 +75,7 @@ public class GavelOfHaimaSpell extends EldenRingAbstractSpell {
                         Utils.stringTruncation(getDirectHitDamage(spellLevel, caster), 2)
                 ),
                 Component.translatable(
-                        "ui.elden_ring_spells.shockwave_damage",
+                        "ui.iss_elden_ring.shockwave_damage",
                         Utils.stringTruncation(getShockwaveDamage(spellLevel, caster), 2)
                 ),
                 Component.translatable(

@@ -1,0 +1,22 @@
+{
+  "spell_cast": {
+    "subtitle": "subtitles.iss_elden_ring.spell_cast",
+    "sounds": [
+      {
+        "name": "iss_elden_ring:spell_cast",
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "spell_cast_start": {
+    "subtitle": "subtitles.iss_elden_ring.spell_cast_start",
+    "sounds": [
+      {
+        "name": "iss_elden_ring:spell_cast_start",
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  }
+}

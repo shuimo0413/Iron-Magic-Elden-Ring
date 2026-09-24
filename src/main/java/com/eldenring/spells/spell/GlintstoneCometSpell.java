@@ -84,18 +84,18 @@ public class GlintstoneCometSpell extends EldenRingAbstractSpell {
         public static float IMPACT_PARTICLE_INTENSITY = 2.55f;
         public static float CAST_BURST_PARTICLE_INTENSITY = 1.95f;
 
-        public static int SPELL_BASE_MANA_COST = 18;
+        public static int SPELL_BASE_MANA_COST = 23;
         public static int SPELL_MANA_COST_PER_LEVEL = 3;
         public static float SPELL_BASE_SPELL_POWER = 10;
         public static float SPELL_SPELL_POWER_PER_LEVEL = 2;
         public static int SPELL_CAST_TIME_TICKS = 0;
-        public static double SPELL_COOLDOWN_SECONDS = 1.2;
+        public static double SPELL_COOLDOWN_SECONDS = 1.5;
         /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
         public static int SPELL_MAX_LEVEL = 7;
         public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.8;
 
-    /** 注册 ID：{@code elden_ring_spells:glintstone_comet}。 */
+    /** 注册 ID：{@code iss_elden_ring:glintstone_comet}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_comet");
 

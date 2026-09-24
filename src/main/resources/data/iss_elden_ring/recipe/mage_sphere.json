@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CBC",
+    "BAP",
+    "CPC"
+  ],
+  "key": {
+    "C": {
+      "item": "iss_elden_ring:cyan_glintstone_shard"
+    },
+    "B": {
+      "item": "iss_elden_ring:blue_glintstone_shard"
+    },
+    "P": {
+      "item": "iss_elden_ring:purple_glintstone_shard"
+    },
+    "A": {
+      "item": "irons_spellbooks:arcane_ingot"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "iss_elden_ring:mage_sphere"
+  }
+}

@@ -140,7 +140,7 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
         @Deprecated
         public static double STAR_RIVER_RADIUS_BLOCKS = 0.85;
 
-        public static int SPELL_BASE_MANA_COST = 55;
+        public static int SPELL_BASE_MANA_COST = 60;
         public static int SPELL_MANA_COST_PER_LEVEL = 8;
         public static float SPELL_BASE_SPELL_POWER = 4;
         public static float SPELL_SPELL_POWER_PER_LEVEL = 1.5f;
@@ -150,7 +150,7 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
          */
         public static int SPELL_CAST_TIME_TICKS = 0;
 
-        public static double SPELL_COOLDOWN_SECONDS = 6.0;
+        public static double SPELL_COOLDOWN_SECONDS = 3.0;
         /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
         public static int SPELL_MAX_LEVEL = 3;
 
@@ -159,7 +159,7 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
 
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.70;
 
-    /** 注册 ID：{@code elden_ring_spells:stars_of_ruin}。 */
+    /** 注册 ID：{@code iss_elden_ring:stars_of_ruin}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "stars_of_ruin");
 

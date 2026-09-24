@@ -16,33 +16,33 @@ public final class TrackingIgnoreMalilibConfigs {
     public static final ConfigBoolean IGNORE_PLAYERS = new ConfigBoolean(
             "ignorePlayers",
             true,
-            "elden_ring_spells.config.comment.ignore_players",
-            "elden_ring_spells.config.name.ignore_players",
-            "elden_ring_spells.config.name.ignore_players"
+            "iss_elden_ring.config.comment.ignore_players",
+            "iss_elden_ring.config.name.ignore_players",
+            "iss_elden_ring.config.name.ignore_players"
     );
 
     public static final ConfigBoolean IGNORE_PEACEFUL = new ConfigBoolean(
             "ignorePeaceful",
             true,
-            "elden_ring_spells.config.comment.ignore_peaceful",
-            "elden_ring_spells.config.name.ignore_peaceful",
-            "elden_ring_spells.config.name.ignore_peaceful"
+            "iss_elden_ring.config.comment.ignore_peaceful",
+            "iss_elden_ring.config.name.ignore_peaceful",
+            "iss_elden_ring.config.name.ignore_peaceful"
     );
 
     public static final ConfigBoolean IGNORE_NEUTRAL = new ConfigBoolean(
             "ignoreNeutral",
             false,
-            "elden_ring_spells.config.comment.ignore_neutral",
-            "elden_ring_spells.config.name.ignore_neutral",
-            "elden_ring_spells.config.name.ignore_neutral"
+            "iss_elden_ring.config.comment.ignore_neutral",
+            "iss_elden_ring.config.name.ignore_neutral",
+            "iss_elden_ring.config.name.ignore_neutral"
     );
 
     public static final ConfigBoolean IGNORE_HOSTILE = new ConfigBoolean(
             "ignoreHostile",
             false,
-            "elden_ring_spells.config.comment.ignore_hostile",
-            "elden_ring_spells.config.name.ignore_hostile",
-            "elden_ring_spells.config.name.ignore_hostile"
+            "iss_elden_ring.config.comment.ignore_hostile",
+            "iss_elden_ring.config.name.ignore_hostile",
+            "iss_elden_ring.config.name.ignore_hostile"
     );
 
     public static final ImmutableList<ConfigBoolean> OPTIONS = ImmutableList.of(

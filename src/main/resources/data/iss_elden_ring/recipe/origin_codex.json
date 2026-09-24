@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ABA",
+    "CDC",
+    "AAA"
+  ],
+  "key": {
+    "A": {
+      "item": "irons_spellbooks:arcane_ingot"
+    },
+    "B": {
+      "item": "iss_elden_ring:origin_crystal"
+    },
+    "C": {
+      "item": "irons_spellbooks:magic_cloth"
+    },
+    "D": {
+      "item": "iss_elden_ring:star_codex"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "iss_elden_ring:origin_codex"
+  }
+}

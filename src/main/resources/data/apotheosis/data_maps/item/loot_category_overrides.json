@@ -1,0 +1,53 @@
+{
+  "values": {
+    "iss_elden_ring:astrologer_hat": "apotheosis:helmet",
+    "iss_elden_ring:astrologer_robe": "apotheosis:chestplate",
+    "iss_elden_ring:astrologer_leggings": "apotheosis:leggings",
+    "iss_elden_ring:astrologer_boots": "apotheosis:boots",
+    "iss_elden_ring:celestial_mage_hat": "apotheosis:helmet",
+    "iss_elden_ring:celestial_mage_robe": "apotheosis:chestplate",
+    "iss_elden_ring:celestial_mage_leggings": "apotheosis:leggings",
+    "iss_elden_ring:celestial_mage_boots": "apotheosis:boots",
+
+    "iss_elden_ring:carian_slicer_sword": "apotheosis:none",
+    "iss_elden_ring:carian_greatsword_sword": "apotheosis:none",
+    "iss_elden_ring:carian_piercer_sword": "apotheosis:none",
+
+    "iss_elden_ring:astrologer_staff": {
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "irons_apothic"
+        }
+      ],
+      "value": "irons_apothic:staff"
+    },
+    "iss_elden_ring:azur_glintstone_staff": {
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "irons_apothic"
+        }
+      ],
+      "value": "irons_apothic:staff"
+    },
+    "iss_elden_ring:star_codex": {
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "irons_apothic"
+        }
+      ],
+      "value": "irons_apothic:spellbook"
+    },
+    "iss_elden_ring:origin_codex": {
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "irons_apothic"
+        }
+      ],
+      "value": "irons_apothic:spellbook"
+    }
+  }
+}

@@ -9,7 +9,7 @@ import net.minecraft.world.damagesource.DamageType;
 /**
  * 本模组伤害类型 ResourceKey。实际条目由数据包 {@code data/.../damage_type/*.json} 提供。
  * <p>
- * 须同步挂到 {@code #elden_ring_spells:glintstone_magic}，并经由
+ * 须同步挂到 {@code #iss_elden_ring:glintstone_magic}，并经由
  * {@code data/neoforge/tags/damage_type/is_magic.json} 并入 {@code #neoforge:is_magic}，
  * 否则伤害数字 / 其它模组会把它当成物理伤害（铁魔法本体各学派同此约定）。
  */

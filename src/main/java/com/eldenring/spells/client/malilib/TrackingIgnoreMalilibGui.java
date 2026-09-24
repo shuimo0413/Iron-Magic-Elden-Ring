@@ -26,7 +26,7 @@ public class TrackingIgnoreMalilibGui extends GuiConfigsBase {
                 50,
                 EldenRingSpellsMod.MOD_ID,
                 null,
-                "elden_ring_spells.config.title",
+                "iss_elden_ring.config.title",
                 resolveModVersion()
         );
     }
@@ -89,7 +89,7 @@ public class TrackingIgnoreMalilibGui extends GuiConfigsBase {
      * 配置页签。目前只有「追踪排除」一页，样式对齐 Tweakerge 顶栏按钮。
      */
     public enum ConfigGuiTab {
-        TRACKING_IGNORE("elden_ring_spells.config.tab.tracking_ignore");
+        TRACKING_IGNORE("iss_elden_ring.config.tab.tracking_ignore");
 
         private final String translationKey;
 

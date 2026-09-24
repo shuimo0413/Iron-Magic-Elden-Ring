@@ -7,7 +7,7 @@ gradle.projectsEvaluated {
                 exclude('com/eldenring/spells/EquipmentProgressionTests*.class')
                 exclude('com/eldenring/spells/AzurPaymentTests*.class')
                 exclude('com/eldenring/spells/item/AzurManaCostPolicyTest.class')
-                exclude('data/elden_ring_spells/structure/empty.nbt')
+                exclude('data/iss_elden_ring/structure/empty.nbt')
             }
         }
     }

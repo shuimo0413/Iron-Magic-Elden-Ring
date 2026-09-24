@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 
 @Mod(EldenRingSpellsMod.MOD_ID)
 public class EldenRingSpellsMod {
-    public static final String MOD_ID = "elden_ring_spells";
+    public static final String MOD_ID = "iss_elden_ring";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public EldenRingSpellsMod(IEventBus modEventBus, ModContainer modContainer) {

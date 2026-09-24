@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "iss_elden_ring:item/glintstone_comet_scroll"
+  }
+}

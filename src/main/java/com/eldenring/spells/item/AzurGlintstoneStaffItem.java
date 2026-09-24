@@ -35,7 +35,7 @@ public class AzurGlintstoneStaffItem extends StaffItem {
         double percent = (AzurStaffBalance.manaCostMultiplier() - 1.0D) * 100.0D;
         if (percent > 0.0D) {
             String amount = String.format(Locale.ROOT, "%.1f", percent).replaceFirst("\\.0$", "");
-            tooltip.add(Component.translatable("tooltip.elden_ring_spells.azur_mana_cost", amount)
+            tooltip.add(Component.translatable("tooltip.iss_elden_ring.azur_mana_cost", amount)
                     .withStyle(ChatFormatting.RED));
         }
     }

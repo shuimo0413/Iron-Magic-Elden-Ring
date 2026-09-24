@@ -14,7 +14,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
  * 本模组 {@link SoundEvent} 注册。资源文件在
- * {@code assets/elden_ring_spells/sounds/}，事件名与 {@code sounds.json} 键一致。
+ * {@code assets/iss_elden_ring/sounds/}，事件名与 {@code sounds.json} 键一致。
  */
 public final class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =

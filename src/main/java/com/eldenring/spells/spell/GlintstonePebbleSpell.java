@@ -125,7 +125,7 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
         // -------------------------------------------------------------------------
 
         /** 1 级基础法力消耗。 */
-        public static int SPELL_BASE_MANA_COST = 10;
+        public static int SPELL_BASE_MANA_COST = 15;
 
         /** 每升一级额外法力消耗。 */
         public static int SPELL_MANA_COST_PER_LEVEL = 2;
@@ -140,7 +140,7 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
         public static int SPELL_CAST_TIME_TICKS = 0;
 
         /** 冷却时间（秒）。 */
-        public static double SPELL_COOLDOWN_SECONDS = 0.5;
+        public static double SPELL_COOLDOWN_SECONDS = 1.0;
 
         /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
         public static int SPELL_MAX_LEVEL = 10;
@@ -171,8 +171,8 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.6;
 
     /**
-     * 法术注册 ID：{@code elden_ring_spells:glintstone_pebble}。
-     * path 必须同时对上语言键 {@code spell.elden_ring_spells.glintstone_pebble}
+     * 法术注册 ID：{@code iss_elden_ring:glintstone_pebble}。
+     * path 必须同时对上语言键 {@code spell.iss_elden_ring.glintstone_pebble}
      * 和图标 {@code textures/gui/spell_icons/glintstone_pebble.png}。
      */
     private final ResourceLocation spellResourceLocation =

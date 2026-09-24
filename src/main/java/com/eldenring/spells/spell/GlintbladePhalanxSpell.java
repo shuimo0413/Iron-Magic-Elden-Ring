@@ -34,7 +34,7 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
     // —— 法术书 / 蓝耗 / 冷却 ——
 
     /** 1 级蓝耗。五把剑比单发魔法辉剑贵一截。 */
-    public static int SPELL_BASE_MANA_COST = 32;
+    public static int SPELL_BASE_MANA_COST = 37;
 
     /** 每升 1 级额外蓝耗。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 3;
@@ -51,7 +51,7 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
     /**
      * 冷却（秒）。圆阵能挂一段时间，CD 要比单发辉剑长，避免无脑叠两圈。
      */
-    public static double SPELL_COOLDOWN_SECONDS = 4.0;
+    public static double SPELL_COOLDOWN_SECONDS = 2.0;
 
     /** 最大等级。 */
     public static int SPELL_MAX_LEVEL = 7;
@@ -128,7 +128,7 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
                 ),
                 Component.literal("×" + GlintbladePhalanxSpell.BLADE_COUNT),
                 Component.translatable(
-                        "ui.elden_ring_spells.projectile_range",
+                        "ui.iss_elden_ring.projectile_range",
                         Utils.stringTruncation(GlintbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS, 1)
                 )
         );

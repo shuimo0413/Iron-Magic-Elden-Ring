@@ -102,18 +102,18 @@ public class CometSpell extends EldenRingAbstractSpell {
         public static float IMPACT_PARTICLE_INTENSITY = 1.80f;
         public static float CAST_BURST_PARTICLE_INTENSITY = 2.1f;
 
-        public static int SPELL_BASE_MANA_COST = 20;
+        public static int SPELL_BASE_MANA_COST = 25;
         public static int SPELL_MANA_COST_PER_LEVEL = 4;
         public static float SPELL_BASE_SPELL_POWER = 15;
         public static float SPELL_SPELL_POWER_PER_LEVEL = 3;
         public static int SPELL_CAST_TIME_TICKS = 0;
-        public static double SPELL_COOLDOWN_SECONDS = 1.6;
+        public static double SPELL_COOLDOWN_SECONDS = 2.0;
         /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
         public static int SPELL_MAX_LEVEL = 5;
         public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.9;
 
-    /** 注册 ID：{@code elden_ring_spells:comet}。语言键 / 图标 path 也是 {@code comet}。 */
+    /** 注册 ID：{@code iss_elden_ring:comet}。语言键 / 图标 path 也是 {@code comet}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "comet");
 

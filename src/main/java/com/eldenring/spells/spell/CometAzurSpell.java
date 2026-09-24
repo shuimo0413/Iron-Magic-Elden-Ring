@@ -36,9 +36,9 @@ import java.util.Optional;
 public class CometAzurSpell extends EldenRingAbstractSpell {
 
     public static final int SPELL_MAX_LEVEL = 3;
-    public static final double SPELL_COOLDOWN_SECONDS = 1.2;
+    public static final double SPELL_COOLDOWN_SECONDS = 3.0;
 
-    public static int SPELL_BASE_MANA_COST = 25;
+    public static int SPELL_BASE_MANA_COST = 30;
     public static int SPELL_MANA_COST_PER_LEVEL = 5;
     public static float SPELL_BASE_SPELL_POWER = 5;
     public static float SPELL_SPELL_POWER_PER_LEVEL = 1;

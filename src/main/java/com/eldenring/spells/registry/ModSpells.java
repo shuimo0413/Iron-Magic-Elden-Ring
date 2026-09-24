@@ -40,7 +40,7 @@ import java.util.function.Supplier;
  * <p>
  * 具体施法逻辑在 {@code spell/XxxSpell.java}，这里只负责注册。
  * 注册名取自 {@link AbstractSpell#getSpellName()}（即 ResourceLocation 的 path），
- * 必须与语言键 {@code spell.elden_ring_spells.<path>}、图标 path 一致。
+ * 必须与语言键 {@code spell.iss_elden_ring.<path>}、图标 path 一致。
  */
 public final class ModSpells {
     public static final DeferredRegister<AbstractSpell> SPELLS =

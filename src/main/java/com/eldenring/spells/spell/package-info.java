@@ -24,7 +24,7 @@
  *       {@code combat/} 命中、{@code fx/} 粒子音效、{@code data/} 持续吟唱绑定。</li>
  *   <li>{@code entity/}：弹道或法阵实体（飞行、追踪、爆炸）。Spell 只负责「生成」它们。</li>
  *   <li>{@code registry/ModSpells.java}：挂到铁魔法法术注册表。</li>
- *   <li>语言键 {@code spell.elden_ring_spells.&lt;path&gt;} + 图标 {@code textures/gui/spell_icons/&lt;path&gt;.png}。</li>
+ *   <li>语言键 {@code spell.iss_elden_ring.&lt;path&gt;} + 图标 {@code textures/gui/spell_icons/&lt;path&gt;.png}。</li>
  * </ul>
  *
  * <h2>现有法术怎么分工</h2>

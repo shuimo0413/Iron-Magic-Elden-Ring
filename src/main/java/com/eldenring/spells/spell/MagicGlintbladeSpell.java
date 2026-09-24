@@ -38,7 +38,7 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
     // —— 法术书 / 蓝耗 / 冷却 ——
 
         /** 1 级蓝耗。高于迅剑、低于大魔砾。 */
-        public static int SPELL_BASE_MANA_COST = 12;
+        public static int SPELL_BASE_MANA_COST = 17;
 
         /** 每升 1 级额外蓝耗。 */
         public static int SPELL_MANA_COST_PER_LEVEL = 2;
@@ -55,7 +55,7 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         /**
          * 冷却（秒）。可同时挂多柄辉剑，但不要低到无脑铺满。
          */
-        public static double SPELL_COOLDOWN_SECONDS = 1.15;
+        public static double SPELL_COOLDOWN_SECONDS = 1.5;
 
         /** 最大等级。 */
         public static int SPELL_MAX_LEVEL = 10;

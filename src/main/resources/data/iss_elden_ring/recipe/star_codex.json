@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " AB",
+    "ACA",
+    "BA "
+  ],
+  "key": {
+    "A": {
+      "tag": "iss_elden_ring:glintstone_shards"
+    },
+    "B": {
+      "item": "irons_spellbooks:arcane_ingot"
+    },
+    "C": {
+      "item": "irons_spellbooks:ruined_book"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "iss_elden_ring:star_codex"
+  }
+}

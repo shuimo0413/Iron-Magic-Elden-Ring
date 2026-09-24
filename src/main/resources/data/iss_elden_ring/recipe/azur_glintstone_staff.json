@@ -1,0 +1,7 @@
+{
+  "type": "iss_elden_ring:equipment_upgrade",
+  "template": {"item": "irons_spellbooks:epic_ink"},
+  "base": {"item": "iss_elden_ring:astrologer_staff"},
+  "addition": {"item": "iss_elden_ring:origin_crystal"},
+  "result": {"id": "iss_elden_ring:azur_glintstone_staff", "count": 1}
+}

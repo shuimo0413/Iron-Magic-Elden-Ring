@@ -40,7 +40,7 @@ public final class AdditiveParticleRenderType {
 
         @Override
         public String toString() {
-            return "elden_ring_spells:soft_translucent";
+            return "iss_elden_ring:soft_translucent";
         }
     };
 
@@ -59,7 +59,7 @@ public final class AdditiveParticleRenderType {
 
         @Override
         public String toString() {
-            return "elden_ring_spells:additive";
+            return "iss_elden_ring:additive";
         }
     };
 }

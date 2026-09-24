@@ -31,9 +31,9 @@ import com.eldenring.spells.particle.foundingrain.FoundingRainFx;
 public class FoundingRainOfStarsSpell extends EldenRingAbstractSpell {
 
     public static final int SPELL_MAX_LEVEL = 3;
-    public static final double SPELL_COOLDOWN_SECONDS = 8.0;
+    public static final double SPELL_COOLDOWN_SECONDS = 4.0;
 
-    public static int SPELL_BASE_MANA_COST = 50;
+    public static int SPELL_BASE_MANA_COST = 55;
     public static int SPELL_MANA_COST_PER_LEVEL = 10;
     public static float SPELL_BASE_SPELL_POWER = 6;
     public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
@@ -52,7 +52,7 @@ public class FoundingRainOfStarsSpell extends EldenRingAbstractSpell {
     /** 雨云寿命（tick）。 */
     public static int OVERHEAD_CLOUD_LIFETIME_TICKS = 100;
 
-    /** 注册 ID：{@code elden_ring_spells:founding_rain_of_stars}。 */
+    /** 注册 ID：{@code iss_elden_ring:founding_rain_of_stars}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "founding_rain_of_stars");
 

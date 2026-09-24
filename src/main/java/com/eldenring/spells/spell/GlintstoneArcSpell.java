@@ -38,13 +38,13 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
      * 冷却（秒）。弯弧清群便宜，松手后再按要有一点空窗。
      * 调大 → 更难连放；调小 → 更接近走位点射。
      */
-    public static final double SPELL_COOLDOWN_SECONDS = 0.85;
+    public static final double SPELL_COOLDOWN_SECONDS = 1.0;
 
     /**
      * 1 级基础法力消耗。瞬时咒只在 {@link #onCast} 扣一次。
      * 调大 → 更吃蓝。
      */
-    public static int SPELL_BASE_MANA_COST = 10;
+    public static int SPELL_BASE_MANA_COST = 15;
 
     /** 每升一级额外法力消耗。当前定死 1 级。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 2;
@@ -124,7 +124,7 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
 
     public static float CAST_BURST_PARTICLE_INTENSITY = 0.50f;
 
-    /** 注册 ID：{@code elden_ring_spells:glintstone_arc}。 */
+    /** 注册 ID：{@code iss_elden_ring:glintstone_arc}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_arc");
 
@@ -164,14 +164,14 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
                 ),
                 Component.literal("Pierce ×" + PROJECTILE_MAX_ENTITY_HITS),
                 Component.translatable(
-                        "ui.elden_ring_spells.projectile_range",
+                        "ui.iss_elden_ring.projectile_range",
                         Utils.stringTruncation(PROJECTILE_MAX_RANGE_BLOCKS, 1)
                 ),
                 Component.translatable(
-                        "ui.elden_ring_spells.arc_width",
+                        "ui.iss_elden_ring.arc_width",
                         Utils.stringTruncation(ARC_MAX_HALF_WIDTH_BLOCKS * 2.0f, 1)
                 ),
-                Component.translatable("ui.elden_ring_spells.cast_while_moving")
+                Component.translatable("ui.iss_elden_ring.cast_while_moving")
         );
     }
 

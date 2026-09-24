@@ -9,7 +9,7 @@
 ## 项目是什么
 
 - **名称**：Iron's Spells 'n Spellbooks: Elden Ring（中文：Iron的法术与魔法书：艾尔登法环）
-- **Mod ID**：`elden_ring_spells`（内部 ID，勿随意改）
+- **Mod ID**：`iss_elden_ring`（内部 ID，勿随意改）
 - **包名**：`com.eldenring.spells`
 - **目标**：在 [Iron's Spells 'n Spellbooks](https://iron.wiki/developers/) 之上新增艾尔登法环风格法术 / 学派等内容
 - **不是**：独立魔法系统；不要绕开铁魔法去自研一套施法管线
@@ -50,8 +50,8 @@ src/main/java/com/eldenring/spells/
   world/GlintstoneColor.java   # 三色枚举
   worldgen/GlintstoneCaveFeature.java  # 现成洞穴整片刷同色水晶
   config/EldenRingConfigs.java         # 注册 toml；加载后 apply + SpellBookStatReloader
-  config/EldenRingServerConfig.java    # 玩法数字 → config/elden_ring_spells-server.toml
-  config/EldenRingCommonConfig.java    # 矿洞密度 → config/elden_ring_spells-common.toml
+  config/EldenRingServerConfig.java    # 玩法数字 → config/iss_elden_ring-server.toml
+  config/EldenRingCommonConfig.java    # 矿洞密度 → config/iss_elden_ring-common.toml
   client/ClientParticleProviders.java  # 粒子 Provider
   client/ClientEntityRenderers.java    # 实体 Renderer / 模型层
   client/ClientItemModels.java         # 卷轴 standalone 模型
@@ -66,7 +66,7 @@ src/main/java/com/eldenring/spells/
   *.json                             # 像素画源数据（32×32）
   iss-reference/                     # 对照铁魔法源码时解压的参考（可不提交）
 
-src/main/resources/assets/elden_ring_spells/
+src/main/resources/assets/iss_elden_ring/
   lang/en_us.json, zh_cn.json
   models/item/<item_id>.json
   particles/<particle_id>.json
@@ -80,7 +80,7 @@ src/main/resources/assets/elden_ring_spells/
 src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} 由 Gradle 展开）
 ```
 
-产物：`build/libs/elden_ring_spells-<version>.jar`
+产物：`build/libs/iss_elden_ring-<version>.jar`
 
 ## 依赖与编译约定
 
@@ -101,8 +101,8 @@ src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} �
 5. 核心玩法数字：只在 `EldenRingServerConfig` 加 toml 键，`apply` 写到 Spell 运行时字段（详见 `法术解耦架构.md`）
 6. 复杂咒（近战/持续/时序）拆到 `spell/curve` / `combat` / `fx`（持续咒再加 `data`，锁人/清障进 `helper`）；视觉写死在这些类里，**不要新建 Tuning**，也**不要把这些函数写回 XxxSpell**
 7. 在 `ModSpells` 用 `registerSpell(new YourSpell())` 注册
-8. 语言键：`spell.elden_ring_spells.<spell_path>`（en_us + zh_cn 都要）
-9. 图标：`assets/elden_ring_spells/textures/gui/spell_icons/<spell_path>.png`
+8. 语言键：`spell.iss_elden_ring.<spell_path>`（en_us + zh_cn 都要）
+9. 图标：`assets/iss_elden_ring/textures/gui/spell_icons/<spell_path>.png`
 10. 施法逻辑写在 `onCast(...)`；服务端生效时判 `!level.isClientSide`；末尾调用 `super.onCast(...)`
 11. 弹道出手音用 `ModSounds.SPELL_CAST`，蓄力起手用 `ModSounds.SPELL_CAST_START`；不要用 `SoundEvents.AMETHYST_BLOCK_CHIME`。卡利亚迅剑除外（斩击自播）
 
@@ -110,7 +110,7 @@ src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} �
 
 ### ResourceLocation / 命名
 
-- 命名空间永远是 `elden_ring_spells`
+- 命名空间永远是 `iss_elden_ring`
 - path：小写 + 下划线，如 `glintstone_pebble`
 - Java 类名：PascalCase + `Spell` 后缀，如 `GlintstonePebbleSpell`
 - 注册字段：`SCREAMING_SNAKE`，如 `GLINTSTONE_PEBBLE`
@@ -154,7 +154,7 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 - **所有工具脚本统一放 `工具链/`**（禁止再写到 `tools/`、`像素画/` 等旧目录）
 - 画布固定 **32×32**（`工具链/*.json` 的 `width` / `height`）
-- 用 `工具链/render_pixel_art.py` 从 JSON 导出 PNG，再放入 `assets/elden_ring_spells/textures/...`
+- 用 `工具链/render_pixel_art.py` 从 JSON 导出 PNG，再放入 `assets/iss_elden_ring/textures/...`
 - 未明确要求时不要用其他尺寸（如 16 / 64）
 
 ## 已知状态
@@ -168,6 +168,7 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 - [x] 三色辉石矿物方块（水晶簇 / 水晶块，不生长、无建材、无矿石）
 - [x] 辉石矿洞 Feature（三色等概率、一洞一色；无矿石矿脉）
 - [x] 法术解耦（删 Tuning、瘦 toml、Curve/Combat/Fx）：见 `法术解耦架构.md`
+- [x] 可选兼容 [Apotheosis x Iron's Spellbooks Compat](https://www.curseforge.com/minecraft/mc-mods/apotheosis-x-irons-spellbooks-compat)（`irons_apothic`）：无则照常玩；有则加载辉石学派词缀/宝石 datapack（`data/irons_apothic/`）。连带神化 ≥8.5.2；仅神化时护甲仍可吃词缀
 - [ ] 卡利亚迅剑：第一刀右臂抬不到玩家正右方 90°。上一轮修改用户判定全部错误，见 `卡利亚迅剑话题交接.md`
 - [ ] 自定义学派 / 法环内容批量设计尚未开始
 - [ ] 辉石彗星（Glintstone Cometshard）尚未实现（用户本次未要求）

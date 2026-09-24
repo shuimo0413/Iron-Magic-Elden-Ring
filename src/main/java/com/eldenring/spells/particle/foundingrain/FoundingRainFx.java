@@ -150,7 +150,7 @@ public final class FoundingRainFx {
          */
         public static int SPELL_CAST_TIME_TICKS = 0;
 
-        public static double SPELL_COOLDOWN_SECONDS = 8.0;
+        public static double SPELL_COOLDOWN_SECONDS = 4.0;
 
         /** 最大等级。法环辉石咒固定 1 级。 */
         public static int SPELL_MAX_LEVEL = 1;

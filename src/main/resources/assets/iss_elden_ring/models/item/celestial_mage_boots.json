@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "iss_elden_ring:item/celestial_mage_boots"
+  }
+}

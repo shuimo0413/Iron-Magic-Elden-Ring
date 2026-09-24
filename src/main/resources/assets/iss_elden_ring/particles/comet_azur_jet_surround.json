@@ -1,0 +1,22 @@
+{
+  "textures": [
+    "iss_elden_ring:nebula_cloud_haze",
+    "iss_elden_ring:star_river_mist",
+    "iss_elden_ring:nebula_cloud_stardust",
+    "iss_elden_ring:nebula_cloud_wisp",
+    "iss_elden_ring:nebula_spiral",
+    "iss_elden_ring:star_cluster",
+    "iss_elden_ring:comet_azur_mist",
+    "iss_elden_ring:comet_azur_dust",
+    "iss_elden_ring:comet_azur_head",
+    "iss_elden_ring:nova_star",
+    "iss_elden_ring:dark_filament",
+    "iss_elden_ring:star_streak",
+    "iss_elden_ring:comet_azur_mote_0",
+    "iss_elden_ring:comet_azur_impact",
+    "iss_elden_ring:comet_azur_mote_1",
+    "iss_elden_ring:comet_azur_mote_2",
+    "iss_elden_ring:glintstone_mote_2",
+    "iss_elden_ring:comet_azur_glow"
+  ]
+}

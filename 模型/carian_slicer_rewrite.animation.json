@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"elden_ring_spells.carian_slicer_1": {
+		"iss_elden_ring.carian_slicer_1": {
 			"animation_length": 1,
 			"bones": {
 				"body": {
@@ -179,7 +179,7 @@
 				}
 			}
 		},
-		"elden_ring_spells.carian_slicer_2": {
+		"iss_elden_ring.carian_slicer_2": {
 			"animation_length": 1,
 			"bones": {
 				"body": {

@@ -55,12 +55,12 @@ public final class PrimalGlintstoneBladeItem extends TalismanItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
                                 TooltipFlag flag) {
         super.appendHoverText(stack, context, tooltip, flag);
-        tooltip.add(Component.translatable("tooltip.elden_ring_spells.primal_glintstone_blade.effect")
+        tooltip.add(Component.translatable("tooltip.iss_elden_ring.primal_glintstone_blade.effect")
                 .withStyle(ChatFormatting.BLUE));
         tooltip.add(Component.empty());
-        tooltip.add(Component.translatable("tooltip.elden_ring_spells.primal_glintstone_blade.lore_1")
+        tooltip.add(Component.translatable("tooltip.iss_elden_ring.primal_glintstone_blade.lore_1")
                 .withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable("tooltip.elden_ring_spells.primal_glintstone_blade.lore_2")
+        tooltip.add(Component.translatable("tooltip.iss_elden_ring.primal_glintstone_blade.lore_2")
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

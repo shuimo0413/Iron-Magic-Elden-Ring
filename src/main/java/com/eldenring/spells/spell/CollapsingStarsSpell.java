@@ -38,10 +38,10 @@ public class CollapsingStarsSpell extends EldenRingAbstractSpell {
      * 冷却（秒）。一次齐射多发，要比单发重力球略长一点空窗。
      * 调大 → 更难连放；调小 → 更接近扫射控场。
      */
-    public static final double SPELL_COOLDOWN_SECONDS = 4.0;
+    public static final double SPELL_COOLDOWN_SECONDS = 2.0;
 
     /** 1 级蓝耗。齐射控场，高于单发重力球。 */
-    public static int SPELL_BASE_MANA_COST = 22;
+    public static int SPELL_BASE_MANA_COST = 27;
 
     /** 每升 1 级额外蓝耗。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 3;
@@ -133,12 +133,12 @@ public class CollapsingStarsSpell extends EldenRingAbstractSpell {
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
                 Component.translatable(
-                        "ui.elden_ring_spells.pull_distance",
+                        "ui.iss_elden_ring.pull_distance",
                         Utils.stringTruncation(suctionPullBlocksForLevel(spellLevel), 1)
                 ),
                 Component.literal("×" + PROJECTILE_COUNT),
                 Component.translatable(
-                        "ui.elden_ring_spells.projectile_range",
+                        "ui.iss_elden_ring.projectile_range",
                         Utils.stringTruncation(PROJECTILE_MAX_RANGE_BLOCKS, 0)
                 )
         );

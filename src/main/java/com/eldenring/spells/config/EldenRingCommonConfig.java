@@ -5,7 +5,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 /**
  * 世界生成等「进游戏前就要定下来」的数值。
  * <p>
- * 文件：{@code config/elden_ring_spells-common.toml}（客户端与服务端各读各的，不联网同步）。
+ * 文件：{@code config/iss_elden_ring-common.toml}（客户端与服务端各读各的，不联网同步）。
  * 整合包改矿洞密度放这里；改完需新区块或新世界才看得到。
  * <p>
  * {@code defineInRange} 绑 toml；{@link #apply()} 写到下面这组运行时字段。逻辑读运行时字段，不读 Spec {@code .get()}。

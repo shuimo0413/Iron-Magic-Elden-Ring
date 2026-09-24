@@ -15,7 +15,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 /**
  * 向铁魔法的 {@link SchoolRegistry} 注册本模组学派。
  * <p>
- * 学派 id：{@code elden_ring_spells:glintstone}（显示名「辉石」）。
+ * 学派 id：{@code iss_elden_ring:glintstone}（显示名「辉石」）。
  * 法术 {@code DefaultConfig#setSchoolResource} 须指向 {@link #GLINTSTONE_RESOURCE}。
  */
 public final class ModSchools {
@@ -36,7 +36,7 @@ public final class ModSchools {
             () -> new SchoolType(
                     GLINTSTONE_RESOURCE,
                     ModTags.GLINTSTONE_FOCUS,
-                    Component.translatable("school.elden_ring_spells.glintstone")
+                    Component.translatable("school.iss_elden_ring.glintstone")
                             .withStyle(Style.EMPTY.withColor(0x3EE8F0)),
                     ModAttributes.GLINTSTONE_SPELL_POWER,
                     ModAttributes.GLINTSTONE_MAGIC_RESIST,

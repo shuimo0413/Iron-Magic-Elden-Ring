@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.animation.elden_ring_spells.cast_raise": {
+		"animation.animation.iss_elden_ring.cast_raise": {
 			"animation_length": 1,
 			"bones": {
 				"head": {
@@ -118,7 +118,7 @@
 				}
 			}
 		},
-		"animation.elden_ring_spells.carian_slicer_1": {
+		"animation.iss_elden_ring.carian_slicer_1": {
 			"animation_length": 0.75,
 			"bones": {
 				"rightArm": {
@@ -269,7 +269,7 @@
 				}
 			}
 		},
-		"animation.elden_ring_spells.carian_slicer_2": {
+		"animation.iss_elden_ring.carian_slicer_2": {
 			"animation_length": 0.75,
 			"bones": {
 				"rightArm": {

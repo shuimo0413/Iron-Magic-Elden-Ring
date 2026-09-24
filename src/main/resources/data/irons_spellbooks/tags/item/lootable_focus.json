@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "elden_ring_spells:cyan_glintstone_shard",
-    "elden_ring_spells:blue_glintstone_shard",
-    "elden_ring_spells:purple_glintstone_shard"
+    "iss_elden_ring:cyan_glintstone_shard",
+    "iss_elden_ring:blue_glintstone_shard",
+    "iss_elden_ring:purple_glintstone_shard"
   ]
 }

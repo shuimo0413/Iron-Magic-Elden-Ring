@@ -39,13 +39,13 @@ public class CrystalBurstSpell extends EldenRingAbstractSpell {
      * 冷却（秒）。齐射已经一次打出很多片，松手后再按要有一点空窗。
      * 调大 → 更难连放；调小 → 更接近走位点射。
      */
-    public static final double SPELL_COOLDOWN_SECONDS = 1.2;
+    public static final double SPELL_COOLDOWN_SECONDS = 1.5;
 
     /**
      * 1 级基础法力消耗。瞬时咒只在 {@link #onCast} 扣一次。
      * 调大 → 更吃蓝。
      */
-    public static int SPELL_BASE_MANA_COST = 12;
+    public static int SPELL_BASE_MANA_COST = 17;
 
     /** 每升一级额外法力消耗。当前定死 1 级。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 1;
@@ -140,7 +140,7 @@ public class CrystalBurstSpell extends EldenRingAbstractSpell {
     public static float IMPACT_PARTICLE_INTENSITY = 1.05f;
     public static float CAST_BURST_PARTICLE_INTENSITY = 0.55f;
 
-    /** 注册 ID：{@code elden_ring_spells:crystal_burst}。 */
+    /** 注册 ID：{@code iss_elden_ring:crystal_burst}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "crystal_burst");
 
@@ -180,10 +180,10 @@ public class CrystalBurstSpell extends EldenRingAbstractSpell {
                 ),
                 Component.literal("×" + PROJECTILE_COUNT),
                 Component.translatable(
-                        "ui.elden_ring_spells.projectile_range",
+                        "ui.iss_elden_ring.projectile_range",
                         Utils.stringTruncation(PROJECTILE_MAX_RANGE_BLOCKS, 1)
                 ),
-                Component.translatable("ui.elden_ring_spells.cast_while_moving")
+                Component.translatable("ui.iss_elden_ring.cast_while_moving")
         );
     }
 

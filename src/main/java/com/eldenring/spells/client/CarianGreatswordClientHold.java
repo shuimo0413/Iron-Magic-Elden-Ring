@@ -57,7 +57,7 @@ public final class CarianGreatswordClientHold {
 
     /**
      * 下标 0 = 点按第一刀（资源 {@code carian_great_sword1}），1 = 连斩第二刀（{@code carian_great_sword2}）。
-     * 与 Blockbench {@code elden_ring_spells.carian_great_sword1} / {@code sword2} 同名 1:1。
+     * 与 Blockbench {@code iss_elden_ring.carian_great_sword1} / {@code sword2} 同名 1:1。
      */
     private static final String[] SLASH_CLIP_NAMES = {
             "carian_great_sword1",
@@ -292,8 +292,8 @@ public final class CarianGreatswordClientHold {
         String otherClipName = SLASH_CLIP_NAMES[slashClipIndex ^ 1];
         String[] candidatePaths = {
                 wantedClipName,
-                "animation.elden_ring_spells." + wantedClipName,
-                "elden_ring_spells." + wantedClipName,
+                "animation.iss_elden_ring." + wantedClipName,
+                "iss_elden_ring." + wantedClipName,
                 "player_animation/" + wantedClipName,
                 "player_animations/" + wantedClipName
         };

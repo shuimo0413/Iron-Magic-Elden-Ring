@@ -105,12 +105,12 @@ public class StarShowerSpell extends EldenRingAbstractSpell {
         public static float IMPACT_PARTICLE_INTENSITY = 1.05f;
         public static float CAST_BURST_PARTICLE_INTENSITY = 1.35f;
 
-        public static int SPELL_BASE_MANA_COST = 26;
+        public static int SPELL_BASE_MANA_COST = 31;
         public static int SPELL_MANA_COST_PER_LEVEL = 2;
         public static float SPELL_BASE_SPELL_POWER = 3;
         public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
         public static int SPELL_CAST_TIME_TICKS = 0;
-        public static double SPELL_COOLDOWN_SECONDS = 2.5;
+        public static double SPELL_COOLDOWN_SECONDS = 2.0;
         /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
         public static int SPELL_MAX_LEVEL = 7;
 
@@ -119,7 +119,7 @@ public class StarShowerSpell extends EldenRingAbstractSpell {
 
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.65;
 
-    /** 注册 ID：{@code elden_ring_spells:star_shower}。 */
+    /** 注册 ID：{@code iss_elden_ring:star_shower}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "star_shower");
 

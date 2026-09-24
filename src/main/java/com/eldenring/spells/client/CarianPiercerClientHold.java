@@ -52,7 +52,7 @@ public final class CarianPiercerClientHold {
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_piercer_animation");
 
     /**
-     * 唯一 clip。与 Blockbench {@code elden_ring_spells.carian_puncture} 同名 1:1，不对调。
+     * 唯一 clip。与 Blockbench {@code iss_elden_ring.carian_puncture} 同名 1:1，不对调。
      */
     private static final String PIERCE_CLIP_NAME = "carian_puncture";
 
@@ -224,8 +224,8 @@ public final class CarianPiercerClientHold {
     private static IPlayable resolvePierceClip() {
         String[] candidatePaths = {
                 PIERCE_CLIP_NAME,
-                "animation.elden_ring_spells." + PIERCE_CLIP_NAME,
-                "elden_ring_spells." + PIERCE_CLIP_NAME,
+                "animation.iss_elden_ring." + PIERCE_CLIP_NAME,
+                "iss_elden_ring." + PIERCE_CLIP_NAME,
                 "player_animation/" + PIERCE_CLIP_NAME,
                 "player_animations/" + PIERCE_CLIP_NAME
         };

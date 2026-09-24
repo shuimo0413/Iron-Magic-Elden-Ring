@@ -23,7 +23,7 @@ public final class CometAzurFx {
          * 冷却（秒）。与辉石彗星同档：连续吟唱结束后很快就能再起手。
          * 原先 18 秒对点按/中途松手都太长。
          */
-        public static double SPELL_COOLDOWN_SECONDS = 1.2;
+        public static double SPELL_COOLDOWN_SECONDS = 3.0;
         /**
          * 每次脉冲蓝耗。CONTINUOUS 约每 10 tick 扣一次，UI「每秒」大约是这个数 ×2。
          * 喷流写好后，没蓝会在下一次脉冲停吟唱。

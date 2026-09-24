@@ -16,21 +16,21 @@ public final class CometAzurJetRenderTypes {
 
     /** 管壁 / 圆球实体：标准半透明，能在白天天空上看出体积。 */
     public static final RenderType CYLINDER = create(
-            "elden_ring_spells_comet_azur_cylinder",
+            "iss_elden_ring_comet_azur_cylinder",
             GlintstoneCometModels.TRAIL_BEAM_TEXTURE,
             RenderStateShard.TRANSLUCENT_TRANSPARENCY
     );
 
     /** 口部圆球光晕：加法，叠在圆球上发亮。 */
     public static final RenderType ORIGIN_GLOW = create(
-            "elden_ring_spells_comet_azur_origin_glow",
+            "iss_elden_ring_comet_azur_origin_glow",
             GlintstoneCometModels.COMET_GLOW_TEXTURE,
             RenderStateShard.LIGHTNING_TRANSPARENCY
     );
 
     /** 亮芯管：加法，圆柱中心一条更亮的细管。 */
     public static final RenderType CORE = create(
-            "elden_ring_spells_comet_azur_core",
+            "iss_elden_ring_comet_azur_core",
             GlintstoneCometModels.TRAIL_BEAM_TEXTURE,
             RenderStateShard.LIGHTNING_TRANSPARENCY
     );

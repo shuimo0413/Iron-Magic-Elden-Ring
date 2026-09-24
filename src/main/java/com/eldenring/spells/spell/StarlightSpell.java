@@ -29,7 +29,7 @@ import java.util.List;
 public class StarlightSpell extends EldenRingAbstractSpell {
 
     /** 1 级蓝耗。照明工具咒，低于魔砾。 */
-    public static int SPELL_BASE_MANA_COST = 20;
+    public static int SPELL_BASE_MANA_COST = 25;
 
     /** 每升 1 级额外蓝耗。本咒默认 1 级，留给 toml。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 0;
@@ -48,7 +48,7 @@ public class StarlightSpell extends EldenRingAbstractSpell {
     /**
      * 冷却（秒）。时长 120 秒，冷却只需挡住连点刷实体。
      */
-    public static double SPELL_COOLDOWN_SECONDS = 2.0;
+    public static double SPELL_COOLDOWN_SECONDS = 1.0;
 
     /** 最大等级。法环原作不升级。 */
     public static int SPELL_MAX_LEVEL = 1;

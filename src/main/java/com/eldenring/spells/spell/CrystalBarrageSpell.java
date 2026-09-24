@@ -46,13 +46,13 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
      * 冷却（秒）。连射本身已经靠按住维持，松手后再按要有一点空窗。
      * 调大 → 更难立刻再开；调小 → 更接近原作「几乎无 CD」。
      */
-    public static final double SPELL_COOLDOWN_SECONDS = 0.8;
+    public static final double SPELL_COOLDOWN_SECONDS = 1.5;
 
     /**
      * 1 级基础法力消耗。CONTINUOUS 约每 10 tick 进 {@link #onCast} 扣一次。
      * 调大 → 按住连射更吃蓝。
      */
-    public static int SPELL_BASE_MANA_COST = 12;
+    public static int SPELL_BASE_MANA_COST = 17;
 
     /** 每升一级额外法力消耗。当前定死 1 级。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 1;
@@ -148,7 +148,7 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
     public static float IMPACT_PARTICLE_INTENSITY = 1.05f;
     public static float CAST_BURST_PARTICLE_INTENSITY = 0.45f;
 
-    /** 注册 ID：{@code elden_ring_spells:crystal_barrage}。 */
+    /** 注册 ID：{@code iss_elden_ring:crystal_barrage}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "crystal_barrage");
 
@@ -187,10 +187,10 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
                         Utils.stringTruncation(getShardDamage(spellLevel, caster), 2)
                 ),
                 Component.translatable(
-                        "ui.elden_ring_spells.projectile_range",
+                        "ui.iss_elden_ring.projectile_range",
                         Utils.stringTruncation(PROJECTILE_MAX_RANGE_BLOCKS, 1)
                 ),
-                Component.translatable("ui.elden_ring_spells.hold_to_barrage")
+                Component.translatable("ui.iss_elden_ring.hold_to_barrage")
         );
     }
 

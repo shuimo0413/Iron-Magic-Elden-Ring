@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "iss_elden_ring:glintstone_cave",
+  "step": "underground_decoration"
+}

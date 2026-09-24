@@ -45,7 +45,7 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
         // -------------------------------------------------------------------------
 
         /** 1 级基础法力消耗。 */
-        public static int SPELL_BASE_MANA_COST = 40;
+        public static int SPELL_BASE_MANA_COST = 55;
 
         /** 每升一级额外法力消耗。 */
         public static int SPELL_MANA_COST_PER_LEVEL = 5;
@@ -66,7 +66,7 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
         public static int SPELL_CAST_TIME_TICKS = 16;
 
         /** 冷却时间（秒）。 */
-        public static double SPELL_COOLDOWN_SECONDS = 25.0;
+        public static double SPELL_COOLDOWN_SECONDS = 5.0;
 
         /** 最大等级。法环辉石咒固定 1 级；持续时间只用 {@link #ZONE_BASE_DURATION_TICKS}。 */
         public static int SPELL_MAX_LEVEL = 1;
@@ -159,7 +159,7 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
          */
         public static int ZONE_CENTER_LIGHT_LEVEL = 12;
 
-    /** 注册 ID：{@code elden_ring_spells:terra_magica}。 */
+    /** 注册 ID：{@code iss_elden_ring:terra_magica}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "terra_magica");
 
@@ -186,7 +186,7 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
     public List<MutableComponent> getUniqueInfo(int spellLevel, LivingEntity caster) {
         return List.of(
                 Component.translatable(
-                        "ui.elden_ring_spells.spell_power_bonus_percent",
+                        "ui.iss_elden_ring.spell_power_bonus_percent",
                         Utils.stringTruncation(TerraMagicaSpell.SPELL_POWER_BONUS_MULTIPLIED_TOTAL * 100.0, 0)
                 ),
                 Component.translatable(

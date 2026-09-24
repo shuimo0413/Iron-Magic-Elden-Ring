@@ -26,14 +26,14 @@ public final class FoundingRainNebulaRenderTypes {
 
     /** 深紫/深蓝气团：半透明，能把白天天空染暗。 */
     public static final RenderType BODY = create(
-            "elden_ring_spells_nebula_body",
+            "iss_elden_ring_nebula_body",
             SOFT_BLOB_TEXTURE,
             RenderStateShard.TRANSLUCENT_TRANSPARENCY
     );
 
     /** 亮紫/青丝：加法，叠在气团上发亮。 */
     public static final RenderType FILAMENT = create(
-            "elden_ring_spells_nebula_filament",
+            "iss_elden_ring_nebula_filament",
             FILAMENT_TEXTURE,
             RenderStateShard.LIGHTNING_TRANSPARENCY
     );

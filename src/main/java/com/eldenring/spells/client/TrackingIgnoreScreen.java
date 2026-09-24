@@ -24,7 +24,7 @@ public class TrackingIgnoreScreen extends Screen {
     private static final int DONE_BUTTON_BOTTOM_MARGIN_PIXELS = 28;
 
     public TrackingIgnoreScreen() {
-        super(Component.translatable("screen.elden_ring_spells.tracking_ignore"));
+        super(Component.translatable("screen.iss_elden_ring.tracking_ignore"));
     }
 
     @Override
@@ -37,7 +37,7 @@ public class TrackingIgnoreScreen extends Screen {
         addCheckbox(
                 checkboxX,
                 rowY,
-                "screen.elden_ring_spells.tracking_ignore.ignore_players",
+                "screen.iss_elden_ring.tracking_ignore.ignore_players",
                 prefs.ignorePlayers(),
                 selected -> applyPrefs(TrackingIgnorePrefsCache.get().withIgnorePlayers(selected))
         );
@@ -45,7 +45,7 @@ public class TrackingIgnoreScreen extends Screen {
         addCheckbox(
                 checkboxX,
                 rowY,
-                "screen.elden_ring_spells.tracking_ignore.ignore_peaceful",
+                "screen.iss_elden_ring.tracking_ignore.ignore_peaceful",
                 prefs.ignorePeaceful(),
                 selected -> applyPrefs(TrackingIgnorePrefsCache.get().withIgnorePeaceful(selected))
         );
@@ -53,7 +53,7 @@ public class TrackingIgnoreScreen extends Screen {
         addCheckbox(
                 checkboxX,
                 rowY,
-                "screen.elden_ring_spells.tracking_ignore.ignore_neutral",
+                "screen.iss_elden_ring.tracking_ignore.ignore_neutral",
                 prefs.ignoreNeutral(),
                 selected -> applyPrefs(TrackingIgnorePrefsCache.get().withIgnoreNeutral(selected))
         );
@@ -61,7 +61,7 @@ public class TrackingIgnoreScreen extends Screen {
         addCheckbox(
                 checkboxX,
                 rowY,
-                "screen.elden_ring_spells.tracking_ignore.ignore_hostile",
+                "screen.iss_elden_ring.tracking_ignore.ignore_hostile",
                 prefs.ignoreHostile(),
                 selected -> applyPrefs(TrackingIgnorePrefsCache.get().withIgnoreHostile(selected))
         );
@@ -106,7 +106,7 @@ public class TrackingIgnoreScreen extends Screen {
         );
         guiGraphics.drawCenteredString(
                 this.font,
-                Component.translatable("screen.elden_ring_spells.tracking_ignore.hint"),
+                Component.translatable("screen.iss_elden_ring.tracking_ignore.hint"),
                 this.width / 2,
                 TITLE_TOP_OFFSET_PIXELS + 14,
                 0xA0A0A0

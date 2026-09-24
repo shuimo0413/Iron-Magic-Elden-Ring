@@ -109,12 +109,12 @@ public class GlintstoneStarsSpell extends EldenRingAbstractSpell {
         public static float IMPACT_PARTICLE_INTENSITY = 1.2f;
         public static float CAST_BURST_PARTICLE_INTENSITY = 1.2f;
 
-        public static int SPELL_BASE_MANA_COST = 12;
+        public static int SPELL_BASE_MANA_COST = 17;
         public static int SPELL_MANA_COST_PER_LEVEL = 2;
         public static float SPELL_BASE_SPELL_POWER = 3;
         public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
         public static int SPELL_CAST_TIME_TICKS = 0;
-        public static double SPELL_COOLDOWN_SECONDS = 1.0;
+        public static double SPELL_COOLDOWN_SECONDS = 1.5;
         /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
         public static int SPELL_MAX_LEVEL = 10;
 
@@ -123,7 +123,7 @@ public class GlintstoneStarsSpell extends EldenRingAbstractSpell {
 
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.65;
 
-    /** 注册 ID：{@code elden_ring_spells:glintstone_stars}。 */
+    /** 注册 ID：{@code iss_elden_ring:glintstone_stars}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_stars");
 

@@ -3,7 +3,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"4": "blue_star_crystal",
-		"particle": "elden_ring_spells:block/blue_glintstone_block"
+		"particle": "iss_elden_ring:block/blue_glintstone_block"
 	},
 	"elements": [
 		{

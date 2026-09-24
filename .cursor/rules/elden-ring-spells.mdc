@@ -5,14 +5,14 @@ alwaysApply: true
 
 # Iron's Spells 'n Spellbooks: Elden Ring 约定
 
-本仓库是 **MC 1.21.1 + NeoForge** 的 **Iron's Spells** 扩展（`elden_ring_spells`），显示名为 Iron's Spells 'n Spellbooks: Elden Ring（中文：Iron的法术与魔法书：艾尔登法环），主题为艾尔登法环，但还有部分其它游戏的魔法元素。完整说明见根目录 `AGENTS.md`。解耦与数值规则见根目录 `法术解耦架构.md`（下个话题按那份构建）。卡利亚迅剑未完成项与作废修法见根目录 `卡利亚迅剑话题交接.md`，接着做迅剑前必读。
+本仓库是 **MC 1.21.1 + NeoForge** 的 **Iron's Spells** 扩展（`iss_elden_ring`），显示名为 Iron's Spells 'n Spellbooks: Elden Ring（中文：Iron的法术与魔法书：艾尔登法环），主题为艾尔登法环，但还有部分其它游戏的魔法元素。完整说明见根目录 `AGENTS.md`。解耦与数值规则见根目录 `法术解耦架构.md`（下个话题按那份构建）。卡利亚迅剑未完成项与作废修法见根目录 `卡利亚迅剑话题交接.md`，接着做迅剑前必读。
 
 ## 硬约束
 
 - JDK **21**；用 `.\gradlew.bat`，勿用 JDK 24 / 系统全局 Gradle
 - 版本以 `gradle.properties` 为准；勿擅自升 MC / NeoForge / 铁魔法大版本
 - 施法扩展走铁魔法 API（`io.redspace.ironsspellbooks.api.*`），不要自研平行魔法系统
-- 包名 `com.eldenring.spells`，Mod ID `elden_ring_spells`
+- 包名 `com.eldenring.spells`，Mod ID `iss_elden_ring`
 
 ## 加新内容清单
 
@@ -21,15 +21,15 @@ alwaysApply: true
 2. 玩法数字进 `EldenRingServerConfig`（toml），视觉写死在 Spell/Curve/Combat/Fx/Entity；**禁止新建 `tuning/XxxTuning.java`**
 3. 复杂咒拆 `spell/curve` / `combat` / `fx`（持续咒再加 `data`；锁人/清障进 `helper`），不要把这些写回 `XxxSpell`
 4. `ModSpells` 注册
-5. `lang`：`spell.elden_ring_spells.<path>`
+5. `lang`：`spell.iss_elden_ring.<path>`
 6. 图标：`textures/gui/spell_icons/<path>.png`
 7. `onCast` 服务端逻辑后调用 `super.onCast`
 8. 施法音：弹道出手走 `ModSounds.SPELL_CAST`，蓄力起手走 `ModSounds.SPELL_CAST_START`（基类已接射出音，不要再写 `AMETHYST_BLOCK_CHIME`）
 
 ### 施法音效（两套，勿混用）
 
-- **飞弹射出** `elden_ring_spells:spell_cast`：弹道真正飞出。瞬时弹道咒走 `getCastFinishSound()`（基类已接）。资源：`sounds/spell_cast.ogg`
-- **蓄力起手** `elden_ring_spells:spell_cast_start`：长吟唱 / 持续咒蓄力。`getCastStartSound()` 接 `ModSounds.SPELL_CAST_START.get()`（海摩炮、魔法之境、彗星亚兹勒）。资源：`sounds/spell_cast_start.ogg`
+- **飞弹射出** `iss_elden_ring:spell_cast`：弹道真正飞出。瞬时弹道咒走 `getCastFinishSound()`（基类已接）。资源：`sounds/spell_cast.ogg`
+- **蓄力起手** `iss_elden_ring:spell_cast_start`：长吟唱 / 持续咒蓄力。`getCastStartSound()` 接 `ModSounds.SPELL_CAST_START.get()`（海摩炮、魔法之境、彗星亚兹勒）。资源：`sounds/spell_cast_start.ogg`
 - 注册：`registry/ModSounds.java`；`sounds.json` 键与上面一致
 - 例外：卡利亚迅剑起手/收招静音，斩击声走实体 / Fx；海摩大槌砸地音走 Fx，不要套射出音
 - 延迟出弹（魔法辉剑凝结后再飞、亚兹勒蓄力结束喷流）在真正出弹点调 `ModSounds.playProjectileLaunch`，并把 `getCastFinishSound` 留空，避免出手瞬间抢响
@@ -39,7 +39,7 @@ alwaysApply: true
 ### 物品
 1. `ModItems` 注册
 2. `models/item/<id>.json` + `textures/item/<id>.png`
-3. `lang`：`item.elden_ring_spells.<id>`
+3. `lang`：`item.iss_elden_ring.<id>`
 
 ### 粒子
 1. `ModParticles` 注册 `ParticleType`
@@ -52,7 +52,7 @@ alwaysApply: true
 - **禁止**再往 `tools/`、`像素画/` 等旧目录写新文件
 - 画布无特殊要求则默认16*16
 - 格式：`name`、`width`、`height`、`pixels`（每项含 `x`/`y`/`rgba`）
-- 用 `工具链/render_pixel_art.py` 导出 PNG，再拷到 `assets/elden_ring_spells/textures/...`
+- 用 `工具链/render_pixel_art.py` 导出 PNG，再拷到 `assets/iss_elden_ring/textures/...`
 - 不要默认用 16×16 或 64×64，除非用户明确要求其他尺寸
 - 现有脚本示例：
   - `工具链/gen_glintstone_pebble.py`
@@ -77,10 +77,10 @@ alwaysApply: true
 - 常量用 `SCREAMING_SNAKE`，且名称含含义 + 单位语义（如 `PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK`）
 
 ### 数字分家（替代旧 Tuning 仓库）
-- **玩法**（伤害、蓝耗、弹速、转向角、数量、爆炸/扇形半径、穿透）：默认值只写 `config/EldenRingServerConfig`，`apply` 写到 Spell 运行时字段。整合包改 `config/elden_ring_spells-server.toml`，**不用重编译**。矿洞改 `-common.toml`。
+- **玩法**（伤害、蓝耗、弹速、转向角、数量、爆炸/扇形半径、穿透）：默认值只写 `config/EldenRingServerConfig`，`apply` 写到 Spell 运行时字段。整合包改 `config/iss_elden_ring-server.toml`，**不用重编译**。矿洞改 `-common.toml`。
 - **视觉 / 动画 / 握点 / 粒子密度**：`private static final` 写在用到它的类（CastCurve、Fx、Entity、Renderer）。不要进 toml。
 - **不要**再新建 `tuning/XxxTuning.java`（该包待删，见 `法术解耦架构.md`）。
-- 冷却 / 最大等级 / 法术开关走铁魔法 `config/irons_spellbooks_spell_config/elden_ring_spells/<id>.json`
+- 冷却 / 最大等级 / 法术开关走铁魔法 `config/irons_spellbooks_spell_config/iss_elden_ring/<id>.json`
 - 实体禁止 `import com.eldenring.spells.client.render...`
 
 ### 辉石弹道渲染复用

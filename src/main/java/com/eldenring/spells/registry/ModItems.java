@@ -47,7 +47,7 @@ public final class ModItems {
      * 星星法典：辉石学派魔法书。
      * <p>
      * 套用铁魔法原生 {@link SpellBook}（与烈焰书同类），10 个法术槽；
-     * 装备后：辉石法术强度 +15%、最大法力 +250。
+     * 装备后：辉石法术强度 +10%、最大法力 +200。
      * 物品模型走铁魔法 {@code template_spell_book_model}；客户端注册
      * {@code SpellBookCurioRenderer} 后腰侧显示立体书。
      * 须加入 {@code curios:spellbook} 物品标签才能装进魔法书槽。
@@ -73,7 +73,7 @@ public final class ModItems {
      * 起源秘典：高阶辉石学派魔法书。
      * <p>
      * 与星星法典同用铁魔法 {@link SpellBook} 模板（12 槽、立体书模型）；
-     * 装备后：辉石法术强度 +35%、最大法力 +400。
+     * 装备后：辉石法术强度 +25%、最大法力 +300。
      * 用起源晶体和传说墨水在锻造台升级星星法典，保留原书法术与扩容；需 {@code curios:spellbook} 标签。
      */
     public static final DeferredItem<Item> ORIGIN_CODEX = ITEMS.register(
@@ -114,6 +114,7 @@ public final class ModItems {
     /**
      * 观星者套装：观星者 NPC 默认穿着。每件提供铁魔法原生学派护甲同级的护甲值、
      * 125 最大法力、10% 辉石法术强度与 5% 通用法术强度；长袍额外拥有一个可灌注法术槽。
+     * 暂不可制作，不进创造栏（见 {@link ModCreativeTabs}）。
      */
     public static final DeferredItem<Item> ASTROLOGER_HAT = ITEMS.register(
             "astrologer_hat",

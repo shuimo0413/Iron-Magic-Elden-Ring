@@ -38,10 +38,10 @@ import java.util.Optional;
 public class CannonOfHaimaSpell extends EldenRingAbstractSpell {
 
     public static final int SPELL_MAX_LEVEL = 5;
-    public static final double SPELL_COOLDOWN_SECONDS = 4.5;
+    public static final double SPELL_COOLDOWN_SECONDS = 2.0;
 
     /** 1 级蓝耗。高于大槌：远程范围弹更贵。 */
-    public static int SPELL_BASE_MANA_COST = 30;
+    public static int SPELL_BASE_MANA_COST = 35;
 
     /** 每升 1 级额外蓝耗。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 4;
@@ -146,7 +146,7 @@ public class CannonOfHaimaSpell extends EldenRingAbstractSpell {
     /** 爆炸粒子强度（交给 Fx，再叠烟雾与碎片）。 */
     public static final float IMPACT_PARTICLE_INTENSITY = 3.05f;
 
-    /** 注册 ID：{@code elden_ring_spells:cannon_of_haima}。 */
+    /** 注册 ID：{@code iss_elden_ring:cannon_of_haima}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "cannon_of_haima");
 

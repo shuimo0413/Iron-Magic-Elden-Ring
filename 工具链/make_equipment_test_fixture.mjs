@@ -24,7 +24,7 @@ const structure = Buffer.concat([
   tag(9, 'entities', Buffer.concat([Buffer.from([10]), int(0)])),
   Buffer.from([0])
 ]);
-const path = resolve('src/gametest/resources/data/elden_ring_spells/structure/empty.nbt');
+const path = resolve('src/gametest/resources/data/iss_elden_ring/structure/empty.nbt');
 mkdirSync(dirname(path), { recursive: true });
 writeFileSync(path, gzipSync(structure));
 console.log(path);

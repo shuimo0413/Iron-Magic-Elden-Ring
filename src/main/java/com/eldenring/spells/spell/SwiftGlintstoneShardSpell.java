@@ -96,18 +96,18 @@ public class SwiftGlintstoneShardSpell extends EldenRingAbstractSpell {
         // 法术数值
         // -------------------------------------------------------------------------
 
-        public static int SPELL_BASE_MANA_COST = 6;
+        public static int SPELL_BASE_MANA_COST = 11;
         public static int SPELL_MANA_COST_PER_LEVEL = 2;
         public static float SPELL_BASE_SPELL_POWER = 4;
         public static float SPELL_SPELL_POWER_PER_LEVEL = 0.5f;
         public static int SPELL_CAST_TIME_TICKS = 0;
-        public static double SPELL_COOLDOWN_SECONDS = 0.25;
+        public static double SPELL_COOLDOWN_SECONDS = 0.7;
         /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
         public static int SPELL_MAX_LEVEL = 10;
         public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.55;
 
-    /** 注册 ID：{@code elden_ring_spells:swift_glintstone_shard}。 */
+    /** 注册 ID：{@code iss_elden_ring:swift_glintstone_shard}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "swift_glintstone_shard");
 

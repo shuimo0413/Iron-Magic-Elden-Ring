@@ -2,8 +2,8 @@
 	"format_version": "1.9.0",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "elden_ring_spells:block/blue_glintstone_cluster",
-		"particle": "elden_ring_spells:block/blue_glintstone_cluster"
+		"0": "iss_elden_ring:block/blue_glintstone_cluster",
+		"particle": "iss_elden_ring:block/blue_glintstone_cluster"
 	},
 	"elements": [
 		{

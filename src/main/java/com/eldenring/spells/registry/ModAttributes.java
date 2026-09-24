@@ -26,7 +26,7 @@ public final class ModAttributes {
     public static final DeferredHolder<Attribute, Attribute> GLINTSTONE_SPELL_POWER =
             ATTRIBUTES.register("glintstone_spell_power", () ->
                     new MagicPercentAttribute(
-                            "attribute.elden_ring_spells.glintstone_spell_power",
+                            "attribute.iss_elden_ring.glintstone_spell_power",
                             1.0D, -100.0D, 100.0D
                     ).setSyncable(true));
 
@@ -37,7 +37,7 @@ public final class ModAttributes {
     public static final DeferredHolder<Attribute, Attribute> GLINTSTONE_MAGIC_RESIST =
             ATTRIBUTES.register("glintstone_magic_resist", () ->
                     new MagicPercentAttribute(
-                            "attribute.elden_ring_spells.glintstone_magic_resist",
+                            "attribute.iss_elden_ring.glintstone_magic_resist",
                             1.0D, -100.0D, 100.0D
                     ).setSyncable(true));
 

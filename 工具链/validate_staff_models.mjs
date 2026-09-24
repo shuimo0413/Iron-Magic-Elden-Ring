@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const assetRoot = path.join(root, 'src/main/resources/assets/elden_ring_spells');
+const assetRoot = path.join(root, 'src/main/resources/assets/iss_elden_ring');
 const legalAngles = new Set([-45, -22.5, 0, 22.5, 45]);
 const handTransforms = {
     thirdperson_righthand: {translation: [0, 3, 1.25]},
@@ -23,7 +23,7 @@ for (const name of ['astrologer_staff', 'azur_glintstone_staff']) {
     assert.equal(texture.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
     assert.deepEqual([texture.readUInt32BE(16), texture.readUInt32BE(20)], [32, 32]);
     assert.deepEqual(model.texture_size, [32, 32]);
-    assert.equal(model.textures['0'], 'elden_ring_spells:item/' + name);
+    assert.equal(model.textures['0'], 'iss_elden_ring:item/' + name);
     assert.equal(model.textures.particle, model.textures['0']);
     assert.equal(editable.meta.model_format, 'java_block');
     assert.equal(editable.elements.length, model.elements.length);

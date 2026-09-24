@@ -18,9 +18,9 @@ import org.lwjgl.glfw.GLFW;
 @EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class ModKeyMappings {
     /**
-     * 控制菜单里的分类名（lang：{@code key.categories.elden_ring_spells}）。
+     * 控制菜单里的分类名（lang：{@code key.categories.iss_elden_ring}）。
      */
-    public static final String CATEGORY = "key.categories.elden_ring_spells";
+    public static final String CATEGORY = "key.categories.iss_elden_ring";
 
     /**
      * 和弦修饰键，默认 {@code X}：须按住才响应打开键。
@@ -38,14 +38,14 @@ public final class ModKeyMappings {
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
         trackingIgnoreMenuModifier = new KeyMapping(
-                "key.elden_ring_spells.tracking_ignore_modifier",
+                "key.iss_elden_ring.tracking_ignore_modifier",
                 KeyConflictContext.IN_GAME,
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_X,
                 CATEGORY
         );
         trackingIgnoreMenuOpen = new KeyMapping(
-                "key.elden_ring_spells.tracking_ignore_open",
+                "key.iss_elden_ring.tracking_ignore_open",
                 KeyConflictContext.IN_GAME,
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_C,

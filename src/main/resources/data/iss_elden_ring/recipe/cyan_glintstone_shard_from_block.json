@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "iss_elden_ring:cyan_glintstone_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "iss_elden_ring:cyan_glintstone_shard"
+  }
+}

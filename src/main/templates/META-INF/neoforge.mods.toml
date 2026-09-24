@@ -15,7 +15,7 @@ loaderVersion="${loader_version_range}" #mandatory
 license="${mod_license}"
 
 [[mixins]]
-config="elden_ring_spells.mixins.json"
+config="iss_elden_ring.mixins.json"
 
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
@@ -87,3 +87,21 @@ Adds Lands Between-themed spells and schools.
     versionRange="[0.4.3,)"
     ordering="AFTER"
     side="CLIENT"
+
+[[dependencies.${mod_id}]]
+    # 可选主目标：Apotheosis x Iron's Spellbooks Compat（CurseForge 显示名；modId=irons_apothic）。
+    # 无此模组可正常游玩；有则加载本模组辉石学派词缀/宝石 datapack，杖/书进 staff/spellbook 分类。
+    modId="irons_apothic"
+    type="optional"
+    versionRange="[1.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    # 可选：神化本体（Iron's Apothic 的硬依赖）。单独装神化时护甲仍可吃词缀；8.5.2～8.8.0+ 兼容。
+    # 模组版本号为 8.x（非 1.21.1-8.x）。
+    modId="apotheosis"
+    type="optional"
+    versionRange="[8.5.2,)"
+    ordering="AFTER"
+    side="BOTH"

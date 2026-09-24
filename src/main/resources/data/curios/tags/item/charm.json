@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "elden_ring_spells:primal_glintstone_blade",
-    "elden_ring_spells:mage_sphere"
+    "iss_elden_ring:primal_glintstone_blade",
+    "iss_elden_ring:mage_sphere"
   ]
 }

@@ -14,14 +14,14 @@ public final class GlintstoneTrailRenderTypes {
 
     /** 外层 / 细丝：标准自发光半透明。 */
     public static final RenderType TRANSLUCENT = create(
-            "elden_ring_spells_glintstone_trail",
+            "iss_elden_ring_glintstone_trail",
             GlintstoneCometModels.TRAIL_BEAM_TEXTURE,
             RenderStateShard.TRANSLUCENT_TRANSPARENCY
     );
 
     /** 内层光芯：加法，彗星 / 帚星用来做出亮核而不堆粒子。 */
     public static final RenderType ADDITIVE_CORE = create(
-            "elden_ring_spells_glintstone_trail_core",
+            "iss_elden_ring_glintstone_trail_core",
             GlintstoneCometModels.TRAIL_BEAM_TEXTURE,
             RenderStateShard.LIGHTNING_TRANSPARENCY
     );

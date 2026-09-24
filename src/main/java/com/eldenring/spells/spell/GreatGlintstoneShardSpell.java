@@ -73,18 +73,18 @@ public class GreatGlintstoneShardSpell extends EldenRingAbstractSpell {
         public static float IMPACT_PARTICLE_INTENSITY = 2.35f;
         public static float CAST_BURST_PARTICLE_INTENSITY = 1.85f;
 
-        public static int SPELL_BASE_MANA_COST = 14;
+        public static int SPELL_BASE_MANA_COST = 19;
         public static int SPELL_MANA_COST_PER_LEVEL = 3;
         public static float SPELL_BASE_SPELL_POWER = 8;
         public static float SPELL_SPELL_POWER_PER_LEVEL = 2;
         public static int SPELL_CAST_TIME_TICKS = 0;
-        public static double SPELL_COOLDOWN_SECONDS = 0.85;
+        public static double SPELL_COOLDOWN_SECONDS = 1.0;
         /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
         public static int SPELL_MAX_LEVEL = 7;
         public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
         public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.75;
 
-    /** 注册 ID：{@code elden_ring_spells:great_glintstone_shard}。 */
+    /** 注册 ID：{@code iss_elden_ring:great_glintstone_shard}。 */
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "great_glintstone_shard");
 

@@ -34,17 +34,14 @@ public final class ModCreativeTabs {
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN =
             CREATIVE_TABS.register("main", () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.elden_ring_spells"))
+                    .title(Component.translatable("itemGroup.iss_elden_ring"))
                     .icon(() -> ModItems.createFilledScroll(1))
                     .displayItems((params, output) -> {
                         output.accept(ModItems.STAR_CODEX.get());
                         output.accept(ModItems.ORIGIN_CODEX.get());
                         output.accept(ModItems.ASTROLOGER_STAFF.get());
                         output.accept(ModItems.AZUR_GLINTSTONE_STAFF.get());
-                        output.accept(ModItems.ASTROLOGER_HAT.get());
-                        output.accept(ModItems.ASTROLOGER_ROBE.get());
-                        output.accept(ModItems.ASTROLOGER_LEGGINGS.get());
-                        output.accept(ModItems.ASTROLOGER_BOOTS.get());
+                        // 观星者套装暂不可制作，不进创造栏；物品仍注册，供观星者 NPC 穿着
                         output.accept(ModItems.CELESTIAL_MAGE_HAT.get());
                         output.accept(ModItems.CELESTIAL_MAGE_ROBE.get());
                         output.accept(ModItems.CELESTIAL_MAGE_LEGGINGS.get());

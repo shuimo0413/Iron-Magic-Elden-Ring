@@ -14,9 +14,9 @@ import net.neoforged.fml.event.config.ModConfigEvent;
  * <p>
  * 整合包改数值的入口：
  * <ul>
- *   <li>{@code config/elden_ring_spells-server.toml} — 伤害、弹速、范围、蓝耗基数等玩法数字</li>
- *   <li>{@code config/elden_ring_spells-common.toml} — 辉石矿洞密度</li>
- *   <li>{@code config/irons_spellbooks_spell_config/elden_ring_spells/*.json} — 冷却、最大等级、开关、蓝耗/法强倍率</li>
+ *   <li>{@code config/iss_elden_ring-server.toml} — 伤害、弹速、范围、蓝耗基数等玩法数字</li>
+ *   <li>{@code config/iss_elden_ring-common.toml} — 辉石矿洞密度</li>
+ *   <li>{@code config/irons_spellbooks_spell_config/iss_elden_ring/*.json} — 冷却、最大等级、开关、蓝耗/法强倍率</li>
  * </ul>
  */
 public final class EldenRingConfigs {
@@ -43,10 +43,10 @@ public final class EldenRingConfigs {
         if (config.getSpec() == EldenRingServerConfig.SPEC) {
             EldenRingServerConfig.apply();
             SpellBookStatReloader.reloadAll();
-            EldenRingSpellsMod.LOGGER.info("Applied elden_ring_spells-server.toml to Spell fields.");
+            EldenRingSpellsMod.LOGGER.info("Applied iss_elden_ring-server.toml to Spell fields.");
         } else if (config.getSpec() == EldenRingCommonConfig.SPEC) {
             EldenRingCommonConfig.apply();
-            EldenRingSpellsMod.LOGGER.info("Applied elden_ring_spells-common.toml to cave fields.");
+            EldenRingSpellsMod.LOGGER.info("Applied iss_elden_ring-common.toml to cave fields.");
         }
     }
 }

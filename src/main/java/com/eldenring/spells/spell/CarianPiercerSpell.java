@@ -27,7 +27,7 @@ import java.util.Optional;
 
 /**
  * 卡利亚贯刺（Carian Piercer）：形成魔力大剑后向前突刺一次。
- * 动作组是 Blockbench {@code elden_ring_spells.carian_puncture}（0.75 秒），
+ * 动作组是 Blockbench {@code iss_elden_ring.carian_puncture}（0.75 秒），
  * 剑的握点 / 贴图从卡利亚大剑拷出独立副本，不共用那套类。
  * <p>
  * 点按只出一刺，长按不会连刺。客户端 PlayerAnimator 由
@@ -45,10 +45,10 @@ public class CarianPiercerSpell extends EldenRingAbstractSpell {
     public static final int SPELL_MAX_LEVEL = 7;
 
     /** 冷却（秒）。比迅剑略长，单刀更重。 */
-    public static final double SPELL_COOLDOWN_SECONDS = 0.5;
+    public static final double SPELL_COOLDOWN_SECONDS = 1.0;
 
     /** 1 级基础法力消耗。点按扣一次，不按住连扣。 */
-    public static int SPELL_BASE_MANA_COST = 18;
+    public static int SPELL_BASE_MANA_COST = 23;
 
     /** 每升一级额外法力消耗。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 3;

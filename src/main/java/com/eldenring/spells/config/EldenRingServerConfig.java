@@ -37,8 +37,8 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * <p>
  * 文件位置：
  * <ul>
- *   <li>全局默认：{@code config/elden_ring_spells-server.toml}</li>
- *   <li>单世界覆盖：{@code saves/&lt;世界&gt;/serverconfig/elden_ring_spells-server.toml}</li>
+ *   <li>全局默认：{@code config/iss_elden_ring-server.toml}</li>
+ *   <li>单世界覆盖：{@code saves/&lt;世界&gt;/serverconfig/iss_elden_ring-server.toml}</li>
  * </ul>
  * 进世界时加载并同步到客户端。整合包改平衡优先改这份 toml。
  * <p>
@@ -52,10 +52,10 @@ public final class EldenRingServerConfig {
     // Book defaults are fixed at item registration; changing these requires a restart.
     public static final int STAR_CODEX_BASE_SLOTS = 10;
     public static final int ORIGIN_CODEX_BASE_SLOTS = 12;
-    public static final double STAR_CODEX_GLINTSTONE_POWER_BONUS = 0.15D;
-    public static final double STAR_CODEX_MAX_MANA_BONUS = 250.0D;
-    public static final double ORIGIN_CODEX_GLINTSTONE_POWER_BONUS = 0.35D;
-    public static final double ORIGIN_CODEX_MAX_MANA_BONUS = 400.0D;
+    public static final double STAR_CODEX_GLINTSTONE_POWER_BONUS = 0.10D;
+    public static final double STAR_CODEX_MAX_MANA_BONUS = 200.0D;
+    public static final double ORIGIN_CODEX_GLINTSTONE_POWER_BONUS = 0.25D;
+    public static final double ORIGIN_CODEX_MAX_MANA_BONUS = 300.0D;
     public static final ModConfigSpec.DoubleValue AZUR_CAST_TIME_REDUCTION;
     public static final ModConfigSpec.DoubleValue AZUR_MANA_COST_MULTIPLIER;
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION;
@@ -95,8 +95,8 @@ public final class EldenRingServerConfig {
         builder.comment(
                 "Iron's Spells 'n Spellbooks: Elden Ring 玩法数值。进世界后由服务端同步。",
                 "冷却 / 最大等级 / 启用 / 蓝耗倍率 / 法强倍率请改铁魔法 JSON：",
-                "  config/irons_spellbooks_spell_config/elden_ring_spells/<法术id>.json",
-                "指令：/ironsSpellbooks generate_file elden_ring_spells:glintstone_pebble full",
+                "  config/irons_spellbooks_spell_config/iss_elden_ring/<法术id>.json",
+                "指令：/ironsSpellbooks generate_file iss_elden_ring:glintstone_pebble full",
                 "颜色、粒子密度、彗星头缩放、握点、动画 tick、出生前移、索敌锥角写死在 Java，不进这份文件。"
         );
 

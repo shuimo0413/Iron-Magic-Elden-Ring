@@ -69,7 +69,7 @@ public final class CarianSlicerClientHold {
 
     /**
      * 下标 0 = 点按第一刀（资源 {@code carian_slicer_1}），1 = 连斩第二刀（{@code carian_slicer_2}）。
-     * 与 Blockbench {@code elden_ring_spells.carian_slicer_1} / {@code _2} 同名 1:1，不再导出对调。
+     * 与 Blockbench {@code iss_elden_ring.carian_slicer_1} / {@code _2} 同名 1:1，不再导出对调。
      */
     private static final String[] SLASH_CLIP_NAMES = {
             "carian_slicer_1",
@@ -306,8 +306,8 @@ public final class CarianSlicerClientHold {
         String otherClipName = SLASH_CLIP_NAMES[slashClipIndex ^ 1];
         String[] candidatePaths = {
                 wantedClipName,
-                "animation.elden_ring_spells." + wantedClipName,
-                "elden_ring_spells." + wantedClipName,
+                "animation.iss_elden_ring." + wantedClipName,
+                "iss_elden_ring." + wantedClipName,
                 "player_animation/" + wantedClipName,
                 "player_animations/" + wantedClipName
         };

@@ -31,7 +31,7 @@ import java.util.Optional;
 public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
 
     /** 1 级蓝耗。三把大剑比九把小剑更贵。 */
-    public static int SPELL_BASE_MANA_COST = 40;
+    public static int SPELL_BASE_MANA_COST = 45;
 
     /** 每升 1 级额外蓝耗。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 4;
@@ -48,7 +48,7 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
     /**
      * 冷却（秒）。单下更重，CD 比另外两圈圆阵更长。
      */
-    public static double SPELL_COOLDOWN_SECONDS = 6.0;
+    public static double SPELL_COOLDOWN_SECONDS = 2.0;
 
     /** 最大等级。 */
     public static int SPELL_MAX_LEVEL = 5;
@@ -116,7 +116,7 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
                 ),
                 Component.literal("×" + GreatbladePhalanxSpell.BLADE_COUNT),
                 Component.translatable(
-                        "ui.elden_ring_spells.projectile_range",
+                        "ui.iss_elden_ring.projectile_range",
                         Utils.stringTruncation(GreatbladePhalanxSpell.AUTO_LAUNCH_RANGE_BLOCKS, 1)
                 )
         );

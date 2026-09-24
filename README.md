@@ -4,7 +4,7 @@
 
 Minecraft **1.21.1** / **NeoForge** 扩展模组。依赖 [Iron's Spells 'n Spellbooks](https://iron.wiki/developers/)，在铁魔法施法管线上加《艾尔登法环》风格法术、辉石学派与地下辉石矿洞。
 
-模组 ID：`elden_ring_spells`（内部 ID，勿随意改）  
+模组 ID：`iss_elden_ring`（内部 ID，勿随意改）  
 当前版本：`1.0.0`
 
 > 这不是独立魔法系统。按键、扣蓝、冷却、法术书仍走铁魔法；本模组只补「出手之后干什么」。
@@ -30,11 +30,17 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 运行时还会拉 Curios、GeckoLib、PlayerAnimator（铁魔法自己的依赖）。把本模组 jar 和铁魔法一起放进 `mods/` 即可。
 
+### 可选：Apotheosis x Iron's Spellbooks Compat
+
+无兼容模组可正常游玩。完整施法向词缀 / 宝石加成请装 [Apotheosis x Iron's Spellbooks Compat](https://www.curseforge.com/minecraft/mc-mods/apotheosis-x-irons-spellbooks-compat)（内部 ID `irons_apothic`，亦称 Iron's Apothic），并连带其依赖的 [Apotheosis](https://www.curseforge.com/minecraft/mc-mods/apotheosis) **≥ 8.5.2**（含 8.8.0+）。
+
+本模组通过 datapack 往 `irons_apothic` 挂辉石学派：法术强度、蓝耗减免、法术等级词缀，以及「辉石棱晶」宝石。仅装神化本体时，护甲仍可参与神化重铸；杖 / 魔法书的施法词缀需要上述兼容模组。
+
 ## 内容
 
 ### 辉石学派
 
-独立学派 `elden_ring_spells:glintstone`（显示名「辉石」），带自己的法术强度 / 抗性属性和伤害类型。
+独立学派 `iss_elden_ring:glintstone`（显示名「辉石」），带自己的法术强度 / 抗性属性和伤害类型。
 
 辉石碎片 / 起源辉石是学派触媒（Focus），放进铁魔法卷轴锻造台的焦点槽抄写卷轴（取出成品时消耗焦点）。不同材料只能抄对应咒，不是整校通用：
 
@@ -51,8 +57,8 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 | 物品 | 效果 |
 |------|------|
-| 星星法典 | 10 个法术槽；辉石法术强度 +15%、最大法力 +250；稀有品质 |
-| 起源秘典 | 12 个法术槽；辉石法术强度 +35%、最大法力 +400；史诗品质 |
+| 星星法典 | 10 个法术槽；辉石法术强度 +10%、最大法力 +200；稀有品质 |
+| 起源秘典 | 12 个法术槽；辉石法术强度 +25%、最大法力 +300；史诗品质 |
 
 ### 装备进阶
 
@@ -71,7 +77,7 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 两根法杖均以主手为有效栏位，保留辉石法术强度 +10%。亚兹勒杖额外提供铁魔法原生吟唱属性 +15%，代价为消耗法力的施法费用增加 20%（向上取整）。普通吟唱缩短；持续施法遵循铁魔法原生规则延长持续时间，不加速脉冲，也不缩短彗星亚兹勒自定义的预热时间。免费卷轴/重施和创造模式原有免蓝设置继续生效。开始施法后换掉亚兹勒杖不会免除这次已获得加速的费用。
 
-亚兹勒杖的新增数值在 `elden_ring_spells-server.toml` 的 `equipment.azur_staff` 下配置：`castTimeReduction` 默认 `0.15`，`manaCostMultiplier` 默认 `1.20`。玩家登录和服务器热重载时同步这两个值，主手属性与客户端蓝耗预览随之更新。书籍基础槽数、辉石和法力加成集中定义在 `EldenRingServerConfig` 的装备常量中，调整它们需要重编译。
+亚兹勒杖的新增数值在 `iss_elden_ring-server.toml` 的 `equipment.azur_staff` 下配置：`castTimeReduction` 默认 `0.15`，`manaCostMultiplier` 默认 `1.20`。玩家登录和服务器热重载时同步这两个值，主手属性与客户端蓝耗预览随之更新。书籍基础槽数、辉石和法力加成集中定义在 `EldenRingServerConfig` 的装备常量中，调整它们需要重编译。
 
 法杖使用原版方块物品模型和 32×32 贴图；可编辑源文件保存在 `模型/*.bbmodel`。下图为 Blockbench 物品栏预览，不代表游戏内动画或光影验收。
 
@@ -129,7 +135,7 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ### 世界
 
-地下洞穴表面会刷三色辉石矿物：水晶块 + 完整水晶簇。一洞一色、不生长、没有矿石矿脉，也不新挖空洞。密度在 `config/elden_ring_spells-common.toml`。
+地下洞穴表面会刷三色辉石矿物：水晶块 + 完整水晶簇。一洞一色、不生长、没有矿石矿脉，也不新挖空洞。密度在 `config/iss_elden_ring-common.toml`。
 
 地表星落坑、辉石粉尘装备、学院哨塔还没做。
 
@@ -139,9 +145,9 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 | 文件 | 改什么 |
 |------|--------|
-| `config/elden_ring_spells-server.toml` | 伤害、蓝耗、弹速、转向、爆炸半径等玩法数字。整合包改这里，不用重编译。 |
-| `config/elden_ring_spells-common.toml` | 辉石矿洞密度与扫描高度。改完要新区块或新世界才看得到。 |
-| `config/irons_spellbooks_spell_config/elden_ring_spells/<法术id>.json` | 冷却、最大等级、法术开关（铁魔法自己的配置）。 |
+| `config/iss_elden_ring-server.toml` | 伤害、蓝耗、弹速、转向、爆炸半径等玩法数字。整合包改这里，不用重编译。 |
+| `config/iss_elden_ring-common.toml` | 辉石矿洞密度与扫描高度。改完要新区块或新世界才看得到。 |
+| `config/irons_spellbooks_spell_config/iss_elden_ring/<法术id>.json` | 冷却、最大等级、法术开关（铁魔法自己的配置）。 |
 
 视觉（粒子密度、动画、握点）写死在代码里，不进 toml。
 
@@ -157,7 +163,7 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 .\gradlew.bat runClient
 ```
 
-产物：`build/libs/elden_ring_spells-1.0.0.jar`
+产物：`build/libs/iss_elden_ring-1.0.0.jar`
 
 装备回归测试使用独立 GameTestServer，不操作玩家存档：
 

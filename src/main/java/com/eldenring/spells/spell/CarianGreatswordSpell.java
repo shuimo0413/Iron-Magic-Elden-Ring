@@ -46,10 +46,10 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
     public static final int SPELL_MAX_LEVEL = 7;
 
     /** 冷却（秒）。比迅剑略长，单刀更重。 */
-    public static final double SPELL_COOLDOWN_SECONDS = 0.5;
+    public static final double SPELL_COOLDOWN_SECONDS = 2.0;
 
     /** 1 级基础法力消耗。CONTINUOUS 按住期间按铁魔法节奏扣蓝。 */
-    public static int SPELL_BASE_MANA_COST = 20;
+    public static int SPELL_BASE_MANA_COST = 25;
 
     /** 每升一级额外法力消耗。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 3;
@@ -146,7 +146,7 @@ public class CarianGreatswordSpell extends EldenRingAbstractSpell {
                         "ui.irons_spellbooks.radius",
                         Utils.stringTruncation(SLASH_RADIUS_BLOCKS, 1)
                 ),
-                Component.translatable("ui.elden_ring_spells.hold_to_combo")
+                Component.translatable("ui.iss_elden_ring.hold_to_combo")
         );
     }
 

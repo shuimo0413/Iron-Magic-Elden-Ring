@@ -43,8 +43,8 @@ isProject: false
   - `cyan_glintstone_shard`
   - `blue_glintstone_shard`
   - `purple_glintstone_shard`
-- [glintstone_focus.json](../../src/main/resources/data/elden_ring_spells/tags/item/glintstone_focus.json)：写入三种碎片，**去掉** `minecraft:amethyst_shard`
-- [school_focus.json](../../src/main/resources/data/irons_spellbooks/tags/item/school_focus.json)：改为 `#elden_ring_spells:glintstone_focus`，避免两处各写一份物品列表
+- [glintstone_focus.json](../../src/main/resources/data/iss_elden_ring/tags/item/glintstone_focus.json)：写入三种碎片，**去掉** `minecraft:amethyst_shard`
+- [school_focus.json](../../src/main/resources/data/irons_spellbooks/tags/item/school_focus.json)：改为 `#iss_elden_ring:glintstone_focus`，避免两处各写一份物品列表
 - 可选：把碎片加进 `irons_spellbooks:lootable_focus`，让铁魔法结构宝箱也能滚到
 - [ModCreativeTabs.java](../../src/main/java/com/eldenring/spells/registry/ModCreativeTabs.java)：卷轴列表前插入碎片
 - `工具链/` 画三种碎片 JSON，用 `工具链/render_pixel_art.py` 导出，拷到 `textures/item/`
