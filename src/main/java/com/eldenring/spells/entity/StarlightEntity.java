@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -79,13 +80,30 @@ public class StarlightEntity extends Projectile implements AntiMagicSusceptible 
     }
 
     /**
-     * 头顶锚点：碰撞箱顶再抬 {@link #HEAD_Y_OFFSET_BLOCKS}，水平跟脚底中心，避免侧移时星星甩到身后。
+     * 头顶锚点（tick 瞬时）：碰撞箱顶再抬 {@link #HEAD_Y_OFFSET_BLOCKS}，水平跟脚底中心。
+     * 服务端 {@link #snapToOwnerHead} / 逻辑换格用；客户端平滑绘制请用带 {@code partialTick} 的重载。
      */
     public static Vec3 worldPositionAboveHead(LivingEntity owner) {
         return new Vec3(
                 owner.getX(),
-                owner.getBoundingBox().maxY + HEAD_Y_OFFSET_BLOCKS,
+                owner.getY() + owner.getBbHeight() + HEAD_Y_OFFSET_BLOCKS,
                 owner.getZ()
+        );
+    }
+
+    /**
+     * 头顶锚点（帧插值）：与主人模型同帧对齐，避免 20 TPS {@code setPos} 硬钉造成的一卡一卡。
+     *
+     * @param partialTick 渲染帧内插值 0–1；调到中间 → 更贴上一 tick 与当前 tick 之间的位置
+     */
+    public static Vec3 worldPositionAboveHead(LivingEntity owner, float partialTick) {
+        double interpolatedX = Mth.lerp(partialTick, owner.xo, owner.getX());
+        double interpolatedY = Mth.lerp(partialTick, owner.yo, owner.getY());
+        double interpolatedZ = Mth.lerp(partialTick, owner.zo, owner.getZ());
+        return new Vec3(
+                interpolatedX,
+                interpolatedY + owner.getBbHeight() + HEAD_Y_OFFSET_BLOCKS,
+                interpolatedZ
         );
     }
 

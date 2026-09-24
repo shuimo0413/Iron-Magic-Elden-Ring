@@ -14,6 +14,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 /**
@@ -108,6 +110,8 @@ public class StarlightRenderer extends EntityRenderer<StarlightEntity> {
         float pulseScale = 1.0f + PULSE_SCALE_AMPLITUDE * Mth.sin(ageTicks * PULSE_RADIANS_PER_TICK);
 
         poseStack.pushPose();
+        // 调度器已把原点放到实体自身插值位；再偏到主人帧插值头顶，跟玩家模型同帧。
+        translateToOwnerInterpolatedHead(poseStack, entity, partialTick);
         poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0f));
         poseStack.mulPose(Axis.ZP.rotationDegrees(ageTicks * SPIN_DEGREES_PER_TICK));
@@ -141,6 +145,27 @@ public class StarlightRenderer extends EntityRenderer<StarlightEntity> {
 
         poseStack.popPose();
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+    }
+
+    /**
+     * 把绘制原点从实体插值位挪到主人 {@code partialTick} 头顶。
+     * 主人无效时不平移，仍画在实体自身位置（兜底）。
+     */
+    private static void translateToOwnerInterpolatedHead(
+            PoseStack poseStack,
+            StarlightEntity entity,
+            float partialTick
+    ) {
+        if (!(entity.getOwner() instanceof LivingEntity livingOwner) || !livingOwner.isAlive()) {
+            return;
+        }
+        Vec3 smoothHead = StarlightEntity.worldPositionAboveHead(livingOwner, partialTick);
+        Vec3 entityInterpolated = entity.getPosition(partialTick);
+        poseStack.translate(
+                smoothHead.x - entityInterpolated.x,
+                smoothHead.y - entityInterpolated.y,
+                smoothHead.z - entityInterpolated.z
+        );
     }
 
     /**
