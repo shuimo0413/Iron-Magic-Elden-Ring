@@ -13,8 +13,13 @@ import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.item.SpellBook;
+import io.redspace.ironsspellbooks.item.UpgradeOrbItem;
 import io.redspace.ironsspellbooks.item.weapons.AttributeContainer;
+import io.redspace.ironsspellbooks.registries.ComponentRegistry;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
+import io.redspace.ironsspellbooks.registries.UpgradeOrbTypeRegistry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
@@ -215,6 +220,31 @@ public final class ModItems {
     public static final DeferredItem<Item> GLINTSTONE_RUNE = ITEMS.register(
             "glintstone_rune",
             () -> new Item(new Item.Properties())
+    );
+
+    /**
+     * 辉石升级法球：铁魔法奥术砧升级球。
+     * <p>
+     * 与火/冰等学派法球同机制：镶嵌后辉石法术强度 +5%（{@code add_multiplied_base}）。
+     * 类型由 datapack {@code iss_elden_ring:glintstone_power} 定义；合成用空白升级法球 + 八枚辉石符文。
+     */
+    public static final DeferredItem<Item> GLINTSTONE_UPGRADE_ORB = ITEMS.register(
+            "glintstone_upgrade_orb",
+            () -> new UpgradeOrbItem(
+                    new Item.Properties()
+                            .rarity(Rarity.UNCOMMON)
+                            .fireResistant()
+                            .component(
+                                    ComponentRegistry.UPGRADE_ORB_TYPE,
+                                    ResourceKey.create(
+                                            UpgradeOrbTypeRegistry.UPGRADE_ORB_REGISTRY_KEY,
+                                            ResourceLocation.fromNamespaceAndPath(
+                                                    EldenRingSpellsMod.MOD_ID,
+                                                    "glintstone_power"
+                                            )
+                                    )
+                            )
+            )
     );
 
     /**
