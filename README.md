@@ -113,50 +113,50 @@ Minecraft **1.21.1** / **NeoForge** 扩展模组。依赖 [Iron's Spells 'n Spel
 
 ### 辉石弹道
 
-| | 法术 | 大致手感 | 抄写焦点 |
-|---|------|----------|----------|
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintstone_pebble.png" width="24" alt=""> | 辉石魔砾 | 基础单发，限角追踪 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/swift_glintstone_shard.png" width="24" alt=""> | 辉石迅魔砾 | 更快更便宜，单发更弱 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/great_glintstone_shard.png" width="24" alt=""> | 辉石大魔砾 | 大体积弹，命中小范围爆炸 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintstone_comet.png" width="24" alt=""> | 辉石彗星 | 介于大魔砾与帚星之间 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintstone_stars.png" width="24" alt=""> | 辉石流星 | 三发错峰强追踪 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/star_shower.png" width="24" alt=""> | 流星雨 | 六发错峰强追踪 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/stars_of_ruin.png" width="24" alt=""> | 毁灭流星 | 长吟唱后八发齐射 | 起源 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/comet.png" width="24" alt=""> | 帚星 | 巨型彗星，大半径爆炸 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/spiral_shard.png" width="24" alt=""> | 旋飞魔砾 | 双螺旋弹道，可穿透 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintstone_arc.png" width="24" alt=""> | 辉石弯弧 | 横向青色穿透刃，不追踪 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/crystal_barrage.png" width="24" alt=""> | 结晶连弹 | 按住散射碎片；可缓慢走动 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/crystal_burst.png" width="24" alt=""> | 结晶散射 | 瞬时齐射，可移动施法 | 青 |
+| | 法术 | 抄写焦点 |
+|---|------|----------|
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintstone_pebble.png" width="24" alt=""> | 辉石魔砾 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/swift_glintstone_shard.png" width="24" alt=""> | 辉石迅魔砾 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/great_glintstone_shard.png" width="24" alt=""> | 辉石大魔砾 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintstone_comet.png" width="24" alt=""> | 辉石彗星 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintstone_stars.png" width="24" alt=""> | 辉石流星 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/star_shower.png" width="24" alt=""> | 流星雨 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/stars_of_ruin.png" width="24" alt=""> | 毁灭流星 | 起源 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/comet.png" width="24" alt=""> | 帚星 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/spiral_shard.png" width="24" alt=""> | 旋飞魔砾 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintstone_arc.png" width="24" alt=""> | 辉石弯弧 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/crystal_barrage.png" width="24" alt=""> | 结晶连弹 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/crystal_burst.png" width="24" alt=""> | 结晶散射 | 青 |
 
 ### 持续 / 场地
 
-| | 法术 | 大致手感 | 抄写焦点 |
-|---|------|----------|----------|
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/starlight.png" width="24" alt=""> | 星光 | 头顶跟随小星，火把级照明 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/terra_magica.png" width="24" alt=""> | 魔法之境 | 脚下法阵，站内法术强度 +30% | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/comet_azur.png" width="24" alt=""> | 彗星亚兹勒 | 蓄力后按住喷流；可缓慢走动 | 起源 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/founding_rain_of_stars.png" width="24" alt=""> | 创星雨 | 星云升空后落下雨针 | 起源 |
+| | 法术 | 抄写焦点 |
+|---|------|----------|
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/starlight.png" width="24" alt=""> | 星光 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/terra_magica.png" width="24" alt=""> | 魔法之境 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/comet_azur.png" width="24" alt=""> | 彗星亚兹勒 | 起源 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/founding_rain_of_stars.png" width="24" alt=""> | 创星雨 | 起源 |
 
 ### 近战 / 卡利亚 / 海摩
 
-| | 法术 | 大致手感 | 抄写焦点 |
-|---|------|----------|----------|
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/gavel_of_haima.png" width="24" alt=""> | 海摩大槌 | 身前巨锤砸地，直击 + 冲击波 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/cannon_of_haima.png" width="24" alt=""> | 海摩炮弹 | 蓄力抛出抛物线炮弹 | 青 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/carian_slicer.png" width="24" alt=""> | 卡利亚迅剑 | 点按第一刀，长按交替斩击 | 蓝 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/carian_greatsword.png" width="24" alt=""> | 卡利亚大剑 | 同迅剑节奏的大剑斩 | 蓝 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/carian_piercer.png" width="24" alt=""> | 卡利亚贯刺 | 点按突刺一次 | 蓝 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/magic_glintblade.png" width="24" alt=""> | 魔法辉剑 | 身前悬停后追踪飞出 | 蓝 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintblade_phalanx.png" width="24" alt=""> | 辉剑圆阵 | 头上五把跟手辉剑，附近有敌人自动射出 | 蓝 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/carian_phalanx.png" width="24" alt=""> | 卡利亚圆阵 | 九把；与另外两圈圆阵互斥 | 蓝 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/greatblade_phalanx.png" width="24" alt=""> | 巨剑阵 | 三把放大辉剑；与另外两圈圆阵互斥 | 蓝 |
+| | 法术 | 抄写焦点 |
+|---|------|----------|
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/gavel_of_haima.png" width="24" alt=""> | 海摩大槌 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/cannon_of_haima.png" width="24" alt=""> | 海摩炮弹 | 青 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/carian_slicer.png" width="24" alt=""> | 卡利亚迅剑 | 蓝 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/carian_greatsword.png" width="24" alt=""> | 卡利亚大剑 | 蓝 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/carian_piercer.png" width="24" alt=""> | 卡利亚贯刺 | 蓝 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/magic_glintblade.png" width="24" alt=""> | 魔法辉剑 | 蓝 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/glintblade_phalanx.png" width="24" alt=""> | 辉剑圆阵 | 蓝 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/carian_phalanx.png" width="24" alt=""> | 卡利亚圆阵 | 蓝 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/greatblade_phalanx.png" width="24" alt=""> | 巨剑阵 | 蓝 |
 
 ### 重力
 
-| | 法术 | 大致手感 | 抄写焦点 |
-|---|------|----------|----------|
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/gravity_ball.png" width="24" alt=""> | 重力球 | 直线紫球，无伤害；命中后把敌人拉向施法者 | 紫 |
-| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/collapsing_stars.png" width="24" alt=""> | 碎星 | 锥面散射多发重力球，拉取距离随等级变长 | 紫 |
+| | 法术 | 抄写焦点 |
+|---|------|----------|
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/gravity_ball.png" width="24" alt=""> | 重力球 | 紫 |
+| <img src="src/main/resources/assets/iss_elden_ring/textures/gui/spell_icons/collapsing_stars.png" width="24" alt=""> | 碎星 | 紫 |
 
 起源系法术伤害类型为**魔法伤害**（非独立起源伤害）。
 
