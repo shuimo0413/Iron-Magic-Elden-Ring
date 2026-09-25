@@ -37,7 +37,7 @@ Minecraft **1.21.1** / **NeoForge** 扩展模组。依赖 [Iron's Spells 'n Spel
 
 | 焦点 | 图标 | 可抄范围 |
 |------|------|----------|
-| 青色辉石碎片 | <img src="src/main/resources/assets/iss_elden_ring/textures/item/cyan_glintstone_shard.png" width="32" alt="青色辉石碎片"> | 学院弹道、星光、魔法之境、海摩等 |
+| 青色辉石碎片 | <img src="src/main/resources/assets/iss_elden_ring/textures/item/cyan_glintstone_shard.png" width="32" alt="青色辉石碎片"> | 学院魔法、星光、魔法之境、海摩等 |
 | 蓝色辉石碎片 | <img src="src/main/resources/assets/iss_elden_ring/textures/item/blue_glintstone_shard.png" width="32" alt="蓝色辉石碎片"> | 卡利亚近战、辉剑 / 圆阵 |
 | 紫色辉石碎片 | <img src="src/main/resources/assets/iss_elden_ring/textures/item/purple_glintstone_shard.png" width="32" alt="紫色辉石碎片"> | 重力球、碎星 |
 | 起源辉石 | <img src="src/main/resources/assets/iss_elden_ring/textures/item/origin_glintstone.png" width="32" alt="起源辉石"> | 毁灭流星、创星雨、彗星亚兹勒 |
@@ -174,9 +174,31 @@ Minecraft **1.21.1** / **NeoForge** 扩展模组。依赖 [Iron's Spells 'n Spel
 
 ### 观星台（星象观测台）
 
-地表会生成观星台结构（法环风格魔法师塔）。内有宝箱（辉石碎片、墨水、铁魔法材料等）；**塔顶箱子**额外有概率掉落魔法师球，以及本模组辉石卷轴。
+结构 ID：`iss_elden_ring:star_observation_platform`（jigsaw，地表 `surface_structures`）。模板为法环风格魔法师塔 NBT，贴地高度图 `WORLD_SURFACE_WG`，地形适配 `beard_box`。
 
-观星者 NPC 会生成在观星台中：出售三色碎片、普通辉石卷轴、源辉石刀，以及概率出售观星杖 / 星星法典；极限模式额外售起源辉石。
+| 项 | 值 | 来源 |
+|----|-----|------|
+| 生物群系 | `#minecraft:is_mountain`（山脉标签） | `tags/worldgen/biome/has_structure/star_observation_platform.json` |
+| 间距 / 间隔 | `spacing` 30、`separation` 20（区块） | `worldgen/structure_set/star_observation_platform.json` |
+| 放置类型 | `minecraft:random_spread`，salt `874215639` | 同上 |
+| 模板池 | 单一 NBT：`structure/star_observation_platform.nbt` | `worldgen/template_pool/star_observation_platform_pool.json` |
+
+查找可用 `/locate structure iss_elden_ring:star_observation_platform`。只在新生成区块生效；已探索区块不会补刷。
+
+箱内战利品：
+
+- 普通箱 `chests/star_observation_platform`：辉石碎片、墨水、杂物等
+- 塔顶箱 `chests/star_observation_platform_tower_top`：同上，另有概率掉落魔法师球，以及本模组辉石卷轴
+
+### 观星者
+
+实体 ID：`iss_elden_ring:astrologer`。
+
+- **不自然刷新**：没有生物群系刷怪表；只随观星台结构模板里的实体一并生成，或用创造栏刷怪蛋补放
+- 结构 NBT 写入实体 ID 与持久化标记；生成后 `setPersistenceRequired()`，不会因距离卸载被清掉
+- 在出生点约 16 格内巡逻；可交易、被攻击后反击（辉石系法术）
+
+交易概要：三色碎片、白名单内普通辉石卷轴、源辉石刀；概率出售观星杖 / 星星法典。起源三法术 / 起源晶体 / 起源药剂等不卖。**极限模式**额外：1 下界之星 + 64 绿宝石 → 1 起源辉石。
 
 尚未实现：地表星落坑、辉石粉尘装备、学院哨塔。
 
