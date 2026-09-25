@@ -86,19 +86,12 @@ public final class EquipmentProgressionTests {
     }
 
     @GameTest(template = "empty", timeoutTicks = 40)
-    public static void staffUpgradePreservesImbuedSpell(GameTestHelper helper) {
-        ItemStack staff = new ItemStack(ModItems.ASTROLOGER_STAFF.get());
-        staff.set(DataComponents.CUSTOM_NAME, Component.literal("My catalyst"));
-        ISpellContainer.createImbuedContainer(ModSpells.GLINTSTONE_PEBBLE.get(), 1, staff);
-        EquipmentUpgradeRecipe recipe = recipe(helper, "azur_glintstone_staff");
-        SmithingRecipeInput input = new SmithingRecipeInput(item("irons_spellbooks:epic_ink"), staff,
-                new ItemStack(ModItems.ORIGIN_CRYSTAL.get()));
-        helper.assertTrue(recipe.matches(input, helper.getLevel()), "staff upgrade is registered");
-        ItemStack output = recipe.assemble(input, helper.getLevel().registryAccess());
-        helper.assertTrue(output.is(ModItems.AZUR_GLINTSTONE_STAFF.get()), "Azur staff returned");
-        helper.assertTrue(ISpellContainer.get(output).getSpellAtIndex(0).getSpell() == ModSpells.GLINTSTONE_PEBBLE.get(),
-                "imbued staff spell retained");
-        helper.assertValueEqual(output.get(DataComponents.CUSTOM_NAME), staff.get(DataComponents.CUSTOM_NAME), "staff name");
+    public static void azurStaffCraftingRecipeLoaded(GameTestHelper helper) {
+        // 亚兹勒杖已改为工作台合成（不再走锻造 equipment_upgrade），只校验配方已注册。
+        helper.assertTrue(helper.getLevel().getRecipeManager().byKey(id("azur_glintstone_staff")).isPresent(),
+                "azur staff crafting loaded");
+        helper.assertTrue(helper.getLevel().getRecipeManager().byKey(id("astrologer_staff")).isPresent(),
+                "astrologer staff crafting loaded");
         helper.succeed();
     }
 

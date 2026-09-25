@@ -1,7 +1,27 @@
 {
-  "type": "iss_elden_ring:equipment_upgrade",
-  "template": {"item": "irons_spellbooks:epic_ink"},
-  "base": {"item": "iss_elden_ring:astrologer_staff"},
-  "addition": {"item": "iss_elden_ring:origin_crystal"},
-  "result": {"id": "iss_elden_ring:azur_glintstone_staff", "count": 1}
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "COC",
+    "CSC",
+    "CAC"
+  ],
+  "key": {
+    "C": {
+      "item": "iss_elden_ring:cyan_glintstone_shard"
+    },
+    "O": {
+      "item": "iss_elden_ring:origin_crystal"
+    },
+    "S": {
+      "item": "iss_elden_ring:astrologer_staff"
+    },
+    "A": {
+      "item": "irons_spellbooks:arcane_ingot"
+    }
+  },
+  "result": {
+    "count": 1,
+    "id": "iss_elden_ring:azur_glintstone_staff"
+  }
 }
