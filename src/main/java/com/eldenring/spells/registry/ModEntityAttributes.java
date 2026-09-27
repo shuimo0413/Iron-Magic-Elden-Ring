@@ -1,9 +1,8 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.entity.astrologer.AstrologerEntity;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 /**
  * 生物实体默认属性创建。观星者等常驻 NPC 的属性集中在此注册。
  */

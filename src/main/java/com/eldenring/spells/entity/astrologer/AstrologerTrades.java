@@ -11,14 +11,12 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -64,9 +62,9 @@ public final class AstrologerTrades {
      * 起源三法术防御列表：即便误入白名单也绝不能售出。
      */
     private static final Set<ResourceLocation> ORIGIN_SPELL_DENYLIST = Set.of(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "stars_of_ruin"),
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "founding_rain_of_stars"),
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "comet_azur")
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "stars_of_ruin"),
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "founding_rain_of_stars"),
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "comet_azur")
     );
 
     private AstrologerTrades() {
@@ -142,11 +140,14 @@ public final class AstrologerTrades {
     /**
      * 极限模式专用：1 下界之星 + 64 绿宝石 → 1 起源辉石。
      * 不走 {@link #sellItem}，以免被起源物品拒绝列表拦掉。
+     * <p>
+     * 1.20.1 没有 1.20.5+ 的 {@code ItemCost}，{@link MerchantOffer} 的两个代价槽直接收 ItemStack，
+     * 所以这里用 7 参构造器：costA、costB、结果、uses、maxUses、xp、价格浮动。
      */
     private static MerchantOffer createHardcoreOriginGlintstoneOffer() {
         return new MerchantOffer(
-                new ItemCost(Items.NETHER_STAR, 1),
-                Optional.of(new ItemCost(Items.EMERALD, 64)),
+                new ItemStack(Items.NETHER_STAR, 1),
+                new ItemStack(Items.EMERALD, 64),
                 new ItemStack(ModItems.ORIGIN_GLINTSTONE.get()),
                 0,
                 HARDCORE_ORIGIN_GLINTSTONE_MAX_USES,
@@ -211,8 +212,8 @@ public final class AstrologerTrades {
                 + random.nextIntBetweenInclusive(4, 7)
                 + spellLevel;
         return new MerchantOffer(
-                new ItemCost(Items.EMERALD, emeraldCost),
-                Optional.empty(),
+                new ItemStack(Items.EMERALD, emeraldCost),
+                ItemStack.EMPTY,
                 scroll,
                 0,
                 1,
@@ -233,8 +234,8 @@ public final class AstrologerTrades {
         }
         int cost = random.nextIntBetweenInclusive(minEmeralds, maxEmeralds);
         return new MerchantOffer(
-                new ItemCost(Items.EMERALD, cost),
-                Optional.empty(),
+                new ItemStack(Items.EMERALD, cost),
+                ItemStack.EMPTY,
                 result.copy(),
                 0,
                 maxUses,
@@ -255,8 +256,8 @@ public final class AstrologerTrades {
         int count = random.nextIntBetweenInclusive(minCount, maxCount);
         int emeraldPayout = random.nextIntBetweenInclusive(minEmeralds, maxEmeralds);
         return new MerchantOffer(
-                new ItemCost(boughtItem, count),
-                Optional.empty(),
+                new ItemStack(boughtItem, count),
+                ItemStack.EMPTY,
                 new ItemStack(Items.EMERALD, emeraldPayout),
                 0,
                 maxUses,

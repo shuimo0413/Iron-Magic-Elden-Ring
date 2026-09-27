@@ -16,14 +16,14 @@ public final class ModTags {
      * {@link com.eldenring.spells.recipe.GlintstoneScrollRecipes}。不含紫水晶。
      */
     public static final TagKey<Item> GLINTSTONE_FOCUS = ItemTags.create(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_focus")
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintstone_focus")
     );
 
     /**
      * 三色辉石水晶簇：起源晶体有序合成周围八格用此标签，可混色。
      */
     public static final TagKey<Item> GLINTSTONE_CLUSTERS = ItemTags.create(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_clusters")
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintstone_clusters")
     );
 
     private ModTags() {

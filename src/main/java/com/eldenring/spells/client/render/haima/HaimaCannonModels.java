@@ -19,7 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 public final class HaimaCannonModels {
 
     public static final ModelLayerLocation CANNONBALL_LAYER = new ModelLayerLocation(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "cannon_of_haima"),
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "cannon_of_haima"),
             "main"
     );
 
@@ -33,10 +33,10 @@ public final class HaimaCannonModels {
     public static final String FACET_PART = "facet";
 
     public static final ResourceLocation CANNONBALL_BODY_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/haima/gavel_body.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/haima/gavel_body.png");
 
     public static final ResourceLocation CANNONBALL_GLOW_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
 
     private HaimaCannonModels() {
     }

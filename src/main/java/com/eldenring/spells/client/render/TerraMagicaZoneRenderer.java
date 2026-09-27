@@ -23,7 +23,7 @@ import com.eldenring.spells.spell.TerraMagicaSpell;
 public class TerraMagicaZoneRenderer extends EntityRenderer<TerraMagicaZoneEntity> {
 
     private static final ResourceLocation SIGIL_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/terra_magica/sigil.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/terra_magica/sigil.png");
 
     private static final RenderType SIGIL_RENDER_TYPE = RenderType.entityTranslucentEmissive(SIGIL_TEXTURE);
 
@@ -88,12 +88,13 @@ public class TerraMagicaZoneRenderer extends EntityRenderer<TerraMagicaZoneEntit
             int packedColor,
             int packedLight
     ) {
-        consumer.addVertex(poseMatrix, x, y, z)
-                .setColor(packedColor)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(packedLight)
-                .setNormal(0.0f, 1.0f, 0.0f);
+        consumer.vertex(poseMatrix, x, y, z)
+                .color(packedColor)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(packedLight)
+                .normal(0.0f, 1.0f, 0.0f)
+                .endVertex();
     }
 
     @Override

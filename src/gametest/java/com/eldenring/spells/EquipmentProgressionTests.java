@@ -21,8 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.crafting.SmithingRecipeInput;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 /** 独立 GameTestServer 使用的回归测试，不进入发布 JAR。 */
 @GameTestHolder(EldenRingSpellsMod.MOD_ID)
@@ -156,10 +156,10 @@ public final class EquipmentProgressionTests {
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, path);
+        return new ResourceLocation(EldenRingSpellsMod.MOD_ID, path);
     }
 
     private static ItemStack item(String id) {
-        return new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(id)));
+        return new ItemStack(BuiltInRegistries.ITEM.get(new ResourceLocation(id)));
     }
 }

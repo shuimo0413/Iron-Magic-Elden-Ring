@@ -105,7 +105,7 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
         public static int EFFECT_REFRESH_DURATION_TICKS = 20;
 
         /**
-         * 全局法术强度加成（乘算，{@code ADD_MULTIPLIED_TOTAL}）。
+         * 全局法术强度加成（乘算，{@code MULTIPLY_TOTAL}）。
          * 0.30 → 默认 1.0 的 SPELL_POWER 变为 1.30（+30%）。全等级固定。
          */
         public static double SPELL_POWER_BONUS_MULTIPLIED_TOTAL = 0.30D;
@@ -161,7 +161,7 @@ public class TerraMagicaSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:terra_magica}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "terra_magica");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "terra_magica");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

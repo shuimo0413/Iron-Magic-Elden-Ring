@@ -103,7 +103,7 @@ public class CollapsingStarsSpell extends EldenRingAbstractSpell {
     public static double PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS = 0.35;
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "collapsing_stars");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "collapsing_stars");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

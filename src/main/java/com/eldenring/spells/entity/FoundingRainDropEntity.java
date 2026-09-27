@@ -5,7 +5,6 @@ import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
 import com.eldenring.spells.particle.foundingrain.FoundingRainFx;
 import com.eldenring.spells.registry.ModEntities;
 import io.redspace.ironsspellbooks.entity.spells.AbstractMagicProjectile;
-import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
@@ -17,12 +16,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * 创星雨的单根雨针：从雨云落下的细弹道，视觉是白紫曲线光带，不是彗星头。
@@ -95,8 +95,9 @@ public class FoundingRainDropEntity extends AbstractMagicProjectile {
         return 0.0f;
     }
 
+    /** 雨针落地只刷涟漪，不播命中音。1.20.1 基类要求 {@code Optional<Supplier<SoundEvent>>}。 */
     @Override
-    public Optional<Holder<SoundEvent>> getImpactSound() {
+    public Optional<Supplier<SoundEvent>> getImpactSound() {
         return Optional.empty();
     }
 
@@ -155,7 +156,8 @@ public class FoundingRainDropEntity extends AbstractMagicProjectile {
         ));
         if (collidesWithBlocks()
                 && blockCollision.getType() != HitResult.Type.MISS
-                && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {
+                // Forge 的 post(...) 直接返回「是否被取消」。
+                && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision))) {
             onHit(blockCollision);
         }
     }

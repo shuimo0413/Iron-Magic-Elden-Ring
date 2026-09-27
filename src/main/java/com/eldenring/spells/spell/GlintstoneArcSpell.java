@@ -126,7 +126,7 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:glintstone_arc}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_arc");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintstone_arc");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.COMMON)

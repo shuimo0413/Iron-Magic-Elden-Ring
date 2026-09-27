@@ -2,6 +2,9 @@
 
 面向后续 AI 与人类协作者的项目说明书。改代码前先读本文件与 `.cursor/rules/`。
 
+**本文件对应分支：`forge-1.20.1`（MC 1.20.1 + Forge）。**  
+主线 `neoforge-1.21.1` 的版本表不同，但 **Java 包树 / 类名 / assets 布局必须与那边锁定一致**（只允许 Loader/MC 强制的 datapack 路径差异，见下文对照表）。
+
 **解耦 / 数值做减法的构建说明书：** 根目录 [`法术解耦架构.md`](法术解耦架构.md)。下个话题按那份落地（删 Tuning、瘦 toml、Spell/Curve/Combat/Fx），不要再开一轮架构讨论。
 
 **卡利亚迅剑（未完成，上一轮修改作废）：** 根目录 [`卡利亚迅剑话题交接.md`](卡利亚迅剑话题交接.md)。接着做迅剑抬臂 / 动作组之前必须先读；禁止沿用那一轮的对调、手改欧拉、Z=±90。
@@ -18,15 +21,32 @@
 
 | 组件 | 版本 / 说明 |
 |------|-------------|
-| Minecraft | `1.21.1` |
-| 加载器 | NeoForge `21.1.244`（见 `gradle.properties` 的 `neo_version`） |
-| JDK | **必须 21**（`org.gradle.java.home` 已指向本机 Microsoft JDK 21） |
-| 构建 | Gradle Wrapper + ModDevGradle（`net.neoforged.moddev`） |
-| 铁魔法 | `irons_spellbooks` 运行时 / 开发编译 ≥ `1.21.1-3.16.1`（`gradle.properties`） |
-| Iron's Lib | 运行时 / 开发 ≥ `1.21.1-1.1.0`（对齐 3.16.1） |
-| 运行时连带 | Curios、GeckoLib、PlayerAnimator（版本写在 `gradle.properties`） |
+| Minecraft | `1.20.1` |
+| 加载器 | Forge `47.4.23`（见 `gradle.properties` 的 `forge_version`） |
+| JDK | **必须 17**（`org.gradle.java.home` 指向本机 JDK 17，如 `D:/java17`） |
+| 构建 | Gradle Wrapper + ForgeGradle 6（`net.minecraftforge.gradle`）+ Parchment |
+| 铁魔法 | 玩家下限 `1.20.1-3.16.1`；开发编译可用 `1.20.1-3.16.3`（API 等价） |
+| Iron's Lib | 开发 `1.20.1-2.1.1`；`mods.toml` 下限 `[1.20.1-2.1.0,)` |
+| 运行时连带 | Curios `5.14.1+1.20.1`、GeckoLib `4.8.4`、PlayerAnimator `1.0.2-rc1+1.20` |
+| MixinExtras | 自带 Jar-in-Jar（Forge 不内置；见 `build.gradle`） |
 
-版本号只改 `gradle.properties`，不要在多处硬编码散落副本（`neoforge.mods.toml` 里依赖范围若写死版本，升级时一并改）。
+版本号只改 `gradle.properties`，不要在多处硬编码散落副本（`mods.toml` 里依赖范围若写死版本，升级时一并改）。
+
+### 双分支 datapack 路径对照（仅允许的「形」差异）
+
+| NeoForge 1.21.1 | Forge 1.20.1（本分支） |
+|-----------------|------------------------|
+| `templates/META-INF/neoforge.mods.toml` | `META-INF/mods.toml` |
+| `data/**/recipe/` | `data/**/recipes/` |
+| `loot_table/` / `advancement/` / `tags/item/` / `tags/block/` | `loot_tables/` / `advancements/` / `tags/items/` / `tags/blocks/` |
+| `structure/` | `structures/` |
+| `data/**/neoforge/biome_modifier/` + `neoforge:add_features` | `data/**/forge/biome_modifier/` + `forge:add_features` |
+| `data/neoforge/tags/...` | `data/forge/tags/...` |
+| `loader: neoforge:separate_transforms` | `loader: forge:separate_transforms` |
+| JDK 21 / Mixin `JAVA_21` | JDK 17 / `JAVA_17` |
+| `data/irons_apothic/**`（可选神化兼容） | 挪至 `compat/neoforge-1.21.1-only/`（`irons_apothic` 无 1.20.1 版） |
+
+**禁止**借迁移改 Java 包路径或类名。新增内容两边同步时：Java/assets 同路径；datapack 按上表各写合法目录。
 
 ## 目录地图
 
@@ -41,6 +61,7 @@ src/main/java/com/eldenring/spells/
   registry/ModEntities.java    # 弹道等实体 DeferredRegister
   registry/ModSpells.java      # 法术 DeferredRegister（挂 SpellRegistry.SPELL_REGISTRY_KEY）
   registry/ModSounds.java      # 施法音（SPELL_CAST 飞弹射出，SPELL_CAST_START 蓄力起手）
+  registry/ModAttachments.java # 对外名不变；Forge 下为 Capability 实现
   registry/ModCreativeTabs.java
   spell/*.java                 # 法术本体（XxxSpell）；helper/curve/combat/fx/data 是被调用的函数
   entity/*.java                # 法术弹道等实体（可继承 AbstractMagicProjectile，非稳定 API）
@@ -56,6 +77,8 @@ src/main/java/com/eldenring/spells/
   client/ClientEntityRenderers.java    # 实体 Renderer / 模型层
   client/ClientItemModels.java         # 卷轴 standalone 模型
 
+compat/neoforge-1.21.1-only/   # 仅 1.21.1 可用的神化/irons_apothic 数据包（本分支不打包）
+
 工具链/                              # 所有离线工具脚本统一放这里（勿再写 tools/ 或 像素画/）
   render_pixel_art.py                # JSON 像素画 → 控制台预览 / PNG
   gen_glintstone_pebble.py           # 辉石魔砾卷轴 / 图标 / 粒子贴图
@@ -65,6 +88,7 @@ src/main/java/com/eldenring/spells/
   gen_glintstone_mineral_assets.py   # 水晶块/簇 blockstate/model/loot/recipe/矿洞 JSON
   *.json                             # 像素画源数据（32×32）
   iss-reference/                     # 对照铁魔法源码时解压的参考（可不提交）
+  forge_port_bucket_a.py             # 迁移用机械替换（已完成，勿重复跑除非新合入 1.21 文件）
 
 src/main/resources/assets/iss_elden_ring/
   lang/en_us.json, zh_cn.json
@@ -77,7 +101,7 @@ src/main/resources/assets/iss_elden_ring/
   sounds/spell_cast.ogg                       # 飞弹射出
   sounds/spell_cast_start.ogg                 # 蓄力起手
 
-src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} 由 Gradle 展开）
+src/main/resources/META-INF/mods.toml         # Forge 模组元数据（${} 由 Gradle 展开）
 ```
 
 产物：`build/libs/iss_elden_ring-<version>.jar`
@@ -86,11 +110,9 @@ src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} �
 
 - 铁魔法官方文档：https://iron.wiki/developers/
 - Maven：`https://code.redspace.io/releases`
-- **编译**：优先使用 `compileOnly ...:api`（稳定包 `io.redspace.ironsspellbooks.api.*`）
-- **开发运行**：`localRuntime` 拉完整铁魔法 + irons_lib + Curios/GeckoLib/PlayerAnimator
-- 若 API 不够用、必须碰非 api 包：改用 full `implementation`/`compileOnly` 无 `:api`，并在 PR/说明里注明「非稳定 API」
-- 当前工程因弹道 / `MagicManager` / `DamageSources` 已使用 **full jar `compileOnly`（无 `:api`）**
-- 国内网络：已配阿里云 public 镜像；NeoForge 下载失败可重试 `.\gradlew.bat build --refresh-dependencies`
+- **编译**：`compileOnly fg.deobf(...)` 拉铁魔法 full jar（弹道 / `MagicManager` / `DamageSources` 属非 api 包）
+- **开发运行**：`localRuntime fg.deobf(...)` 拉完整铁魔法 + irons_lib + Curios/GeckoLib/PlayerAnimator
+- 国内网络：已配阿里云 public 镜像；Forge/依赖下载失败可重试 `.\gradlew.bat build --refresh-dependencies`
 
 ## 新增法术标准流程（AI 必须按此做）
 
@@ -114,6 +136,7 @@ src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} �
 - path：小写 + 下划线，如 `glintstone_pebble`
 - Java 类名：PascalCase + `Spell` 后缀，如 `GlintstonePebbleSpell`
 - 注册字段：`SCREAMING_SNAKE`，如 `GLINTSTONE_PEBBLE`
+- 本分支用 `new ResourceLocation(ns, path)`（勿用 1.21 的 `fromNamespaceAndPath`）
 
 ### 学派
 
@@ -125,25 +148,26 @@ src/main/templates/META-INF/neoforge.mods.toml  # 模组元数据模板（${} �
 
 ## 常用命令
 
-在项目根目录，且 JDK 21 生效时：
+在项目根目录，且 JDK **17** 生效时：
 
 ```powershell
-$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-21.0.12.8-hotspot"
+$env:JAVA_HOME = "D:\java17"
 $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 .\gradlew.bat compileJava
 .\gradlew.bat build
 .\gradlew.bat runClient
 ```
 
-- 不要用系统 PATH 里的 JDK 24 编本项目
+- 不要用系统 PATH 里的 JDK 21/24 编本分支（主线 `neoforge-1.21.1` 才用 JDK 21）
 - 不要全局安装 Gradle；只用 `gradlew.bat`
 
 ## AI 改代码时的约束
 
 - **最小改动**：只改任务需要的文件；不顺便重构 MDK 示例残留以外的无关结构
-- **不升级** Minecraft / NeoForge / 铁魔法大版本，除非用户明确要求
-- **不引入** Fabric、Forge（旧）、Kotlin 为主语言等平行栈
+- **不升级** Minecraft / Forge / 铁魔法大版本，除非用户明确要求
+- **不引入** Fabric、NeoForge（本分支）、Kotlin 为主语言等平行栈
 - **不做** 完整铁魔法本体拷贝；扩展逻辑放在本 mod 包下
+- **结构锁定**：相对 `neoforge-1.21.1` 禁止 Java/assets 路径漂移；datapack 只允许上表合法差异
 - 资源与代码同步：加法术 = Java + 双语 lang + 图标（可用占位图）
 - **完整注释**：类 / 关键方法 / 可调常量需说明用途与单位；禁止复述代码的废话注释
 - **完整变量名**：可读全称，避免含糊缩写；常量名含语义与单位
@@ -159,23 +183,19 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 
 ## 已知状态
 
-- [x] NeoForge 1.21.1 工程可 `build`
-- [x] 铁魔法 API 编译通过
-- [x] `ModItems` / `ModParticles` / `ModSpells` 注册骨架已就绪
-- [x] 辉石魔砾：法术 + 卷轴物品 + 弹道（限角追踪）+ 辉石粒子库
-- [x] 辉石迅魔砾 / 辉石大魔砾 / 辉石流星 / 帚星（共用 `AbstractGlintstoneProjectile`）
-- [x] 辉石碎片 Focus 已替换紫水晶
-- [x] 三色辉石矿物方块（水晶簇 / 水晶块，不生长、无建材、无矿石）
-- [x] 辉石矿洞 Feature（三色等概率、一洞一色；无矿石矿脉）
-- [x] 法术解耦（删 Tuning、瘦 toml、Curve/Combat/Fx）：见 `法术解耦架构.md`
-- [x] 可选兼容 [Apotheosis x Iron's Spellbooks Compat](https://www.curseforge.com/minecraft/mc-mods/apotheosis-x-irons-spellbooks-compat)（`irons_apothic`）：无则照常玩；有则加载辉石学派词缀/宝石 datapack（`data/irons_apothic/`）。连带神化 ≥8.5.2；仅神化时护甲仍可吃词缀
+- [x] Forge 1.20.1 工程可 `compileJava` / `build`
+- [x] 铁魔法 1.20.1-3.16.x API 编译通过；Mixin 已启用 + MixinExtras Jar-in-Jar
+- [x] 平台层：DeferredRegister / SimpleChannel / Capability（`ModAttachments`）/ datapack 复数目录
+- [x] 内容垂切：辉石 / 星落亚兹勒 / 卡利亚 / 海摩引力 / 世界装备（包结构未漂移）
+- [x] 可选神化：`irons_apothic` 无 1.20.1 版 → datapack 隔离在 `compat/neoforge-1.21.1-only/`
 - [ ] 卡利亚迅剑：第一刀右臂抬不到玩家正右方 90°。上一轮修改用户判定全部错误，见 `卡利亚迅剑话题交接.md`
 - [ ] 自定义学派 / 法环内容批量设计尚未开始
 - [ ] 辉石彗星（Glintstone Cometshard）尚未实现（用户本次未要求）
 - [ ] 地表星落坑 / 粉尘装备 / 学院哨塔尚未实现
+- [ ] 开发工具链（JEI / Sodium / Iris）按 1.20.1 Forge 重钉（不阻塞主迁移）
 
 ## 外部文档
 
 - 铁魔法开发者：https://iron.wiki/developers/
-- NeoForge 文档：https://docs.neoforged.net/
+- Forge 文档：https://docs.minecraftforge.net/
 - 铁魔法源码（对照法术实现）：https://github.com/iron431/irons-spells-n-spellbooks

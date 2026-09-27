@@ -12,6 +12,6 @@ import net.minecraft.resources.ResourceLocation;
 public final class AstrologerModel extends AbstractSpellCastingMobModel {
     @Override
     public ResourceLocation getTextureResource(AbstractSpellCastingMob animatable) {
-        return ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/astrologer.png");
+        return new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/astrologer.png");
     }
 }

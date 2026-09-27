@@ -56,7 +56,7 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
     public static float JET_BEAM_DAMAGE_PER_SPELL_POWER = 1.0f;
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "comet_azur");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "comet_azur");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.LEGENDARY)

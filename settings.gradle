@@ -1,12 +1,23 @@
 pluginManagement {
     repositories {
+        // 国内镜像优先（仅做加速，跨源 404 由后续仓库兜底）
         maven { url = 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url = 'https://maven.aliyun.com/repository/public' }
-        maven { url = 'https://maven.neoforged.net/releases' }
+        // ForgeGradle 6 插件本体
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        // Parchment 映射插件
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
         gradlePluginPortal()
     }
 }
 
 plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+    // 工具链自动下载（本机已有 D:/java17，一般不会触发下载）
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.7.0'
 }

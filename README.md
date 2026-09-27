@@ -264,3 +264,9 @@ $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
 ## 许可证
 
 All Rights Reserved。
+
+
+```bash
+$env:JAVA_HOME = "D:\java17"
+.\gradlew.bat build
+```

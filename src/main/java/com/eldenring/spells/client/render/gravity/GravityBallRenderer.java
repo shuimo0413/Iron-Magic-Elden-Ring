@@ -23,11 +23,11 @@ import org.joml.Matrix4f;
 public class GravityBallRenderer extends EntityRenderer<GravityBallProjectile> {
 
     private static final ResourceLocation CORE_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/particle/gravity_core.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/particle/gravity_core.png");
     private static final ResourceLocation GLOW_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/particle/gravity_glow.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/particle/gravity_glow.png");
     private static final ResourceLocation ECLIPSE_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/particle/gravity_eclipse.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/particle/gravity_eclipse.png");
 
     private static final RenderType CORE_RENDER_TYPE = RenderType.entityTranslucentEmissive(CORE_TEXTURE);
     private static final RenderType GLOW_RENDER_TYPE = RenderType.entityTranslucentEmissive(GLOW_TEXTURE);
@@ -158,11 +158,12 @@ public class GravityBallRenderer extends EntityRenderer<GravityBallProjectile> {
             int packedColor,
             int packedLight
     ) {
-        consumer.addVertex(poseMatrix, x, y, z)
-                .setColor(packedColor)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(packedLight)
-                .setNormal(0.0f, 0.0f, 1.0f);
+        consumer.vertex(poseMatrix, x, y, z)
+                .color(packedColor)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(packedLight)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
     }
 }

@@ -7,40 +7,41 @@ import com.eldenring.spells.client.ClientEntityRenderers;
 import com.eldenring.spells.client.ClientItemModels;
 import com.eldenring.spells.client.ClientParticleProviders;
 import com.eldenring.spells.registry.ModBlocks;
-import com.eldenring.spells.registry.ModFluids;
 import com.eldenring.spells.registry.ModItems;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
-import io.redspace.ironsspellbooks.render.ClientStaffItemExtensions;
 import io.redspace.ironsspellbooks.render.SpellBookCurioRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 /**
  * 客户端入口：粒子 / 实体渲染 / 卷轴模型 / 魔法书 Curios 渲染。
+ * <p>
+ * Forge 1.20.1 约束：
+ * <ul>
+ *   <li>同一个 modid 只能有一个 {@code @Mod} 类，且 {@code @Mod} 没有 {@code dist} 参数；
+ *       所以本类不再是第二个 {@code @Mod}，改为纯 MOD 总线订阅者。它的处理器全部是 MOD 总线事件
+ *       （{@code FMLClientSetupEvent} / {@code RegisterParticleProvidersEvent} / {@code ModelEvent} /
+ *       {@code EntityRenderersEvent}），因此必须显式写 {@code bus = Mod.EventBusSubscriber.Bus.MOD}。</li>
+ *   <li>NeoForge 的 {@code IConfigScreenFactory} 与自动生成 {@code ConfigurationScreen} 不存在。
+ *       本次降级为「无内置配置界面」：{@code config/iss_elden_ring-server.toml} 与
+ *       {@code -common.toml} 仍可手动编辑，加载 / 热重载时照样 apply 到运行时字段，
+ *       只是少了游戏内的图形化编辑入口。</li>
+ *   <li>物品 / 流体客户端扩展（法杖握持姿势、起源药剂染色）分别由铁魔法 {@code StaffItem}
+ *       自带实现与 {@code fluid/ModFluids} 的 {@code FluidType#initializeClient} 负责，见下方说明。</li>
+ * </ul>
  */
-@Mod(value = EldenRingSpellsMod.MOD_ID, dist = Dist.CLIENT)
-@EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EldenRingSpellsClient {
-    public EldenRingSpellsClient(ModContainer container) {
-        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-    }
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
@@ -76,36 +77,15 @@ public class EldenRingSpellsClient {
         });
     }
 
-    /**
-     * 观星杖 / 亚兹勒的辉石杖复用铁魔法法杖握持姿势（抬臂），否则会像普通物品一样僵硬下垂。
-     * 起源药剂流体：水贴图 + 青色染色，供炼药锅罐内显示。
+    /*
+     * 原先的 registerClientExtensions(RegisterClientExtensionsEvent) 在 Forge 1.20.1 已整体移除：
+     *  1) 法杖握持姿势：Forge 无 RegisterClientExtensionsEvent（该事件 1.21 才有）。
+     *     铁魔法 1.20.1 的 StaffItem 自带 initializeClient()，已应用 StaffArmPose，无需本模组再注册；
+     *     ClientStaffItemExtensions 类在 1.20.1 铁魔法中也不存在。
+     *  2) 起源药剂流体染色：已移交 registry agent，在 fluid/ModFluids 的
+     *     FluidType#initializeClient(Consumer<IClientFluidTypeExtensions>) 内实现
+     *     （水 still/flow 贴图 + 0xFF2FADA2 青色染色），本文件不再引用 ModFluids。
      */
-    @SubscribeEvent
-    static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-        event.registerItem(new ClientStaffItemExtensions(), ModItems.ASTROLOGER_STAFF.get());
-        event.registerItem(new ClientStaffItemExtensions(), ModItems.AZUR_GLINTSTONE_STAFF.get());
-
-        // 0xAARRGGBB：不透明青（对齐碎片 mid #2FADA2）
-        final int originPotionTintArgb = 0xFF2FADA2;
-        final ResourceLocation waterStill = ResourceLocation.withDefaultNamespace("block/water_still");
-        final ResourceLocation waterFlow = ResourceLocation.withDefaultNamespace("block/water_flow");
-        event.registerFluidType(new IClientFluidTypeExtensions() {
-            @Override
-            public int getTintColor() {
-                return originPotionTintArgb;
-            }
-
-            @Override
-            public ResourceLocation getStillTexture() {
-                return waterStill;
-            }
-
-            @Override
-            public ResourceLocation getFlowingTexture() {
-                return waterFlow;
-            }
-        }, ModFluids.ORIGIN_POTION_TYPE.get());
-    }
 
     @SubscribeEvent
     static void registerParticleProviders(RegisterParticleProvidersEvent event) {

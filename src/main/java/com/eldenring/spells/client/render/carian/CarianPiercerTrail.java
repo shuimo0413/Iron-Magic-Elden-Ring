@@ -22,19 +22,19 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import net.minecraftforge.fml.common.Mod;
 /**
  * 卡利亚贯刺挥砍光轨：从迅剑光轨拷出的独立副本。
  * 采样发生在 {@link CarianPiercerHandLayer}。星星粒子仍走 {@link CarianSlicerFx}。
  */
-@EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class CarianPiercerTrail {
 
     /**
@@ -105,7 +105,11 @@ public final class CarianPiercerTrail {
      * 粒子放在客户端 tick 刷，避免在实体渲染中途往粒子引擎塞东西。
      */
     @SubscribeEvent
-    public static void spawnPendingSlashParticles(ClientTickEvent.Post event) {
+    public static void spawnPendingSlashParticles(TickEvent.ClientTickEvent event) {
+        // 1.20.1 的 ClientTickEvent 每 tick 有 PRE / END 两次；迁移前只订阅过 NeoForge 的 Post 阶段（等价 END）。
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {
             TRAILS_BY_PLAYER.clear();
@@ -303,12 +307,13 @@ public final class CarianPiercerTrail {
                 int blue,
                 int alpha
         ) {
-            consumer.addVertex(poseMatrix, (float) worldPosition.x, (float) worldPosition.y, (float) worldPosition.z)
-                    .setColor(red, green, blue, Mth.clamp(alpha, 0, 255))
-                    .setUv(0.5f, 0.5f)
-                    .setOverlay(OverlayTexture.NO_OVERLAY)
-                    .setLight(LightTexture.FULL_BRIGHT)
-                    .setNormal(0.0f, 1.0f, 0.0f);
+            consumer.vertex(poseMatrix, (float) worldPosition.x, (float) worldPosition.y, (float) worldPosition.z)
+                    .color(red, green, blue, Mth.clamp(alpha, 0, 255))
+                    .uv(0.5f, 0.5f)
+                    .overlayCoords(OverlayTexture.NO_OVERLAY)
+                    .uv2(LightTexture.FULL_BRIGHT)
+                    .normal(0.0f, 1.0f, 0.0f)
+                    .endVertex();
         }
     }
 

@@ -2,8 +2,6 @@ package com.eldenring.spells.item.talisman;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -12,12 +10,19 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import top.theillusivec4.curios.api.SlotContext;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 源辉石刀：佩戴时降低最大生命值，并由独立效果类提供全学派蓝耗减免。
+ * <p>
+ * 1.20.1 的 Curios {@code getAttributeModifiers} 形参是 {@code UUID}、返回键类型是 {@code Attribute}
+ * （1.21+ 才换成 {@code ResourceLocation} + {@code Holder<Attribute>}）。
+ * 同一次调用里的两个修饰符挂在不同属性上，可以共用 Curios 给的同一个 UUID。
  */
 public final class PrimalGlintstoneBladeItem extends TalismanItem {
     public PrimalGlintstoneBladeItem(Properties properties) {
@@ -25,36 +30,41 @@ public final class PrimalGlintstoneBladeItem extends TalismanItem {
     }
 
     @Override
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(
             SlotContext slotContext,
-            ResourceLocation modifierId,
+            UUID modifierId,
             ItemStack stack
     ) {
-        Multimap<Holder<Attribute>, AttributeModifier> modifiers =
+        Multimap<Attribute, AttributeModifier> modifiers =
                 LinkedHashMultimap.create();
         modifiers.put(
                 Attributes.MAX_HEALTH,
                 new AttributeModifier(
                         modifierId,
+                        "iss_elden_ring.primal_glintstone_blade.max_health",
                         -PrimalGlintstoneBladeEffect.maxHealthReduction(),
-                        AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                        AttributeModifier.Operation.MULTIPLY_TOTAL
                 )
         );
         modifiers.put(
-                AttributeRegistry.SPELL_POWER,
+                AttributeRegistry.SPELL_POWER.get(),
                 new AttributeModifier(
                         modifierId,
+                        "iss_elden_ring.primal_glintstone_blade.spell_power",
                         PrimalGlintstoneBladeEffect.spellPowerBonus(),
-                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                        AttributeModifier.Operation.MULTIPLY_BASE
                 )
         );
         return modifiers;
     }
 
+    /**
+     * 1.20.1 的悬浮提示签名是 {@code (ItemStack, Level, List, TooltipFlag)}；1.21 才改成 {@code TooltipContext}。
+     */
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip,
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip,
                                 TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+        super.appendHoverText(stack, level, tooltip, flag);
         tooltip.add(Component.translatable("tooltip.iss_elden_ring.primal_glintstone_blade.effect")
                 .withStyle(ChatFormatting.BLUE));
         tooltip.add(Component.empty());

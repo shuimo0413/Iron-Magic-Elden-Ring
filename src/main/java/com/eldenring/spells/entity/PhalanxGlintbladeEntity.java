@@ -73,15 +73,15 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_SLOT_INDEX, 0);
-        builder.define(DATA_SLOT_COUNT, GlintbladePhalanxSpell.BLADE_COUNT);
-        builder.define(
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_SLOT_INDEX, 0);
+        this.entityData.define(DATA_SLOT_COUNT, GlintbladePhalanxSpell.BLADE_COUNT);
+        this.entityData.define(
                 DATA_ORBIT_RADIUS_HUNDREDTHS,
                 hundredthsFromBlocks(GlintbladePhalanxCastCurve.ORBIT_RADIUS_BLOCKS)
         );
-        builder.define(
+        this.entityData.define(
                 DATA_SWORD_VISUAL_SCALE_HUNDREDTHS,
                 hundredthsFromScale(GlintbladePhalanxCastCurve.SWORD_VISUAL_SCALE)
         );

@@ -20,8 +20,7 @@ import com.eldenring.spells.particle.glintstone.GlintstoneShardParticle;
 import com.eldenring.spells.particle.glintstone.GlintstoneSparkParticle;
 import com.eldenring.spells.particle.starriver.StarRiverParticle;
 import com.eldenring.spells.registry.ModParticles;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 /**
  * 客户端粒子 Provider 注册。由 {@code EldenRingSpellsClient} 转发。
  */

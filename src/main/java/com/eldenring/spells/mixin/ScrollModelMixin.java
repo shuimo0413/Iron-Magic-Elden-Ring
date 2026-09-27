@@ -3,6 +3,7 @@ package com.eldenring.spells.mixin;
 import com.eldenring.spells.EldenRingSpellsMod;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.render.ScrollModel;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,9 +20,18 @@ import java.util.Optional;
 @Mixin(ScrollModel.class)
 public abstract class ScrollModelMixin {
 
-    @Inject(method = "getModelFromStack", at = @At("HEAD"), cancellable = true)
+    /**
+     * 注入铁魔法 1.20.1 的 {@code ScrollModel#getModelFromTag}（包私有）。
+     * <p>
+     * 1.21.1 分支注入的是 {@code getModelFromStack(ItemStack)}；1.20.1 的方法名与形参都不同，
+     * 是「按 NBT 抠模型」而非「按 item stack 抠」，多一个 {@link CompoundTag}（物品 NBT，可能为 null）。
+     * 目标名写错时 mixin 在 {@code required: true} + {@code defaultRequire: 1} 下会直接让游戏启动崩溃，
+     * 且编译期完全看不出来，所以这里以 1.20.1 参考 jar 的 javap 结果为准。
+     */
+    @Inject(method = "getModelFromTag", at = @At("HEAD"), cancellable = true)
     private void eldenRingSpells$usePerSpellScrollModel(
             ItemStack itemStack,
+            CompoundTag tag,
             CallbackInfoReturnable<Optional<ResourceLocation>> cir
     ) {
         if (!ISpellContainer.isSpellContainer(itemStack)) {
@@ -32,7 +42,7 @@ public abstract class ScrollModelMixin {
             return;
         }
         cir.setReturnValue(Optional.of(
-                ResourceLocation.fromNamespaceAndPath(
+                new ResourceLocation(
                         EldenRingSpellsMod.MOD_ID,
                         "item/" + spellId.getPath() + "_scroll"
                 )

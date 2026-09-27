@@ -97,7 +97,7 @@ public class GlintstoneCometSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:glintstone_comet}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_comet");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintstone_comet");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

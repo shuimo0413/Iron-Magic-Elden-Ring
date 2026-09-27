@@ -259,12 +259,13 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
             float v,
             int colorArgb
     ) {
-        consumer.addVertex(matrix, (float) position.x, (float) position.y, (float) position.z)
-                .setColor(colorArgb)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 1.0f, 0.0f);
+        consumer.vertex(matrix, (float) position.x, (float) position.y, (float) position.z)
+                .color(colorArgb)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 1.0f, 0.0f)
+                .endVertex();
     }
 
     private record CrescentSlice(Vec3 innerBottom, Vec3 outerBottom, Vec3 innerTop, Vec3 outerTop) {

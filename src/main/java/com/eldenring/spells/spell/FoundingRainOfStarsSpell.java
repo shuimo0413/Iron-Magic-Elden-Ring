@@ -54,7 +54,7 @@ public class FoundingRainOfStarsSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:founding_rain_of_stars}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "founding_rain_of_stars");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "founding_rain_of_stars");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.LEGENDARY)

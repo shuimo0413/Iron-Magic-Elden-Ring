@@ -17,8 +17,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -134,7 +134,8 @@ public class GlintstoneArcProjectile extends AbstractGlintstoneProjectile {
             if (entityHit.getLocation().distanceToSqr(pathStart) > blockDistanceSquared) {
                 break;
             }
-            if (!NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHit)).isCanceled()) {
+            // Forge 的 post(...) 直接返回「是否被取消」。
+            if (!MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHit))) {
                 onHit(entityHit);
             }
         }
@@ -142,7 +143,7 @@ public class GlintstoneArcProjectile extends AbstractGlintstoneProjectile {
         if (collidesWithBlocks()
                 && blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
-                && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {
+                && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision))) {
             onHit(blockCollision);
         }
     }

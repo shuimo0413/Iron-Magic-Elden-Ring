@@ -2,9 +2,7 @@ package com.eldenring.spells.tracking;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * 玩家级辉石追踪「排除」偏好：勾选表示不追踪该类目标。
@@ -30,14 +28,26 @@ public record TrackingIgnorePrefs(
             Codec.BOOL.optionalFieldOf("ignore_hostile", false).forGetter(TrackingIgnorePrefs::ignoreHostile)
     ).apply(instance, TrackingIgnorePrefs::new));
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, TrackingIgnorePrefs> STREAM_CODEC =
-            StreamCodec.composite(
-                    ByteBufCodecs.BOOL, TrackingIgnorePrefs::ignorePlayers,
-                    ByteBufCodecs.BOOL, TrackingIgnorePrefs::ignorePeaceful,
-                    ByteBufCodecs.BOOL, TrackingIgnorePrefs::ignoreNeutral,
-                    ByteBufCodecs.BOOL, TrackingIgnorePrefs::ignoreHostile,
-                    TrackingIgnorePrefs::new
-            );
+    /**
+     * 写入网络缓冲。字段顺序必须与 {@link #read(FriendlyByteBuf)} 完全一致，
+     * 否则客户端与服务端会按错误顺序还原出串位的布尔值。
+     */
+    public void writeTo(FriendlyByteBuf buffer) {
+        buffer.writeBoolean(ignorePlayers);
+        buffer.writeBoolean(ignorePeaceful);
+        buffer.writeBoolean(ignoreNeutral);
+        buffer.writeBoolean(ignoreHostile);
+    }
+
+    /** 从网络缓冲还原，读取顺序与 {@link #writeTo(FriendlyByteBuf)} 一一对应。 */
+    public static TrackingIgnorePrefs read(FriendlyByteBuf buffer) {
+        return new TrackingIgnorePrefs(
+                buffer.readBoolean(),
+                buffer.readBoolean(),
+                buffer.readBoolean(),
+                buffer.readBoolean()
+        );
+    }
 
     /**
      * 复制并只改「不追踪玩家」。

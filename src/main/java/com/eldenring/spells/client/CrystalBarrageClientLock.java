@@ -6,18 +6,19 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.redspace.ironsspellbooks.network.casting.CancelCastPacket;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
 import io.redspace.ironsspellbooks.player.KeyMappings;
+// 1.20.1 铁魔法自带 Forge SimpleChannel 包装；NeoForge 的 net.neoforged.neoforge.network.PacketDistributor 不存在。
+import io.redspace.ironsspellbooks.setup.PacketDistributor;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
 import org.lwjgl.glfw.GLFW;
 
+import net.minecraftforge.fml.common.Mod;
 /**
  * 客户端：施放结晶连弹时把移动输入限制为潜行速度，并处理松键取消。
  * <p>
@@ -28,7 +29,7 @@ import org.lwjgl.glfw.GLFW;
  * 点按起手时，等服务端回「正在吟唱」时键往往已经弹起，这时不能立刻取消；
  * 只有本段吟唱里确实按住过施法键，再松开才停。
  */
-@EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class CrystalBarrageClientLock {
 
     private static boolean lockActive;
@@ -74,7 +75,11 @@ public final class CrystalBarrageClientLock {
     }
 
     @SubscribeEvent
-    public static void onClientTick(ClientTickEvent.Post event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        // 1.20.1 的 ClientTickEvent 每 tick 有 PRE / END 两次；迁移前只订阅过 NeoForge 的 Post 阶段（等价 END）。
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         if (localPlayer == null) {
             resetLockState();

@@ -1,14 +1,13 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import io.redspace.ironsspellbooks.api.attribute.MagicPercentAttribute;
+import io.redspace.ironsspellbooks.api.attribute.MagicRangedAttribute;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 /**
  * 辉石学派相关属性：法术强度与对应抗性。
  * <p>
@@ -23,9 +22,9 @@ public final class ModAttributes {
      * 辉石法术强度（百分比属性，默认 1.0 = 100%）。
      * 调高装备加成可显著提升辉石系伤害。
      */
-    public static final DeferredHolder<Attribute, Attribute> GLINTSTONE_SPELL_POWER =
+    public static final RegistryObject<Attribute> GLINTSTONE_SPELL_POWER =
             ATTRIBUTES.register("glintstone_spell_power", () ->
-                    new MagicPercentAttribute(
+                    new MagicRangedAttribute(
                             "attribute.iss_elden_ring.glintstone_spell_power",
                             1.0D, -100.0D, 100.0D
                     ).setSyncable(true));
@@ -34,9 +33,9 @@ public final class ModAttributes {
      * 辉石魔法抗性（百分比属性，默认 1.0）。
      * 调高 → 受到辉石伤害更少（经铁魔法 soft-cap 公式）。
      */
-    public static final DeferredHolder<Attribute, Attribute> GLINTSTONE_MAGIC_RESIST =
+    public static final RegistryObject<Attribute> GLINTSTONE_MAGIC_RESIST =
             ATTRIBUTES.register("glintstone_magic_resist", () ->
-                    new MagicPercentAttribute(
+                    new MagicRangedAttribute(
                             "attribute.iss_elden_ring.glintstone_magic_resist",
                             1.0D, -100.0D, 100.0D
                     ).setSyncable(true));
@@ -55,9 +54,11 @@ public final class ModAttributes {
      * 会因缺少属性而回退为 1。
      */
     private static void modifyEntityAttributes(EntityAttributeModificationEvent event) {
+        // 1.20.1 的 EntityAttributeModificationEvent#add 收 Attribute 本体，而不是 Holder，
+        // 而本模组的属性句柄是 RegistryObject（只是 Supplier），所以必须 .get()。
         event.getTypes().forEach(entityType -> {
-            event.add(entityType, GLINTSTONE_SPELL_POWER);
-            event.add(entityType, GLINTSTONE_MAGIC_RESIST);
+            event.add(entityType, GLINTSTONE_SPELL_POWER.get());
+            event.add(entityType, GLINTSTONE_MAGIC_RESIST.get());
         });
     }
 }

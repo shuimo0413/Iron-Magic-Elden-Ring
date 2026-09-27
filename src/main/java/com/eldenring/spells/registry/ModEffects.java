@@ -8,9 +8,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import com.eldenring.spells.spell.TerraMagicaSpell;
 
 /**
@@ -28,21 +28,28 @@ public final class ModEffects {
      * 同 id 的 {@link AttributeModifier} 会替换而非相加。
      */
     public static final ResourceLocation TERRA_MAGICA_ATTRIBUTE_MODIFIER_ID =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "mobeffect_terra_magica");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "mobeffect_terra_magica");
 
     /**
      * 魔法之境：全局法术强度 +30%（{@link AttributeRegistry#SPELL_POWER}）。
      * 颜色取辉石青，方便 HUD 图标描边。
+     * <p>
+     * 末位 {@code cast()} 不能省：铁魔法 1.20.1 给 {@code MagicMobEffect} 加了
+     * {@code IBackwardsAttributeCompatMobEffect} 兼容接口，其
+     * {@code addAttributeModifier(Supplier&lt;Attribute&gt;, ResourceLocation, double, Operation)}
+     * 返回的是接口本身而不是 {@link MobEffect}；{@code cast()} 才把结果转回效果对象，
+     * 供 {@code DeferredRegister<MobEffect>} 注册。
      */
-    public static final DeferredHolder<MobEffect, MobEffect> TERRA_MAGICA =
+    public static final RegistryObject<MobEffect> TERRA_MAGICA =
             MOB_EFFECTS.register("terra_magica", () ->
                     new MagicMobEffect(MobEffectCategory.BENEFICIAL, 0x3EE8F0)
                             .addAttributeModifier(
                                     AttributeRegistry.SPELL_POWER,
                                     TERRA_MAGICA_ATTRIBUTE_MODIFIER_ID,
                                     TerraMagicaSpell.SPELL_POWER_BONUS_MULTIPLIED_TOTAL,
-                                    AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                                    AttributeModifier.Operation.MULTIPLY_TOTAL
                             )
+                            .cast()
             );
 
     private ModEffects() {

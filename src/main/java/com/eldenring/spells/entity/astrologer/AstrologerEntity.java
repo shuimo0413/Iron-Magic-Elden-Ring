@@ -109,16 +109,21 @@ public class AstrologerEntity extends NeutralWizard implements IMerchantWizard {
         this.targetSelector.addGoal(5, new ResetUniversalAngerTargetGoal<>(this, false));
     }
 
+    /**
+     * 1.20.1 的 {@code Mob#finalizeSpawn} 比 1.21 多一个尾部 {@code CompoundTag}（生成时携带的实体数据标签），
+     * 少了这个参数既不能覆写、也调不到 super，故按 1.20.1 签名补齐并原样透传。
+     */
     @Override
     public SpawnGroupData finalizeSpawn(
             ServerLevelAccessor level,
             DifficultyInstance difficulty,
             MobSpawnType reason,
-            @Nullable SpawnGroupData spawnData
+            @Nullable SpawnGroupData spawnData,
+            @Nullable CompoundTag dataTag
     ) {
         RandomSource random = Utils.random;
         this.populateDefaultEquipmentSlots(random, difficulty);
-        return super.finalizeSpawn(level, difficulty, reason, spawnData);
+        return super.finalizeSpawn(level, difficulty, reason, spawnData, dataTag);
     }
 
     @Override

@@ -94,7 +94,7 @@ public class GravityBallSpell extends EldenRingAbstractSpell {
     public static float IMPACT_PARTICLE_INTENSITY = 1.35f;
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "gravity_ball");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "gravity_ball");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.UNCOMMON)

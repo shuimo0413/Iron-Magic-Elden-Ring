@@ -125,7 +125,7 @@ public class GlintstoneStarsSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:glintstone_stars}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_stars");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintstone_stars");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.COMMON)

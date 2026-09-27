@@ -133,28 +133,44 @@ public final class GlintstoneCometHeadDrawer {
                 RenderType.entityTranslucentEmissive(visualStyle.bodyTexture())
         );
         if (visualStyle.usesSpikedCrystalCluster()) {
-            cometBodyRoot.getChild(GlintstoneCometModels.SPIKED_CLUSTER_CORE_PART).render(
-                    poseStack,
-                    bodyConsumer,
-                    LightTexture.FULL_BRIGHT,
-                    OverlayTexture.NO_OVERLAY,
-                    visualStyle.coreColorArgb()
+            renderPartWithArgb(
+                    cometBodyRoot.getChild(GlintstoneCometModels.SPIKED_CLUSTER_CORE_PART),
+                    poseStack, bodyConsumer, visualStyle.coreColorArgb()
             );
-            cometBodyRoot.getChild(GlintstoneCometModels.SPIKED_CLUSTER_SPIKES_PART).render(
-                    poseStack,
-                    bodyConsumer,
-                    LightTexture.FULL_BRIGHT,
-                    OverlayTexture.NO_OVERLAY,
-                    visualStyle.spikeColorArgb()
+            renderPartWithArgb(
+                    cometBodyRoot.getChild(GlintstoneCometModels.SPIKED_CLUSTER_SPIKES_PART),
+                    poseStack, bodyConsumer, visualStyle.spikeColorArgb()
             );
             return;
         }
-        cometBodyRoot.render(
+        renderPartWithArgb(cometBodyRoot, poseStack, bodyConsumer, visualStyle.coreColorArgb());
+    }
+
+    /**
+     * 用 ARGB 颜色画一段模型部件。
+     * <p>
+     * 1.20.1 的 {@code ModelPart} 只有 4 参（无颜色）与 8 参（0–1 的 RGBA）两个 {@code render} 重载，
+     * 1.21 才有的「单 int ARGB」5 参重载不存在，所以在这里把 ARGB 拆成四个分量再调用。
+     */
+    private static void renderPartWithArgb(
+            ModelPart modelPart,
+            PoseStack poseStack,
+            VertexConsumer consumer,
+            int colorArgb
+    ) {
+        float alpha = ((colorArgb >> 24) & 0xFF) / 255.0f;
+        float red = ((colorArgb >> 16) & 0xFF) / 255.0f;
+        float green = ((colorArgb >> 8) & 0xFF) / 255.0f;
+        float blue = (colorArgb & 0xFF) / 255.0f;
+        modelPart.render(
                 poseStack,
-                bodyConsumer,
+                consumer,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                visualStyle.coreColorArgb()
+                red,
+                green,
+                blue,
+                alpha
         );
     }
 
@@ -310,29 +326,33 @@ public final class GlintstoneCometHeadDrawer {
             int alpha,
             float zOffset
     ) {
-        consumer.addVertex(poseMatrix, -1.0f, -1.0f, zOffset)
-                .setColor(red, green, blue, alpha)
-                .setUv(0.0f, 1.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 1.0f, 0.0f);
-        consumer.addVertex(poseMatrix, 1.0f, -1.0f, zOffset)
-                .setColor(red, green, blue, alpha)
-                .setUv(1.0f, 1.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 1.0f, 0.0f);
-        consumer.addVertex(poseMatrix, 1.0f, 1.0f, zOffset)
-                .setColor(red, green, blue, alpha)
-                .setUv(1.0f, 0.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 1.0f, 0.0f);
-        consumer.addVertex(poseMatrix, -1.0f, 1.0f, zOffset)
-                .setColor(red, green, blue, alpha)
-                .setUv(0.0f, 0.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 1.0f, 0.0f);
+        consumer.vertex(poseMatrix, -1.0f, -1.0f, zOffset)
+                .color(red, green, blue, alpha)
+                .uv(0.0f, 1.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 1.0f, 0.0f)
+                .endVertex();
+        consumer.vertex(poseMatrix, 1.0f, -1.0f, zOffset)
+                .color(red, green, blue, alpha)
+                .uv(1.0f, 1.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 1.0f, 0.0f)
+                .endVertex();
+        consumer.vertex(poseMatrix, 1.0f, 1.0f, zOffset)
+                .color(red, green, blue, alpha)
+                .uv(1.0f, 0.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 1.0f, 0.0f)
+                .endVertex();
+        consumer.vertex(poseMatrix, -1.0f, 1.0f, zOffset)
+                .color(red, green, blue, alpha)
+                .uv(0.0f, 0.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 1.0f, 0.0f)
+                .endVertex();
     }
 }

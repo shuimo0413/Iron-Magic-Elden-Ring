@@ -4,71 +4,105 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.registry.ModAttachments;
 import com.eldenring.spells.tracking.TrackingIgnorePrefs;
 import com.eldenring.spells.tracking.TrackingIgnorePrefsCache;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import java.util.function.Supplier;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 /**
  * 辉石追踪排除偏好同步。
  * <ul>
- *   <li>C2S：客户端 GUI 勾选变更 → 服务端写入 Attachment → 回推 S2C</li>
+ *   <li>C2S：客户端 GUI 勾选变更 → 服务端写入玩家偏好 → 回推 S2C</li>
  *   <li>S2C：登录 / 变更后刷新客户端缓存，供 GUI 显示</li>
  * </ul>
+ * Forge 1.20.1 没有 {@code CustomPacketPayload} / {@code StreamCodec} / {@code IPayloadContext}，
+ * 因此本类改成普通 POJO，并顺带承载本模组唯一的 {@link SimpleChannel}。
  */
-public record TrackingIgnorePrefsPayload(TrackingIgnorePrefs prefs) implements CustomPacketPayload {
-    public static final Type<TrackingIgnorePrefsPayload> TYPE = new Type<>(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "tracking_ignore_prefs"));
+public final class TrackingIgnorePrefsPayload {
+    /**
+     * 本模组唯一网络通道。Forge 1.20.1 的 {@link PacketDistributor} 只有「目标选择器」builder，
+     * 真正的发送动作必须落在这条通道上，所以两个 payload 共用它。
+     */
+    public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
+            .named(new ResourceLocation(EldenRingSpellsMod.MOD_ID, "main"))
+            .networkProtocolVersion(() -> "1")
+            .clientAcceptedVersions("1"::equals)
+            .serverAcceptedVersions("1"::equals)
+            .simpleChannel();
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, TrackingIgnorePrefsPayload> STREAM_CODEC =
-            StreamCodec.composite(
-                    TrackingIgnorePrefs.STREAM_CODEC,
-                    TrackingIgnorePrefsPayload::prefs,
-                    TrackingIgnorePrefsPayload::new
-            );
+    private final TrackingIgnorePrefs prefs;
 
-    public static void register(RegisterPayloadHandlersEvent event) {
-        event.registrar("1")
-                .playBidirectional(TYPE, STREAM_CODEC, TrackingIgnorePrefsPayload::handle);
+    public TrackingIgnorePrefsPayload(TrackingIgnorePrefs prefs) {
+        this.prefs = prefs;
     }
 
-    private static void handle(TrackingIgnorePrefsPayload payload, IPayloadContext context) {
+    /** 网络解码构造器：字段顺序必须与 {@link #toBytes(FriendlyByteBuf)} 完全一致。 */
+    public TrackingIgnorePrefsPayload(FriendlyByteBuf buffer) {
+        this(TrackingIgnorePrefs.read(buffer));
+    }
+
+    public TrackingIgnorePrefs prefs() {
+        return prefs;
+    }
+
+    public void toBytes(FriendlyByteBuf buffer) {
+        prefs.writeTo(buffer);
+    }
+
+    /**
+     * 由 {@code FMLCommonSetupEvent} 调用一次，注册本模组全部消息。
+     * 替代旧 NeoForge 的 {@code RegisterPayloadHandlersEvent} 回调。
+     */
+    public static void register() {
+        // 不带 NetworkDirection = 双向注册：本消息既 C2S（GUI 提交）又 S2C（服务端回推）。
+        CHANNEL.messageBuilder(TrackingIgnorePrefsPayload.class, 0)
+                .encoder(TrackingIgnorePrefsPayload::toBytes)
+                .decoder(TrackingIgnorePrefsPayload::new)
+                .consumerMainThread(TrackingIgnorePrefsPayload::handle)
+                .add();
+        CHANNEL.messageBuilder(AzurStaffSettingsPayload.class, 1, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(AzurStaffSettingsPayload::toBytes)
+                .decoder(AzurStaffSettingsPayload::new)
+                .consumerMainThread(AzurStaffSettingsPayload::handle)
+                .add();
+    }
+
+    private static void handle(TrackingIgnorePrefsPayload message, Supplier<NetworkEvent.Context> contextSupplier) {
+        NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
-            if (context.flow().isClientbound()) {
-                TrackingIgnorePrefsCache.acceptFromServer(payload.prefs());
+            if (context.getDirection().getReceptionSide().isClient()) {
+                TrackingIgnorePrefsCache.acceptFromServer(message.prefs());
                 return;
             }
-            if (context.player() instanceof ServerPlayer serverPlayer) {
-                serverPlayer.setData(ModAttachments.TRACKING_IGNORE_PREFS.get(), payload.prefs());
+            ServerPlayer serverPlayer = context.getSender();
+            if (serverPlayer != null) {
+                ModAttachments.setPrefs(serverPlayer, message.prefs());
                 syncTo(serverPlayer);
             }
         });
     }
 
     /**
-     * 把当前 Attachment 推给该玩家客户端（登录 / 改勾选后）。
+     * 把该玩家当前的偏好推给其客户端（登录 / 改勾选后）。
      */
     public static void syncTo(ServerPlayer player) {
-        if (!player.connection.hasChannel(TYPE)) {
+        // 假玩家 / 尚未协商完自定义通道的连接不支持本模组消息，直接跳过。
+        if (!CHANNEL.isRemotePresent(player.connection.connection)) {
             return;
         }
-        TrackingIgnorePrefs prefs = player.getData(ModAttachments.TRACKING_IGNORE_PREFS.get());
-        PacketDistributor.sendToPlayer(player, new TrackingIgnorePrefsPayload(prefs));
+        TrackingIgnorePrefs prefs = ModAttachments.getPrefs(player);
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new TrackingIgnorePrefsPayload(prefs));
     }
 
     /**
      * 客户端 GUI：把新偏好发给服务端。
      */
     public static void sendToServer(TrackingIgnorePrefs prefs) {
-        PacketDistributor.sendToServer(new TrackingIgnorePrefsPayload(prefs));
-    }
-
-    @Override
-    public Type<TrackingIgnorePrefsPayload> type() {
-        return TYPE;
+        CHANNEL.sendToServer(new TrackingIgnorePrefsPayload(prefs));
     }
 }

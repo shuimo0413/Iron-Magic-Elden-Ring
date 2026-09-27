@@ -4,11 +4,10 @@ import com.eldenring.spells.registry.ModParticles;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * 亚兹勒喷流周围粒子的网络 / 本地数据。
@@ -23,14 +22,6 @@ public final class CometAzurJetOptions implements ParticleOptions {
                     Codec.FLOAT.fieldOf("yaw_degrees").forGetter(CometAzurJetOptions::yawDegrees),
                     Codec.FLOAT.fieldOf("pitch_degrees").forGetter(CometAzurJetOptions::pitchDegrees)
             ).apply(instance, CometAzurJetOptions::emitter)
-    );
-
-    public static final StreamCodec<ByteBuf, CometAzurJetOptions> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.FLOAT,
-            CometAzurJetOptions::yawDegrees,
-            ByteBufCodecs.FLOAT,
-            CometAzurJetOptions::pitchDegrees,
-            CometAzurJetOptions::emitter
     );
 
     private final boolean emitter;
@@ -168,6 +159,40 @@ public final class CometAzurJetOptions implements ParticleOptions {
      */
     public float helixRadiansPerTick() {
         return helixRadiansPerTick;
+    }
+
+    /**
+     * 1.20.1 网络写入口：只发 yaw / pitch 两个朝向。
+     * <p>
+     * 这是原 {@code StreamCodec.composite(...)} 里两个字段的等价实现，字段顺序必须与
+     * {@link #read(FriendlyByteBuf)} 完全一致，否则联机端喷流朝向会错位。
+     * {@code emitter} 与各 ordinal / 半径是纯客户端本地量，不进网络。
+     */
+    public void writeTo(FriendlyByteBuf buffer) {
+        buffer.writeFloat(this.yawDegrees);
+        buffer.writeFloat(this.pitchDegrees);
+    }
+
+    /**
+     * 1.20.1 网络读入口。读回的两数交给 {@link #emitter(float, float)}，
+     * 因为服务端只会发「发射器」形态（飞粒子由客户端 {@link CometAzurJetEmitterParticle} 本地再刷）。
+     */
+    public static CometAzurJetOptions read(FriendlyByteBuf buffer) {
+        float yawDegrees = buffer.readFloat();
+        float pitchDegrees = buffer.readFloat();
+        return emitter(yawDegrees, pitchDegrees);
+    }
+
+    /** 1.20.1 {@link ParticleOptions} 的网络序列化钩子（1.20.5+ 才改为 StreamCodec）。 */
+    @Override
+    public void writeToNetwork(FriendlyByteBuf buffer) {
+        writeTo(buffer);
+    }
+
+    /** 1.20.1 {@link ParticleOptions} 要求的调试文本（命令回显用，不参与同步）。 */
+    @Override
+    public String writeToString() {
+        return BuiltInRegistries.PARTICLE_TYPE.getKey(getType()) + " " + this.yawDegrees + " " + this.pitchDegrees;
     }
 
     @Override

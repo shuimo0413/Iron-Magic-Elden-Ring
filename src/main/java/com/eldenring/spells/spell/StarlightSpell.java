@@ -66,7 +66,7 @@ public class StarlightSpell extends EldenRingAbstractSpell {
     public static int LIGHT_LEVEL = 14;
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "starlight");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "starlight");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.COMMON)

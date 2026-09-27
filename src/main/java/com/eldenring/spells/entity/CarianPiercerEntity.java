@@ -39,7 +39,7 @@ public class CarianPiercerEntity extends Projectile implements AntiMagicSuscepti
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData() {
         // 无客户端同步字段；突刺由 tickCount 驱动。
     }
 

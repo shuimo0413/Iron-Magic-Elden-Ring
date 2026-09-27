@@ -21,7 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 public final class HaimaGavelModels {
 
     public static final ModelLayerLocation GAVEL_LAYER = new ModelLayerLocation(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "gavel_of_haima"),
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "gavel_of_haima"),
             "main"
     );
 
@@ -38,10 +38,10 @@ public final class HaimaGavelModels {
     public static final String HEAD_CAP_PART = "head_cap";
 
     public static final ResourceLocation GAVEL_BODY_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/haima/gavel_body.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/haima/gavel_body.png");
 
     public static final ResourceLocation GAVEL_GLOW_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
 
     private HaimaGavelModels() {
     }

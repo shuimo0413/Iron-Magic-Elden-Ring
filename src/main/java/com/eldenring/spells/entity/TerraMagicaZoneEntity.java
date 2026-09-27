@@ -64,7 +64,9 @@ public class TerraMagicaZoneEntity extends AoeEntity implements AntiMagicSuscept
             return;
         }
         target.addEffect(new MobEffectInstance(
-                ModEffects.TERRA_MAGICA,
+                // 1.20.1 里 ModEffects.TERRA_MAGICA 是 RegistryObject<MobEffect>，
+                // 而 MobEffectInstance 构造器收的是 MobEffect 本体，必须 .get()。
+                ModEffects.TERRA_MAGICA.get(),
                 TerraMagicaSpell.EFFECT_REFRESH_DURATION_TICKS,
                 0,
                 false,

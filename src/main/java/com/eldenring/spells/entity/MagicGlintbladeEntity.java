@@ -11,8 +11,6 @@ import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.DamageSources;
 import io.redspace.ironsspellbooks.entity.spells.AbstractMagicProjectile;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -30,8 +28,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,6 +38,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * 魔法辉剑：先在身前铺漩涡、平躺凝结，再沿准星飞出并做限角追踪。
@@ -88,11 +87,11 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_LAUNCHED, false);
-        builder.define(DATA_HOVER_YAW_DEGREES, 0.0f);
-        builder.define(DATA_HOVER_PITCH_DEGREES, 0.0f);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_LAUNCHED, false);
+        this.entityData.define(DATA_HOVER_YAW_DEGREES, 0.0f);
+        this.entityData.define(DATA_HOVER_PITCH_DEGREES, 0.0f);
     }
 
     public boolean hasLaunched() {
@@ -249,9 +248,10 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         return MagicGlintbladeSpell.HIT_DETECTION_INFLATION_BLOCKS;
     }
 
+    /** 命中音。1.20.1 基类要求 {@code Optional<Supplier<SoundEvent>>}。 */
     @Override
-    public Optional<Holder<SoundEvent>> getImpactSound() {
-        return Optional.of(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.AMETHYST_BLOCK_HIT));
+    public Optional<Supplier<SoundEvent>> getImpactSound() {
+        return Optional.of(() -> SoundEvents.AMETHYST_BLOCK_HIT);
     }
 
     @Override
@@ -454,7 +454,8 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         entityHits.sort(Comparator.comparingDouble(hit -> hit.getLocation().distanceToSqr(startPosition)));
         for (HitResult hitResult : entityHits) {
             if (hitResult instanceof EntityHitResult entityHitResult
-                    && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult)).isCanceled()) {
+                    // Forge 的 post(...) 直接返回「是否被取消」。
+                    && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult))) {
                 onHit(entityHitResult);
             }
             if (this.isRemoved()) {
@@ -465,7 +466,7 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         if (collidesWithBlocks()
                 && blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
-                && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {
+                && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision))) {
             onHit(blockCollision);
         }
     }

@@ -4,7 +4,6 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.registry.ModSpells;
 import com.eldenring.spells.spell.curve.CarianSlicerCastCurve;
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.kosmx.playerAnim.api.IPlayable;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonMode;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
@@ -18,6 +17,9 @@ import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.spells.SpellAnimations;
 import io.redspace.ironsspellbooks.network.casting.CancelCastPacket;
+// 1.20.1 的 CancelCastPacket 是 Forge SimpleChannel 包，发送必须走铁魔法自带的通道包装；
+// NeoForge 侧的 PacketDistributor 在该分支不存在。
+import io.redspace.ironsspellbooks.setup.PacketDistributor;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
 import io.redspace.ironsspellbooks.player.KeyMappings;
 import java.util.Map;
@@ -25,16 +27,15 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import org.lwjgl.glfw.GLFW;
 
+import net.minecraftforge.fml.common.Mod;
 /**
  * 卡利亚迅剑客户端：交替播放 {@code carian_slicer_1}（第一刀）与 {@code carian_slicer_2}（第二刀）。
  * <p>
@@ -52,10 +53,11 @@ import org.lwjgl.glfw.GLFW;
  * 斩击期间按走路 / 冲刺原速移动：铁魔法会在 {@code MovementInputUpdateEvent} 把冲量乘到约 0.2，
  * 本类先记下未减速冲量，再在 {@link EventPriority#LOWEST} 写回去。
  * <p>
- * PlayerAnimator 2.x 用动画 JSON 内的 clip 名做 path，不是文件名。
+ * PlayerAnimator 1.0.2 把每条动画注册在 {@code <命名空间>:<动画 JSON 内的 name>} 下（不是文件名），
+ * 因此按 clip 名直接拼 ResourceLocation 就能命中。
  * 本类用 {@link EventPriority#LOWEST}，保证盖掉铁魔法 CONTINUOUS 可能先塞进默认层的挥击。
  */
-@EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class CarianSlicerClientHold {
 
     private static final ResourceLocation CAST_BAR_LAYER_ID = IronsSpellbooks.id("cast_bar");
@@ -65,7 +67,7 @@ public final class CarianSlicerClientHold {
      * 优先级高于铁魔法的 42，且不挂 Mirror / 准星修正。
      */
     public static final ResourceLocation CARIAN_SLICER_ANIMATION_LAYER =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_slicer_animation");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "carian_slicer_animation");
 
     /**
      * 下标 0 = 点按第一刀（资源 {@code carian_slicer_1}），1 = 连斩第二刀（{@code carian_slicer_2}）。
@@ -156,9 +158,13 @@ public final class CarianSlicerClientHold {
         event.getInput().leftImpulse = unslowedLeftImpulse;
     }
 
+    /**
+     * 1.20.1 Forge 的 {@code RenderGuiOverlayEvent} 没有 {@code getName()}（1.21 NeoForge 才有），
+     * 只能拿 {@code getOverlay().id()} 与铁魔法注册的 {@code irons_spellbooks:cast_bar} 比对。
+     */
     @SubscribeEvent
-    public static void hideChargeBar(RenderGuiLayerEvent.Pre event) {
-        if (!event.getName().equals(CAST_BAR_LAYER_ID)) {
+    public static void hideChargeBar(RenderGuiOverlayEvent.Pre event) {
+        if (!event.getOverlay().id().equals(CAST_BAR_LAYER_ID)) {
             return;
         }
         if (isLocalPlayerCastingCarianSlicer()) {
@@ -167,7 +173,11 @@ public final class CarianSlicerClientHold {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onClientTick(ClientTickEvent.Post event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        // 1.20.1 的 ClientTickEvent 每 tick 有 PRE / END 两次；迁移前只订阅过 NeoForge 的 Post 阶段（等价 END）。
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         if (localPlayer == null) {
             resetAll();
@@ -242,8 +252,8 @@ public final class CarianSlicerClientHold {
     @SuppressWarnings("unchecked")
     private static void playSlashAnimation(LocalPlayer player, int sequenceIndex) {
         int slashClipIndex = sequenceIndex & 1;
-        IPlayable playable = resolveSlashClip(slashClipIndex);
-        if (playable == null) {
+        KeyframeAnimation keyframeAnimation = resolveSlashClip(slashClipIndex);
+        if (keyframeAnimation == null) {
             return;
         }
         // 清掉铁魔法默认层，防止 MirrorModifier 层上残留的同名 clip 和本层抢。
@@ -259,7 +269,7 @@ public final class CarianSlicerClientHold {
             );
             return;
         }
-        IAnimation animationToPlay = createSlashPlayer(playable);
+        IAnimation animationToPlay = createSlashPlayer(keyframeAnimation);
         slicerAnimationLayer.replaceAnimationWithFade(
                 AbstractFadeModifier.standardFadeIn(ANIMATION_FADE_IN_TICKS, Ease.INOUTSINE),
                 animationToPlay,
@@ -298,10 +308,12 @@ public final class CarianSlicerClientHold {
     }
 
     /**
-     * PlayerAnimator 2.x 的注册 path 可能是 clip 名、gecko 长名或带目录的资源 path。
-     * 按精确名查找，找不到再扫本 mod 已注册动画，避免 {@code carian_slicer_1} 静默失败后直接播到 2。
+     * PlayerAnimator 1.0.x 里 {@code getAnimation} 直接返回 {@link KeyframeAnimation}
+     * （2.x 才有的「可播放动画」接口在 1.0.x 不存在）。
+     * 注册 path 可能是 clip 名、gecko 长名或带目录的资源 path，按精确名查找，
+     * 找不到再扫本 mod 已注册动画，避免 {@code carian_slicer_1} 静默失败后直接播到 2。
      */
-    private static IPlayable resolveSlashClip(int slashClipIndex) {
+    private static KeyframeAnimation resolveSlashClip(int slashClipIndex) {
         String wantedClipName = SLASH_CLIP_NAMES[slashClipIndex];
         String otherClipName = SLASH_CLIP_NAMES[slashClipIndex ^ 1];
         String[] candidatePaths = {
@@ -312,20 +324,20 @@ public final class CarianSlicerClientHold {
                 "player_animations/" + wantedClipName
         };
         for (String candidatePath : candidatePaths) {
-            IPlayable playable = PlayerAnimationRegistry.getAnimation(
-                    ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, candidatePath)
+            KeyframeAnimation registeredAnimation = PlayerAnimationRegistry.getAnimation(
+                    new ResourceLocation(EldenRingSpellsMod.MOD_ID, candidatePath)
             );
-            if (playable != null) {
-                return playable;
+            if (registeredAnimation != null) {
+                return registeredAnimation;
             }
         }
-        Map<String, IPlayable> registeredClips =
+        Map<String, KeyframeAnimation> registeredClips =
                 PlayerAnimationRegistry.getModAnimations(EldenRingSpellsMod.MOD_ID);
-        IPlayable exactName = registeredClips.get(wantedClipName);
+        KeyframeAnimation exactName = registeredClips.get(wantedClipName);
         if (exactName != null) {
             return exactName;
         }
-        for (Map.Entry<String, IPlayable> entry : registeredClips.entrySet()) {
+        for (Map.Entry<String, KeyframeAnimation> entry : registeredClips.entrySet()) {
             String registeredPath = entry.getKey();
             if (!registeredPath.contains(wantedClipName) || registeredPath.contains(otherClipName)) {
                 continue;
@@ -340,18 +352,9 @@ public final class CarianSlicerClientHold {
         return null;
     }
 
-    private static IAnimation createSlashPlayer(IPlayable playable) {
-        KeyframeAnimationPlayer keyframePlayer;
-        if (playable instanceof KeyframeAnimation keyframeAnimation) {
-            keyframePlayer = new KeyframeAnimationPlayer(keyframeAnimation);
-        } else {
-            IAnimation played = playable.playAnimation();
-            if (played instanceof KeyframeAnimationPlayer typedPlayer) {
-                keyframePlayer = typedPlayer;
-            } else {
-                return played;
-            }
-        }
+    private static IAnimation createSlashPlayer(KeyframeAnimation keyframeAnimation) {
+        // 1.0.x 的 registry 只会给出 KeyframeAnimation，直接包成播放器，不再走 2.x「由接口自行创建播放器」的分支。
+        KeyframeAnimationPlayer keyframePlayer = new KeyframeAnimationPlayer(keyframeAnimation);
         keyframePlayer.setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL);
         // 右臂开、左手/双手物品关：第一人称只看到斩击右臂，法术书仍藏着。
         // 迅剑不走这里的「右手物品」开关，由 CarianSlicerHandLayer 自己画。

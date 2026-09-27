@@ -50,7 +50,7 @@ public class GavelOfHaimaSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:gavel_of_haima}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "gavel_of_haima");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "gavel_of_haima");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

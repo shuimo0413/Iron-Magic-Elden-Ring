@@ -71,10 +71,10 @@ public class CometAzurJetEntity extends Projectile implements AntiMagicSusceptib
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_BEAM_LENGTH_BLOCKS, (float) CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS);
-        builder.define(DATA_YAW_DEGREES, 0.0f);
-        builder.define(DATA_PITCH_DEGREES, 0.0f);
+    protected void defineSynchedData() {
+        this.entityData.define(DATA_BEAM_LENGTH_BLOCKS, (float) CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS);
+        this.entityData.define(DATA_YAW_DEGREES, 0.0f);
+        this.entityData.define(DATA_PITCH_DEGREES, 0.0f);
     }
 
     /**

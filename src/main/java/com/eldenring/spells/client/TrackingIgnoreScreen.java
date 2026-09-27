@@ -20,6 +20,9 @@ public class TrackingIgnoreScreen extends Screen {
     private static final int TITLE_TOP_OFFSET_PIXELS = 20;
     private static final int FIRST_CHECKBOX_TOP_OFFSET_PIXELS = 48;
     private static final int CHECKBOX_ROW_SPACING_PIXELS = 24;
+    /** 1.20.1 的 {@code Checkbox} 构造器要求显式宽高；20×20 就是原版勾选框方框本身的大小。 */
+    private static final int CHECKBOX_WIDTH_PIXELS = 20;
+    private static final int CHECKBOX_HEIGHT_PIXELS = 20;
     private static final int DONE_BUTTON_WIDTH_PIXELS = 100;
     private static final int DONE_BUTTON_BOTTOM_MARGIN_PIXELS = 28;
 
@@ -80,11 +83,22 @@ public class TrackingIgnoreScreen extends Screen {
             boolean selected,
             java.util.function.Consumer<Boolean> onToggle
     ) {
-        Checkbox checkbox = Checkbox.builder(Component.translatable(translationKey), this.font)
-                .pos(x, y)
-                .selected(selected)
-                .onValueChange((box, value) -> onToggle.accept(value))
-                .build();
+        // 1.20.1 的 Checkbox 只有构造器 + onPress()，没有 1.20.2+ 的 builder / onValueChange，
+        // 所以用匿名子类在按下后把新状态回调出去，效果与 builder 版一致。
+        Checkbox checkbox = new Checkbox(
+                x,
+                y,
+                CHECKBOX_WIDTH_PIXELS,
+                CHECKBOX_HEIGHT_PIXELS,
+                Component.translatable(translationKey),
+                selected
+        ) {
+            @Override
+            public void onPress() {
+                super.onPress();
+                onToggle.accept(this.selected());
+            }
+        };
         addRenderableWidget(checkbox);
     }
 
@@ -95,7 +109,9 @@ public class TrackingIgnoreScreen extends Screen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        // 1.20.1 的 Screen.renderBackground 只收 GuiGraphics（4 参版本 1.20.2 才有），
+        // 且这里的 Screen.render 不会自己画背景，必须显式调一次。
+        renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.drawCenteredString(
                 this.font,

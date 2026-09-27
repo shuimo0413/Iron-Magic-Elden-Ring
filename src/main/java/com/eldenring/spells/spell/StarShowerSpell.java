@@ -121,7 +121,7 @@ public class StarShowerSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:star_shower}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "star_shower");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "star_shower");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

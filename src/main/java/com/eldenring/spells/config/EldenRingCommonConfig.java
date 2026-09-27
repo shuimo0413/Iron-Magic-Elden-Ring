@@ -1,7 +1,6 @@
 package com.eldenring.spells.config;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
-
+import net.minecraftforge.common.ForgeConfigSpec;
 /**
  * 世界生成等「进游戏前就要定下来」的数值。
  * <p>
@@ -13,7 +12,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  */
 public final class EldenRingCommonConfig {
 
-    public static final ModConfigSpec SPEC;
+    public static final ForgeConfigSpec SPEC;
 
     /** 大尺度噪声单元格（chunk）。越大 → 同色辉石地带斑块越大。 */
     public static double caveRegionNoiseCellSizeChunks = 6.0;
@@ -42,22 +41,22 @@ public final class EldenRingCommonConfig {
     /** 单 chunk 水晶簇硬上限。 */
     public static int caveMaxClustersPerChunk = 64;
 
-    private static final ModConfigSpec.DoubleValue CAVE_REGION_NOISE_CELL_SIZE_CHUNKS;
-    private static final ModConfigSpec.DoubleValue CAVE_CHUNK_NOISE_CELL_SIZE_CHUNKS;
-    private static final ModConfigSpec.DoubleValue CAVE_REGION_PRESENCE_THRESHOLD;
-    private static final ModConfigSpec.DoubleValue CAVE_CHUNK_DECORATE_THRESHOLD;
-    private static final ModConfigSpec.IntValue CAVE_SCAN_MIN_Y;
-    private static final ModConfigSpec.IntValue CAVE_SCAN_MAX_Y;
-    private static final ModConfigSpec.IntValue CAVE_POCKETS_PER_CHUNK;
-    private static final ModConfigSpec.IntValue CAVE_POCKET_CENTER_SCAN_STRIDE;
-    private static final ModConfigSpec.IntValue CAVE_POCKET_RADIUS_BLOCKS;
-    private static final ModConfigSpec.DoubleValue CAVE_SURFACE_BLOCK_CHANCE;
-    private static final ModConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_BLOCK_CHANCE;
-    private static final ModConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_STONE_CHANCE;
-    private static final ModConfigSpec.IntValue CAVE_MAX_CLUSTERS_PER_CHUNK;
+    private static final ForgeConfigSpec.DoubleValue CAVE_REGION_NOISE_CELL_SIZE_CHUNKS;
+    private static final ForgeConfigSpec.DoubleValue CAVE_CHUNK_NOISE_CELL_SIZE_CHUNKS;
+    private static final ForgeConfigSpec.DoubleValue CAVE_REGION_PRESENCE_THRESHOLD;
+    private static final ForgeConfigSpec.DoubleValue CAVE_CHUNK_DECORATE_THRESHOLD;
+    private static final ForgeConfigSpec.IntValue CAVE_SCAN_MIN_Y;
+    private static final ForgeConfigSpec.IntValue CAVE_SCAN_MAX_Y;
+    private static final ForgeConfigSpec.IntValue CAVE_POCKETS_PER_CHUNK;
+    private static final ForgeConfigSpec.IntValue CAVE_POCKET_CENTER_SCAN_STRIDE;
+    private static final ForgeConfigSpec.IntValue CAVE_POCKET_RADIUS_BLOCKS;
+    private static final ForgeConfigSpec.DoubleValue CAVE_SURFACE_BLOCK_CHANCE;
+    private static final ForgeConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_BLOCK_CHANCE;
+    private static final ForgeConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_STONE_CHANCE;
+    private static final ForgeConfigSpec.IntValue CAVE_MAX_CLUSTERS_PER_CHUNK;
 
     static {
-        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
         builder.comment(
                 "辉石矿洞世界生成。只装饰现成洞穴表面，不新挖空洞。",
                 "噪声盐不开放配置，避免整合包误改导致同种子矿洞错位。"

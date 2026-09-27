@@ -90,7 +90,7 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
     public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 4.5f;
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "greatblade_phalanx");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "greatblade_phalanx");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

@@ -32,15 +32,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 public final class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES =
             DeferredRegister.create(Registries.ENTITY_TYPE, EldenRingSpellsMod.MOD_ID);
 
-    public static final DeferredHolder<EntityType<?>, EntityType<GlintstonePebbleProjectile>> GLINTSTONE_PEBBLE =
+    public static final RegistryObject<EntityType<GlintstonePebbleProjectile>> GLINTSTONE_PEBBLE =
             ENTITIES.register("glintstone_pebble", () ->
                     EntityType.Builder.<GlintstonePebbleProjectile>of(GlintstonePebbleProjectile::new, MobCategory.MISC)
                             .sized(0.4f, 0.4f)
@@ -49,7 +48,7 @@ public final class ModEntities {
                             .build(id("glintstone_pebble"))
             );
 
-    public static final DeferredHolder<EntityType<?>, EntityType<SwiftGlintstoneShardProjectile>> SWIFT_GLINTSTONE_SHARD =
+    public static final RegistryObject<EntityType<SwiftGlintstoneShardProjectile>> SWIFT_GLINTSTONE_SHARD =
             ENTITIES.register("swift_glintstone_shard", () ->
                     EntityType.Builder.<SwiftGlintstoneShardProjectile>of(SwiftGlintstoneShardProjectile::new, MobCategory.MISC)
                             .sized(0.32f, 0.32f)
@@ -61,7 +60,7 @@ public final class ModEntities {
     /**
      * 辉石弯弧：碰撞箱仅作追踪占位；横向命中体积在 Combat 里按当前半宽计算。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneArcProjectile>> GLINTSTONE_ARC =
+    public static final RegistryObject<EntityType<GlintstoneArcProjectile>> GLINTSTONE_ARC =
             ENTITIES.register("glintstone_arc", () ->
                     EntityType.Builder.<GlintstoneArcProjectile>of(GlintstoneArcProjectile::new, MobCategory.MISC)
                             .sized(0.40f, 0.40f)
@@ -73,7 +72,7 @@ public final class ModEntities {
     /**
      * 结晶连弹碎片：迅魔砾同尺寸针状弹，不追踪、短射程。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<CrystalBarrageShardProjectile>> CRYSTAL_BARRAGE_SHARD =
+    public static final RegistryObject<EntityType<CrystalBarrageShardProjectile>> CRYSTAL_BARRAGE_SHARD =
             ENTITIES.register("crystal_barrage_shard", () ->
                     EntityType.Builder.<CrystalBarrageShardProjectile>of(CrystalBarrageShardProjectile::new, MobCategory.MISC)
                             .sized(0.32f, 0.32f)
@@ -85,7 +84,7 @@ public final class ModEntities {
     /**
      * 结晶散射碎片：迅魔砾同尺寸针状弹，不追踪、短射程，一次齐射多发。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<CrystalBurstShardProjectile>> CRYSTAL_BURST_SHARD =
+    public static final RegistryObject<EntityType<CrystalBurstShardProjectile>> CRYSTAL_BURST_SHARD =
             ENTITIES.register("crystal_burst_shard", () ->
                     EntityType.Builder.<CrystalBurstShardProjectile>of(CrystalBurstShardProjectile::new, MobCategory.MISC)
                             .sized(0.32f, 0.32f)
@@ -94,7 +93,7 @@ public final class ModEntities {
                             .build(id("crystal_burst_shard"))
             );
 
-    public static final DeferredHolder<EntityType<?>, EntityType<GreatGlintstoneShardProjectile>> GREAT_GLINTSTONE_SHARD =
+    public static final RegistryObject<EntityType<GreatGlintstoneShardProjectile>> GREAT_GLINTSTONE_SHARD =
             ENTITIES.register("great_glintstone_shard", () ->
                     EntityType.Builder.<GreatGlintstoneShardProjectile>of(GreatGlintstoneShardProjectile::new, MobCategory.MISC)
                             .sized(0.85f, 0.85f)
@@ -103,7 +102,7 @@ public final class ModEntities {
                             .build(id("great_glintstone_shard"))
             );
 
-    public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneCometProjectile>> GLINTSTONE_COMET =
+    public static final RegistryObject<EntityType<GlintstoneCometProjectile>> GLINTSTONE_COMET =
             ENTITIES.register("glintstone_comet", () ->
                     EntityType.Builder.<GlintstoneCometProjectile>of(GlintstoneCometProjectile::new, MobCategory.MISC)
                             .sized(0.95f, 0.95f)
@@ -112,7 +111,7 @@ public final class ModEntities {
                             .build(id("glintstone_comet"))
             );
 
-    public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneStarProjectile>> GLINTSTONE_STAR =
+    public static final RegistryObject<EntityType<GlintstoneStarProjectile>> GLINTSTONE_STAR =
             ENTITIES.register("glintstone_star", () ->
                     EntityType.Builder.<GlintstoneStarProjectile>of(GlintstoneStarProjectile::new, MobCategory.MISC)
                             .sized(0.34f, 0.34f)
@@ -121,7 +120,7 @@ public final class ModEntities {
                             .build(id("glintstone_star"))
             );
 
-    public static final DeferredHolder<EntityType<?>, EntityType<StarShowerProjectile>> STAR_SHOWER =
+    public static final RegistryObject<EntityType<StarShowerProjectile>> STAR_SHOWER =
             ENTITIES.register("star_shower", () ->
                     EntityType.Builder.<StarShowerProjectile>of(StarShowerProjectile::new, MobCategory.MISC)
                             .sized(0.32f, 0.32f)
@@ -130,7 +129,7 @@ public final class ModEntities {
                             .build(id("star_shower"))
             );
 
-    public static final DeferredHolder<EntityType<?>, EntityType<StarsOfRuinProjectile>> STARS_OF_RUIN =
+    public static final RegistryObject<EntityType<StarsOfRuinProjectile>> STARS_OF_RUIN =
             ENTITIES.register("stars_of_ruin", () ->
                     EntityType.Builder.<StarsOfRuinProjectile>of(StarsOfRuinProjectile::new, MobCategory.MISC)
                             .sized(0.36f, 0.36f)
@@ -142,7 +141,7 @@ public final class ModEntities {
     /**
      * 创星雨时序实体：不可见，升空节拍 + 钉雨云 + 从云层抽雨针。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<FoundingRainOfStarsEntity>> FOUNDING_RAIN_OF_STARS =
+    public static final RegistryObject<EntityType<FoundingRainOfStarsEntity>> FOUNDING_RAIN_OF_STARS =
             ENTITIES.register("founding_rain_of_stars", () ->
                     EntityType.Builder.<FoundingRainOfStarsEntity>of(FoundingRainOfStarsEntity::new, MobCategory.MISC)
                             .sized(0.1f, 0.1f)
@@ -154,7 +153,7 @@ public final class ModEntities {
     /**
      * 创星雨雨针：细碰撞箱，视觉完全靠曲线光带。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<FoundingRainDropEntity>> FOUNDING_RAIN_DROP =
+    public static final RegistryObject<EntityType<FoundingRainDropEntity>> FOUNDING_RAIN_DROP =
             ENTITIES.register("founding_rain_drop", () ->
                     EntityType.Builder.<FoundingRainDropEntity>of(FoundingRainDropEntity::new, MobCategory.MISC)
                             .sized(0.12f, 0.12f)
@@ -166,7 +165,7 @@ public final class ModEntities {
     /**
      * 辉石连发控制器：不可见，只按 tick 依次生成流星，避免 TickTask 把延迟发挤进同一帧。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneStarVolleyEntity>> GLINTSTONE_STAR_VOLLEY =
+    public static final RegistryObject<EntityType<GlintstoneStarVolleyEntity>> GLINTSTONE_STAR_VOLLEY =
             ENTITIES.register("glintstone_star_volley", () ->
                     EntityType.Builder.<GlintstoneStarVolleyEntity>of(GlintstoneStarVolleyEntity::new, MobCategory.MISC)
                             .sized(0.1f, 0.1f)
@@ -175,7 +174,7 @@ public final class ModEntities {
                             .build(id("glintstone_star_volley"))
             );
 
-    public static final DeferredHolder<EntityType<?>, EntityType<CometProjectile>> COMET =
+    public static final RegistryObject<EntityType<CometProjectile>> COMET =
             ENTITIES.register("comet", () ->
                     EntityType.Builder.<CometProjectile>of(CometProjectile::new, MobCategory.MISC)
                             .sized(1.1f, 1.1f)
@@ -188,7 +187,7 @@ public final class ModEntities {
      * 旋飞魔砾：实体为双螺旋中心轴；两颗彗星在渲染/命中时按欧拉相位展开。
      * 碰撞箱略大于半径，便于客户端追踪与调试。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<SpiralShardProjectile>> SPIRAL_SHARD =
+    public static final RegistryObject<EntityType<SpiralShardProjectile>> SPIRAL_SHARD =
             ENTITIES.register("spiral_shard", () ->
                     EntityType.Builder.<SpiralShardProjectile>of(SpiralShardProjectile::new, MobCategory.MISC)
                             .sized(0.55f, 0.55f)
@@ -200,7 +199,7 @@ public final class ModEntities {
     /**
      * 星光头顶小星：跟随主人，碰撞箱仅作客户端追踪占位。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<StarlightEntity>> STARLIGHT =
+    public static final RegistryObject<EntityType<StarlightEntity>> STARLIGHT =
             ENTITIES.register("starlight", () ->
                     EntityType.Builder.<StarlightEntity>of(StarlightEntity::new, MobCategory.MISC)
                             .sized(0.25f, 0.25f)
@@ -213,7 +212,7 @@ public final class ModEntities {
      * 魔法之境法阵：静止圆形区域，尺寸由运行时 {@code setRadius} 刷新；
      * 此处初始碰撞箱仅作占位，实际以同步半径为准。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<TerraMagicaZoneEntity>> TERRA_MAGICA_ZONE =
+    public static final RegistryObject<EntityType<TerraMagicaZoneEntity>> TERRA_MAGICA_ZONE =
             ENTITIES.register("terra_magica_zone", () ->
                     EntityType.Builder.<TerraMagicaZoneEntity>of(TerraMagicaZoneEntity::new, MobCategory.MISC)
                             .sized(9.0f, 1.2f)
@@ -225,7 +224,7 @@ public final class ModEntities {
     /**
      * 彗星亚兹勒星河喷流：钉在施法者面前，视觉靠多层 ribbon，碰撞箱仅作追踪占位。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<CometAzurJetEntity>> COMET_AZUR_JET =
+    public static final RegistryObject<EntityType<CometAzurJetEntity>> COMET_AZUR_JET =
             ENTITIES.register("comet_azur_jet", () ->
                     EntityType.Builder.<CometAzurJetEntity>of(CometAzurJetEntity::new, MobCategory.MISC)
                             .sized(0.6f, 0.6f)
@@ -237,7 +236,7 @@ public final class ModEntities {
     /**
      * 海摩炮弹：受重力的实心辉石球，碰撞箱约 1 格，用于落地与碰敌爆炸。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<CannonOfHaimaProjectile>> CANNON_OF_HAIMA =
+    public static final RegistryObject<EntityType<CannonOfHaimaProjectile>> CANNON_OF_HAIMA =
             ENTITIES.register("cannon_of_haima", () ->
                     EntityType.Builder.<CannonOfHaimaProjectile>of(CannonOfHaimaProjectile::new, MobCategory.MISC)
                             .sized(0.95f, 0.95f)
@@ -249,7 +248,7 @@ public final class ModEntities {
     /**
      * 海摩大槌：锚在砸地点，视觉为立体巨锤，碰撞箱仅作追踪占位。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<GavelOfHaimaEntity>> GAVEL_OF_HAIMA =
+    public static final RegistryObject<EntityType<GavelOfHaimaEntity>> GAVEL_OF_HAIMA =
             ENTITIES.register("gavel_of_haima", () ->
                     EntityType.Builder.<GavelOfHaimaEntity>of(GavelOfHaimaEntity::new, MobCategory.MISC)
                             .sized(1.2f, 2.0f)
@@ -261,7 +260,7 @@ public final class ModEntities {
     /**
      * 卡利亚迅剑：服务端斩击锚点，无渲染；跟施法者结算扇形伤害。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<CarianSlicerEntity>> CARIAN_SLICER =
+    public static final RegistryObject<EntityType<CarianSlicerEntity>> CARIAN_SLICER =
             ENTITIES.register("carian_slicer", () ->
                     EntityType.Builder.<CarianSlicerEntity>of(CarianSlicerEntity::new, MobCategory.MISC)
                             .sized(0.5f, 0.5f)
@@ -273,7 +272,7 @@ public final class ModEntities {
     /**
      * 卡利亚大剑：服务端斩击锚点，无渲染；跟施法者结算扇形伤害。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<CarianGreatswordEntity>> CARIAN_GREATSWORD =
+    public static final RegistryObject<EntityType<CarianGreatswordEntity>> CARIAN_GREATSWORD =
             ENTITIES.register("carian_greatsword", () ->
                     EntityType.Builder.<CarianGreatswordEntity>of(CarianGreatswordEntity::new, MobCategory.MISC)
                             .sized(0.5f, 0.5f)
@@ -285,7 +284,7 @@ public final class ModEntities {
     /**
      * 卡利亚贯刺：服务端突刺锚点，无渲染；跟施法者结算扇形伤害。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<CarianPiercerEntity>> CARIAN_PIERCER =
+    public static final RegistryObject<EntityType<CarianPiercerEntity>> CARIAN_PIERCER =
             ENTITIES.register("carian_piercer", () ->
                     EntityType.Builder.<CarianPiercerEntity>of(CarianPiercerEntity::new, MobCategory.MISC)
                             .sized(0.5f, 0.5f)
@@ -297,7 +296,7 @@ public final class ModEntities {
     /**
      * 魔法辉剑：先漩涡凝结后飞出。碰撞箱绕凝结点，原点就是盘心。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<MagicGlintbladeEntity>> MAGIC_GLINTBLADE =
+    public static final RegistryObject<EntityType<MagicGlintbladeEntity>> MAGIC_GLINTBLADE =
             ENTITIES.register("magic_glintblade", () ->
                     EntityType.Builder.<MagicGlintbladeEntity>of(MagicGlintbladeEntity::new, MobCategory.MISC)
                             .sized(0.40f, 0.40f)
@@ -309,7 +308,7 @@ public final class ModEntities {
     /**
      * 圆阵辉剑：跟手半圆后自动射出。碰撞箱与魔法辉剑相同，模型复用。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<PhalanxGlintbladeEntity>> PHALANX_GLINTBLADE =
+    public static final RegistryObject<EntityType<PhalanxGlintbladeEntity>> PHALANX_GLINTBLADE =
             ENTITIES.register("phalanx_glintblade", () ->
                     EntityType.Builder.<PhalanxGlintbladeEntity>of(PhalanxGlintbladeEntity::new, MobCategory.MISC)
                             .sized(0.40f, 0.40f)
@@ -321,7 +320,7 @@ public final class ModEntities {
     /**
      * 重力球：无追踪直线紫球。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<GravityBallProjectile>> GRAVITY_BALL =
+    public static final RegistryObject<EntityType<GravityBallProjectile>> GRAVITY_BALL =
             ENTITIES.register("gravity_ball", () ->
                     EntityType.Builder.<GravityBallProjectile>of(GravityBallProjectile::new, MobCategory.MISC)
                             .sized(0.45f, 0.45f)
@@ -333,7 +332,7 @@ public final class ModEntities {
     /**
      * 观星者：中立辉石商人法师。仅随观星台结构或生成蛋出现，不自然刷新。
      */
-    public static final DeferredHolder<EntityType<?>, EntityType<AstrologerEntity>> ASTROLOGER =
+    public static final RegistryObject<EntityType<AstrologerEntity>> ASTROLOGER =
             ENTITIES.register("astrologer", () ->
                     EntityType.Builder.of(AstrologerEntity::new, MobCategory.CREATURE)
                             .sized(0.6f, 1.8f)
@@ -345,7 +344,7 @@ public final class ModEntities {
     }
 
     private static String id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, path).toString();
+        return new ResourceLocation(EldenRingSpellsMod.MOD_ID, path).toString();
     }
 
     public static void register(IEventBus modEventBus) {

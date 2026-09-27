@@ -97,35 +97,64 @@ public class MagicGlintbladeRenderer<T extends MagicGlintbladeEntity> extends En
             VertexConsumer bodyConsumer = bufferSource.getBuffer(
                     RenderType.entityTranslucentEmissive(MagicGlintbladeModels.GLINTBLADE_BODY_TEXTURE)
             );
-            swordRoot.getChild(MagicGlintbladeModels.POMMEL_PART).render(
-                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                    MagicGlintbladeSpell.SWORD_BODY_COLOR_ARGB
+            renderSwordPart(
+                    swordRoot.getChild(MagicGlintbladeModels.POMMEL_PART),
+                    poseStack, bodyConsumer, MagicGlintbladeSpell.SWORD_BODY_COLOR_ARGB
             );
-            swordRoot.getChild(MagicGlintbladeModels.HANDLE_PART).render(
-                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                    MagicGlintbladeSpell.SWORD_BODY_COLOR_ARGB
+            renderSwordPart(
+                    swordRoot.getChild(MagicGlintbladeModels.HANDLE_PART),
+                    poseStack, bodyConsumer, MagicGlintbladeSpell.SWORD_BODY_COLOR_ARGB
             );
-            swordRoot.getChild(MagicGlintbladeModels.GUARD_PART).render(
-                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                    MagicGlintbladeSpell.SWORD_BLADE_COLOR_ARGB
+            renderSwordPart(
+                    swordRoot.getChild(MagicGlintbladeModels.GUARD_PART),
+                    poseStack, bodyConsumer, MagicGlintbladeSpell.SWORD_BLADE_COLOR_ARGB
             );
-            swordRoot.getChild(MagicGlintbladeModels.BLADE_PART).render(
-                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                    MagicGlintbladeSpell.SWORD_BLADE_COLOR_ARGB
+            renderSwordPart(
+                    swordRoot.getChild(MagicGlintbladeModels.BLADE_PART),
+                    poseStack, bodyConsumer, MagicGlintbladeSpell.SWORD_BLADE_COLOR_ARGB
             );
-            swordRoot.getChild(MagicGlintbladeModels.RIDGE_PART).render(
-                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                    MagicGlintbladeSpell.SWORD_EDGE_COLOR_ARGB
+            renderSwordPart(
+                    swordRoot.getChild(MagicGlintbladeModels.RIDGE_PART),
+                    poseStack, bodyConsumer, MagicGlintbladeSpell.SWORD_EDGE_COLOR_ARGB
             );
-            swordRoot.getChild(MagicGlintbladeModels.EDGE_PART).render(
-                    poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                    MagicGlintbladeSpell.SWORD_EDGE_COLOR_ARGB
+            renderSwordPart(
+                    swordRoot.getChild(MagicGlintbladeModels.EDGE_PART),
+                    poseStack, bodyConsumer, MagicGlintbladeSpell.SWORD_EDGE_COLOR_ARGB
             );
         }
         poseStack.popPose();
 
         renderHoverGlow(entity, partialTicks, swordScale, poseStack, bufferSource);
         super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
+    }
+
+    /**
+     * 画一段剑身网格并染色。
+     * <p>
+     * 1.21 的 {@code ModelPart.render(PoseStack, VertexConsumer, int, int, int colorArgb)} 在 1.20.1 不存在；
+     * 1.20.1 只有 {@code render(PoseStack, VertexConsumer, int, int, float, float, float, float)}。
+     * 原版 1.21 就是把打包 ARGB 拆成四个 0–1 浮点再走同一路径，这里照做，颜色结果完全一致。
+     */
+    private static void renderSwordPart(
+            ModelPart part,
+            PoseStack poseStack,
+            VertexConsumer consumer,
+            int colorArgb
+    ) {
+        float alpha = ((colorArgb >> 24) & 0xFF) / 255.0f;
+        float red = ((colorArgb >> 16) & 0xFF) / 255.0f;
+        float green = ((colorArgb >> 8) & 0xFF) / 255.0f;
+        float blue = (colorArgb & 0xFF) / 255.0f;
+        part.render(
+                poseStack,
+                consumer,
+                LightTexture.FULL_BRIGHT,
+                OverlayTexture.NO_OVERLAY,
+                red,
+                green,
+                blue,
+                alpha
+        );
     }
 
     /**
@@ -180,22 +209,22 @@ public class MagicGlintbladeRenderer<T extends MagicGlintbladeEntity> extends En
                 RenderType.entityTranslucentEmissive(MagicGlintbladeModels.GLINTBLADE_GLOW_TEXTURE)
         );
         int color = (alpha << 24) | (red << 16) | (green << 8) | blue;
-        consumer.addVertex(matrix, -0.5f, -0.5f, 0.0f)
-                .setColor(color).setUv(0.0f, 1.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, 0.5f, -0.5f, 0.0f)
-                .setColor(color).setUv(1.0f, 1.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, 0.5f, 0.5f, 0.0f)
-                .setColor(color).setUv(1.0f, 0.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, -0.5f, 0.5f, 0.0f)
-                .setColor(color).setUv(0.0f, 0.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
+        consumer.vertex(matrix, -0.5f, -0.5f, 0.0f)
+                .color(color).uv(0.0f, 1.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f).endVertex();
+        consumer.vertex(matrix, 0.5f, -0.5f, 0.0f)
+                .color(color).uv(1.0f, 1.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f).endVertex();
+        consumer.vertex(matrix, 0.5f, 0.5f, 0.0f)
+                .color(color).uv(1.0f, 0.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f).endVertex();
+        consumer.vertex(matrix, -0.5f, 0.5f, 0.0f)
+                .color(color).uv(0.0f, 0.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f).endVertex();
         poseStack.popPose();
     }
 }

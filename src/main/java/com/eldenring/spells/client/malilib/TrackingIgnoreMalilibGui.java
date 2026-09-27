@@ -9,13 +9,13 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.util.StringUtils;
 import java.util.Collections;
 import java.util.List;
-import net.neoforged.fml.ModList;
-
+import net.minecraftforge.fml.ModList;
 /**
  * MaLiLib / Tweakerge 同款配置界面：顶部标题 + 右上角模组切换下拉 + 选项列表。
  * <p>
- * 有 MaFgLib 时由 {@link TrackingIgnoreMalilibBootstrap} 注册进 {@code Registry.CONFIG_SCREEN}，
- * 可从 Tweakerge 配置界面右上角切到本模组。
+ * 有 MaFgLib 时由 {@link TrackingIgnoreMalilibBootstrap} 注册进 Forge 的模组配置屏入口
+ * （MaFgLib 0.1.x 的 {@code ForgePlatformUtils#registerModConfigScreen}），
+ * 可从 Tweakerge / 模组列表的配置按钮切到本模组。
  */
 public class TrackingIgnoreMalilibGui extends GuiConfigsBase {
     private static ConfigGuiTab currentTab = ConfigGuiTab.TRACKING_IGNORE;

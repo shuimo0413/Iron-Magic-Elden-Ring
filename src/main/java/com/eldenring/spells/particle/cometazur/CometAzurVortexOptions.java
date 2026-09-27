@@ -4,11 +4,10 @@ import com.eldenring.spells.registry.ModParticles;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * 亚兹勒漩涡中心的网络数据：哪张 shrink、转多快、施法时朝向（用来在垂直视线的平面上铺对数螺线）。
@@ -23,20 +22,6 @@ public final class CometAzurVortexOptions implements ParticleOptions {
                     Codec.FLOAT.fieldOf("pitch_degrees").forGetter(CometAzurVortexOptions::pitchDegrees),
                     Codec.BOOL.fieldOf("spawn_spirals").forGetter(CometAzurVortexOptions::spawnSpirals)
             ).apply(instance, CometAzurVortexOptions::new)
-    );
-
-    public static final StreamCodec<ByteBuf, CometAzurVortexOptions> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.INT,
-            CometAzurVortexOptions::spriteIndex,
-            ByteBufCodecs.FLOAT,
-            CometAzurVortexOptions::rollRadiansPerTick,
-            ByteBufCodecs.FLOAT,
-            CometAzurVortexOptions::yawDegrees,
-            ByteBufCodecs.FLOAT,
-            CometAzurVortexOptions::pitchDegrees,
-            ByteBufCodecs.BOOL,
-            CometAzurVortexOptions::spawnSpirals,
-            CometAzurVortexOptions::new
     );
 
     private final int spriteIndex;
@@ -82,6 +67,46 @@ public final class CometAzurVortexOptions implements ParticleOptions {
     /** 只有主层为 true，避免两层各铺一遍螺线。 */
     public boolean spawnSpirals() {
         return spawnSpirals;
+    }
+
+    /**
+     * 1.20.1 网络写入口。字段顺序与原 {@code StreamCodec.composite(...)} 一致：
+     * sprite_index(int) → roll → yaw → pitch → spawn_spirals(bool)，
+     * 必须与 {@link #read(FriendlyByteBuf)} 严格对应，否则联机端螺线会错位。
+     * <p>
+     * sprite_index 用定长 {@code writeInt}（对应原 {@code ByteBufCodecs.INT}），
+     * 不是 {@code writeVarInt}（那是 {@code ByteBufCodecs.VAR_INT}）。
+     */
+    public void writeTo(FriendlyByteBuf buffer) {
+        buffer.writeInt(this.spriteIndex);
+        buffer.writeFloat(this.rollRadiansPerTick);
+        buffer.writeFloat(this.yawDegrees);
+        buffer.writeFloat(this.pitchDegrees);
+        buffer.writeBoolean(this.spawnSpirals);
+    }
+
+    /** 1.20.1 网络读入口，顺序与 {@link #writeTo(FriendlyByteBuf)} 一致。 */
+    public static CometAzurVortexOptions read(FriendlyByteBuf buffer) {
+        int spriteIndex = buffer.readInt();
+        float rollRadiansPerTick = buffer.readFloat();
+        float yawDegrees = buffer.readFloat();
+        float pitchDegrees = buffer.readFloat();
+        boolean spawnSpirals = buffer.readBoolean();
+        return new CometAzurVortexOptions(spriteIndex, rollRadiansPerTick, yawDegrees, pitchDegrees, spawnSpirals);
+    }
+
+    /** 1.20.1 {@link ParticleOptions} 的网络序列化钩子（1.20.5+ 才改为 StreamCodec）。 */
+    @Override
+    public void writeToNetwork(FriendlyByteBuf buffer) {
+        writeTo(buffer);
+    }
+
+    /** 1.20.1 {@link ParticleOptions} 要求的调试文本（命令回显用，不参与同步）。 */
+    @Override
+    public String writeToString() {
+        return BuiltInRegistries.PARTICLE_TYPE.getKey(getType()) + " " + this.spriteIndex
+                + " " + this.rollRadiansPerTick + " " + this.yawDegrees + " " + this.pitchDegrees
+                + " " + this.spawnSpirals;
     }
 
     @Override

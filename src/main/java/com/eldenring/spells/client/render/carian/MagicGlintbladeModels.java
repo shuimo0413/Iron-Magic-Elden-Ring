@@ -20,7 +20,7 @@ import net.minecraft.util.Mth;
 public final class MagicGlintbladeModels {
 
     public static final ModelLayerLocation GLINTBLADE_LAYER = new ModelLayerLocation(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "magic_glintblade"),
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "magic_glintblade"),
             "main"
     );
 
@@ -32,10 +32,10 @@ public final class MagicGlintbladeModels {
     public static final String EDGE_PART = "edge";
 
     public static final ResourceLocation GLINTBLADE_BODY_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/carian/glintblade_body.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/carian/glintblade_body.png");
 
     public static final ResourceLocation GLINTBLADE_GLOW_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
 
     /**
      * 护手左右翼上翘角（度）。调大 → 锷尖更朝刃；调小 → 更平的十字锷。

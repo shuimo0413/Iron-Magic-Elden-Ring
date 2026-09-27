@@ -150,7 +150,7 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:crystal_barrage}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "crystal_barrage");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "crystal_barrage");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.COMMON)

@@ -2,17 +2,21 @@ package com.eldenring.spells.item;
 
 import com.eldenring.spells.registry.ModAttributes;
 import io.redspace.ironsspellbooks.item.weapons.AttributeContainer;
-import io.redspace.ironsspellbooks.item.weapons.IronsWeaponTier;
+import io.redspace.ironsspellbooks.item.weapons.StaffTier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 /**
  * 亚兹勒的辉石杖武器档位：近战贴近铁魔法普通法杖，额外给辉石法术强度。
  * <p>
- * {@code glintstone_spell_power +10%}（{@link AttributeModifier.Operation#ADD_MULTIPLIED_BASE}）
+ * 1.20.1 里铁魔法 {@code StaffItem} 只接受 {@link StaffTier}，且
+ * {@code ExtendedSwordItem.createAttributes(...)} 与 {@code Item.Properties.attributes(...)}
+ * 都不存在；所以这里改为直接继承 {@link StaffTier}，把近战数值与附加属性交给父类构造器，
+ * 由 {@code StaffItem(Properties, StaffTier)} 生成默认属性。
+ * <p>
+ * {@code glintstone_spell_power +10%}（{@link AttributeModifier.Operation#MULTIPLY_BASE}）
  * → 手持时辉石系伤害约提升 10%。攻击伤害 / 攻速与灰须杖、观星杖同档。
  */
-public final class AzurGlintstoneStaffTier implements IronsWeaponTier {
-    public static final AzurGlintstoneStaffTier INSTANCE = new AzurGlintstoneStaffTier();
+public final class AzurGlintstoneStaffTier extends StaffTier {
 
     /**
      * 主手攻击伤害加成（点）。调大 → 近战砸得更疼；法杖以施法为主，保持偏低。
@@ -29,28 +33,21 @@ public final class AzurGlintstoneStaffTier implements IronsWeaponTier {
      */
     private static final double GLINTSTONE_SPELL_POWER_BONUS = 0.10D;
 
+    /**
+     * 全局单例：档位不可变，注册物品时共享一份即可。
+     * 必须声明在常量之后，保证类初始化时参数已就绪。
+     */
+    public static final AzurGlintstoneStaffTier INSTANCE = new AzurGlintstoneStaffTier();
+
     private AzurGlintstoneStaffTier() {
-    }
-
-    @Override
-    public float getAttackDamageBonus() {
-        return ATTACK_DAMAGE_BONUS;
-    }
-
-    @Override
-    public float getSpeed() {
-        return ATTACK_SPEED_MODIFIER;
-    }
-
-    @Override
-    public AttributeContainer[] getAdditionalAttributes() {
-        // Reloadable all-school cast speed is supplied by AzurStaffBalance's item attribute event.
-        return new AttributeContainer[]{
+        super(
+                ATTACK_DAMAGE_BONUS,
+                ATTACK_SPEED_MODIFIER,
                 new AttributeContainer(
                         ModAttributes.GLINTSTONE_SPELL_POWER,
                         GLINTSTONE_SPELL_POWER_BONUS,
-                        AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                        AttributeModifier.Operation.MULTIPLY_BASE
                 )
-        };
+        );
     }
 }

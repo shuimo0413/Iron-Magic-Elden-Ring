@@ -3,8 +3,7 @@ package com.eldenring.spells.client;
 import com.eldenring.spells.EldenRingSpellsMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.neoforged.fml.ModList;
-
+import net.minecraftforge.fml.ModList;
 /**
  * 有 MaFgLib 时打开 malilib 风格配置界面；否则回退到简易 {@link TrackingIgnoreScreen}。
  * <p>

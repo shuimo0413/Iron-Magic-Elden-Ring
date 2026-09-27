@@ -8,14 +8,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 /**
@@ -30,9 +30,9 @@ public final class ModCreativeTabs {
 
     /** 铁魔法「法术卷轴」创造栏 id。 */
     private static final ResourceLocation IRONS_SPELLS_SCROLLS_TAB_ID =
-            ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "spellbook_scrolls");
+            new ResourceLocation("irons_spellbooks", "spellbook_scrolls");
 
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN =
+    public static final RegistryObject<CreativeModeTab> MAIN =
             CREATIVE_TABS.register("main", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.iss_elden_ring"))
                     .icon(() -> ModItems.createFilledScroll(1))
@@ -115,19 +115,23 @@ public final class ModCreativeTabs {
 
     /**
      * 铁魔法会把所有启用法术填进自己的卷轴栏。辉石咒已经在本模组栏里，这里删掉重复项。
+     * <p>
+     * Forge 1.20.1 的事件只暴露 {@code getEntries()}（{@code MutableHashedLinkedMap}），
+     * 没有 NeoForge 1.21 的 {@code getParentEntries()/remove(stack, TabVisibility)}；
+     * 因此先把要删的栈收集起来，再按 key 删除，避免迭代中改集合。
      */
     private static void hideGlintstoneScrollsFromIronsTab(BuildCreativeModeTabContentsEvent event) {
         if (!IRONS_SPELLS_SCROLLS_TAB_ID.equals(event.getTabKey().location())) {
             return;
         }
         List<ItemStack> stacksToRemove = new ArrayList<>();
-        for (ItemStack stack : event.getParentEntries()) {
-            if (isEldenRingSpellScroll(stack)) {
-                stacksToRemove.add(stack);
+        for (Map.Entry<ItemStack, CreativeModeTab.TabVisibility> entry : event.getEntries()) {
+            if (isEldenRingSpellScroll(entry.getKey())) {
+                stacksToRemove.add(entry.getKey());
             }
         }
         for (ItemStack stack : stacksToRemove) {
-            event.remove(stack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+            event.getEntries().remove(stack);
         }
     }
 

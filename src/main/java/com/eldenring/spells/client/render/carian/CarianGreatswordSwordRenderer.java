@@ -14,8 +14,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.ClientHooks;
-
+import net.minecraftforge.client.ForgeHooksClient;
 /**
  * 卡利亚大剑手持网格：贴图与迅剑同一把像素剑（柄的定位不能改），只在柄枢轴上把刃拉长。
  * 缩放 / 柄进掌心 / 刃长只读本类常量，改这里不会动迅剑。
@@ -72,7 +71,7 @@ public final class CarianGreatswordSwordRenderer {
         );
 
         poseStack.pushPose();
-        bakedModel = ClientHooks.handleCameraTransforms(
+        bakedModel = ForgeHooksClient.handleCameraTransforms(
                 poseStack,
                 bakedModel,
                 ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,
@@ -107,7 +106,7 @@ public final class CarianGreatswordSwordRenderer {
                 player,
                 player.getId() + ItemDisplayContext.THIRD_PERSON_RIGHT_HAND.ordinal()
         );
-        ClientHooks.handleCameraTransforms(
+        ForgeHooksClient.handleCameraTransforms(
                 poseStack,
                 bakedModel,
                 ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,

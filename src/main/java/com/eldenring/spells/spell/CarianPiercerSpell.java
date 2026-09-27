@@ -89,12 +89,12 @@ public class CarianPiercerSpell extends EldenRingAbstractSpell {
 
     /** 点按第一刀 clip 名；由客户端专用层播放，不再走铁魔法 cast-start 动画层。 */
     public static final AnimationHolder OPENING_SLASH_ANIMATION = new AnimationHolder(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_puncture"),
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "carian_puncture"),
             true
     );
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_piercer");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "carian_piercer");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

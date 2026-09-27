@@ -30,8 +30,7 @@ import com.eldenring.spells.spell.StarlightSpell;
 import com.eldenring.spells.spell.StarsOfRuinSpell;
 import com.eldenring.spells.spell.SwiftGlintstoneShardSpell;
 import com.eldenring.spells.spell.TerraMagicaSpell;
-import net.neoforged.neoforge.common.ModConfigSpec;
-
+import net.minecraftforge.common.ForgeConfigSpec;
 /**
  * 玩法数值（伤害系数、弹速、范围、蓝耗基数、吟唱 tick 等）。
  * <p>
@@ -47,7 +46,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  */
 public final class EldenRingServerConfig {
 
-    public static final ModConfigSpec SPEC;
+    public static final ForgeConfigSpec SPEC;
 
     // Book defaults are fixed at item registration; changing these requires a restart.
     public static final int STAR_CODEX_BASE_SLOTS = 10;
@@ -56,11 +55,11 @@ public final class EldenRingServerConfig {
     public static final double STAR_CODEX_MAX_MANA_BONUS = 200.0D;
     public static final double ORIGIN_CODEX_GLINTSTONE_POWER_BONUS = 0.25D;
     public static final double ORIGIN_CODEX_MAX_MANA_BONUS = 300.0D;
-    public static final ModConfigSpec.DoubleValue AZUR_CAST_TIME_REDUCTION;
-    public static final ModConfigSpec.DoubleValue AZUR_MANA_COST_MULTIPLIER;
-    public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION;
-    public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION;
-    public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS;
+    public static final ForgeConfigSpec.DoubleValue AZUR_CAST_TIME_REDUCTION;
+    public static final ForgeConfigSpec.DoubleValue AZUR_MANA_COST_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION;
+    public static final ForgeConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION;
+    public static final ForgeConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS;
 
     public static final HomingValues GLINTSTONE_PEBBLE;
     public static final HomingValues SWIFT_GLINTSTONE_SHARD;
@@ -91,7 +90,7 @@ public final class EldenRingServerConfig {
     public static final CollapsingStarsValues COLLAPSING_STARS;
 
     static {
-        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
         builder.comment(
                 "Iron's Spells 'n Spellbooks: Elden Ring 玩法数值。进世界后由服务端同步。",
                 "冷却 / 最大等级 / 启用 / 蓝耗倍率 / 法强倍率请改铁魔法 JSON：",
@@ -514,21 +513,21 @@ public final class EldenRingServerConfig {
      * 单发限角追踪弹（魔砾族 / 彗星族）共用键。
      */
     public static final class HomingValues {
-        public final ModConfigSpec.IntValue baseManaCost;
-        public final ModConfigSpec.IntValue manaCostPerLevel;
-        public final ModConfigSpec.DoubleValue baseSpellPower;
-        public final ModConfigSpec.DoubleValue spellPowerPerLevel;
-        public final ModConfigSpec.IntValue castTimeTicks;
-        public final ModConfigSpec.DoubleValue projectileFlightSpeed;
-        public final ModConfigSpec.DoubleValue projectileTrackingRangeBlocks;
-        public final ModConfigSpec.DoubleValue projectileMaxTurnAngleDegreesPerTick;
-        public final ModConfigSpec.DoubleValue spellDamagePerSpellPower;
-        public final ModConfigSpec.DoubleValue explosionRadiusBlocks;
+        public final ForgeConfigSpec.IntValue baseManaCost;
+        public final ForgeConfigSpec.IntValue manaCostPerLevel;
+        public final ForgeConfigSpec.DoubleValue baseSpellPower;
+        public final ForgeConfigSpec.DoubleValue spellPowerPerLevel;
+        public final ForgeConfigSpec.IntValue castTimeTicks;
+        public final ForgeConfigSpec.DoubleValue projectileFlightSpeed;
+        public final ForgeConfigSpec.DoubleValue projectileTrackingRangeBlocks;
+        public final ForgeConfigSpec.DoubleValue projectileMaxTurnAngleDegreesPerTick;
+        public final ForgeConfigSpec.DoubleValue spellDamagePerSpellPower;
+        public final ForgeConfigSpec.DoubleValue explosionRadiusBlocks;
 
         private HomingValues(
                 SpellBookKeys book,
                 HomingFlightKeys flight,
-                ModConfigSpec.DoubleValue explosionRadiusBlocks
+                ForgeConfigSpec.DoubleValue explosionRadiusBlocks
         ) {
             this.baseManaCost = book.baseManaCost;
             this.manaCostPerLevel = book.manaCostPerLevel;
@@ -542,13 +541,13 @@ public final class EldenRingServerConfig {
             this.explosionRadiusBlocks = explosionRadiusBlocks;
         }
 
-        static HomingValues create(ModConfigSpec.Builder builder, String section, HomingSeed seed) {
+        static HomingValues create(ForgeConfigSpec.Builder builder, String section, HomingSeed seed) {
             builder.push(section);
             SpellBookKeys book = SpellBookKeys.define(
                     builder, seed.baseMana, seed.manaPerLevel, seed.basePower, seed.powerPerLevel, seed.castTime
             );
             HomingFlightKeys flight = HomingFlightKeys.define(builder, seed, true);
-            ModConfigSpec.DoubleValue explosion = null;
+            ForgeConfigSpec.DoubleValue explosion = null;
             if (seed.explosionRadius != null) {
                 explosion = ConfigSpecHelper.floating(
                         builder,
@@ -565,23 +564,23 @@ public final class EldenRingServerConfig {
     }
 
     public static final class VolleyValues {
-        public final ModConfigSpec.IntValue baseManaCost;
-        public final ModConfigSpec.IntValue manaCostPerLevel;
-        public final ModConfigSpec.DoubleValue baseSpellPower;
-        public final ModConfigSpec.DoubleValue spellPowerPerLevel;
-        public final ModConfigSpec.IntValue castTimeTicks;
-        public final ModConfigSpec.DoubleValue projectileFlightSpeed;
-        public final ModConfigSpec.DoubleValue projectileTrackingRangeBlocks;
-        public final ModConfigSpec.DoubleValue projectileMaxTurnAngleDegreesPerTick;
-        public final ModConfigSpec.DoubleValue spellDamagePerSpellPower;
-        public final ModConfigSpec.IntValue projectileCount;
-        public final ModConfigSpec.IntValue projectileSpawnStaggerTicks;
+        public final ForgeConfigSpec.IntValue baseManaCost;
+        public final ForgeConfigSpec.IntValue manaCostPerLevel;
+        public final ForgeConfigSpec.DoubleValue baseSpellPower;
+        public final ForgeConfigSpec.DoubleValue spellPowerPerLevel;
+        public final ForgeConfigSpec.IntValue castTimeTicks;
+        public final ForgeConfigSpec.DoubleValue projectileFlightSpeed;
+        public final ForgeConfigSpec.DoubleValue projectileTrackingRangeBlocks;
+        public final ForgeConfigSpec.DoubleValue projectileMaxTurnAngleDegreesPerTick;
+        public final ForgeConfigSpec.DoubleValue spellDamagePerSpellPower;
+        public final ForgeConfigSpec.IntValue projectileCount;
+        public final ForgeConfigSpec.IntValue projectileSpawnStaggerTicks;
 
         private VolleyValues(
                 SpellBookKeys book,
                 HomingFlightKeys flight,
-                ModConfigSpec.IntValue projectileCount,
-                ModConfigSpec.IntValue projectileSpawnStaggerTicks
+                ForgeConfigSpec.IntValue projectileCount,
+                ForgeConfigSpec.IntValue projectileSpawnStaggerTicks
         ) {
             this.baseManaCost = book.baseManaCost;
             this.manaCostPerLevel = book.manaCostPerLevel;
@@ -596,7 +595,7 @@ public final class EldenRingServerConfig {
             this.projectileSpawnStaggerTicks = projectileSpawnStaggerTicks;
         }
 
-        static VolleyValues create(ModConfigSpec.Builder builder, String section, VolleySeed seed) {
+        static VolleyValues create(ForgeConfigSpec.Builder builder, String section, VolleySeed seed) {
             builder.push(section);
             SpellBookKeys book = SpellBookKeys.define(
                     builder, seed.baseMana, seed.manaPerLevel, seed.basePower, seed.powerPerLevel, seed.castTime
@@ -605,10 +604,10 @@ public final class EldenRingServerConfig {
                     seed.baseMana, seed.manaPerLevel, seed.basePower, seed.powerPerLevel, seed.castTime,
                     seed.flightSpeed, seed.trackingRange, seed.turnAngle, seed.damage, null
             ), true);
-            ModConfigSpec.IntValue count = ConfigSpecHelper.integer(
+            ForgeConfigSpec.IntValue count = ConfigSpecHelper.integer(
                     builder, "projectile_count", "单次施法弹数。", seed.projectileCount, 1, 32
             );
-            ModConfigSpec.IntValue stagger = ConfigSpecHelper.integer(
+            ForgeConfigSpec.IntValue stagger = ConfigSpecHelper.integer(
                     builder, "projectile_spawn_stagger_ticks", "相邻两发间隔（tick）。调大更疏。", seed.staggerTicks, 0, 40
             );
             builder.pop();
@@ -617,14 +616,14 @@ public final class EldenRingServerConfig {
     }
 
     private record SpellBookKeys(
-            ModConfigSpec.IntValue baseManaCost,
-            ModConfigSpec.IntValue manaCostPerLevel,
-            ModConfigSpec.DoubleValue baseSpellPower,
-            ModConfigSpec.DoubleValue spellPowerPerLevel,
-            ModConfigSpec.IntValue castTimeTicks
+            ForgeConfigSpec.IntValue baseManaCost,
+            ForgeConfigSpec.IntValue manaCostPerLevel,
+            ForgeConfigSpec.DoubleValue baseSpellPower,
+            ForgeConfigSpec.DoubleValue spellPowerPerLevel,
+            ForgeConfigSpec.IntValue castTimeTicks
     ) {
         static SpellBookKeys define(
-                ModConfigSpec.Builder builder,
+                ForgeConfigSpec.Builder builder,
                 int baseMana,
                 int manaPer,
                 float basePower,
@@ -642,12 +641,12 @@ public final class EldenRingServerConfig {
     }
 
     private record HomingFlightKeys(
-            ModConfigSpec.DoubleValue speed,
-            ModConfigSpec.DoubleValue range,
-            ModConfigSpec.DoubleValue turn,
-            ModConfigSpec.DoubleValue damage
+            ForgeConfigSpec.DoubleValue speed,
+            ForgeConfigSpec.DoubleValue range,
+            ForgeConfigSpec.DoubleValue turn,
+            ForgeConfigSpec.DoubleValue damage
     ) {
-        static HomingFlightKeys define(ModConfigSpec.Builder builder, HomingSeed seed, boolean includeDamage) {
+        static HomingFlightKeys define(ForgeConfigSpec.Builder builder, HomingSeed seed, boolean includeDamage) {
             return new HomingFlightKeys(
                     ConfigSpecHelper.floating(builder, "projectile_flight_speed", "弹道速度（方块/tick）。越大越难躲。", seed.flightSpeed, 0.05, 8.0),
                     ConfigSpecHelper.floating(builder, "projectile_tracking_range_blocks", "追踪索敌半径（方块）。", seed.trackingRange, 1.0, 128.0),
@@ -662,15 +661,15 @@ public final class EldenRingServerConfig {
     public static final class SpiralValues {
         private final SpellBookKeys book;
         private final HomingFlightKeys flight;
-        private final ModConfigSpec.IntValue maxEntityHits;
+        private final ForgeConfigSpec.IntValue maxEntityHits;
 
-        private SpiralValues(SpellBookKeys book, HomingFlightKeys flight, ModConfigSpec.IntValue maxEntityHits) {
+        private SpiralValues(SpellBookKeys book, HomingFlightKeys flight, ForgeConfigSpec.IntValue maxEntityHits) {
             this.book = book;
             this.flight = flight;
             this.maxEntityHits = maxEntityHits;
         }
 
-        static SpiralValues create(ModConfigSpec.Builder builder) {
+        static SpiralValues create(ForgeConfigSpec.Builder builder) {
             builder.push("spiral_shard");
             SpellBookKeys book = SpellBookKeys.define(
                     builder,
@@ -717,21 +716,21 @@ public final class EldenRingServerConfig {
 
     public static final class FoundingRainValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue damagePerSpellPower;
-        private final ModConfigSpec.IntValue rainDropsPerTick;
-        private final ModConfigSpec.DoubleValue rainDropFallSpeed;
-        private final ModConfigSpec.IntValue rainZoneDamageIntervalTicks;
-        private final ModConfigSpec.DoubleValue overheadCloudRadiusBlocks;
-        private final ModConfigSpec.IntValue overheadCloudLifetimeTicks;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.IntValue rainDropsPerTick;
+        private final ForgeConfigSpec.DoubleValue rainDropFallSpeed;
+        private final ForgeConfigSpec.IntValue rainZoneDamageIntervalTicks;
+        private final ForgeConfigSpec.DoubleValue overheadCloudRadiusBlocks;
+        private final ForgeConfigSpec.IntValue overheadCloudLifetimeTicks;
 
         private FoundingRainValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue damagePerSpellPower,
-                ModConfigSpec.IntValue rainDropsPerTick,
-                ModConfigSpec.DoubleValue rainDropFallSpeed,
-                ModConfigSpec.IntValue rainZoneDamageIntervalTicks,
-                ModConfigSpec.DoubleValue overheadCloudRadiusBlocks,
-                ModConfigSpec.IntValue overheadCloudLifetimeTicks
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.IntValue rainDropsPerTick,
+                ForgeConfigSpec.DoubleValue rainDropFallSpeed,
+                ForgeConfigSpec.IntValue rainZoneDamageIntervalTicks,
+                ForgeConfigSpec.DoubleValue overheadCloudRadiusBlocks,
+                ForgeConfigSpec.IntValue overheadCloudLifetimeTicks
         ) {
             this.book = book;
             this.damagePerSpellPower = damagePerSpellPower;
@@ -742,7 +741,7 @@ public final class EldenRingServerConfig {
             this.overheadCloudLifetimeTicks = overheadCloudLifetimeTicks;
         }
 
-        static FoundingRainValues create(ModConfigSpec.Builder builder) {
+        static FoundingRainValues create(ForgeConfigSpec.Builder builder) {
             builder.push("founding_rain_of_stars");
             FoundingRainValues values = new FoundingRainValues(
                     SpellBookKeys.define(
@@ -784,20 +783,20 @@ public final class EldenRingServerConfig {
      */
     public static final class StarlightValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.IntValue starDurationTicks;
-        private final ModConfigSpec.IntValue lightLevel;
+        private final ForgeConfigSpec.IntValue starDurationTicks;
+        private final ForgeConfigSpec.IntValue lightLevel;
 
         private StarlightValues(
                 SpellBookKeys book,
-                ModConfigSpec.IntValue starDurationTicks,
-                ModConfigSpec.IntValue lightLevel
+                ForgeConfigSpec.IntValue starDurationTicks,
+                ForgeConfigSpec.IntValue lightLevel
         ) {
             this.book = book;
             this.starDurationTicks = starDurationTicks;
             this.lightLevel = lightLevel;
         }
 
-        static StarlightValues create(ModConfigSpec.Builder builder) {
+        static StarlightValues create(ForgeConfigSpec.Builder builder) {
             builder.push("starlight");
             StarlightValues values = new StarlightValues(
                     SpellBookKeys.define(
@@ -842,17 +841,17 @@ public final class EldenRingServerConfig {
 
     public static final class TerraMagicaValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue zoneRadiusBlocks;
-        private final ModConfigSpec.IntValue zoneBaseDurationTicks;
-        private final ModConfigSpec.IntValue zoneDurationTicksPerLevel;
-        private final ModConfigSpec.DoubleValue spellPowerBonusMultipliedTotal;
+        private final ForgeConfigSpec.DoubleValue zoneRadiusBlocks;
+        private final ForgeConfigSpec.IntValue zoneBaseDurationTicks;
+        private final ForgeConfigSpec.IntValue zoneDurationTicksPerLevel;
+        private final ForgeConfigSpec.DoubleValue spellPowerBonusMultipliedTotal;
 
         private TerraMagicaValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue zoneRadiusBlocks,
-                ModConfigSpec.IntValue zoneBaseDurationTicks,
-                ModConfigSpec.IntValue zoneDurationTicksPerLevel,
-                ModConfigSpec.DoubleValue spellPowerBonusMultipliedTotal
+                ForgeConfigSpec.DoubleValue zoneRadiusBlocks,
+                ForgeConfigSpec.IntValue zoneBaseDurationTicks,
+                ForgeConfigSpec.IntValue zoneDurationTicksPerLevel,
+                ForgeConfigSpec.DoubleValue spellPowerBonusMultipliedTotal
         ) {
             this.book = book;
             this.zoneRadiusBlocks = zoneRadiusBlocks;
@@ -861,7 +860,7 @@ public final class EldenRingServerConfig {
             this.spellPowerBonusMultipliedTotal = spellPowerBonusMultipliedTotal;
         }
 
-        static TerraMagicaValues create(ModConfigSpec.Builder builder) {
+        static TerraMagicaValues create(ForgeConfigSpec.Builder builder) {
             builder.push("terra_magica");
             TerraMagicaValues values = new TerraMagicaValues(
                     SpellBookKeys.define(
@@ -896,19 +895,19 @@ public final class EldenRingServerConfig {
 
     public static final class CometAzurValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.IntValue startupDurationTicks;
-        private final ModConfigSpec.DoubleValue jetBeamMaxRangeBlocks;
-        private final ModConfigSpec.DoubleValue jetBeamDamageRadiusBlocks;
-        private final ModConfigSpec.IntValue jetBeamDamageIntervalTicks;
-        private final ModConfigSpec.DoubleValue jetBeamDamagePerSpellPower;
+        private final ForgeConfigSpec.IntValue startupDurationTicks;
+        private final ForgeConfigSpec.DoubleValue jetBeamMaxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue jetBeamDamageRadiusBlocks;
+        private final ForgeConfigSpec.IntValue jetBeamDamageIntervalTicks;
+        private final ForgeConfigSpec.DoubleValue jetBeamDamagePerSpellPower;
 
         private CometAzurValues(
                 SpellBookKeys book,
-                ModConfigSpec.IntValue startupDurationTicks,
-                ModConfigSpec.DoubleValue jetBeamMaxRangeBlocks,
-                ModConfigSpec.DoubleValue jetBeamDamageRadiusBlocks,
-                ModConfigSpec.IntValue jetBeamDamageIntervalTicks,
-                ModConfigSpec.DoubleValue jetBeamDamagePerSpellPower
+                ForgeConfigSpec.IntValue startupDurationTicks,
+                ForgeConfigSpec.DoubleValue jetBeamMaxRangeBlocks,
+                ForgeConfigSpec.DoubleValue jetBeamDamageRadiusBlocks,
+                ForgeConfigSpec.IntValue jetBeamDamageIntervalTicks,
+                ForgeConfigSpec.DoubleValue jetBeamDamagePerSpellPower
         ) {
             this.book = book;
             this.startupDurationTicks = startupDurationTicks;
@@ -918,7 +917,7 @@ public final class EldenRingServerConfig {
             this.jetBeamDamagePerSpellPower = jetBeamDamagePerSpellPower;
         }
 
-        static CometAzurValues create(ModConfigSpec.Builder builder) {
+        static CometAzurValues create(ForgeConfigSpec.Builder builder) {
             builder.push("comet_azur");
             CometAzurValues values = new CometAzurValues(
                     SpellBookKeys.define(
@@ -956,21 +955,21 @@ public final class EldenRingServerConfig {
 
     public static final class GavelValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue directHitDamage;
-        private final ModConfigSpec.DoubleValue shockwaveDamage;
-        private final ModConfigSpec.DoubleValue directHitRadius;
-        private final ModConfigSpec.DoubleValue shockwaveRadius;
-        private final ModConfigSpec.DoubleValue directHitKnockback;
-        private final ModConfigSpec.DoubleValue shockwaveKnockback;
+        private final ForgeConfigSpec.DoubleValue directHitDamage;
+        private final ForgeConfigSpec.DoubleValue shockwaveDamage;
+        private final ForgeConfigSpec.DoubleValue directHitRadius;
+        private final ForgeConfigSpec.DoubleValue shockwaveRadius;
+        private final ForgeConfigSpec.DoubleValue directHitKnockback;
+        private final ForgeConfigSpec.DoubleValue shockwaveKnockback;
 
         private GavelValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue directHitDamage,
-                ModConfigSpec.DoubleValue shockwaveDamage,
-                ModConfigSpec.DoubleValue directHitRadius,
-                ModConfigSpec.DoubleValue shockwaveRadius,
-                ModConfigSpec.DoubleValue directHitKnockback,
-                ModConfigSpec.DoubleValue shockwaveKnockback
+                ForgeConfigSpec.DoubleValue directHitDamage,
+                ForgeConfigSpec.DoubleValue shockwaveDamage,
+                ForgeConfigSpec.DoubleValue directHitRadius,
+                ForgeConfigSpec.DoubleValue shockwaveRadius,
+                ForgeConfigSpec.DoubleValue directHitKnockback,
+                ForgeConfigSpec.DoubleValue shockwaveKnockback
         ) {
             this.book = book;
             this.directHitDamage = directHitDamage;
@@ -981,7 +980,7 @@ public final class EldenRingServerConfig {
             this.shockwaveKnockback = shockwaveKnockback;
         }
 
-        static GavelValues create(ModConfigSpec.Builder builder) {
+        static GavelValues create(ForgeConfigSpec.Builder builder) {
             builder.push("gavel_of_haima");
             GavelValues values = new GavelValues(
                     SpellBookKeys.define(
@@ -1023,17 +1022,17 @@ public final class EldenRingServerConfig {
      */
     public static final class CannonValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue damagePerSpellPower;
-        private final ModConfigSpec.DoubleValue explosionRadius;
-        private final ModConfigSpec.DoubleValue flightSpeed;
-        private final ModConfigSpec.DoubleValue knockback;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.DoubleValue explosionRadius;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue knockback;
 
         private CannonValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue damagePerSpellPower,
-                ModConfigSpec.DoubleValue explosionRadius,
-                ModConfigSpec.DoubleValue flightSpeed,
-                ModConfigSpec.DoubleValue knockback
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.DoubleValue explosionRadius,
+                ForgeConfigSpec.DoubleValue flightSpeed,
+                ForgeConfigSpec.DoubleValue knockback
         ) {
             this.book = book;
             this.damagePerSpellPower = damagePerSpellPower;
@@ -1042,7 +1041,7 @@ public final class EldenRingServerConfig {
             this.knockback = knockback;
         }
 
-        static CannonValues create(ModConfigSpec.Builder builder) {
+        static CannonValues create(ForgeConfigSpec.Builder builder) {
             builder.push("cannon_of_haima");
             CannonValues values = new CannonValues(
                     SpellBookKeys.define(
@@ -1077,18 +1076,18 @@ public final class EldenRingServerConfig {
 
     public static final class CarianSlicerValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue damagePerSpellPower;
-        private final ModConfigSpec.DoubleValue slashRadiusBlocks;
-        private final ModConfigSpec.DoubleValue slashHalfAngleDegrees;
-        private final ModConfigSpec.DoubleValue slashKnockbackStrength;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.DoubleValue slashRadiusBlocks;
+        private final ForgeConfigSpec.DoubleValue slashHalfAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue slashKnockbackStrength;
         private final SlashApplyTarget applyTarget;
 
         private CarianSlicerValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue damagePerSpellPower,
-                ModConfigSpec.DoubleValue slashRadiusBlocks,
-                ModConfigSpec.DoubleValue slashHalfAngleDegrees,
-                ModConfigSpec.DoubleValue slashKnockbackStrength,
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.DoubleValue slashRadiusBlocks,
+                ForgeConfigSpec.DoubleValue slashHalfAngleDegrees,
+                ForgeConfigSpec.DoubleValue slashKnockbackStrength,
                 SlashApplyTarget applyTarget
         ) {
             this.book = book;
@@ -1100,7 +1099,7 @@ public final class EldenRingServerConfig {
         }
 
         static CarianSlicerValues create(
-                ModConfigSpec.Builder builder,
+                ForgeConfigSpec.Builder builder,
                 String section,
                 SlashSeed seed,
                 SlashApplyTarget applyTarget
@@ -1309,14 +1308,14 @@ public final class EldenRingServerConfig {
 
     public static final class MagicGlintbladeValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue damagePerSpellPower;
-        private final ModConfigSpec.IntValue hoverDurationTicks;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.IntValue hoverDurationTicks;
         private final HomingFlightKeys flight;
 
         private MagicGlintbladeValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue damagePerSpellPower,
-                ModConfigSpec.IntValue hoverDurationTicks,
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.IntValue hoverDurationTicks,
                 HomingFlightKeys flight
         ) {
             this.book = book;
@@ -1325,7 +1324,7 @@ public final class EldenRingServerConfig {
             this.flight = flight;
         }
 
-        static MagicGlintbladeValues create(ModConfigSpec.Builder builder) {
+        static MagicGlintbladeValues create(ForgeConfigSpec.Builder builder) {
             builder.push("magic_glintblade");
             SpellBookKeys book = SpellBookKeys.define(
                     builder,
@@ -1375,19 +1374,19 @@ public final class EldenRingServerConfig {
      */
     public static final class GlintbladePhalanxValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue damagePerSpellPower;
-        private final ModConfigSpec.IntValue bladeCount;
-        private final ModConfigSpec.DoubleValue autoLaunchRangeBlocks;
-        private final ModConfigSpec.IntValue hoverLifetimeTicks;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.IntValue bladeCount;
+        private final ForgeConfigSpec.DoubleValue autoLaunchRangeBlocks;
+        private final ForgeConfigSpec.IntValue hoverLifetimeTicks;
         private final HomingFlightKeys flight;
         private final PhalanxApplyTarget applyTarget;
 
         private GlintbladePhalanxValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue damagePerSpellPower,
-                ModConfigSpec.IntValue bladeCount,
-                ModConfigSpec.DoubleValue autoLaunchRangeBlocks,
-                ModConfigSpec.IntValue hoverLifetimeTicks,
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.IntValue bladeCount,
+                ForgeConfigSpec.DoubleValue autoLaunchRangeBlocks,
+                ForgeConfigSpec.IntValue hoverLifetimeTicks,
                 HomingFlightKeys flight,
                 PhalanxApplyTarget applyTarget
         ) {
@@ -1401,7 +1400,7 @@ public final class EldenRingServerConfig {
         }
 
         static GlintbladePhalanxValues create(
-                ModConfigSpec.Builder builder,
+                ForgeConfigSpec.Builder builder,
                 String section,
                 String bladeCountComment,
                 PhalanxSeed seed,
@@ -1660,19 +1659,19 @@ public final class EldenRingServerConfig {
      */
     public static final class CrystalBarrageValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue damagePerSpellPower;
-        private final ModConfigSpec.DoubleValue flightSpeed;
-        private final ModConfigSpec.DoubleValue maxRangeBlocks;
-        private final ModConfigSpec.DoubleValue scatterHalfAngleDegrees;
-        private final ModConfigSpec.IntValue shardSpawnIntervalTicks;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue maxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue scatterHalfAngleDegrees;
+        private final ForgeConfigSpec.IntValue shardSpawnIntervalTicks;
 
         private CrystalBarrageValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue damagePerSpellPower,
-                ModConfigSpec.DoubleValue flightSpeed,
-                ModConfigSpec.DoubleValue maxRangeBlocks,
-                ModConfigSpec.DoubleValue scatterHalfAngleDegrees,
-                ModConfigSpec.IntValue shardSpawnIntervalTicks
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.DoubleValue flightSpeed,
+                ForgeConfigSpec.DoubleValue maxRangeBlocks,
+                ForgeConfigSpec.DoubleValue scatterHalfAngleDegrees,
+                ForgeConfigSpec.IntValue shardSpawnIntervalTicks
         ) {
             this.book = book;
             this.damagePerSpellPower = damagePerSpellPower;
@@ -1682,7 +1681,7 @@ public final class EldenRingServerConfig {
             this.shardSpawnIntervalTicks = shardSpawnIntervalTicks;
         }
 
-        static CrystalBarrageValues create(ModConfigSpec.Builder builder) {
+        static CrystalBarrageValues create(ForgeConfigSpec.Builder builder) {
             builder.push("crystal_barrage");
             CrystalBarrageValues values = new CrystalBarrageValues(
                     SpellBookKeys.define(
@@ -1757,19 +1756,19 @@ public final class EldenRingServerConfig {
      */
     public static final class CrystalBurstValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue damagePerSpellPower;
-        private final ModConfigSpec.DoubleValue flightSpeed;
-        private final ModConfigSpec.DoubleValue maxRangeBlocks;
-        private final ModConfigSpec.DoubleValue scatterHalfAngleDegrees;
-        private final ModConfigSpec.IntValue projectileCount;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue maxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue scatterHalfAngleDegrees;
+        private final ForgeConfigSpec.IntValue projectileCount;
 
         private CrystalBurstValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue damagePerSpellPower,
-                ModConfigSpec.DoubleValue flightSpeed,
-                ModConfigSpec.DoubleValue maxRangeBlocks,
-                ModConfigSpec.DoubleValue scatterHalfAngleDegrees,
-                ModConfigSpec.IntValue projectileCount
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.DoubleValue flightSpeed,
+                ForgeConfigSpec.DoubleValue maxRangeBlocks,
+                ForgeConfigSpec.DoubleValue scatterHalfAngleDegrees,
+                ForgeConfigSpec.IntValue projectileCount
         ) {
             this.book = book;
             this.damagePerSpellPower = damagePerSpellPower;
@@ -1779,7 +1778,7 @@ public final class EldenRingServerConfig {
             this.projectileCount = projectileCount;
         }
 
-        static CrystalBurstValues create(ModConfigSpec.Builder builder) {
+        static CrystalBurstValues create(ForgeConfigSpec.Builder builder) {
             builder.push("crystal_burst");
             CrystalBurstValues values = new CrystalBurstValues(
                     SpellBookKeys.define(
@@ -1854,21 +1853,21 @@ public final class EldenRingServerConfig {
      */
     public static final class GlintstoneArcValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue damagePerSpellPower;
-        private final ModConfigSpec.DoubleValue flightSpeed;
-        private final ModConfigSpec.DoubleValue maxRangeBlocks;
-        private final ModConfigSpec.DoubleValue startHalfWidthBlocks;
-        private final ModConfigSpec.DoubleValue maxHalfWidthBlocks;
-        private final ModConfigSpec.IntValue maxEntityHits;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue maxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue startHalfWidthBlocks;
+        private final ForgeConfigSpec.DoubleValue maxHalfWidthBlocks;
+        private final ForgeConfigSpec.IntValue maxEntityHits;
 
         private GlintstoneArcValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue damagePerSpellPower,
-                ModConfigSpec.DoubleValue flightSpeed,
-                ModConfigSpec.DoubleValue maxRangeBlocks,
-                ModConfigSpec.DoubleValue startHalfWidthBlocks,
-                ModConfigSpec.DoubleValue maxHalfWidthBlocks,
-                ModConfigSpec.IntValue maxEntityHits
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.DoubleValue flightSpeed,
+                ForgeConfigSpec.DoubleValue maxRangeBlocks,
+                ForgeConfigSpec.DoubleValue startHalfWidthBlocks,
+                ForgeConfigSpec.DoubleValue maxHalfWidthBlocks,
+                ForgeConfigSpec.IntValue maxEntityHits
         ) {
             this.book = book;
             this.damagePerSpellPower = damagePerSpellPower;
@@ -1879,7 +1878,7 @@ public final class EldenRingServerConfig {
             this.maxEntityHits = maxEntityHits;
         }
 
-        static GlintstoneArcValues create(ModConfigSpec.Builder builder) {
+        static GlintstoneArcValues create(ForgeConfigSpec.Builder builder) {
             builder.push("glintstone_arc");
             GlintstoneArcValues values = new GlintstoneArcValues(
                     SpellBookKeys.define(
@@ -1963,21 +1962,21 @@ public final class EldenRingServerConfig {
      */
     public static final class GravityBallValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.DoubleValue flightSpeed;
-        private final ModConfigSpec.DoubleValue maxRangeBlocks;
-        private final ModConfigSpec.DoubleValue hitRadiusBlocks;
-        private final ModConfigSpec.DoubleValue pullBlocksAtLevel1;
-        private final ModConfigSpec.DoubleValue pullBlocksPerLevel;
-        private final ModConfigSpec.DoubleValue standOffBlocks;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue maxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue hitRadiusBlocks;
+        private final ForgeConfigSpec.DoubleValue pullBlocksAtLevel1;
+        private final ForgeConfigSpec.DoubleValue pullBlocksPerLevel;
+        private final ForgeConfigSpec.DoubleValue standOffBlocks;
 
         private GravityBallValues(
                 SpellBookKeys book,
-                ModConfigSpec.DoubleValue flightSpeed,
-                ModConfigSpec.DoubleValue maxRangeBlocks,
-                ModConfigSpec.DoubleValue hitRadiusBlocks,
-                ModConfigSpec.DoubleValue pullBlocksAtLevel1,
-                ModConfigSpec.DoubleValue pullBlocksPerLevel,
-                ModConfigSpec.DoubleValue standOffBlocks
+                ForgeConfigSpec.DoubleValue flightSpeed,
+                ForgeConfigSpec.DoubleValue maxRangeBlocks,
+                ForgeConfigSpec.DoubleValue hitRadiusBlocks,
+                ForgeConfigSpec.DoubleValue pullBlocksAtLevel1,
+                ForgeConfigSpec.DoubleValue pullBlocksPerLevel,
+                ForgeConfigSpec.DoubleValue standOffBlocks
         ) {
             this.book = book;
             this.flightSpeed = flightSpeed;
@@ -1988,7 +1987,7 @@ public final class EldenRingServerConfig {
             this.standOffBlocks = standOffBlocks;
         }
 
-        static GravityBallValues create(ModConfigSpec.Builder builder) {
+        static GravityBallValues create(ForgeConfigSpec.Builder builder) {
             builder.push("gravity_ball");
             GravityBallValues values = new GravityBallValues(
                     SpellBookKeys.define(
@@ -2072,25 +2071,25 @@ public final class EldenRingServerConfig {
      */
     public static final class CollapsingStarsValues {
         private final SpellBookKeys book;
-        private final ModConfigSpec.IntValue projectileCount;
-        private final ModConfigSpec.DoubleValue scatterHalfAngleDegrees;
-        private final ModConfigSpec.DoubleValue flightSpeed;
-        private final ModConfigSpec.DoubleValue maxRangeBlocks;
-        private final ModConfigSpec.DoubleValue hitRadiusBlocks;
-        private final ModConfigSpec.DoubleValue pullBlocksAtLevel1;
-        private final ModConfigSpec.DoubleValue pullBlocksPerLevel;
-        private final ModConfigSpec.DoubleValue standOffBlocks;
+        private final ForgeConfigSpec.IntValue projectileCount;
+        private final ForgeConfigSpec.DoubleValue scatterHalfAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue maxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue hitRadiusBlocks;
+        private final ForgeConfigSpec.DoubleValue pullBlocksAtLevel1;
+        private final ForgeConfigSpec.DoubleValue pullBlocksPerLevel;
+        private final ForgeConfigSpec.DoubleValue standOffBlocks;
 
         private CollapsingStarsValues(
                 SpellBookKeys book,
-                ModConfigSpec.IntValue projectileCount,
-                ModConfigSpec.DoubleValue scatterHalfAngleDegrees,
-                ModConfigSpec.DoubleValue flightSpeed,
-                ModConfigSpec.DoubleValue maxRangeBlocks,
-                ModConfigSpec.DoubleValue hitRadiusBlocks,
-                ModConfigSpec.DoubleValue pullBlocksAtLevel1,
-                ModConfigSpec.DoubleValue pullBlocksPerLevel,
-                ModConfigSpec.DoubleValue standOffBlocks
+                ForgeConfigSpec.IntValue projectileCount,
+                ForgeConfigSpec.DoubleValue scatterHalfAngleDegrees,
+                ForgeConfigSpec.DoubleValue flightSpeed,
+                ForgeConfigSpec.DoubleValue maxRangeBlocks,
+                ForgeConfigSpec.DoubleValue hitRadiusBlocks,
+                ForgeConfigSpec.DoubleValue pullBlocksAtLevel1,
+                ForgeConfigSpec.DoubleValue pullBlocksPerLevel,
+                ForgeConfigSpec.DoubleValue standOffBlocks
         ) {
             this.book = book;
             this.projectileCount = projectileCount;
@@ -2103,7 +2102,7 @@ public final class EldenRingServerConfig {
             this.standOffBlocks = standOffBlocks;
         }
 
-        static CollapsingStarsValues create(ModConfigSpec.Builder builder) {
+        static CollapsingStarsValues create(ForgeConfigSpec.Builder builder) {
             builder.push("collapsing_stars");
             CollapsingStarsValues values = new CollapsingStarsValues(
                     SpellBookKeys.define(

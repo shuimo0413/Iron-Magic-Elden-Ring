@@ -142,7 +142,7 @@ public class CrystalBurstSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:crystal_burst}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "crystal_burst");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "crystal_burst");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.COMMON)

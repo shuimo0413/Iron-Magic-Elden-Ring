@@ -16,7 +16,8 @@ import net.minecraft.world.entity.player.Player;
 /**
  * 辉石系索敌 / 追踪的排除过滤：先盟友规则，再按施法者偏好排除。
  * <p>
- * 仅当弹道 {@code owner} 是 {@link Player} 时读取其 Attachment；女仆 / 怪等非玩家施法一律
+ * 仅当弹道 {@code owner} 是 {@link Player} 时读取其偏好（1.20.1 走 Forge Capability，
+ * 由 {@link ModAttachments#getPrefs(Player)} 统一封装）；女仆 / 怪等非玩家施法一律
  * {@link TrackingIgnorePrefs#DEFAULT}，不猜测主人、不硬依赖其它 mod。
  * <p>
  * 分类是<strong>保守排除</strong>：认不出的模组生物落在「未分类」，不会被任何排除项踢掉。
@@ -26,11 +27,11 @@ public final class TrackingTargetFilter {
     }
 
     /**
-     * 读取用于索敌的偏好：玩家 owner → Attachment，否则默认。
+     * 读取用于索敌的偏好：玩家 owner → 其 capability 数据，否则默认。
      */
     public static TrackingIgnorePrefs prefsForOwner(@Nullable Entity ownerEntity) {
         if (ownerEntity instanceof Player player) {
-            return player.getData(ModAttachments.TRACKING_IGNORE_PREFS.get());
+            return ModAttachments.getPrefs(player);
         }
         return TrackingIgnorePrefs.DEFAULT;
     }

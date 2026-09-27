@@ -102,7 +102,7 @@ public class GlintbladePhalanxSpell extends EldenRingAbstractSpell {
     public static GlintstoneTrailStyle TRAIL_STYLE = MagicGlintbladeSpell.TRAIL_STYLE;
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintblade_phalanx");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintblade_phalanx");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.UNCOMMON)

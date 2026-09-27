@@ -90,7 +90,7 @@ public class CarianPhalanxSpell extends EldenRingAbstractSpell {
     public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 5.5f;
 
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_phalanx");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "carian_phalanx");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

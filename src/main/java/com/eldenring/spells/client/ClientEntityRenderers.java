@@ -24,10 +24,8 @@ import com.eldenring.spells.registry.ModEntities;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-
+import net.minecraftforge.client.event.EntityRenderersEvent;
 /**
  * 实体 Renderer 与模型层注册。由 {@code EldenRingSpellsClient} 转发。
  */
@@ -94,7 +92,9 @@ public final class ClientEntityRenderers {
      * PlayerAnimator 第一人称 pass 才不会把它滤掉。握点各自独立。
      */
     public static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
-        for (PlayerSkin.Model skinModel : event.getSkins()) {
+        // 1.20.1 Forge 的 AddLayers 用 "default" / "slim" 字面量区分胳膊粗细；
+        // 1.21 才有的 PlayerSkin.Model 枚举在这里不存在，1.20.1 直接遍历 String。
+        for (String skinModel : event.getSkins()) {
             EntityRenderer<? extends Player> renderer = event.getSkin(skinModel);
             if (renderer instanceof PlayerRenderer playerRenderer) {
                 playerRenderer.addLayer(new CarianSlicerHandLayer(

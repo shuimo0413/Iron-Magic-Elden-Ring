@@ -115,7 +115,7 @@ public class CometSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:comet}。语言键 / 图标 path 也是 {@code comet}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "comet");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "comet");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.EPIC)

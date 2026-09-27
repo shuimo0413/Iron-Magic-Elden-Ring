@@ -7,7 +7,6 @@ import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.combat.CannonOfHaimaCombat;
 import com.eldenring.spells.spell.fx.CannonOfHaimaFx;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
-import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -17,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * 海摩炮弹弹道：受重力的实心辉石球，不追踪。
@@ -68,7 +68,7 @@ public class CannonOfHaimaProjectile extends AbstractGlintstoneProjectile {
     }
 
     @Override
-    public Optional<Holder<SoundEvent>> getImpactSound() {
+    public Optional<Supplier<SoundEvent>> getImpactSound() {
         // 爆炸音已经在 Fx 里播过，这里不要再叠一层紫水晶击打。
         return Optional.empty();
     }

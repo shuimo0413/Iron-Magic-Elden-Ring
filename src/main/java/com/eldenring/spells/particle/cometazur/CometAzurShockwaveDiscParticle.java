@@ -354,10 +354,13 @@ public class CometAzurShockwaveDiscParticle extends TextureSheetParticle {
         float worldX = originX + (float) (this.rightAxis.x * rotatedX + this.upAxis.x * rotatedY);
         float worldY = originY + (float) (this.rightAxis.y * rotatedX + this.upAxis.y * rotatedY);
         float worldZ = originZ + (float) (this.rightAxis.z * rotatedX + this.upAxis.z * rotatedY);
-        buffer.addVertex(worldX, worldY, worldZ)
-                .setUv(u, v)
-                .setColor(this.rCol, this.gCol, this.bCol, this.alpha)
-                .setLight(packedLight);
+        // 1.20.1 的链式 VertexConsumer 不会自动提交顶点：方法名是 vertex 而非 addVertex，
+        // 且必须显式 endVertex() 收尾，否则顶点丢失、几何体残缺（编译期看不出来）。
+        buffer.vertex(worldX, worldY, worldZ)
+                .uv(u, v)
+                .color(this.rCol, this.gCol, this.bCol, this.alpha)
+                .uv2(packedLight)
+                .endVertex();
     }
 
     @Override

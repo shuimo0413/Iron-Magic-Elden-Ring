@@ -18,8 +18,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -313,7 +313,8 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
             if (nearestBlockHit != null && nearestBlockDistanceSquared <= entityDistanceSquared) {
                 break;
             }
-            if (!NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHit)).isCanceled()) {
+            // Forge 的 post(...) 直接返回「是否被取消」。
+            if (!MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHit))) {
                 onHit(entityHit);
             }
         }
@@ -321,7 +322,7 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
         if (!this.isRemoved()
                 && nearestBlockHit != null
                 && nearestBlockHit.getType() != HitResult.Type.MISS
-                && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, nearestBlockHit)).isCanceled()) {
+                && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, nearestBlockHit))) {
             onHit(nearestBlockHit);
         }
     }

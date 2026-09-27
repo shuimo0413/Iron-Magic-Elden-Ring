@@ -48,9 +48,12 @@ public class GavelOfHaimaEntity extends Projectile implements AntiMagicSusceptib
         snapToOwnerGrip(caster);
     }
 
+    /**
+     * 1.20.1 的 {@code Entity.defineSynchedData()} 是无参抽象方法（1.21 才改成传 Builder）。
+     * 大槌动画完全用 tickCount 驱动，没有需要同步的字段，因此留空实现。
+     */
     @Override
-    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {
-        // 动画完全用 tickCount，无需额外同步字段。
+    protected void defineSynchedData() {
     }
 
     @Override

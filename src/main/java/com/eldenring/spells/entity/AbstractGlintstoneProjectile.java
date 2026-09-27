@@ -6,8 +6,6 @@ import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.DamageSources;
 import io.redspace.ironsspellbooks.entity.spells.AbstractMagicProjectile;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -21,8 +19,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * 辉石系弹道公共基类：限角锥形追踪 + {@link GlintstoneFx} 拖尾/爆裂。
@@ -193,9 +192,13 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         return 0.0f;
     }
 
+    /**
+     * 命中音。1.20.1 的铁魔法基类要求返回 {@code Optional<Supplier<SoundEvent>>}
+     * （1.21.1 是 {@code Optional<Holder<SoundEvent>>}），所以这里直接给一个延迟取值 lambda。
+     */
     @Override
-    public Optional<Holder<SoundEvent>> getImpactSound() {
-        return Optional.of(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.AMETHYST_BLOCK_HIT));
+    public Optional<Supplier<SoundEvent>> getImpactSound() {
+        return Optional.of(() -> SoundEvents.AMETHYST_BLOCK_HIT);
     }
 
     @Override
@@ -245,7 +248,8 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
                 continue;
             }
             if (entityHitResult.getType() != HitResult.Type.MISS
-                    && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult)).isCanceled()) {
+                    // Forge 的 EVENT_BUS.post(...) 直接返回「是否被取消」，不像 NeoForge 返回事件对象。
+                    && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult))) {
                 onHit(entityHitResult);
             }
             if (this.isRemoved()) {
@@ -256,7 +260,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         if (collidesWithBlocks()
                 && blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
-                && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {
+                && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision))) {
             onHit(blockCollision);
         }
     }

@@ -18,6 +18,7 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -67,8 +68,12 @@ public class OriginPotionItem extends Item {
         return stack;
     }
 
+    /**
+     * 饮用所需 tick 数。1.20.1 只有 {@code getUseDuration(ItemStack)} 单参签名，
+     * 1.20.5+ 才加入 {@code LivingEntity} 参数，所以这里不能再声明第二个参数。
+     */
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getUseDuration(ItemStack stack) {
         return DRINK_DURATION_TICKS;
     }
 
@@ -82,14 +87,17 @@ public class OriginPotionItem extends Item {
         return ItemUtils.startUsingInstantly(level, player, hand);
     }
 
+    /**
+     * 1.20.1 的悬浮提示签名是 {@code (ItemStack, Level, List, TooltipFlag)}；1.21 才改成 {@code TooltipContext}。
+     */
     @Override
     public void appendHoverText(
             ItemStack stack,
-            TooltipContext context,
+            @Nullable Level level,
             List<Component> tooltipComponents,
             TooltipFlag isAdvanced
     ) {
-        super.appendHoverText(stack, context, tooltipComponents, isAdvanced);
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
         tooltipComponents.add(Component.empty());
         tooltipComponents.add(Component.translatable("potion.whenDrank").withStyle(ChatFormatting.DARK_PURPLE));
         tooltipComponents.add(

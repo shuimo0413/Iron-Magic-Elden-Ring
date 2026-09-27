@@ -8,10 +8,9 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 /**
  * 本模组 {@link SoundEvent} 注册。资源文件在
  * {@code assets/iss_elden_ring/sounds/}，事件名与 {@code sounds.json} 键一致。
@@ -24,14 +23,14 @@ public final class ModSounds {
      * 飞弹射出音。瞬时弹道咒走 {@code getCastFinishSound}；延迟射出（辉剑、亚兹勒喷流）
      * 在真正出弹时再调 {@link #playProjectileLaunch}。资源：{@code sounds/spell_cast.ogg}。
      */
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPELL_CAST =
+    public static final RegistryObject<SoundEvent> SPELL_CAST =
             SOUND_EVENTS.register("spell_cast", () -> SoundEvent.createVariableRangeEvent(id("spell_cast")));
 
     /**
      * 蓄力 / 起手音。长吟唱与持续咒的 {@code getCastStartSound} 接这条；
      * 辉剑凝结虽然是瞬时咒，也在漩涡起手时播一次。资源：{@code sounds/spell_cast_start.ogg}。
      */
-    public static final DeferredHolder<SoundEvent, SoundEvent> SPELL_CAST_START =
+    public static final RegistryObject<SoundEvent> SPELL_CAST_START =
             SOUND_EVENTS.register(
                     "spell_cast_start",
                     () -> SoundEvent.createVariableRangeEvent(id("spell_cast_start"))
@@ -97,6 +96,6 @@ public final class ModSounds {
     }
 
     private static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, path);
+        return new ResourceLocation(EldenRingSpellsMod.MOD_ID, path);
     }
 }

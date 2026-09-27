@@ -3,7 +3,6 @@ package com.eldenring.spells.client;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.registry.ModSpells;
 import com.eldenring.spells.spell.curve.CarianPiercerCastCurve;
-import dev.kosmx.playerAnim.api.IPlayable;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonMode;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
@@ -18,19 +17,20 @@ import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.spells.SpellAnimations;
 import io.redspace.ironsspellbooks.network.casting.CancelCastPacket;
 import io.redspace.ironsspellbooks.player.ClientMagicData;
+// 1.20.1 铁魔法自带 Forge SimpleChannel 包装；NeoForge 侧的 PacketDistributor 在该分支不存在。
+import io.redspace.ironsspellbooks.setup.PacketDistributor;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.MovementInputUpdateEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 
+import net.minecraftforge.fml.common.Mod;
 /**
  * 卡利亚贯刺客户端：点按只播一次 {@code carian_puncture}（0.75 秒），不连刺。
  * <p>
@@ -39,7 +39,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * 不挂铁魔法 Mirror / 准星修正。手里的剑由
  * {@link com.eldenring.spells.client.render.carian.CarianPiercerHandLayer} 画。
  */
-@EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class CarianPiercerClientHold {
 
     private static final ResourceLocation CAST_BAR_LAYER_ID = IronsSpellbooks.id("cast_bar");
@@ -49,7 +49,7 @@ public final class CarianPiercerClientHold {
      * 优先级高于铁魔法的 42，且不挂 Mirror / 准星修正。
      */
     public static final ResourceLocation CARIAN_PIERCER_ANIMATION_LAYER =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "carian_piercer_animation");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "carian_piercer_animation");
 
     /**
      * 唯一 clip。与 Blockbench {@code iss_elden_ring.carian_puncture} 同名 1:1，不对调。
@@ -115,9 +115,13 @@ public final class CarianPiercerClientHold {
         event.getInput().leftImpulse = unslowedLeftImpulse;
     }
 
+    /**
+     * 1.20.1 Forge 的 {@code RenderGuiOverlayEvent} 没有 {@code getName()}（1.21 NeoForge 才有），
+     * 只能拿 {@code getOverlay().id()} 与铁魔法注册的 {@code irons_spellbooks:cast_bar} 比对。
+     */
     @SubscribeEvent
-    public static void hideChargeBar(RenderGuiLayerEvent.Pre event) {
-        if (!event.getName().equals(CAST_BAR_LAYER_ID)) {
+    public static void hideChargeBar(RenderGuiOverlayEvent.Pre event) {
+        if (!event.getOverlay().id().equals(CAST_BAR_LAYER_ID)) {
             return;
         }
         if (isLocalPlayerCastingCarianPiercer() || slashPlaybackActive) {
@@ -126,7 +130,11 @@ public final class CarianPiercerClientHold {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void onClientTick(ClientTickEvent.Post event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        // 1.20.1 的 ClientTickEvent 每 tick 有 PRE / END 两次；迁移前只订阅过 NeoForge 的 Post 阶段（等价 END）。
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
         LocalPlayer localPlayer = Minecraft.getInstance().player;
         if (localPlayer == null) {
             resetAll();
@@ -163,8 +171,8 @@ public final class CarianPiercerClientHold {
 
     @SuppressWarnings("unchecked")
     private static void playPierceAnimation(LocalPlayer player) {
-        IPlayable playable = resolvePierceClip();
-        if (playable == null) {
+        KeyframeAnimation keyframeAnimation = resolvePierceClip();
+        if (keyframeAnimation == null) {
             return;
         }
         clearIronSpellAnimationLayer(player);
@@ -179,7 +187,7 @@ public final class CarianPiercerClientHold {
             );
             return;
         }
-        IAnimation animationToPlay = createPiercePlayer(playable);
+        IAnimation animationToPlay = createPiercePlayer(keyframeAnimation);
         piercerAnimationLayer.replaceAnimationWithFade(
                 AbstractFadeModifier.standardFadeIn(ANIMATION_FADE_IN_TICKS, Ease.INOUTSINE),
                 animationToPlay,
@@ -218,10 +226,12 @@ public final class CarianPiercerClientHold {
     }
 
     /**
-     * PlayerAnimator 2.x 的注册 path 可能是 clip 名、gecko 长名或带目录的资源 path。
-     * 按精确名查找，找不到再扫本 mod 已注册动画。
+     * PlayerAnimator 1.0.x 里 {@code getAnimation} 直接返回 {@link KeyframeAnimation}
+     * （2.x 才有的「可播放动画」接口在 1.0.x 不存在）。
+     * 注册 path 可能是 clip 名、gecko 长名或带目录的资源 path，按精确名查找，
+     * 找不到再扫本 mod 已注册动画。
      */
-    private static IPlayable resolvePierceClip() {
+    private static KeyframeAnimation resolvePierceClip() {
         String[] candidatePaths = {
                 PIERCE_CLIP_NAME,
                 "animation.iss_elden_ring." + PIERCE_CLIP_NAME,
@@ -230,20 +240,20 @@ public final class CarianPiercerClientHold {
                 "player_animations/" + PIERCE_CLIP_NAME
         };
         for (String candidatePath : candidatePaths) {
-            IPlayable playable = PlayerAnimationRegistry.getAnimation(
-                    ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, candidatePath)
+            KeyframeAnimation registeredAnimation = PlayerAnimationRegistry.getAnimation(
+                    new ResourceLocation(EldenRingSpellsMod.MOD_ID, candidatePath)
             );
-            if (playable != null) {
-                return playable;
+            if (registeredAnimation != null) {
+                return registeredAnimation;
             }
         }
-        Map<String, IPlayable> registeredClips =
+        Map<String, KeyframeAnimation> registeredClips =
                 PlayerAnimationRegistry.getModAnimations(EldenRingSpellsMod.MOD_ID);
-        IPlayable exactName = registeredClips.get(PIERCE_CLIP_NAME);
+        KeyframeAnimation exactName = registeredClips.get(PIERCE_CLIP_NAME);
         if (exactName != null) {
             return exactName;
         }
-        for (Map.Entry<String, IPlayable> entry : registeredClips.entrySet()) {
+        for (Map.Entry<String, KeyframeAnimation> entry : registeredClips.entrySet()) {
             if (entry.getKey().contains(PIERCE_CLIP_NAME)) {
                 return entry.getValue();
             }
@@ -256,18 +266,9 @@ public final class CarianPiercerClientHold {
         return null;
     }
 
-    private static IAnimation createPiercePlayer(IPlayable playable) {
-        KeyframeAnimationPlayer keyframePlayer;
-        if (playable instanceof KeyframeAnimation keyframeAnimation) {
-            keyframePlayer = new KeyframeAnimationPlayer(keyframeAnimation);
-        } else {
-            IAnimation played = playable.playAnimation();
-            if (played instanceof KeyframeAnimationPlayer typedPlayer) {
-                keyframePlayer = typedPlayer;
-            } else {
-                return played;
-            }
-        }
+    private static IAnimation createPiercePlayer(KeyframeAnimation keyframeAnimation) {
+        // 1.0.x 的 registry 只会给出 KeyframeAnimation，直接包成播放器，不再走 2.x「由接口自行创建播放器」的分支。
+        KeyframeAnimationPlayer keyframePlayer = new KeyframeAnimationPlayer(keyframeAnimation);
         keyframePlayer.setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL);
         // 右臂开、左手/双手物品关：第一人称只看到突刺右臂，法术书仍藏着。
         keyframePlayer.setFirstPersonConfiguration(new FirstPersonConfiguration(

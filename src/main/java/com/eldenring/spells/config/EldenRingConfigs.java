@@ -4,13 +4,12 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.spell.SpellBookStatReloader;
 import com.eldenring.spells.item.AzurStaffBalance;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeEffect;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.config.ModConfigEvent;
-
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 /**
- * 注册 NeoForge 配置并在加载 / 热重载时写回 Spell / 矿洞运行时字段。
+ * 注册 Forge 配置并在加载 / 热重载时写回 Spell / 矿洞运行时字段。
  * <p>
  * 整合包改数值的入口：
  * <ul>
@@ -24,9 +23,13 @@ public final class EldenRingConfigs {
     private EldenRingConfigs() {
     }
 
-    public static void register(ModContainer modContainer, IEventBus modEventBus) {
-        modContainer.registerConfig(ModConfig.Type.SERVER, EldenRingServerConfig.SPEC);
-        modContainer.registerConfig(ModConfig.Type.COMMON, EldenRingCommonConfig.SPEC);
+    /**
+     * Forge 1.20.1 不支持 {@code (IEventBus, ModContainer)} 构造器注入，改由
+     * {@link ModLoadingContext#get()} 拿到本模组的配置注册入口；mod 总线仍从入口传入。
+     */
+    public static void register(IEventBus modEventBus) {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, EldenRingServerConfig.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, EldenRingCommonConfig.SPEC);
         modEventBus.addListener(EldenRingConfigs::onModConfig);
     }
 

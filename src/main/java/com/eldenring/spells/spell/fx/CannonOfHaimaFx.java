@@ -116,7 +116,7 @@ public final class CannonOfHaimaFx {
                 impactCenter.x,
                 impactCenter.y,
                 impactCenter.z,
-                SoundEvents.GENERIC_EXPLODE.value(),
+                SoundEvents.GENERIC_EXPLODE,
                 SoundSource.NEUTRAL,
                 1.45f,
                 0.62f + level.random.nextFloat() * 0.12f

@@ -209,17 +209,18 @@ public final class CometAzurJetMesh {
             int blue,
             int alpha
     ) {
-        consumer.addVertex(
+        consumer.vertex(
                         poseMatrix,
                         (float) localPosition.x,
                         (float) localPosition.y,
                         (float) localPosition.z
                 )
-                .setColor(red, green, blue, alpha)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 1.0f, 0.0f);
+                .color(red, green, blue, alpha)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 1.0f, 0.0f)
+                .endVertex();
     }
 
     private static int unpackRed(int argb) {

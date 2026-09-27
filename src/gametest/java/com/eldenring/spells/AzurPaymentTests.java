@@ -27,12 +27,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.gametest.GameTestHolder;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.gametest.GameTestHolder;
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -244,11 +244,11 @@ public final class AzurPaymentTests {
     }
 
     private static <T extends Event> void listen(Class<T> type, Consumer<T> listener, Runnable action) {
-        NeoForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, type, listener);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, type, listener);
         try {
             action.run();
         } finally {
-            NeoForge.EVENT_BUS.unregister(listener);
+            MinecraftForge.EVENT_BUS.unregister(listener);
         }
     }
 

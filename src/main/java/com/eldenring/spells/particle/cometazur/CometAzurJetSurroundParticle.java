@@ -424,7 +424,9 @@ public class CometAzurJetSurroundParticle extends TextureSheetParticle {
                 toWorld,
                 ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.NONE,
-                CollisionContext.empty()
+                // 1.20.1 的 ClipContext 第 5 参是 Entity（1.21 改为 CollisionContext），
+                // 粒子没有实体上下文，传 null 即等价于「无碰撞实体过滤」。
+                null
         ));
         if (blockHit.getType() != HitResult.Type.MISS) {
             return true;

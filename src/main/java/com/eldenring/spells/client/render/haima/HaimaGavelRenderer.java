@@ -24,7 +24,6 @@ import org.joml.Matrix4f;
  * 俯仰由 {@link GavelOfHaimaEntity#getSwingProgress} 插值：近 0° 竖直握持 → 正角向前砸地。
  */
 public class HaimaGavelRenderer extends EntityRenderer<GavelOfHaimaEntity> {
-
     /** 模型整体缩放。约玩家身高量级的单手大槌。 */
     private static final float HAMMER_RENDER_SCALE = 1.08f;
     private static final float RENDER_PIVOT_Y_OFFSET_BLOCKS = 0.0f;
@@ -81,32 +80,19 @@ public class HaimaGavelRenderer extends EntityRenderer<GavelOfHaimaEntity> {
         VertexConsumer bodyConsumer = bufferSource.getBuffer(
                 RenderType.entityTranslucentEmissive(HaimaGavelModels.GAVEL_BODY_TEXTURE)
         );
-        gavelRoot.getChild(HaimaGavelModels.HANDLE_PART).render(
-                poseStack,
-                bodyConsumer,
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
-                bodyColor
+        renderPartWithArgb(
+                gavelRoot.getChild(HaimaGavelModels.HANDLE_PART), poseStack, bodyConsumer, bodyColor
         );
-        gavelRoot.getChild(HaimaGavelModels.HEAD_BAND_PART).render(
-                poseStack,
-                bodyConsumer,
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
-                headColor
+        renderPartWithArgb(
+                gavelRoot.getChild(HaimaGavelModels.HEAD_BAND_PART), poseStack, bodyConsumer, headColor
         );
-        gavelRoot.getChild(HaimaGavelModels.HEAD_PART).render(
-                poseStack,
-                bodyConsumer,
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
-                headColor
+        renderPartWithArgb(
+                gavelRoot.getChild(HaimaGavelModels.HEAD_PART), poseStack, bodyConsumer, headColor
         );
-        gavelRoot.getChild(HaimaGavelModels.HEAD_CAP_PART).render(
+        renderPartWithArgb(
+                gavelRoot.getChild(HaimaGavelModels.HEAD_CAP_PART),
                 poseStack,
                 bodyConsumer,
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
                 applyAlpha(HAMMER_CAP_COLOR_ARGB, fadeAlpha)
         );
         poseStack.popPose();
@@ -175,35 +161,67 @@ public class HaimaGavelRenderer extends EntityRenderer<GavelOfHaimaEntity> {
                 RenderType.entityTranslucentEmissive(HaimaGavelModels.GAVEL_GLOW_TEXTURE)
         );
         int color = (alpha << 24) | (red << 16) | (green << 8) | blue;
-        consumer.addVertex(matrix, -0.5f, -0.5f, 0.0f)
-                .setColor(color)
-                .setUv(0.0f, 1.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, 0.5f, -0.5f, 0.0f)
-                .setColor(color)
-                .setUv(1.0f, 1.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, 0.5f, 0.5f, 0.0f)
-                .setColor(color)
-                .setUv(1.0f, 0.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, -0.5f, 0.5f, 0.0f)
-                .setColor(color)
-                .setUv(0.0f, 0.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
+        consumer.vertex(matrix, -0.5f, -0.5f, 0.0f)
+                .color(color)
+                .uv(0.0f, 1.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
+        consumer.vertex(matrix, 0.5f, -0.5f, 0.0f)
+                .color(color)
+                .uv(1.0f, 1.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
+        consumer.vertex(matrix, 0.5f, 0.5f, 0.0f)
+                .color(color)
+                .uv(1.0f, 0.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
+        consumer.vertex(matrix, -0.5f, 0.5f, 0.0f)
+                .color(color)
+                .uv(0.0f, 0.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
         poseStack.popPose();
     }
 
     private static int applyAlpha(int argb, float alphaMultiplier) {
         int alpha = Mth.clamp((int) (((argb >> 24) & 0xFF) * alphaMultiplier), 0, 255);
         return (alpha << 24) | (argb & 0x00FFFFFF);
+    }
+
+    /**
+     * 用 ARGB 颜色画一段模型部件。
+     * <p>
+     * 1.20.1 的 {@code ModelPart} 只有 4 参（无颜色）与 8 参（0–1 的 RGBA）两个 {@code render} 重载，
+     * 1.21 才有的「单 int ARGB」5 参重载不存在，所以在这里把 ARGB 拆成四个分量再调用。
+     */
+    private static void renderPartWithArgb(
+            ModelPart modelPart,
+            PoseStack poseStack,
+            VertexConsumer consumer,
+            int colorArgb
+    ) {
+        float alpha = ((colorArgb >> 24) & 0xFF) / 255.0f;
+        float red = ((colorArgb >> 16) & 0xFF) / 255.0f;
+        float green = ((colorArgb >> 8) & 0xFF) / 255.0f;
+        float blue = (colorArgb & 0xFF) / 255.0f;
+        modelPart.render(
+                poseStack,
+                consumer,
+                LightTexture.FULL_BRIGHT,
+                OverlayTexture.NO_OVERLAY,
+                red,
+                green,
+                blue,
+                alpha
+        );
     }
 }

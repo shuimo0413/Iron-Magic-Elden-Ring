@@ -125,7 +125,7 @@ public final class GavelOfHaimaFx {
                 impactCenter.x,
                 impactCenter.y,
                 impactCenter.z,
-                SoundEvents.GENERIC_EXPLODE.value(),
+                SoundEvents.GENERIC_EXPLODE,
                 SoundSource.NEUTRAL,
                 1.35f,
                 0.55f + level.random.nextFloat() * 0.12f

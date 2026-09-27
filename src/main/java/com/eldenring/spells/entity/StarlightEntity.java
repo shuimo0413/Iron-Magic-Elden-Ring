@@ -62,14 +62,14 @@ public class StarlightEntity extends Projectile implements AntiMagicSusceptible 
         this(ModEntities.STARLIGHT.get(), level);
         setOwner(caster);
         this.lifetimeTicks = Math.max(1, lifetimeTicks);
-        this.lightLevel = Math.clamp(lightLevel, 0, LightBlock.MAX_LEVEL);
+        this.lightLevel = Mth.clamp(lightLevel, 0, LightBlock.MAX_LEVEL);
         this.entityData.set(DATA_REMAINING_TICKS, this.lifetimeTicks);
         snapToOwnerHead(caster);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_REMAINING_TICKS, StarlightSpell.STAR_DURATION_TICKS);
+    protected void defineSynchedData() {
+        this.entityData.define(DATA_REMAINING_TICKS, StarlightSpell.STAR_DURATION_TICKS);
     }
 
     /**
@@ -277,7 +277,7 @@ public class StarlightEntity extends Projectile implements AntiMagicSusceptible 
         super.readAdditionalSaveData(compoundTag);
         this.ageTicks = compoundTag.getInt("AgeTicks");
         this.lifetimeTicks = Math.max(1, compoundTag.getInt("LifetimeTicks"));
-        this.lightLevel = Math.clamp(compoundTag.getInt("LightLevel"), 0, LightBlock.MAX_LEVEL);
+        this.lightLevel = Mth.clamp(compoundTag.getInt("LightLevel"), 0, LightBlock.MAX_LEVEL);
         this.entityData.set(DATA_REMAINING_TICKS, this.lifetimeTicks - this.ageTicks);
         if (compoundTag.contains("LightX")) {
             this.currentLightBlockPos = new BlockPos(

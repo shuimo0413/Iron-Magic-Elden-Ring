@@ -126,6 +126,6 @@ public final class GlintstoneScrollRecipes {
     }
 
     private static ResourceLocation spellId(String path) {
-        return ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, path);
+        return new ResourceLocation(EldenRingSpellsMod.MOD_ID, path);
     }
 }

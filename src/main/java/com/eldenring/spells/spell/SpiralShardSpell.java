@@ -152,7 +152,7 @@ public class SpiralShardSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:spiral_shard}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "spiral_shard");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "spiral_shard");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.RARE)

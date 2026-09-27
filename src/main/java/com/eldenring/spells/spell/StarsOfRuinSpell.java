@@ -161,7 +161,7 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
 
     /** 注册 ID：{@code iss_elden_ring:stars_of_ruin}。 */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "stars_of_ruin");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "stars_of_ruin");
 
     private final DefaultConfig defaultConfig = new DefaultConfig()
             .setMinRarity(SpellRarity.LEGENDARY)

@@ -26,11 +26,11 @@ public record GlintstoneVisualStyle(
 ) {
     /** 菱形晶核贴图。路径与客户端模型层共用，实体侧只持有 ResourceLocation。 */
     public static final ResourceLocation COMET_HEAD_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_head.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_head.png");
 
     /** 朝向相机的光晕贴图。 */
     public static final ResourceLocation COMET_GLOW_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
 
     /** 兼容旧调用：均匀缩放时的等效整体缩放。 */
     public float bodyScale() {

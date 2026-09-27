@@ -5,7 +5,6 @@ import com.eldenring.spells.spell.GravityBallSpell;
 import com.eldenring.spells.spell.combat.GravityBallCombat;
 import com.eldenring.spells.spell.fx.GravityBallFx;
 import io.redspace.ironsspellbooks.entity.spells.AbstractMagicProjectile;
-import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
@@ -16,11 +15,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * 重力球弹道：无追踪、无重力的直线紫球；无伤害，命中后按等级拉取格数吸敌。
@@ -151,8 +151,9 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
         return HIT_DETECTION_INFLATION_BLOCKS;
     }
 
+    /** 重力球命中不额外播紫水晶击打；吸敌音由 Combat / Fx 负责。 */
     @Override
-    public Optional<Holder<SoundEvent>> getImpactSound() {
+    public Optional<Supplier<SoundEvent>> getImpactSound() {
         return Optional.empty();
     }
 
@@ -211,7 +212,8 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
             );
             if (entityHit.getType() != HitResult.Type.MISS
                     && entityHit instanceof EntityHitResult entityHitResult
-                    && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult)).isCanceled()) {
+                    // Forge 的 post(...) 直接返回「是否被取消」。
+                    && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult))) {
                 onHit(entityHitResult);
             }
             if (this.isRemoved()) {
@@ -221,7 +223,7 @@ public class GravityBallProjectile extends AbstractMagicProjectile {
 
         if (blockCollision.getType() != HitResult.Type.MISS
                 && !this.isRemoved()
-                && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision)).isCanceled()) {
+                && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision))) {
             onHit(blockCollision);
         }
     }

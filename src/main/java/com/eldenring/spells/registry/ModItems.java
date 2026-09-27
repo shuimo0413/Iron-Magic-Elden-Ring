@@ -15,21 +15,21 @@ import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.item.SpellBook;
 import io.redspace.ironsspellbooks.item.UpgradeOrbItem;
 import io.redspace.ironsspellbooks.item.weapons.AttributeContainer;
-import io.redspace.ironsspellbooks.registries.ComponentRegistry;
 import io.redspace.ironsspellbooks.registries.ItemRegistry;
 import io.redspace.ironsspellbooks.registries.UpgradeOrbTypeRegistry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
-
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 /**
@@ -45,8 +45,9 @@ import java.util.function.Supplier;
  * 观星杖 / 亚兹勒的辉石杖是铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒（辉石强度 +10%）。
  */
 public final class ModItems {
-    public static final DeferredRegister.Items ITEMS =
-            DeferredRegister.createItems(EldenRingSpellsMod.MOD_ID);
+    // Forge 1.20.1 没有 DeferredRegister.Items / createItems，改用普通 DeferredRegister<Item>。
+    public static final DeferredRegister<Item> ITEMS =
+            DeferredRegister.create(Registries.ITEM, EldenRingSpellsMod.MOD_ID);
 
     /**
      * 星星法典：辉石学派魔法书。
@@ -57,19 +58,19 @@ public final class ModItems {
      * {@code SpellBookCurioRenderer} 后腰侧显示立体书。
      * 须加入 {@code curios:spellbook} 物品标签才能装进魔法书槽。
      */
-    public static final DeferredItem<Item> STAR_CODEX = ITEMS.register(
+    public static final RegistryObject<Item> STAR_CODEX = ITEMS.register(
             "star_codex",
             () -> new SpellBook(EldenRingServerConfig.STAR_CODEX_BASE_SLOTS,
                     new Item.Properties().rarity(Rarity.RARE)).withSpellbookAttributes(
                     new AttributeContainer(
                             ModAttributes.GLINTSTONE_SPELL_POWER,
                             EldenRingServerConfig.STAR_CODEX_GLINTSTONE_POWER_BONUS,
-                            AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                            AttributeModifier.Operation.MULTIPLY_BASE
                     ),
                     new AttributeContainer(
                             AttributeRegistry.MAX_MANA,
                             EldenRingServerConfig.STAR_CODEX_MAX_MANA_BONUS,
-                            AttributeModifier.Operation.ADD_VALUE
+                            AttributeModifier.Operation.ADDITION
                     )
             )
     );
@@ -81,19 +82,19 @@ public final class ModItems {
      * 装备后：辉石法术强度 +25%、最大法力 +300。
      * 用起源晶体和传说墨水在锻造台升级星星法典，保留原书法术与扩容；需 {@code curios:spellbook} 标签。
      */
-    public static final DeferredItem<Item> ORIGIN_CODEX = ITEMS.register(
+    public static final RegistryObject<Item> ORIGIN_CODEX = ITEMS.register(
             "origin_codex",
             () -> new SpellBook(EldenRingServerConfig.ORIGIN_CODEX_BASE_SLOTS,
                     new Item.Properties().rarity(Rarity.EPIC)).withSpellbookAttributes(
                     new AttributeContainer(
                             ModAttributes.GLINTSTONE_SPELL_POWER,
                             EldenRingServerConfig.ORIGIN_CODEX_GLINTSTONE_POWER_BONUS,
-                            AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                            AttributeModifier.Operation.MULTIPLY_BASE
                     ),
                     new AttributeContainer(
                             AttributeRegistry.MAX_MANA,
                             EldenRingServerConfig.ORIGIN_CODEX_MAX_MANA_BONUS,
-                            AttributeModifier.Operation.ADD_VALUE
+                            AttributeModifier.Operation.ADDITION
                     )
             )
     );
@@ -102,7 +103,7 @@ public final class ModItems {
      * 观星杖：铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
      * 手持时可右键施法（与铁魔法魔杖相同）；辉石法术强度 +10%。
      */
-    public static final DeferredItem<Item> ASTROLOGER_STAFF = ITEMS.register(
+    public static final RegistryObject<Item> ASTROLOGER_STAFF = ITEMS.register(
             "astrologer_staff",
             AstrologerStaffItem::new
     );
@@ -111,7 +112,7 @@ public final class ModItems {
      * 亚兹勒的辉石杖：铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
      * 主手可右键施法；辉石强度 +10%，额外吟唱属性与蓝耗由服务端配置决定。
      */
-    public static final DeferredItem<Item> AZUR_GLINTSTONE_STAFF = ITEMS.register(
+    public static final RegistryObject<Item> AZUR_GLINTSTONE_STAFF = ITEMS.register(
             "azur_glintstone_staff",
             AzurGlintstoneStaffItem::new
     );
@@ -121,7 +122,7 @@ public final class ModItems {
      * 125 最大法力、10% 辉石法术强度与 5% 通用法术强度；长袍额外拥有一个可灌注法术槽。
      * 暂不可制作，不进创造栏（见 {@link ModCreativeTabs}）。
      */
-    public static final DeferredItem<Item> ASTROLOGER_HAT = ITEMS.register(
+    public static final RegistryObject<Item> ASTROLOGER_HAT = ITEMS.register(
             "astrologer_hat",
             () -> new AstrologerArmorItem(
                     ArmorItem.Type.HELMET,
@@ -129,7 +130,7 @@ public final class ModItems {
             )
     );
 
-    public static final DeferredItem<Item> ASTROLOGER_ROBE = ITEMS.register(
+    public static final RegistryObject<Item> ASTROLOGER_ROBE = ITEMS.register(
             "astrologer_robe",
             () -> new AstrologerArmorItem(
                     ArmorItem.Type.CHESTPLATE,
@@ -137,7 +138,7 @@ public final class ModItems {
             )
     );
 
-    public static final DeferredItem<Item> ASTROLOGER_LEGGINGS = ITEMS.register(
+    public static final RegistryObject<Item> ASTROLOGER_LEGGINGS = ITEMS.register(
             "astrologer_leggings",
             () -> new AstrologerArmorItem(
                     ArmorItem.Type.LEGGINGS,
@@ -145,7 +146,7 @@ public final class ModItems {
             )
     );
 
-    public static final DeferredItem<Item> ASTROLOGER_BOOTS = ITEMS.register(
+    public static final RegistryObject<Item> ASTROLOGER_BOOTS = ITEMS.register(
             "astrologer_boots",
             () -> new AstrologerArmorItem(
                     ArmorItem.Type.BOOTS,
@@ -157,7 +158,7 @@ public final class ModItems {
      * 星辰法师套装：每件提供铁魔法原生学派护甲同级的护甲值、125 最大法力、
      * 10% 辉石法术强度与 5% 通用法术强度；长袍额外拥有一个可灌注法术槽。
      */
-    public static final DeferredItem<Item> CELESTIAL_MAGE_HAT = ITEMS.register(
+    public static final RegistryObject<Item> CELESTIAL_MAGE_HAT = ITEMS.register(
             "celestial_mage_hat",
             () -> new CelestialMageArmorItem(
                     ArmorItem.Type.HELMET,
@@ -165,7 +166,7 @@ public final class ModItems {
             )
     );
 
-    public static final DeferredItem<Item> CELESTIAL_MAGE_ROBE = ITEMS.register(
+    public static final RegistryObject<Item> CELESTIAL_MAGE_ROBE = ITEMS.register(
             "celestial_mage_robe",
             () -> new CelestialMageArmorItem(
                     ArmorItem.Type.CHESTPLATE,
@@ -173,7 +174,7 @@ public final class ModItems {
             )
     );
 
-    public static final DeferredItem<Item> CELESTIAL_MAGE_LEGGINGS = ITEMS.register(
+    public static final RegistryObject<Item> CELESTIAL_MAGE_LEGGINGS = ITEMS.register(
             "celestial_mage_leggings",
             () -> new CelestialMageArmorItem(
                     ArmorItem.Type.LEGGINGS,
@@ -181,7 +182,7 @@ public final class ModItems {
             )
     );
 
-    public static final DeferredItem<Item> CELESTIAL_MAGE_BOOTS = ITEMS.register(
+    public static final RegistryObject<Item> CELESTIAL_MAGE_BOOTS = ITEMS.register(
             "celestial_mage_boots",
             () -> new CelestialMageArmorItem(
                     ArmorItem.Type.BOOTS,
@@ -192,7 +193,7 @@ public final class ModItems {
     /**
      * 青色辉石碎片。学院弹道 / 场地 / 海摩等咒的抄写材料（焦点槽，抄成消耗）。
      */
-    public static final DeferredItem<Item> CYAN_GLINTSTONE_SHARD = ITEMS.register(
+    public static final RegistryObject<Item> CYAN_GLINTSTONE_SHARD = ITEMS.register(
             "cyan_glintstone_shard",
             () -> new Item(new Item.Properties())
     );
@@ -200,7 +201,7 @@ public final class ModItems {
     /**
      * 蓝色辉石碎片。卡利亚近战 / 辉剑阵等咒的抄写材料（焦点槽，抄成消耗）。
      */
-    public static final DeferredItem<Item> BLUE_GLINTSTONE_SHARD = ITEMS.register(
+    public static final RegistryObject<Item> BLUE_GLINTSTONE_SHARD = ITEMS.register(
             "blue_glintstone_shard",
             () -> new Item(new Item.Properties())
     );
@@ -208,7 +209,7 @@ public final class ModItems {
     /**
      * 紫色辉石碎片。重力系咒的抄写材料（焦点槽，抄成消耗）。
      */
-    public static final DeferredItem<Item> PURPLE_GLINTSTONE_SHARD = ITEMS.register(
+    public static final RegistryObject<Item> PURPLE_GLINTSTONE_SHARD = ITEMS.register(
             "purple_glintstone_shard",
             () -> new Item(new Item.Properties())
     );
@@ -217,7 +218,7 @@ public final class ModItems {
      * 辉石符文：辉石学派材料符文，与铁魔法学派符文同级。
      * 合成：八个辉石碎片（青/蓝/紫均可）围一圈，中间放空白符文。
      */
-    public static final DeferredItem<Item> GLINTSTONE_RUNE = ITEMS.register(
+    public static final RegistryObject<Item> GLINTSTONE_RUNE = ITEMS.register(
             "glintstone_rune",
             () -> new Item(new Item.Properties())
     );
@@ -225,32 +226,32 @@ public final class ModItems {
     /**
      * 辉石升级法球：铁魔法奥术砧升级球。
      * <p>
-     * 与火/冰等学派法球同机制：镶嵌后辉石法术强度 +5%（{@code add_multiplied_base}）。
+     * 与火/冰等学派法球同机制：镶嵌后辉石法术强度 +5%（{@code MULTIPLY_BASE}；1.21 线写作 {@code add_multiplied_base}）。
      * 类型由 datapack {@code iss_elden_ring:glintstone_power} 定义；合成用空白升级法球 + 八枚辉石符文。
+     * <p>
+     * 1.20.1 没有数据组件（{@code ComponentRegistry} 是空壳），升级球类型改为构造器直传
+     * {@link ResourceKey}，效果与旧 {@code .component(UPGRADE_ORB_TYPE, key)} 相同。
      */
-    public static final DeferredItem<Item> GLINTSTONE_UPGRADE_ORB = ITEMS.register(
+    public static final RegistryObject<Item> GLINTSTONE_UPGRADE_ORB = ITEMS.register(
             "glintstone_upgrade_orb",
             () -> new UpgradeOrbItem(
                     new Item.Properties()
                             .rarity(Rarity.UNCOMMON)
-                            .fireResistant()
-                            .component(
-                                    ComponentRegistry.UPGRADE_ORB_TYPE,
-                                    ResourceKey.create(
-                                            UpgradeOrbTypeRegistry.UPGRADE_ORB_REGISTRY_KEY,
-                                            ResourceLocation.fromNamespaceAndPath(
-                                                    EldenRingSpellsMod.MOD_ID,
-                                                    "glintstone_power"
-                                            )
-                                    )
+                            .fireResistant(),
+                    ResourceKey.create(
+                            UpgradeOrbTypeRegistry.UPGRADE_ORB_REGISTRY_KEY,
+                            new ResourceLocation(
+                                    EldenRingSpellsMod.MOD_ID,
+                                    "glintstone_power"
                             )
+                    )
             )
     );
 
     /**
      * 起源晶体：八辉石晶簇围下界之星合成；投入炼药锅与粗制药水炼成起源药剂。
      */
-    public static final DeferredItem<Item> ORIGIN_CRYSTAL = ITEMS.register(
+    public static final RegistryObject<Item> ORIGIN_CRYSTAL = ITEMS.register(
             "origin_crystal",
             () -> new Item(new Item.Properties())
     );
@@ -259,7 +260,7 @@ public final class ModItems {
      * 起源辉石：喝下起源药剂死亡后在原地悬浮掉落；不可合成。
      * 亦为毁灭流星 / 创星雨 / 彗星亚兹勒的抄写材料（焦点槽，抄成消耗）。
      */
-    public static final DeferredItem<Item> ORIGIN_GLINTSTONE = ITEMS.register(
+    public static final RegistryObject<Item> ORIGIN_GLINTSTONE = ITEMS.register(
             "origin_glintstone",
             () -> new Item(new Item.Properties())
     );
@@ -268,7 +269,7 @@ public final class ModItems {
      * 起源药剂：炼药锅装瓶产物；饮用后代码处死并掉落起源辉石；恒带附魔光。
      * 堆叠上限 16，与铁魔法 elixir 接近。
      */
-    public static final DeferredItem<Item> ORIGIN_POTION = ITEMS.register(
+    public static final RegistryObject<Item> ORIGIN_POTION = ITEMS.register(
             "origin_potion",
             () -> new OriginPotionItem(new Item.Properties().stacksTo(16))
     );
@@ -277,7 +278,7 @@ public final class ModItems {
      * 卡利亚迅剑视觉用物品：只给挥砍时 {@code ItemRenderer} 画手里那把像素剑。
      * 不进创造栏，玩家不会当武器用。
      */
-    public static final DeferredItem<Item> CARIAN_SLICER_SWORD = ITEMS.register(
+    public static final RegistryObject<Item> CARIAN_SLICER_SWORD = ITEMS.register(
             "carian_slicer_sword",
             () -> new Item(new Item.Properties())
     );
@@ -287,7 +288,7 @@ public final class ModItems {
      * 贴图像素与迅剑相同，模型 JSON / display 是大剑自己的，改 JSON 不会动迅剑。
      * 不进创造栏。
      */
-    public static final DeferredItem<Item> CARIAN_GREATSWORD_SWORD = ITEMS.register(
+    public static final RegistryObject<Item> CARIAN_GREATSWORD_SWORD = ITEMS.register(
             "carian_greatsword_sword",
             () -> new Item(new Item.Properties())
     );
@@ -296,7 +297,7 @@ public final class ModItems {
      * 卡利亚贯刺视觉用物品：贴图从大剑拷出，模型 JSON / display 是贯刺自己的。
      * 不进创造栏。
      */
-    public static final DeferredItem<Item> CARIAN_PIERCER_SWORD = ITEMS.register(
+    public static final RegistryObject<Item> CARIAN_PIERCER_SWORD = ITEMS.register(
             "carian_piercer_sword",
             () -> new Item(new Item.Properties())
     );
@@ -304,7 +305,7 @@ public final class ModItems {
     /**
      * 源辉石刀：Curios 护符。降低 15% 最大生命值，并减少 25% 全学派蓝耗。
      */
-    public static final DeferredItem<Item> PRIMAL_GLINTSTONE_BLADE = ITEMS.register(
+    public static final RegistryObject<Item> PRIMAL_GLINTSTONE_BLADE = ITEMS.register(
             "primal_glintstone_blade",
             () -> new PrimalGlintstoneBladeItem(
                     new Item.Properties().rarity(Rarity.EPIC)
@@ -315,7 +316,7 @@ public final class ModItems {
      * 魔法师球护符：Curios 护符。佩戴时全局法术强度 +5%（铁魔法 {@code SPELL_POWER}）。
      * 须加入 {@code curios:charm} 物品标签才能装进护符槽。
      */
-    public static final DeferredItem<Item> MAGE_SPHERE = ITEMS.register(
+    public static final RegistryObject<Item> MAGE_SPHERE = ITEMS.register(
             "mage_sphere",
             () -> new MageSphereItem(
                     new Item.Properties().rarity(Rarity.UNCOMMON)
@@ -325,9 +326,9 @@ public final class ModItems {
     /**
      * 观星者生成蛋：供旧存档补放与调试。主体色深紫、高亮金星。
      */
-    public static final DeferredItem<Item> ASTROLOGER_SPAWN_EGG = ITEMS.register(
+    public static final RegistryObject<Item> ASTROLOGER_SPAWN_EGG = ITEMS.register(
             "astrologer_spawn_egg",
-            () -> new DeferredSpawnEggItem(
+            () -> new ForgeSpawnEggItem(
                     ModEntities.ASTROLOGER,
                     0x4B237A,
                     0xFFD85A,
@@ -336,14 +337,40 @@ public final class ModItems {
     );
 
     static {
-        // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)
+        // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)。
+        // NeoForge 的 registerSimpleBlockItem(DeferredBlock) 在 Forge 不存在，改为显式 new BlockItem。
         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
-            ITEMS.registerSimpleBlockItem(set.crystalBlock);
-            ITEMS.registerSimpleBlockItem(set.cluster);
+            ITEMS.register(set.color.idPrefix() + "_glintstone_block",
+                    () -> new BlockItem(set.crystalBlock.get(), new Item.Properties()));
+            ITEMS.register(set.color.idPrefix() + "_glintstone_cluster",
+                    () -> new BlockItem(set.cluster.get(), new Item.Properties()));
         }
     }
 
     private ModItems() {
+    }
+
+    /** 学派护甲耐久的基准值，与 1.21.1 分支调用 {@code armorType.getDurability(37)} 时传入的一致。 */
+    private static final int SCHOOL_ARMOR_BASE_DURABILITY = 37;
+
+    /**
+     * 按 1.21.1 的 {@code ArmorItem.Type#getDurability(int)} 公式换算学派护甲耐久。
+     * <p>
+     * 为什么要本地算：1.20.1 的 {@link ArmorItem.Type} 只有 {@code getSlot()} / {@code getName()}，
+     * 没有 1.21 才加入的 {@code getDurability(int)}；而 1.20.1 的 {@code ArmorItem} 构造器会用
+     * {@code material.getDurabilityForType(type)} 走 {@code defaultDurability}，与 1.21.1 分支
+     * 「按 37 × 部位倍率」的显式取值不是一回事。倍率取自 1.21.1 {@code ArmorItem$Type} 的常量定义。
+     * 注：{@code Properties#durability} 会先占位，{@code defaultDurability} 只在未设置时生效，
+     * 所以显式赋值能稳定压过材质默认值，两分支耐久完全一致。
+     */
+    private static int schoolArmorDurability(ArmorItem.Type armorType) {
+        int durabilityMultiplier = switch (armorType) {
+            case HELMET -> 11;
+            case CHESTPLATE -> 16;
+            case LEGGINGS -> 15;
+            case BOOTS -> 13;
+        };
+        return SCHOOL_ARMOR_BASE_DURABILITY * durabilityMultiplier;
     }
 
     /** 观星者 / 星辰法师共用学派护甲耐久与稀有度。 */
@@ -351,7 +378,7 @@ public final class ModItems {
         return new Item.Properties()
                 .stacksTo(1)
                 .rarity(Rarity.RARE)
-                .durability(armorType.getDurability(37));
+                .durability(schoolArmorDurability(armorType));
     }
 
     /**

@@ -19,7 +19,7 @@ import net.minecraft.util.Mth;
  */
 public final class GlintstoneCometModels {
     public static final ModelLayerLocation COMET_HEAD_LAYER = new ModelLayerLocation(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_comet_head"),
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintstone_comet_head"),
             "main"
     );
 
@@ -28,7 +28,7 @@ public final class GlintstoneCometModels {
      * 绘制时核更深、刺更亮。
      */
     public static final ModelLayerLocation SPIKED_COMET_HEAD_LAYER = new ModelLayerLocation(
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_spiked_comet_head"),
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintstone_spiked_comet_head"),
             "main"
     );
 
@@ -39,14 +39,14 @@ public final class GlintstoneCometModels {
     public static final String SPIKED_CLUSTER_SPIKES_PART = "spikes";
 
     public static final ResourceLocation COMET_HEAD_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_head.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_head.png");
 
     public static final ResourceLocation COMET_GLOW_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/comet_glow.png");
 
     /** 连续光轨白色透明度纹理；运行时由各法术的蓝绿色顶点颜色着色。 */
     public static final ResourceLocation TRAIL_BEAM_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/trail_beam.png");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "textures/entity/glintstone/trail_beam.png");
 
     /** 菱形截面：绕飞行轴转 45°，方块四角变成菱形尖角。 */
     private static final float DIAMOND_SECTION_ROTATION_Z = Mth.HALF_PI * 0.5f;

@@ -330,12 +330,12 @@ public class FoundingRainOfStarsEntity extends Projectile {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_CLOUD_ACTIVE, false);
-        builder.define(DATA_CLOUD_X, 0.0f);
-        builder.define(DATA_CLOUD_Y, 0.0f);
-        builder.define(DATA_CLOUD_Z, 0.0f);
-        builder.define(DATA_CLOUD_YAW_DEGREES, 0.0f);
+    protected void defineSynchedData() {
+        this.entityData.define(DATA_CLOUD_ACTIVE, false);
+        this.entityData.define(DATA_CLOUD_X, 0.0f);
+        this.entityData.define(DATA_CLOUD_Y, 0.0f);
+        this.entityData.define(DATA_CLOUD_Z, 0.0f);
+        this.entityData.define(DATA_CLOUD_YAW_DEGREES, 0.0f);
     }
 
     @Override

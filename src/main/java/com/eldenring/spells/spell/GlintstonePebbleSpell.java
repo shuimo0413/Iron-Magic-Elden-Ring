@@ -176,7 +176,7 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
      * 和图标 {@code textures/gui/spell_icons/glintstone_pebble.png}。
      */
     private final ResourceLocation spellResourceLocation =
-            ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "glintstone_pebble");
+            new ResourceLocation(EldenRingSpellsMod.MOD_ID, "glintstone_pebble");
 
     /**
      * 铁魔法默认配置（可被服务端 irons 配置文件覆盖）。

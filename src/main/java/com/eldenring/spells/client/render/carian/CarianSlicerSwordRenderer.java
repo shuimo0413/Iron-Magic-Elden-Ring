@@ -14,8 +14,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.ClientHooks;
-
+import net.minecraftforge.client.ForgeHooksClient;
 /**
  * 卡利亚迅剑手持网格：原版生成物（像素挤成立体薄片），但走自发光 RenderType。
  * <p>
@@ -79,7 +78,7 @@ public final class CarianSlicerSwordRenderer {
         );
 
         poseStack.pushPose();
-        bakedModel = ClientHooks.handleCameraTransforms(
+        bakedModel = ForgeHooksClient.handleCameraTransforms(
                 poseStack,
                 bakedModel,
                 ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,
@@ -114,7 +113,7 @@ public final class CarianSlicerSwordRenderer {
                 player,
                 player.getId() + ItemDisplayContext.THIRD_PERSON_RIGHT_HAND.ordinal()
         );
-        ClientHooks.handleCameraTransforms(
+        ForgeHooksClient.handleCameraTransforms(
                 poseStack,
                 bakedModel,
                 ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,

@@ -95,25 +95,22 @@ public class HaimaCannonRenderer extends EntityRenderer<CannonOfHaimaProjectile>
         VertexConsumer bodyConsumer = bufferSource.getBuffer(
                 RenderType.entityTranslucentEmissive(HaimaCannonModels.CANNONBALL_BODY_TEXTURE)
         );
-        cannonballRoot.getChild(HaimaCannonModels.CORE_PART).render(
+        renderPartWithArgb(
+                cannonballRoot.getChild(HaimaCannonModels.CORE_PART),
                 poseStack,
                 bodyConsumer,
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
                 CannonOfHaimaSpell.CANNONBALL_CORE_COLOR_ARGB
         );
-        cannonballRoot.getChild(HaimaCannonModels.SHELL_PART).render(
+        renderPartWithArgb(
+                cannonballRoot.getChild(HaimaCannonModels.SHELL_PART),
                 poseStack,
                 bodyConsumer,
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
                 CannonOfHaimaSpell.CANNONBALL_BODY_COLOR_ARGB
         );
-        cannonballRoot.getChild(HaimaCannonModels.FACET_PART).render(
+        renderPartWithArgb(
+                cannonballRoot.getChild(HaimaCannonModels.FACET_PART),
                 poseStack,
                 bodyConsumer,
-                LightTexture.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
                 CannonOfHaimaSpell.CANNONBALL_FACET_COLOR_ARGB
         );
         poseStack.popPose();
@@ -167,30 +164,62 @@ public class HaimaCannonRenderer extends EntityRenderer<CannonOfHaimaProjectile>
                 RenderType.entityTranslucentEmissive(HaimaCannonModels.CANNONBALL_GLOW_TEXTURE)
         );
         int color = (alpha << 24) | (red << 16) | (green << 8) | blue;
-        consumer.addVertex(matrix, -0.5f, -0.5f, 0.0f)
-                .setColor(color)
-                .setUv(0.0f, 1.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, 0.5f, -0.5f, 0.0f)
-                .setColor(color)
-                .setUv(1.0f, 1.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, 0.5f, 0.5f, 0.0f)
-                .setColor(color)
-                .setUv(1.0f, 0.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
-        consumer.addVertex(matrix, -0.5f, 0.5f, 0.0f)
-                .setColor(color)
-                .setUv(0.0f, 0.0f)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(0.0f, 0.0f, 1.0f);
+        consumer.vertex(matrix, -0.5f, -0.5f, 0.0f)
+                .color(color)
+                .uv(0.0f, 1.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
+        consumer.vertex(matrix, 0.5f, -0.5f, 0.0f)
+                .color(color)
+                .uv(1.0f, 1.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
+        consumer.vertex(matrix, 0.5f, 0.5f, 0.0f)
+                .color(color)
+                .uv(1.0f, 0.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
+        consumer.vertex(matrix, -0.5f, 0.5f, 0.0f)
+                .color(color)
+                .uv(0.0f, 0.0f)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(0.0f, 0.0f, 1.0f)
+                .endVertex();
         poseStack.popPose();
+    }
+
+    /**
+     * 用 ARGB 颜色画一段模型部件。
+     * <p>
+     * 1.20.1 的 {@code ModelPart} 只有 4 参（无颜色）与 8 参（0–1 的 RGBA）两个 {@code render} 重载，
+     * 1.21 才有的「单 int ARGB」5 参重载不存在，所以在这里把 ARGB 拆成四个分量再调用。
+     */
+    private static void renderPartWithArgb(
+            ModelPart modelPart,
+            PoseStack poseStack,
+            VertexConsumer consumer,
+            int colorArgb
+    ) {
+        float alpha = ((colorArgb >> 24) & 0xFF) / 255.0f;
+        float red = ((colorArgb >> 16) & 0xFF) / 255.0f;
+        float green = ((colorArgb >> 8) & 0xFF) / 255.0f;
+        float blue = (colorArgb & 0xFF) / 255.0f;
+        modelPart.render(
+                poseStack,
+                consumer,
+                LightTexture.FULL_BRIGHT,
+                OverlayTexture.NO_OVERLAY,
+                red,
+                green,
+                blue,
+                alpha
+        );
     }
 }
