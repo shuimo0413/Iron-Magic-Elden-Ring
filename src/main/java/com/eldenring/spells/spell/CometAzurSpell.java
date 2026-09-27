@@ -5,6 +5,7 @@ import com.eldenring.spells.particle.cometazur.CometAzurFx;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.spell.data.CometAzurCastData;
+import com.eldenring.spells.spell.helper.ArmorPiercingSpellDamageSource;
 import com.eldenring.spells.spell.helper.CometAzurCasting;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -73,9 +74,10 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
         this.castTime = SPELL_CAST_TIME_TICKS;
     }
 
+    /** 起源咒：无视护甲（辉石抗性仍生效）。 */
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
-        return super.getDamageSource(projectile, attacker).setIFrames(0);
+        return ArmorPiercingSpellDamageSource.source(projectile, attacker, this).setIFrames(0);
     }
 
     @Override
