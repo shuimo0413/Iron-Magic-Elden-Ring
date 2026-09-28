@@ -56,11 +56,14 @@ public final class ModItems {
      * 物品模型走铁魔法 {@code template_spell_book_model}；客户端注册
      * {@code SpellBookCurioRenderer} 后腰侧显示立体书。
      * 须加入 {@code curios:spellbook} 物品标签才能装进魔法书槽。
+     * <p>
+     * 必须 {@code stacksTo(1)}：{@link SpellBook} 构造器不会自己限制堆叠，
+     * 可堆叠时整叠共用一份法术容器，能拿来复制卷轴。与铁魔法原版魔法书一致。
      */
     public static final DeferredItem<Item> STAR_CODEX = ITEMS.register(
             "star_codex",
             () -> new SpellBook(EldenRingServerConfig.STAR_CODEX_BASE_SLOTS,
-                    new Item.Properties().rarity(Rarity.RARE)).withSpellbookAttributes(
+                    new Item.Properties().stacksTo(1).rarity(Rarity.RARE)).withSpellbookAttributes(
                     new AttributeContainer(
                             ModAttributes.GLINTSTONE_SPELL_POWER,
                             EldenRingServerConfig.STAR_CODEX_GLINTSTONE_POWER_BONUS,
@@ -80,11 +83,12 @@ public final class ModItems {
      * 与星星法典同用铁魔法 {@link SpellBook} 模板（12 槽、立体书模型）；
      * 装备后：辉石法术强度 +25%、最大法力 +300。
      * 用起源晶体和传说墨水在锻造台升级星星法典，保留原书法术与扩容；需 {@code curios:spellbook} 标签。
+     * 同星星法典必须 {@code stacksTo(1)}，防止堆叠复制卷轴。
      */
     public static final DeferredItem<Item> ORIGIN_CODEX = ITEMS.register(
             "origin_codex",
             () -> new SpellBook(EldenRingServerConfig.ORIGIN_CODEX_BASE_SLOTS,
-                    new Item.Properties().rarity(Rarity.EPIC)).withSpellbookAttributes(
+                    new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)).withSpellbookAttributes(
                     new AttributeContainer(
                             ModAttributes.GLINTSTONE_SPELL_POWER,
                             EldenRingServerConfig.ORIGIN_CODEX_GLINTSTONE_POWER_BONUS,
