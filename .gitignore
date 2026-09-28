@@ -43,14 +43,19 @@ repo/
 __pycache__/
 *.pyc
 
-### Local Iron's Spellbooks reference (do not publish) ###
-工具链/*
-!工具链/equipment-gametest.init.gradle
-!工具链/validate_staff_models.mjs
-!工具链/make_equipment_test_fixture.mjs
-
-### Local demo media (do not publish) ###
-演示图片/
-
-wiki专用/
+### Local-only: shared authoring / AI / design docs (only the mod itself is published) ###
+工具链/
+模型/
 粒子库/
+演示图片/
+wiki专用/
+.cursor/
+AGENTS.md
+update_logs/
+net/
+法术解耦架构.md
+卡利亚迅剑话题交接.md
+辉石曲线拖尾原理.md
+毁灭流星星云原理.md
+代码阅读路径.md
+模组介绍（English）.md
