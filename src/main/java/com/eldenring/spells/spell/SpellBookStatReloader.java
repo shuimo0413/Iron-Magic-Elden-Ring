@@ -225,6 +225,14 @@ public final class SpellBookStatReloader {
                 GreatbladePhalanxSpell.SPELL_CAST_TIME_TICKS
         );
         apply(
+                ModSpells.LORETTA_GREATBOW.get(),
+                LorettaGreatbowSpell.SPELL_BASE_MANA_COST,
+                LorettaGreatbowSpell.SPELL_MANA_COST_PER_LEVEL,
+                LorettaGreatbowSpell.SPELL_BASE_SPELL_POWER,
+                LorettaGreatbowSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                LorettaGreatbowSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
                 ModSpells.GRAVITY_BALL.get(),
                 GravityBallSpell.SPELL_BASE_MANA_COST,
                 GravityBallSpell.SPELL_MANA_COST_PER_LEVEL,
@@ -239,6 +247,30 @@ public final class SpellBookStatReloader {
                 CollapsingStarsSpell.SPELL_BASE_SPELL_POWER,
                 CollapsingStarsSpell.SPELL_SPELL_POWER_PER_LEVEL,
                 CollapsingStarsSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
+                ModSpells.ROCK_SLING.get(),
+                RockSlingSpell.SPELL_BASE_MANA_COST,
+                RockSlingSpell.SPELL_MANA_COST_PER_LEVEL,
+                RockSlingSpell.SPELL_BASE_SPELL_POWER,
+                RockSlingSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                RockSlingSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
+                ModSpells.METEORITE.get(),
+                MeteoriteSpell.SPELL_BASE_MANA_COST,
+                MeteoriteSpell.SPELL_MANA_COST_PER_LEVEL,
+                MeteoriteSpell.SPELL_BASE_SPELL_POWER,
+                MeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                MeteoriteSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
+                ModSpells.METEORITE_OF_ASTEL.get(),
+                AstelMeteoriteSpell.SPELL_BASE_MANA_COST,
+                AstelMeteoriteSpell.SPELL_MANA_COST_PER_LEVEL,
+                AstelMeteoriteSpell.SPELL_BASE_SPELL_POWER,
+                AstelMeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                AstelMeteoriteSpell.SPELL_CAST_TIME_TICKS
         );
     }
 

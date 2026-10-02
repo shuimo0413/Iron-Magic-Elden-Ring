@@ -37,6 +37,18 @@ public final class ModSounds {
                     () -> SoundEvent.createVariableRangeEvent(id("spell_cast_start"))
             );
 
+    /**
+     * 本模组手动播放施法音时的音量，与铁魔法 {@code AbstractSpell#playSound} 的 2.0 对齐。
+     * <p>
+     * 客户端增益上限为 1.0，大于 1 只放大可听范围：范围 = {@code sounds.json} 的
+     * {@code attenuation_distance}（16 格）× 音量 = 32 格，线性衰减到 0。
+     * 调大 → 更远能听见；调小到 1.0 → 只剩 16 格。近处响度不变。
+     * <p>
+     * 距离衰减只对<b>单声道</b> OGG 生效，立体声会变成全局音量；换音频文件时先跑
+     * {@code 工具链/sound_to_mono.py}。
+     */
+    private static final float SPELL_SOUND_VOLUME = 2.0f;
+
     private ModSounds() {
     }
 
@@ -48,14 +60,14 @@ public final class ModSounds {
      * 在实体处播蓄力起手音。只在服务端调，会广播给附近玩家。
      */
     public static void playCastStart(Level level, Entity at) {
-        play(level, at.getX(), at.getY(), at.getZ(), SPELL_CAST_START.get(), 1.0f, 1.0f);
+        play(level, at.getX(), at.getY(), at.getZ(), SPELL_CAST_START.get(), SPELL_SOUND_VOLUME, 1.0f);
     }
 
     /**
      * 在世界坐标播蓄力起手音。只在服务端调。
      */
     public static void playCastStart(Level level, Vec3 at) {
-        play(level, at.x, at.y, at.z, SPELL_CAST_START.get(), 1.0f, 1.0f);
+        play(level, at.x, at.y, at.z, SPELL_CAST_START.get(), SPELL_SOUND_VOLUME, 1.0f);
     }
 
     /**
@@ -78,7 +90,7 @@ public final class ModSounds {
      * @param pitch 音高倍率。1.0 为原速；连发时略抬高可听出错峰，不要叠太多次 1.3 秒的原片
      */
     public static void playProjectileLaunch(Level level, double x, double y, double z, float pitch) {
-        play(level, x, y, z, SPELL_CAST.get(), 1.0f, pitch);
+        play(level, x, y, z, SPELL_CAST.get(), SPELL_SOUND_VOLUME, pitch);
     }
 
     private static void play(

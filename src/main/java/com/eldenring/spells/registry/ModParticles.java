@@ -472,6 +472,60 @@ public final class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GRAVITY_ECLIPSE =
             PARTICLE_TYPES.register("gravity_eclipse", () -> new SimpleParticleType(false));
 
+    // --- 冰霜星辰粒子库：深冰蓝 / 浅青 / 冷白，32×32，见 FrostParticle ---
+
+    /** 冰霜六芒星。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_STAR =
+            PARTICLE_TYPES.register("frost_star", () -> new SimpleParticleType(false));
+
+    /** 冰霜十字火花。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_SPARK =
+            PARTICLE_TYPES.register("frost_spark", () -> new SimpleParticleType(false));
+
+    /** 冰霜柔和光晕。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_GLOW =
+            PARTICLE_TYPES.register("frost_glow", () -> new SimpleParticleType(false));
+
+    /** 寒霜光环（环上带星屑）。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_HALO =
+            PARTICLE_TYPES.register("frost_halo", () -> new SimpleParticleType(false));
+
+    /** 斜切菱形冰碎片。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_SHARD =
+            PARTICLE_TYPES.register("frost_shard", () -> new SimpleParticleType(false));
+
+    /** 主晶 + 两侧小碎片的冰晶簇。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_CRYSTAL =
+            PARTICLE_TYPES.register("frost_crystal", () -> new SimpleParticleType(false));
+
+    /** 星尘雪花。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_SNOWFLAKE =
+            PARTICLE_TYPES.register("frost_snowflake", () -> new SimpleParticleType(false));
+
+    /** 细碎冰星屑。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_STARDUST =
+            PARTICLE_TYPES.register("frost_stardust", () -> new SimpleParticleType(false));
+
+    /** 不规则寒雾团。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_MIST =
+            PARTICLE_TYPES.register("frost_mist", () -> new SimpleParticleType(false));
+
+    /** 冰霜十字绽光。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_FLARE =
+            PARTICLE_TYPES.register("frost_flare", () -> new SimpleParticleType(false));
+
+    /** 微弱冷白闪烁。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_SPARKLE =
+            PARTICLE_TYPES.register("frost_sparkle", () -> new SimpleParticleType(false));
+
+    /** 寒霜光环：双环 + 内雪花。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_AURA =
+            PARTICLE_TYPES.register("frost_aura", () -> new SimpleParticleType(false));
+
+    /** 冰霜漂浮微粒（三帧）。 */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_MOTE =
+            PARTICLE_TYPES.register("frost_mote", () -> new SimpleParticleType(false));
+
     private ModParticles() {
     }
 

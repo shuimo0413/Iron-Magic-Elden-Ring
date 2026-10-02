@@ -5,7 +5,8 @@
       {
         "name": "iss_elden_ring:spell_cast",
         "volume": 1.0,
-        "pitch": 1.0
+        "pitch": 1.0,
+        "attenuation_distance": 16
       }
     ]
   },
@@ -15,7 +16,8 @@
       {
         "name": "iss_elden_ring:spell_cast_start",
         "volume": 1.0,
-        "pitch": 1.0
+        "pitch": 1.0,
+        "attenuation_distance": 16
       }
     ]
   }

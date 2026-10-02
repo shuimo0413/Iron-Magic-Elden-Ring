@@ -16,6 +16,8 @@ import com.eldenring.spells.client.render.glintstone.GlintstoneCometModels;
 import com.eldenring.spells.client.render.glintstone.GlintstoneProjectileRenderer;
 import com.eldenring.spells.client.render.glintstone.SpiralShardRenderer;
 import com.eldenring.spells.client.render.gravity.GravityBallRenderer;
+import com.eldenring.spells.client.render.gravity.MeteoriteRenderer;
+import com.eldenring.spells.client.render.gravity.RockSlingRenderer;
 import com.eldenring.spells.client.render.haima.HaimaCannonModels;
 import com.eldenring.spells.client.render.haima.HaimaCannonRenderer;
 import com.eldenring.spells.client.render.haima.HaimaGavelModels;
@@ -67,6 +69,7 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.CRYSTAL_BURST_SHARD.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GREAT_GLINTSTONE_SHARD.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GLINTSTONE_COMET.get(), GlintstoneProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.LORETTA_GREATBOW.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GLINTSTONE_STAR.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.STAR_SHOWER.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.STARS_OF_RUIN.get(), GlintstoneProjectileRenderer::new);
@@ -86,6 +89,9 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.MAGIC_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.PHALANX_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.GRAVITY_BALL.get(), GravityBallRenderer::new);
+        event.registerEntityRenderer(ModEntities.ROCK_SLING.get(), RockSlingRenderer::new);
+        event.registerEntityRenderer(ModEntities.METEORITE.get(), MeteoriteRenderer::new);
+        event.registerEntityRenderer(ModEntities.METEORITE_VOID.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.ASTROLOGER.get(), AstrologerRenderer::new);
     }
 

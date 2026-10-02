@@ -22,8 +22,12 @@ import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
 import com.eldenring.spells.spell.GravityBallSpell;
+import com.eldenring.spells.spell.LorettaGreatbowSpell;
 import com.eldenring.spells.spell.GreatbladePhalanxSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
+import com.eldenring.spells.spell.MeteoriteSpell;
+import com.eldenring.spells.spell.AstelMeteoriteSpell;
+import com.eldenring.spells.spell.RockSlingSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
 import com.eldenring.spells.spell.StarShowerSpell;
 import com.eldenring.spells.spell.StarlightSpell;
@@ -67,6 +71,7 @@ public final class EldenRingServerConfig {
     public static final HomingValues GREAT_GLINTSTONE_SHARD;
     public static final HomingValues GLINTSTONE_COMET;
     public static final HomingValues COMET;
+    public static final HomingValues LORETTA_GREATBOW;
     public static final VolleyValues GLINTSTONE_STARS;
     public static final VolleyValues STAR_SHOWER;
     public static final VolleyValues STARS_OF_RUIN;
@@ -89,6 +94,9 @@ public final class EldenRingServerConfig {
     public static final GlintstoneArcValues GLINTSTONE_ARC;
     public static final GravityBallValues GRAVITY_BALL;
     public static final CollapsingStarsValues COLLAPSING_STARS;
+    public static final RockSlingValues ROCK_SLING;
+    public static final MeteoriteValues METEORITE;
+    public static final AstelMeteoriteValues METEORITE_OF_ASTEL;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -159,6 +167,18 @@ public final class EldenRingServerConfig {
                 CometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 CometSpell.SPELL_DAMAGE_PER_SPELL_POWER,
                 CometSpell.EXPLOSION_RADIUS_BLOCKS
+        ));
+        LORETTA_GREATBOW = HomingValues.create(builder, "loretta_greatbow", new HomingSeed(
+                LorettaGreatbowSpell.SPELL_BASE_MANA_COST,
+                LorettaGreatbowSpell.SPELL_MANA_COST_PER_LEVEL,
+                LorettaGreatbowSpell.SPELL_BASE_SPELL_POWER,
+                LorettaGreatbowSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                LorettaGreatbowSpell.SPELL_CAST_TIME_TICKS,
+                LorettaGreatbowSpell.PROJECTILE_FLIGHT_SPEED,
+                LorettaGreatbowSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
+                LorettaGreatbowSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                LorettaGreatbowSpell.SPELL_DAMAGE_PER_SPELL_POWER,
+                LorettaGreatbowSpell.EXPLOSION_RADIUS_BLOCKS
         ));
 
         GLINTSTONE_STARS = VolleyValues.create(builder, "glintstone_stars", new VolleySeed(
@@ -253,6 +273,9 @@ public final class EldenRingServerConfig {
         GLINTSTONE_ARC = GlintstoneArcValues.create(builder);
         GRAVITY_BALL = GravityBallValues.create(builder);
         COLLAPSING_STARS = CollapsingStarsValues.create(builder);
+        ROCK_SLING = RockSlingValues.create(builder);
+        METEORITE = MeteoriteValues.create(builder);
+        METEORITE_OF_ASTEL = AstelMeteoriteValues.create(builder);
 
         builder.push("equipment").push("azur_staff");
         AZUR_CAST_TIME_REDUCTION = builder
@@ -355,6 +378,20 @@ public final class EldenRingServerConfig {
                 CometSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
+        applyHoming(LORETTA_GREATBOW, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+            LorettaGreatbowSpell.SPELL_BASE_MANA_COST = mana;
+            LorettaGreatbowSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
+            LorettaGreatbowSpell.SPELL_BASE_SPELL_POWER = power;
+            LorettaGreatbowSpell.SPELL_SPELL_POWER_PER_LEVEL = powerPer;
+            LorettaGreatbowSpell.SPELL_CAST_TIME_TICKS = castTime;
+            LorettaGreatbowSpell.PROJECTILE_FLIGHT_SPEED = speed;
+            LorettaGreatbowSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
+            LorettaGreatbowSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            LorettaGreatbowSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
+            if (explosion != null) {
+                LorettaGreatbowSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
+            }
+        });
 
         applyVolley(GLINTSTONE_STARS, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger) -> {
             GlintstoneStarsSpell.SPELL_BASE_MANA_COST = mana;
@@ -415,6 +452,9 @@ public final class EldenRingServerConfig {
         GLINTSTONE_ARC.apply();
         GRAVITY_BALL.apply();
         COLLAPSING_STARS.apply();
+        ROCK_SLING.apply();
+        METEORITE.apply();
+        METEORITE_OF_ASTEL.apply();
     }
 
     private static void applyHoming(HomingValues values, HomingTarget target) {
@@ -2197,6 +2237,278 @@ public final class EldenRingServerConfig {
             CollapsingStarsSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1 = pullBlocksAtLevel1.get();
             CollapsingStarsSpell.SUCTION_PULL_BLOCKS_PER_LEVEL = pullBlocksPerLevel.get();
             CollapsingStarsSpell.SUCTION_STAND_OFF_BLOCKS = standOffBlocks.get();
+        }
+    }
+
+    /**
+     * 岩石球：蓝耗 / 单块伤害 / 岩石数 / 弹速 / 射程 / 索敌 / 转向 / 击退。
+     */
+    public static final class RockSlingValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.IntValue rockCount;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue maxRangeBlocks;
+        private final ModConfigSpec.DoubleValue trackingRangeBlocks;
+        private final ModConfigSpec.DoubleValue maxTurnAngleDegreesPerTick;
+        private final ModConfigSpec.DoubleValue knockbackStrength;
+
+        private RockSlingValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.IntValue rockCount,
+                ModConfigSpec.DoubleValue flightSpeed,
+                ModConfigSpec.DoubleValue maxRangeBlocks,
+                ModConfigSpec.DoubleValue trackingRangeBlocks,
+                ModConfigSpec.DoubleValue maxTurnAngleDegreesPerTick,
+                ModConfigSpec.DoubleValue knockbackStrength
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.rockCount = rockCount;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.trackingRangeBlocks = trackingRangeBlocks;
+            this.maxTurnAngleDegreesPerTick = maxTurnAngleDegreesPerTick;
+            this.knockbackStrength = knockbackStrength;
+        }
+
+        static RockSlingValues create(ModConfigSpec.Builder builder) {
+            builder.push("rock_sling");
+            RockSlingValues values = new RockSlingValues(
+                    SpellBookKeys.define(
+                            builder,
+                            RockSlingSpell.SPELL_BASE_MANA_COST,
+                            RockSlingSpell.SPELL_MANA_COST_PER_LEVEL,
+                            RockSlingSpell.SPELL_BASE_SPELL_POWER,
+                            RockSlingSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            RockSlingSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "单块岩石伤害 = 法强 × 本系数。每块独立结算，全中约为 3 倍。", RockSlingSpell.SPELL_DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.integer(builder, "rock_count", "一次凝聚的岩石数量（横排）。", RockSlingSpell.ROCK_COUNT, 1, 7),
+                    ConfigSpecHelper.floating(builder, "projectile_flight_speed", "岩石飞行速度（方块/tick）。越大越难躲。", RockSlingSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0),
+                    ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离后碎裂。", RockSlingSpell.PROJECTILE_MAX_RANGE_BLOCKS, 1.0, 128.0),
+                    ConfigSpecHelper.floating(builder, "projectile_tracking_range_blocks", "发射时索敌半径（方块）。", RockSlingSpell.PROJECTILE_TRACKING_RANGE_BLOCKS, 0.0, 128.0),
+                    ConfigSpecHelper.floating(builder, "projectile_max_turn_angle_degrees_per_tick", "飞行中每 tick 最大转向（度）。0 = 不追踪。", RockSlingSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK, 0.0, 180.0),
+                    ConfigSpecHelper.floating(builder, "knockback_strength", "单块命中击退强度（原版 knockback，受击退抗性削减）。0 = 不击退。", RockSlingSpell.KNOCKBACK_STRENGTH, 0.0, 8.0)
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            RockSlingSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            RockSlingSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            RockSlingSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            RockSlingSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
+            RockSlingSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            RockSlingSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            RockSlingSpell.ROCK_COUNT = rockCount.get();
+            RockSlingSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            RockSlingSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            RockSlingSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = trackingRangeBlocks.get();
+            RockSlingSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = maxTurnAngleDegreesPerTick.get().floatValue();
+            RockSlingSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
+        }
+    }
+
+    /**
+     * 陨石：蓝耗（每 10 tick 一次）/ 单颗伤害 / 张开时长 / 出弹间隔 / 弹速 / 射程 / 下坠角 / 散布 / 爆炸 / 击退。
+     */
+    public static final class MeteoriteValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.IntValue voidOpeningDurationTicks;
+        private final ModConfigSpec.IntValue spawnIntervalTicks;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue maxRangeBlocks;
+        private final ModConfigSpec.DoubleValue descentBaseAngleDegrees;
+        private final ModConfigSpec.DoubleValue descentMinAngleDegrees;
+        private final ModConfigSpec.DoubleValue descentMaxAngleDegrees;
+        private final ModConfigSpec.DoubleValue descentJitterDegrees;
+        private final ModConfigSpec.DoubleValue scatterHalfAngleDegrees;
+        private final ModConfigSpec.DoubleValue explosionRadiusBlocks;
+        private final ModConfigSpec.DoubleValue knockbackStrength;
+
+        private MeteoriteValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.IntValue voidOpeningDurationTicks,
+                ModConfigSpec.IntValue spawnIntervalTicks,
+                ModConfigSpec.DoubleValue flightSpeed,
+                ModConfigSpec.DoubleValue maxRangeBlocks,
+                ModConfigSpec.DoubleValue descentBaseAngleDegrees,
+                ModConfigSpec.DoubleValue descentMinAngleDegrees,
+                ModConfigSpec.DoubleValue descentMaxAngleDegrees,
+                ModConfigSpec.DoubleValue descentJitterDegrees,
+                ModConfigSpec.DoubleValue scatterHalfAngleDegrees,
+                ModConfigSpec.DoubleValue explosionRadiusBlocks,
+                ModConfigSpec.DoubleValue knockbackStrength
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.voidOpeningDurationTicks = voidOpeningDurationTicks;
+            this.spawnIntervalTicks = spawnIntervalTicks;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.descentBaseAngleDegrees = descentBaseAngleDegrees;
+            this.descentMinAngleDegrees = descentMinAngleDegrees;
+            this.descentMaxAngleDegrees = descentMaxAngleDegrees;
+            this.descentJitterDegrees = descentJitterDegrees;
+            this.scatterHalfAngleDegrees = scatterHalfAngleDegrees;
+            this.explosionRadiusBlocks = explosionRadiusBlocks;
+            this.knockbackStrength = knockbackStrength;
+        }
+
+        static MeteoriteValues create(ModConfigSpec.Builder builder) {
+            builder.push("meteorite");
+            MeteoriteValues values = new MeteoriteValues(
+                    SpellBookKeys.define(
+                            builder,
+                            MeteoriteSpell.SPELL_BASE_MANA_COST,
+                            MeteoriteSpell.SPELL_MANA_COST_PER_LEVEL,
+                            MeteoriteSpell.SPELL_BASE_SPELL_POWER,
+                            MeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            MeteoriteSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "单颗陨石（含落地爆炸）伤害 = 法强 × 本系数。", MeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.integer(builder, "void_opening_duration_ticks", "黑洞张开时长（tick），期间不落陨石。20=1 秒。", MeteoriteSpell.VOID_OPENING_DURATION_TICKS, 0, 200),
+                    ConfigSpecHelper.integer(builder, "meteorite_spawn_interval_ticks", "相邻两颗陨石间隔（tick）。10=每秒 2 颗。", MeteoriteSpell.METEORITE_SPAWN_INTERVAL_TICKS, 1, 40),
+                    ConfigSpecHelper.floating(builder, "projectile_flight_speed", "陨石飞行速度（方块/tick）。越大越难躲。", MeteoriteSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0),
+                    ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离还没落地就碎裂。", MeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS, 4.0, 128.0),
+                    ConfigSpecHelper.floating(builder, "descent_base_angle_degrees", "平视时的下坠角（度，相对水平向下），视线俯角叠加其上。越大落得越近。", MeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES, 0.0, 89.0),
+                    ConfigSpecHelper.floating(builder, "descent_min_angle_degrees", "下坠角下限（度）。抬头时不低于它。", MeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES, 1.0, 89.0),
+                    ConfigSpecHelper.floating(builder, "descent_max_angle_degrees", "下坠角上限（度）。低头时不高于它。", MeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES, 1.0, 89.0),
+                    ConfigSpecHelper.floating(builder, "descent_jitter_degrees", "下坠角随机抖动（度，±），让落点前后错开。", MeteoriteSpell.DESCENT_JITTER_DEGREES, 0.0, 30.0),
+                    ConfigSpecHelper.floating(builder, "scatter_half_angle_degrees", "左右散布半角（度）。越大落区扇面越宽。", MeteoriteSpell.SCATTER_HALF_ANGLE_DEGREES, 0.0, 60.0),
+                    ConfigSpecHelper.floating(builder, "explosion_radius_blocks", "落地爆炸半径（方块）。范围内每个敌人各吃一次伤害。", MeteoriteSpell.EXPLOSION_RADIUS_BLOCKS, 0.0, 8.0),
+                    ConfigSpecHelper.floating(builder, "knockback_strength", "爆炸击退强度（原版 knockback，受击退抗性削减）。0 = 不击退。", MeteoriteSpell.KNOCKBACK_STRENGTH, 0.0, 8.0)
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            MeteoriteSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            MeteoriteSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            MeteoriteSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            MeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
+            MeteoriteSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            MeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            MeteoriteSpell.VOID_OPENING_DURATION_TICKS = voidOpeningDurationTicks.get();
+            MeteoriteSpell.METEORITE_SPAWN_INTERVAL_TICKS = spawnIntervalTicks.get();
+            MeteoriteSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            MeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            MeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES = descentBaseAngleDegrees.get().floatValue();
+            MeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES = descentMinAngleDegrees.get().floatValue();
+            MeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES = descentMaxAngleDegrees.get().floatValue();
+            MeteoriteSpell.DESCENT_JITTER_DEGREES = descentJitterDegrees.get().floatValue();
+            MeteoriteSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
+            MeteoriteSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadiusBlocks.get().floatValue();
+            MeteoriteSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
+        }
+    }
+
+    /**
+     * 艾斯提陨石：蓝耗（每 10 tick 一次）/ 单颗伤害 / 裂缝数量与节奏 / 扇形选点 / 弹速 / 射程 / 下坠角 / 爆炸 / 击退。
+     */
+    public static final class AstelMeteoriteValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.IntValue castWindupTicks;
+        private final ModConfigSpec.IntValue maxConcurrentRifts;
+        private final ModConfigSpec.IntValue meteoritesPerRiftMin;
+        private final ModConfigSpec.IntValue meteoritesPerRiftMax;
+        private final ModConfigSpec.IntValue riftOpeningDurationTicks;
+        private final ModConfigSpec.IntValue riftMeteoriteIntervalTicks;
+        private final ModConfigSpec.IntValue riftSpawnIntervalTicks;
+        private final ModConfigSpec.DoubleValue riftFanHalfAngleDegrees;
+        private final ModConfigSpec.DoubleValue riftFacingSpreadFraction;
+        private final ModConfigSpec.DoubleValue riftForwardMinBlocks;
+        private final ModConfigSpec.DoubleValue riftForwardMaxBlocks;
+        private final ModConfigSpec.DoubleValue riftHeightMinBlocks;
+        private final ModConfigSpec.DoubleValue riftHeightMaxBlocks;
+        private final ModConfigSpec.DoubleValue flightSpeed;
+        private final ModConfigSpec.DoubleValue maxRangeBlocks;
+        private final ModConfigSpec.DoubleValue descentBaseAngleDegrees;
+        private final ModConfigSpec.DoubleValue descentMinAngleDegrees;
+        private final ModConfigSpec.DoubleValue descentMaxAngleDegrees;
+        private final ModConfigSpec.DoubleValue descentJitterDegrees;
+        private final ModConfigSpec.DoubleValue meteoriteYawJitterDegrees;
+        private final ModConfigSpec.DoubleValue explosionRadiusBlocks;
+        private final ModConfigSpec.DoubleValue knockbackStrength;
+
+        /** 按 toml 中出现的顺序逐项定义；调用前后由 {@link #create} 负责 push / pop。 */
+        private AstelMeteoriteValues(ModConfigSpec.Builder builder) {
+            this.book = SpellBookKeys.define(
+                    builder,
+                    AstelMeteoriteSpell.SPELL_BASE_MANA_COST,
+                    AstelMeteoriteSpell.SPELL_MANA_COST_PER_LEVEL,
+                    AstelMeteoriteSpell.SPELL_BASE_SPELL_POWER,
+                    AstelMeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                    AstelMeteoriteSpell.SPELL_CAST_TIME_TICKS
+            );
+            this.damagePerSpellPower = ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "单颗陨石（含落地爆炸）伤害 = 法强 × 本系数。", AstelMeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER, 0.0, 20.0);
+            this.castWindupTicks = ConfigSpecHelper.integer(builder, "cast_windup_ticks", "起手蓄力时长（tick）：只张开第一道裂缝，不落陨石、不开其它裂缝。20=1 秒，同陨石。", AstelMeteoriteSpell.CAST_WINDUP_TICKS, 0, 200);
+            this.maxConcurrentRifts = ConfigSpecHelper.integer(builder, "max_concurrent_rifts", "同时存活的虚空裂缝上限（道）。", AstelMeteoriteSpell.MAX_CONCURRENT_RIFTS, 1, 8);
+            this.meteoritesPerRiftMin = ConfigSpecHelper.integer(builder, "meteorites_per_rift_min", "每道裂缝最少落几颗陨石后坍缩。", AstelMeteoriteSpell.METEORITES_PER_RIFT_MIN, 1, 10);
+            this.meteoritesPerRiftMax = ConfigSpecHelper.integer(builder, "meteorites_per_rift_max", "每道裂缝最多落几颗陨石后坍缩。", AstelMeteoriteSpell.METEORITES_PER_RIFT_MAX, 1, 10);
+            this.riftOpeningDurationTicks = ConfigSpecHelper.integer(builder, "rift_opening_duration_ticks", "裂缝张开时长（tick），期间不落陨石。", AstelMeteoriteSpell.RIFT_OPENING_DURATION_TICKS, 1, 100);
+            this.riftMeteoriteIntervalTicks = ConfigSpecHelper.integer(builder, "rift_meteorite_interval_ticks", "同一道裂缝相邻两颗陨石的间隔（tick）。", AstelMeteoriteSpell.RIFT_METEORITE_INTERVAL_TICKS, 1, 40);
+            this.riftSpawnIntervalTicks = ConfigSpecHelper.integer(builder, "rift_spawn_interval_ticks", "两次开新裂缝之间的最短间隔（tick）。", AstelMeteoriteSpell.RIFT_SPAWN_INTERVAL_TICKS, 1, 40);
+            this.riftFanHalfAngleDegrees = ConfigSpecHelper.floating(builder, "rift_fan_half_angle_degrees", "裂缝选点扇形半角（度，相对施法者朝向）。越大覆盖越宽。", AstelMeteoriteSpell.RIFT_FAN_HALF_ANGLE_DEGREES, 0.0, 90.0);
+            this.riftFacingSpreadFraction = ConfigSpecHelper.floating(builder, "rift_facing_spread_fraction", "裂缝朝向保留位置偏角的比例（0–1）。越小陨石越集中砸向正前方；1 = 朝向与位置一致。", AstelMeteoriteSpell.RIFT_FACING_SPREAD_FRACTION, 0.0, 1.0);
+            this.riftForwardMinBlocks = ConfigSpecHelper.floating(builder, "rift_forward_min_blocks", "裂缝中心最小水平前移（方块）。", AstelMeteoriteSpell.RIFT_FORWARD_MIN_BLOCKS, 0.0, 16.0);
+            this.riftForwardMaxBlocks = ConfigSpecHelper.floating(builder, "rift_forward_max_blocks", "裂缝中心最大水平前移（方块）。", AstelMeteoriteSpell.RIFT_FORWARD_MAX_BLOCKS, 0.0, 16.0);
+            this.riftHeightMinBlocks = ConfigSpecHelper.floating(builder, "rift_height_min_blocks", "裂缝中心最小上抬高度（方块，相对眼睛）。", AstelMeteoriteSpell.RIFT_HEIGHT_MIN_BLOCKS, 0.0, 16.0);
+            this.riftHeightMaxBlocks = ConfigSpecHelper.floating(builder, "rift_height_max_blocks", "裂缝中心最大上抬高度（方块，相对眼睛）。", AstelMeteoriteSpell.RIFT_HEIGHT_MAX_BLOCKS, 0.0, 16.0);
+            this.flightSpeed = ConfigSpecHelper.floating(builder, "projectile_flight_speed", "陨石飞行速度（方块/tick）。越大越难躲。", AstelMeteoriteSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0);
+            this.maxRangeBlocks = ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离还没落地就碎裂。", AstelMeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS, 4.0, 128.0);
+            this.descentBaseAngleDegrees = ConfigSpecHelper.floating(builder, "descent_base_angle_degrees", "平视时的下坠角（度，相对水平向下），视线俯角叠加其上。越大落得越近。", AstelMeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES, 0.0, 89.0);
+            this.descentMinAngleDegrees = ConfigSpecHelper.floating(builder, "descent_min_angle_degrees", "下坠角下限（度）。抬头时不低于它。", AstelMeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES, 1.0, 89.0);
+            this.descentMaxAngleDegrees = ConfigSpecHelper.floating(builder, "descent_max_angle_degrees", "下坠角上限（度）。低头时不高于它。", AstelMeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES, 1.0, 89.0);
+            this.descentJitterDegrees = ConfigSpecHelper.floating(builder, "descent_jitter_degrees", "下坠角随机抖动（度，±），让落点前后错开。", AstelMeteoriteSpell.DESCENT_JITTER_DEGREES, 0.0, 30.0);
+            this.meteoriteYawJitterDegrees = ConfigSpecHelper.floating(builder, "meteorite_yaw_jitter_degrees", "单颗陨石相对所在裂缝朝向的左右随机偏转（度，±）。", AstelMeteoriteSpell.METEORITE_YAW_JITTER_DEGREES, 0.0, 45.0);
+            this.explosionRadiusBlocks = ConfigSpecHelper.floating(builder, "explosion_radius_blocks", "落地爆炸半径（方块）。范围内每个敌人各吃一次伤害。", AstelMeteoriteSpell.EXPLOSION_RADIUS_BLOCKS, 0.0, 8.0);
+            this.knockbackStrength = ConfigSpecHelper.floating(builder, "knockback_strength", "爆炸击退强度（原版 knockback，受击退抗性削减）。0 = 不击退。", AstelMeteoriteSpell.KNOCKBACK_STRENGTH, 0.0, 8.0);
+        }
+
+        static AstelMeteoriteValues create(ModConfigSpec.Builder builder) {
+            builder.push("meteorite_of_astel");
+            AstelMeteoriteValues values = new AstelMeteoriteValues(builder);
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            AstelMeteoriteSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            AstelMeteoriteSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            AstelMeteoriteSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            AstelMeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
+            AstelMeteoriteSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            AstelMeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            AstelMeteoriteSpell.CAST_WINDUP_TICKS = castWindupTicks.get();
+            AstelMeteoriteSpell.MAX_CONCURRENT_RIFTS = maxConcurrentRifts.get();
+            AstelMeteoriteSpell.METEORITES_PER_RIFT_MIN = meteoritesPerRiftMin.get();
+            AstelMeteoriteSpell.METEORITES_PER_RIFT_MAX = meteoritesPerRiftMax.get();
+            AstelMeteoriteSpell.RIFT_OPENING_DURATION_TICKS = riftOpeningDurationTicks.get();
+            AstelMeteoriteSpell.RIFT_METEORITE_INTERVAL_TICKS = riftMeteoriteIntervalTicks.get();
+            AstelMeteoriteSpell.RIFT_SPAWN_INTERVAL_TICKS = riftSpawnIntervalTicks.get();
+            AstelMeteoriteSpell.RIFT_FAN_HALF_ANGLE_DEGREES = riftFanHalfAngleDegrees.get().floatValue();
+            AstelMeteoriteSpell.RIFT_FACING_SPREAD_FRACTION = riftFacingSpreadFraction.get().floatValue();
+            AstelMeteoriteSpell.RIFT_FORWARD_MIN_BLOCKS = riftForwardMinBlocks.get();
+            AstelMeteoriteSpell.RIFT_FORWARD_MAX_BLOCKS = riftForwardMaxBlocks.get();
+            AstelMeteoriteSpell.RIFT_HEIGHT_MIN_BLOCKS = riftHeightMinBlocks.get();
+            AstelMeteoriteSpell.RIFT_HEIGHT_MAX_BLOCKS = riftHeightMaxBlocks.get();
+            AstelMeteoriteSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            AstelMeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            AstelMeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES = descentBaseAngleDegrees.get().floatValue();
+            AstelMeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES = descentMinAngleDegrees.get().floatValue();
+            AstelMeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES = descentMaxAngleDegrees.get().floatValue();
+            AstelMeteoriteSpell.DESCENT_JITTER_DEGREES = descentJitterDegrees.get().floatValue();
+            AstelMeteoriteSpell.METEORITE_YAW_JITTER_DEGREES = meteoriteYawJitterDegrees.get().floatValue();
+            AstelMeteoriteSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadiusBlocks.get().floatValue();
+            AstelMeteoriteSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
         }
     }
 }

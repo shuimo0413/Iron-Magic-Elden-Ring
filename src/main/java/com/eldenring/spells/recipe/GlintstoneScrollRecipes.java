@@ -53,7 +53,7 @@ public final class GlintstoneScrollRecipes {
         putOrigin(map, "founding_rain_of_stars");
         putOrigin(map, "comet_azur");
 
-        // —— 蓝色辉石碎片：卡利亚近战 / 辉剑阵 ——
+        // —— 蓝色辉石碎片：卡利亚近战 / 辉剑阵 / 罗蕾塔大弓 ——
         putBlue(map, "carian_slicer");
         putBlue(map, "carian_greatsword");
         putBlue(map, "carian_piercer");
@@ -61,10 +61,14 @@ public final class GlintstoneScrollRecipes {
         putBlue(map, "glintblade_phalanx");
         putBlue(map, "carian_phalanx");
         putBlue(map, "greatblade_phalanx");
+        putBlue(map, "loretta_greatbow");
 
         // —— 紫色辉石碎片：重力 ——
         putPurple(map, "gravity_ball");
         putPurple(map, "collapsing_stars");
+        putPurple(map, "rock_sling");
+        putPurple(map, "meteorite");
+        putPurple(map, "meteorite_of_astel");
 
         SPELL_TO_FOCUS = Collections.unmodifiableMap(map);
     }

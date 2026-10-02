@@ -15,12 +15,16 @@ import com.eldenring.spells.entity.CrystalBurstShardProjectile;
 import com.eldenring.spells.entity.GavelOfHaimaEntity;
 import com.eldenring.spells.entity.GlintstoneArcProjectile;
 import com.eldenring.spells.entity.GlintstoneCometProjectile;
+import com.eldenring.spells.entity.LorettaGreatbowProjectile;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
 import com.eldenring.spells.entity.PhalanxGlintbladeEntity;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
 import com.eldenring.spells.entity.GlintstoneStarProjectile;
 import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
 import com.eldenring.spells.entity.GravityBallProjectile;
+import com.eldenring.spells.entity.MeteoriteProjectile;
+import com.eldenring.spells.entity.MeteoriteVoidEntity;
+import com.eldenring.spells.entity.RockSlingProjectile;
 import com.eldenring.spells.entity.GreatGlintstoneShardProjectile;
 import com.eldenring.spells.entity.SpiralShardProjectile;
 import com.eldenring.spells.entity.StarShowerProjectile;
@@ -110,6 +114,16 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("glintstone_comet"))
+            );
+
+    /** 罗蕾塔的大弓：高速追踪彗星箭，碰撞箱与辉石彗星相同。 */
+    public static final DeferredHolder<EntityType<?>, EntityType<LorettaGreatbowProjectile>> LORETTA_GREATBOW =
+            ENTITIES.register("loretta_greatbow", () ->
+                    EntityType.Builder.<LorettaGreatbowProjectile>of(LorettaGreatbowProjectile::new, MobCategory.MISC)
+                            .sized(0.95f, 0.95f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("loretta_greatbow"))
             );
 
     public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneStarProjectile>> GLINTSTONE_STAR =
@@ -328,6 +342,42 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("gravity_ball"))
+            );
+
+    /**
+     * 岩石球：蓄力时悬停在施法者身前，满蓄后飞出。碰撞箱按满尺寸岩石取。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<RockSlingProjectile>> ROCK_SLING =
+            ENTITIES.register("rock_sling", () ->
+                    EntityType.Builder.<RockSlingProjectile>of(RockSlingProjectile::new, MobCategory.MISC)
+                            .sized(0.7f, 0.7f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("rock_sling"))
+            );
+
+    /**
+     * 陨石：从虚空黑洞倾斜砸下的不追踪石块。碰撞箱按满尺寸陨石取。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<MeteoriteProjectile>> METEORITE =
+            ENTITIES.register("meteorite", () ->
+                    EntityType.Builder.<MeteoriteProjectile>of(MeteoriteProjectile::new, MobCategory.MISC)
+                            .sized(0.8f, 0.8f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("meteorite"))
+            );
+
+    /**
+     * 陨石的虚空黑洞：施法者头顶前方的跟随锚点，只刷粒子不渲染模型。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<MeteoriteVoidEntity>> METEORITE_VOID =
+            ENTITIES.register("meteorite_void", () ->
+                    EntityType.Builder.<MeteoriteVoidEntity>of(MeteoriteVoidEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(96)
+                            .updateInterval(1)
+                            .build(id("meteorite_void"))
             );
 
     /**

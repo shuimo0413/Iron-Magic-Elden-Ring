@@ -59,7 +59,10 @@ public final class GravityFx {
         return CLIENT_PARTICLE_SIZE_SCALE.get();
     }
 
-    private static void withParticleSizeScale(float sizeScale, Runnable spawnAction) {
+    /**
+     * 在 {@code spawnAction} 里客户端 {@code addParticle} 出来的重力粒子按 {@code sizeScale} 放大 / 缩小。仅客户端有意义。
+     */
+    public static void withParticleSizeScale(float sizeScale, Runnable spawnAction) {
         Float previousScale = CLIENT_PARTICLE_SIZE_SCALE.get();
         CLIENT_PARTICLE_SIZE_SCALE.set(sizeScale);
         try {

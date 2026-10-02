@@ -2,6 +2,7 @@ package com.eldenring.spells.client;
 
 import com.eldenring.spells.particle.carian.CarianParticle;
 import com.eldenring.spells.particle.carian.CarianSlashParticle;
+import com.eldenring.spells.particle.frost.FrostParticle;
 import com.eldenring.spells.particle.gravity.GravityParticle;
 import com.eldenring.spells.particle.cometazur.CometAzurInboundParticle;
 import com.eldenring.spells.particle.cometazur.CometAzurJetEmitterParticle;
@@ -138,5 +139,18 @@ public final class ClientParticleProviders {
         event.registerSpriteSet(ModParticles.GRAVITY_RING.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.RING));
         event.registerSpriteSet(ModParticles.GRAVITY_FILAMENT.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.FILAMENT));
         event.registerSpriteSet(ModParticles.GRAVITY_ECLIPSE.get(), sprites -> new GravityParticle.Provider(sprites, GravityParticle.Kind.ECLIPSE));
+        event.registerSpriteSet(ModParticles.FROST_STAR.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.STAR));
+        event.registerSpriteSet(ModParticles.FROST_SPARK.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.SPARK));
+        event.registerSpriteSet(ModParticles.FROST_GLOW.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.GLOW));
+        event.registerSpriteSet(ModParticles.FROST_HALO.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.HALO));
+        event.registerSpriteSet(ModParticles.FROST_SHARD.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.SHARD));
+        event.registerSpriteSet(ModParticles.FROST_CRYSTAL.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.CRYSTAL));
+        event.registerSpriteSet(ModParticles.FROST_SNOWFLAKE.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.SNOWFLAKE));
+        event.registerSpriteSet(ModParticles.FROST_STARDUST.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.STARDUST));
+        event.registerSpriteSet(ModParticles.FROST_MIST.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.MIST));
+        event.registerSpriteSet(ModParticles.FROST_FLARE.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.FLARE));
+        event.registerSpriteSet(ModParticles.FROST_SPARKLE.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.SPARKLE));
+        event.registerSpriteSet(ModParticles.FROST_AURA.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.AURA));
+        event.registerSpriteSet(ModParticles.FROST_MOTE.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.MOTE));
     }
 }

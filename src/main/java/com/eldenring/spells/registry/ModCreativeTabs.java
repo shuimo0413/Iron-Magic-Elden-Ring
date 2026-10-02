@@ -86,8 +86,12 @@ public final class ModCreativeTabs {
                         acceptAllScrollLevels(output, ModSpells.GLINTBLADE_PHALANX);
                         acceptAllScrollLevels(output, ModSpells.CARIAN_PHALANX);
                         acceptAllScrollLevels(output, ModSpells.GREATBLADE_PHALANX);
+                        acceptAllScrollLevels(output, ModSpells.LORETTA_GREATBOW);
                         acceptAllScrollLevels(output, ModSpells.GRAVITY_BALL);
                         acceptAllScrollLevels(output, ModSpells.COLLAPSING_STARS);
+                        acceptAllScrollLevels(output, ModSpells.ROCK_SLING);
+                        acceptAllScrollLevels(output, ModSpells.METEORITE);
+                        acceptAllScrollLevels(output, ModSpells.METEORITE_OF_ASTEL);
                     })
                     .build());
 

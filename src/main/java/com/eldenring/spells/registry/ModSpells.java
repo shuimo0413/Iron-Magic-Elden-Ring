@@ -13,6 +13,8 @@ import com.eldenring.spells.spell.CometSpell;
 import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
 import com.eldenring.spells.spell.GavelOfHaimaSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
+import com.eldenring.spells.spell.MeteoriteSpell;
+import com.eldenring.spells.spell.AstelMeteoriteSpell;
 import com.eldenring.spells.spell.GlintbladePhalanxSpell;
 import com.eldenring.spells.spell.GreatbladePhalanxSpell;
 import com.eldenring.spells.spell.GlintstoneArcSpell;
@@ -21,7 +23,9 @@ import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
 import com.eldenring.spells.spell.GravityBallSpell;
+import com.eldenring.spells.spell.LorettaGreatbowSpell;
 import com.eldenring.spells.spell.CollapsingStarsSpell;
+import com.eldenring.spells.spell.RockSlingSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
 import com.eldenring.spells.spell.StarlightSpell;
 import com.eldenring.spells.spell.StarShowerSpell;
@@ -146,6 +150,10 @@ public final class ModSpells {
     public static final Supplier<AbstractSpell> GREATBLADE_PHALANX =
             registerSpell(new GreatbladePhalanxSpell());
 
+    /** 罗蕾塔的大弓：拉弓蓄力 2 秒后射出高速追踪的蓝色彗星箭。 */
+    public static final Supplier<AbstractSpell> LORETTA_GREATBOW =
+            registerSpell(new LorettaGreatbowSpell());
+
     /** 重力球：直线紫球，命中后把敌人吸向施法者。 */
     public static final Supplier<AbstractSpell> GRAVITY_BALL =
             registerSpell(new GravityBallSpell());
@@ -153,6 +161,18 @@ public final class ModSpells {
     /** 碎星：向前锥面散射多发重力球，拉取距离随等级变长。 */
     public static final Supplier<AbstractSpell> COLLAPSING_STARS =
             registerSpell(new CollapsingStarsSpell());
+
+    /** 岩石球：蓄力凝聚三块岩石，满蓄后一齐砸向前方敌人并击退。 */
+    public static final Supplier<AbstractSpell> ROCK_SLING =
+            registerSpell(new RockSlingSpell());
+
+    /** 陨石：按住在头顶前方撕开虚空，倾泻不追踪的倾斜陨石雨；施法期间潜行速度。 */
+    public static final Supplier<AbstractSpell> METEORITE =
+            registerSpell(new MeteoriteSpell());
+
+    /** 艾斯提陨石：按住在前方扇形里随机撕开至多 4 道虚空裂缝，每道落 2–3 颗陨石后坍缩并换位重开。 */
+    public static final Supplier<AbstractSpell> METEORITE_OF_ASTEL =
+            registerSpell(new AstelMeteoriteSpell());
 
     private ModSpells() {
     }
