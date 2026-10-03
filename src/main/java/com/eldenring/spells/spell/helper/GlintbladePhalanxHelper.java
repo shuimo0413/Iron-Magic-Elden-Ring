@@ -43,6 +43,7 @@ public final class GlintbladePhalanxHelper {
      * @param projectileFlightSpeed                  射出后速度（方块/tick）
      * @param projectileTrackingRangeBlocks          射出后还能追多远（方块）
      * @param projectileMaxTurnAngleDegreesPerTick   每 tick 最大转向（度）
+     * @param projectileMaxRangeBlocks               射出后最大射程（方块，按飞行路径长度）
      */
     public record SpawnSpec(
             AbstractSpell sourceSpell,
@@ -54,7 +55,8 @@ public final class GlintbladePhalanxHelper {
             float swordVisualScale,
             float projectileFlightSpeed,
             double projectileTrackingRangeBlocks,
-            float projectileMaxTurnAngleDegreesPerTick
+            float projectileMaxTurnAngleDegreesPerTick,
+            double projectileMaxRangeBlocks
     ) {
     }
 

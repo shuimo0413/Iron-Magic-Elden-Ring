@@ -118,7 +118,8 @@ public final class EldenRingServerConfig {
                 GlintstonePebbleSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 GlintstonePebbleSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 GlintstonePebbleSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                null
+                null,
+                GlintstonePebbleSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         SWIFT_GLINTSTONE_SHARD = HomingValues.create(builder, "swift_glintstone_shard", new HomingSeed(
                 SwiftGlintstoneShardSpell.SPELL_BASE_MANA_COST,
@@ -130,7 +131,8 @@ public final class EldenRingServerConfig {
                 SwiftGlintstoneShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 SwiftGlintstoneShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 SwiftGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                null
+                null,
+                SwiftGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         GREAT_GLINTSTONE_SHARD = HomingValues.create(builder, "great_glintstone_shard", new HomingSeed(
                 GreatGlintstoneShardSpell.SPELL_BASE_MANA_COST,
@@ -142,7 +144,8 @@ public final class EldenRingServerConfig {
                 GreatGlintstoneShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 GreatGlintstoneShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 GreatGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                GreatGlintstoneShardSpell.EXPLOSION_RADIUS_BLOCKS
+                GreatGlintstoneShardSpell.EXPLOSION_RADIUS_BLOCKS,
+                GreatGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         GLINTSTONE_COMET = HomingValues.create(builder, "glintstone_comet", new HomingSeed(
                 GlintstoneCometSpell.SPELL_BASE_MANA_COST,
@@ -154,7 +157,8 @@ public final class EldenRingServerConfig {
                 GlintstoneCometSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 GlintstoneCometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 GlintstoneCometSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                GlintstoneCometSpell.EXPLOSION_RADIUS_BLOCKS
+                GlintstoneCometSpell.EXPLOSION_RADIUS_BLOCKS,
+                GlintstoneCometSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         COMET = HomingValues.create(builder, "comet", new HomingSeed(
                 CometSpell.SPELL_BASE_MANA_COST,
@@ -166,7 +170,8 @@ public final class EldenRingServerConfig {
                 CometSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 CometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 CometSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                CometSpell.EXPLOSION_RADIUS_BLOCKS
+                CometSpell.EXPLOSION_RADIUS_BLOCKS,
+                CometSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         LORETTA_GREATBOW = HomingValues.create(builder, "loretta_greatbow", new HomingSeed(
                 LorettaGreatbowSpell.SPELL_BASE_MANA_COST,
@@ -178,7 +183,8 @@ public final class EldenRingServerConfig {
                 LorettaGreatbowSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 LorettaGreatbowSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 LorettaGreatbowSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                LorettaGreatbowSpell.EXPLOSION_RADIUS_BLOCKS
+                LorettaGreatbowSpell.EXPLOSION_RADIUS_BLOCKS,
+                LorettaGreatbowSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
 
         GLINTSTONE_STARS = VolleyValues.create(builder, "glintstone_stars", new VolleySeed(
@@ -192,7 +198,8 @@ public final class EldenRingServerConfig {
                 GlintstoneStarsSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 GlintstoneStarsSpell.SPELL_DAMAGE_PER_SPELL_POWER,
                 GlintstoneStarsSpell.PROJECTILE_COUNT,
-                GlintstoneStarsSpell.PROJECTILE_SPAWN_STAGGER_TICKS
+                GlintstoneStarsSpell.PROJECTILE_SPAWN_STAGGER_TICKS,
+                GlintstoneStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         STAR_SHOWER = VolleyValues.create(builder, "star_shower", new VolleySeed(
                 StarShowerSpell.SPELL_BASE_MANA_COST,
@@ -205,7 +212,8 @@ public final class EldenRingServerConfig {
                 StarShowerSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 StarShowerSpell.SPELL_DAMAGE_PER_SPELL_POWER,
                 StarShowerSpell.PROJECTILE_COUNT,
-                StarShowerSpell.PROJECTILE_SPAWN_STAGGER_TICKS
+                StarShowerSpell.PROJECTILE_SPAWN_STAGGER_TICKS,
+                StarShowerSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         STARS_OF_RUIN = VolleyValues.create(builder, "stars_of_ruin", new VolleySeed(
                 StarsOfRuinSpell.SPELL_BASE_MANA_COST,
@@ -218,7 +226,8 @@ public final class EldenRingServerConfig {
                 StarsOfRuinSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 StarsOfRuinSpell.SPELL_DAMAGE_PER_SPELL_POWER,
                 StarsOfRuinSpell.PROJECTILE_COUNT,
-                StarsOfRuinSpell.PROJECTILE_SPAWN_STAGGER_TICKS
+                StarsOfRuinSpell.PROJECTILE_SPAWN_STAGGER_TICKS,
+                StarsOfRuinSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
 
         SPIRAL_SHARD = SpiralValues.create(builder);
@@ -314,7 +323,7 @@ public final class EldenRingServerConfig {
                 PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION.get(),
                 PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS.get()
         );
-        applyHoming(GLINTSTONE_PEBBLE, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(GLINTSTONE_PEBBLE, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstonePebbleSpell.SPELL_BASE_MANA_COST = mana;
             GlintstonePebbleSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             GlintstonePebbleSpell.SPELL_BASE_SPELL_POWER = power;
@@ -323,9 +332,10 @@ public final class EldenRingServerConfig {
             GlintstonePebbleSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GlintstonePebbleSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GlintstonePebbleSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintstonePebbleSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             GlintstonePebbleSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
         });
-        applyHoming(SWIFT_GLINTSTONE_SHARD, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(SWIFT_GLINTSTONE_SHARD, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             SwiftGlintstoneShardSpell.SPELL_BASE_MANA_COST = mana;
             SwiftGlintstoneShardSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             SwiftGlintstoneShardSpell.SPELL_BASE_SPELL_POWER = power;
@@ -334,9 +344,10 @@ public final class EldenRingServerConfig {
             SwiftGlintstoneShardSpell.PROJECTILE_FLIGHT_SPEED = speed;
             SwiftGlintstoneShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             SwiftGlintstoneShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            SwiftGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             SwiftGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
         });
-        applyHoming(GREAT_GLINTSTONE_SHARD, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(GREAT_GLINTSTONE_SHARD, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GreatGlintstoneShardSpell.SPELL_BASE_MANA_COST = mana;
             GreatGlintstoneShardSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             GreatGlintstoneShardSpell.SPELL_BASE_SPELL_POWER = power;
@@ -345,12 +356,13 @@ public final class EldenRingServerConfig {
             GreatGlintstoneShardSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GreatGlintstoneShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GreatGlintstoneShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GreatGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             GreatGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             if (explosion != null) {
                 GreatGlintstoneShardSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
-        applyHoming(GLINTSTONE_COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(GLINTSTONE_COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstoneCometSpell.SPELL_BASE_MANA_COST = mana;
             GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             GlintstoneCometSpell.SPELL_BASE_SPELL_POWER = power;
@@ -359,12 +371,13 @@ public final class EldenRingServerConfig {
             GlintstoneCometSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GlintstoneCometSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GlintstoneCometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintstoneCometSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             GlintstoneCometSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             if (explosion != null) {
                 GlintstoneCometSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
-        applyHoming(COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             CometSpell.SPELL_BASE_MANA_COST = mana;
             CometSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             CometSpell.SPELL_BASE_SPELL_POWER = power;
@@ -373,12 +386,13 @@ public final class EldenRingServerConfig {
             CometSpell.PROJECTILE_FLIGHT_SPEED = speed;
             CometSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             CometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            CometSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             CometSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             if (explosion != null) {
                 CometSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
-        applyHoming(LORETTA_GREATBOW, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(LORETTA_GREATBOW, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             LorettaGreatbowSpell.SPELL_BASE_MANA_COST = mana;
             LorettaGreatbowSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             LorettaGreatbowSpell.SPELL_BASE_SPELL_POWER = power;
@@ -387,13 +401,14 @@ public final class EldenRingServerConfig {
             LorettaGreatbowSpell.PROJECTILE_FLIGHT_SPEED = speed;
             LorettaGreatbowSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             LorettaGreatbowSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            LorettaGreatbowSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             LorettaGreatbowSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             if (explosion != null) {
                 LorettaGreatbowSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
 
-        applyVolley(GLINTSTONE_STARS, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger) -> {
+        applyVolley(GLINTSTONE_STARS, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger, maxRange) -> {
             GlintstoneStarsSpell.SPELL_BASE_MANA_COST = mana;
             GlintstoneStarsSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             GlintstoneStarsSpell.SPELL_BASE_SPELL_POWER = power;
@@ -402,11 +417,12 @@ public final class EldenRingServerConfig {
             GlintstoneStarsSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GlintstoneStarsSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GlintstoneStarsSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintstoneStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             GlintstoneStarsSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             GlintstoneStarsSpell.PROJECTILE_COUNT = count;
             GlintstoneStarsSpell.PROJECTILE_SPAWN_STAGGER_TICKS = stagger;
         });
-        applyVolley(STAR_SHOWER, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger) -> {
+        applyVolley(STAR_SHOWER, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger, maxRange) -> {
             StarShowerSpell.SPELL_BASE_MANA_COST = mana;
             StarShowerSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             StarShowerSpell.SPELL_BASE_SPELL_POWER = power;
@@ -415,11 +431,12 @@ public final class EldenRingServerConfig {
             StarShowerSpell.PROJECTILE_FLIGHT_SPEED = speed;
             StarShowerSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             StarShowerSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            StarShowerSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             StarShowerSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             StarShowerSpell.PROJECTILE_COUNT = count;
             StarShowerSpell.PROJECTILE_SPAWN_STAGGER_TICKS = stagger;
         });
-        applyVolley(STARS_OF_RUIN, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger) -> {
+        applyVolley(STARS_OF_RUIN, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger, maxRange) -> {
             StarsOfRuinSpell.SPELL_BASE_MANA_COST = mana;
             StarsOfRuinSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             StarsOfRuinSpell.SPELL_BASE_SPELL_POWER = power;
@@ -428,6 +445,7 @@ public final class EldenRingServerConfig {
             StarsOfRuinSpell.PROJECTILE_FLIGHT_SPEED = speed;
             StarsOfRuinSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             StarsOfRuinSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            StarsOfRuinSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             StarsOfRuinSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             StarsOfRuinSpell.PROJECTILE_COUNT = count;
             StarsOfRuinSpell.PROJECTILE_SPAWN_STAGGER_TICKS = stagger;
@@ -468,7 +486,8 @@ public final class EldenRingServerConfig {
                 values.projectileTrackingRangeBlocks.get(),
                 values.projectileMaxTurnAngleDegreesPerTick.get().floatValue(),
                 values.spellDamagePerSpellPower.get().floatValue(),
-                values.explosionRadiusBlocks == null ? null : values.explosionRadiusBlocks.get().floatValue()
+                values.explosionRadiusBlocks == null ? null : values.explosionRadiusBlocks.get().floatValue(),
+                values.projectileMaxRangeBlocks.get()
         );
     }
 
@@ -484,7 +503,8 @@ public final class EldenRingServerConfig {
                 values.projectileMaxTurnAngleDegreesPerTick.get().floatValue(),
                 values.spellDamagePerSpellPower.get().floatValue(),
                 values.projectileCount.get(),
-                values.projectileSpawnStaggerTicks.get()
+                values.projectileSpawnStaggerTicks.get(),
+                values.projectileMaxRangeBlocks.get()
         );
     }
 
@@ -498,7 +518,8 @@ public final class EldenRingServerConfig {
             double trackingRange,
             float turnAngle,
             float damage,
-            Float explosionRadius
+            Float explosionRadius,
+            double maxRangeBlocks
     ) {
     }
 
@@ -513,7 +534,8 @@ public final class EldenRingServerConfig {
             float turnAngle,
             float damage,
             int projectileCount,
-            int staggerTicks
+            int staggerTicks,
+            double maxRangeBlocks
     ) {
     }
 
@@ -529,7 +551,8 @@ public final class EldenRingServerConfig {
                 double range,
                 float turn,
                 float damage,
-                Float explosion
+                Float explosion,
+                double maxRange
         );
     }
 
@@ -546,7 +569,8 @@ public final class EldenRingServerConfig {
                 float turn,
                 float damage,
                 int count,
-                int stagger
+                int stagger,
+                double maxRange
         );
     }
 
@@ -564,6 +588,7 @@ public final class EldenRingServerConfig {
         public final ModConfigSpec.DoubleValue projectileMaxTurnAngleDegreesPerTick;
         public final ModConfigSpec.DoubleValue spellDamagePerSpellPower;
         public final ModConfigSpec.DoubleValue explosionRadiusBlocks;
+        public final ModConfigSpec.DoubleValue projectileMaxRangeBlocks;
 
         private HomingValues(
                 SpellBookKeys book,
@@ -580,6 +605,7 @@ public final class EldenRingServerConfig {
             this.projectileMaxTurnAngleDegreesPerTick = flight.turn;
             this.spellDamagePerSpellPower = flight.damage;
             this.explosionRadiusBlocks = explosionRadiusBlocks;
+            this.projectileMaxRangeBlocks = flight.maxRange;
         }
 
         static HomingValues create(ModConfigSpec.Builder builder, String section, HomingSeed seed) {
@@ -616,6 +642,7 @@ public final class EldenRingServerConfig {
         public final ModConfigSpec.DoubleValue spellDamagePerSpellPower;
         public final ModConfigSpec.IntValue projectileCount;
         public final ModConfigSpec.IntValue projectileSpawnStaggerTicks;
+        public final ModConfigSpec.DoubleValue projectileMaxRangeBlocks;
 
         private VolleyValues(
                 SpellBookKeys book,
@@ -634,6 +661,7 @@ public final class EldenRingServerConfig {
             this.spellDamagePerSpellPower = flight.damage;
             this.projectileCount = projectileCount;
             this.projectileSpawnStaggerTicks = projectileSpawnStaggerTicks;
+            this.projectileMaxRangeBlocks = flight.maxRange;
         }
 
         static VolleyValues create(ModConfigSpec.Builder builder, String section, VolleySeed seed) {
@@ -643,7 +671,7 @@ public final class EldenRingServerConfig {
             );
             HomingFlightKeys flight = HomingFlightKeys.define(builder, new HomingSeed(
                     seed.baseMana, seed.manaPerLevel, seed.basePower, seed.powerPerLevel, seed.castTime,
-                    seed.flightSpeed, seed.trackingRange, seed.turnAngle, seed.damage, null
+                    seed.flightSpeed, seed.trackingRange, seed.turnAngle, seed.damage, null, seed.maxRangeBlocks
             ), true);
             ModConfigSpec.IntValue count = ConfigSpecHelper.integer(
                     builder, "projectile_count", "单次施法弹数。", seed.projectileCount, 1, 32
@@ -681,11 +709,15 @@ public final class EldenRingServerConfig {
         }
     }
 
+    /**
+     * 追踪弹道共用飞行键。{@code maxRange} 按实际飞行路径长度计，悬停 / 凝结阶段不计。
+     */
     private record HomingFlightKeys(
             ModConfigSpec.DoubleValue speed,
             ModConfigSpec.DoubleValue range,
             ModConfigSpec.DoubleValue turn,
-            ModConfigSpec.DoubleValue damage
+            ModConfigSpec.DoubleValue damage,
+            ModConfigSpec.DoubleValue maxRange
     ) {
         static HomingFlightKeys define(ModConfigSpec.Builder builder, HomingSeed seed, boolean includeDamage) {
             return new HomingFlightKeys(
@@ -694,7 +726,16 @@ public final class EldenRingServerConfig {
                     ConfigSpecHelper.floating(builder, "projectile_max_turn_angle_degrees_per_tick", "每 tick 最大转向（度）。越小越像法环轻追踪。", seed.turnAngle, 0.0, 180.0),
                     includeDamage
                             ? ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "最终伤害 = 法术强度 × 本系数。", seed.damage, 0.0, 20.0)
-                            : null
+                            : null,
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_max_range_blocks",
+                            "最大射程（方块，按飞行路径长度，悬停阶段不计）。飞满后直接消失（无伤害、无爆炸）。"
+                                    + "铁魔法弹道从生成起最多活 300 tick，须满足：射程 ≤ (300 − 发射前 tick) × 弹速，否则会被提前删除。",
+                            seed.maxRangeBlocks,
+                            1.0,
+                            512.0
+                    )
             );
         }
     }
@@ -730,7 +771,8 @@ public final class EldenRingServerConfig {
                     SpiralShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                     SpiralShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                     SpiralShardSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                    null
+                    null,
+                    SpiralShardSpell.PROJECTILE_MAX_RANGE_BLOCKS
             ), true);
             SpiralValues values = new SpiralValues(
                     book,
@@ -750,6 +792,7 @@ public final class EldenRingServerConfig {
             SpiralShardSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
             SpiralShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
             SpiralShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
+            SpiralShardSpell.PROJECTILE_MAX_RANGE_BLOCKS = flight.maxRange.get();
             SpiralShardSpell.SPELL_DAMAGE_PER_SPELL_POWER = flight.damage.get().floatValue();
             SpiralShardSpell.PROJECTILE_MAX_ENTITY_HITS = maxEntityHits.get();
         }
@@ -1389,7 +1432,8 @@ public final class EldenRingServerConfig {
                             MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                             MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                             MagicGlintbladeSpell.DAMAGE_PER_SPELL_POWER,
-                            null
+                            null,
+                            MagicGlintbladeSpell.PROJECTILE_MAX_RANGE_BLOCKS
                     ), false)
             );
             builder.pop();
@@ -1407,6 +1451,7 @@ public final class EldenRingServerConfig {
             MagicGlintbladeSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
             MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
             MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
+            MagicGlintbladeSpell.PROJECTILE_MAX_RANGE_BLOCKS = flight.maxRange.get();
         }
     }
 
@@ -1500,7 +1545,8 @@ public final class EldenRingServerConfig {
                             seed.trackingRange,
                             seed.turnAngle,
                             seed.damage,
-                            null
+                            null,
+                            seed.maxRangeBlocks
                     ), false),
                     applyTarget
             );
@@ -1521,7 +1567,8 @@ public final class EldenRingServerConfig {
                     hoverLifetimeTicks.get(),
                     flight.speed.get().floatValue(),
                     flight.range.get(),
-                    flight.turn.get().floatValue()
+                    flight.turn.get().floatValue(),
+                    flight.maxRange.get()
             );
         }
 
@@ -1537,7 +1584,8 @@ public final class EldenRingServerConfig {
                 int hover,
                 float speed,
                 double range,
-                float turn
+                float turn,
+                double maxRange
         ) {
             GlintbladePhalanxSpell.SPELL_BASE_MANA_COST = mana;
             GlintbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -1551,6 +1599,7 @@ public final class EldenRingServerConfig {
             GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
         }
 
         private static void applyCarian(
@@ -1565,7 +1614,8 @@ public final class EldenRingServerConfig {
                 int hover,
                 float speed,
                 double range,
-                float turn
+                float turn,
+                double maxRange
         ) {
             CarianPhalanxSpell.SPELL_BASE_MANA_COST = mana;
             CarianPhalanxSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -1579,6 +1629,7 @@ public final class EldenRingServerConfig {
             CarianPhalanxSpell.PROJECTILE_FLIGHT_SPEED = speed;
             CarianPhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             CarianPhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            CarianPhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
         }
 
         private static void applyGreatblade(
@@ -1593,7 +1644,8 @@ public final class EldenRingServerConfig {
                 int hover,
                 float speed,
                 double range,
-                float turn
+                float turn,
+                double maxRange
         ) {
             GreatbladePhalanxSpell.SPELL_BASE_MANA_COST = mana;
             GreatbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -1607,6 +1659,7 @@ public final class EldenRingServerConfig {
             GreatbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GreatbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GreatbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
         }
     }
 
@@ -1622,7 +1675,8 @@ public final class EldenRingServerConfig {
             int hoverLifetimeTicks,
             float flightSpeed,
             double trackingRange,
-            float turnAngle
+            float turnAngle,
+            double maxRangeBlocks
     ) {
     }
 
@@ -1640,7 +1694,8 @@ public final class EldenRingServerConfig {
                 int hover,
                 float speed,
                 double range,
-                float turn
+                float turn,
+                double maxRange
         );
     }
 
@@ -1657,7 +1712,8 @@ public final class EldenRingServerConfig {
                 GlintbladePhalanxSpell.HOVER_LIFETIME_TICKS,
                 GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED,
                 GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
-                GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                GlintbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS
         );
     }
 
@@ -1674,7 +1730,8 @@ public final class EldenRingServerConfig {
                 CarianPhalanxSpell.HOVER_LIFETIME_TICKS,
                 CarianPhalanxSpell.PROJECTILE_FLIGHT_SPEED,
                 CarianPhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
-                CarianPhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                CarianPhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                CarianPhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS
         );
     }
 
@@ -1691,7 +1748,8 @@ public final class EldenRingServerConfig {
                 GreatbladePhalanxSpell.HOVER_LIFETIME_TICKS,
                 GreatbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED,
                 GreatbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
-                GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                GreatbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS
         );
     }
 
@@ -2287,7 +2345,7 @@ public final class EldenRingServerConfig {
                     ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "单块岩石伤害 = 法强 × 本系数。每块独立结算，全中约为 3 倍。", RockSlingSpell.SPELL_DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
                     ConfigSpecHelper.integer(builder, "rock_count", "一次凝聚的岩石数量（横排）。", RockSlingSpell.ROCK_COUNT, 1, 7),
                     ConfigSpecHelper.floating(builder, "projectile_flight_speed", "岩石飞行速度（方块/tick）。越大越难躲。", RockSlingSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0),
-                    ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离后碎裂。", RockSlingSpell.PROJECTILE_MAX_RANGE_BLOCKS, 1.0, 128.0),
+                    ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离后碎裂。铁魔法弹道从生成起最多活 300 tick（含约 30 tick 环绕），须满足：射程 ≤ (300 − 发射前 tick) × 弹速。", RockSlingSpell.PROJECTILE_MAX_RANGE_BLOCKS, 1.0, 512.0),
                     ConfigSpecHelper.floating(builder, "projectile_tracking_range_blocks", "发射时索敌半径（方块）。", RockSlingSpell.PROJECTILE_TRACKING_RANGE_BLOCKS, 0.0, 128.0),
                     ConfigSpecHelper.floating(builder, "projectile_max_turn_angle_degrees_per_tick", "飞行中每 tick 最大转向（度）。0 = 不追踪。", RockSlingSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK, 0.0, 180.0),
                     ConfigSpecHelper.floating(builder, "knockback_strength", "单块命中击退强度（原版 knockback，受击退抗性削减）。0 = 不击退。", RockSlingSpell.KNOCKBACK_STRENGTH, 0.0, 8.0)
@@ -2375,7 +2433,7 @@ public final class EldenRingServerConfig {
                     ConfigSpecHelper.integer(builder, "void_opening_duration_ticks", "黑洞张开时长（tick），期间不落陨石。20=1 秒。", MeteoriteSpell.VOID_OPENING_DURATION_TICKS, 0, 200),
                     ConfigSpecHelper.integer(builder, "meteorite_spawn_interval_ticks", "相邻两颗陨石间隔（tick）。10=每秒 2 颗。", MeteoriteSpell.METEORITE_SPAWN_INTERVAL_TICKS, 1, 40),
                     ConfigSpecHelper.floating(builder, "projectile_flight_speed", "陨石飞行速度（方块/tick）。越大越难躲。", MeteoriteSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0),
-                    ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离还没落地就碎裂。", MeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS, 4.0, 128.0),
+                    ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离还没落地就碎裂。", MeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS, 4.0, 512.0),
                     ConfigSpecHelper.floating(builder, "descent_base_angle_degrees", "平视时的下坠角（度，相对水平向下），视线俯角叠加其上。越大落得越近。", MeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES, 0.0, 89.0),
                     ConfigSpecHelper.floating(builder, "descent_min_angle_degrees", "下坠角下限（度）。抬头时不低于它。", MeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES, 1.0, 89.0),
                     ConfigSpecHelper.floating(builder, "descent_max_angle_degrees", "下坠角上限（度）。低头时不高于它。", MeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES, 1.0, 89.0),
@@ -2463,7 +2521,7 @@ public final class EldenRingServerConfig {
             this.riftHeightMinBlocks = ConfigSpecHelper.floating(builder, "rift_height_min_blocks", "裂缝中心最小上抬高度（方块，相对眼睛）。", AstelMeteoriteSpell.RIFT_HEIGHT_MIN_BLOCKS, 0.0, 16.0);
             this.riftHeightMaxBlocks = ConfigSpecHelper.floating(builder, "rift_height_max_blocks", "裂缝中心最大上抬高度（方块，相对眼睛）。", AstelMeteoriteSpell.RIFT_HEIGHT_MAX_BLOCKS, 0.0, 16.0);
             this.flightSpeed = ConfigSpecHelper.floating(builder, "projectile_flight_speed", "陨石飞行速度（方块/tick）。越大越难躲。", AstelMeteoriteSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0);
-            this.maxRangeBlocks = ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离还没落地就碎裂。", AstelMeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS, 4.0, 128.0);
+            this.maxRangeBlocks = ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离还没落地就碎裂。", AstelMeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS, 4.0, 512.0);
             this.descentBaseAngleDegrees = ConfigSpecHelper.floating(builder, "descent_base_angle_degrees", "平视时的下坠角（度，相对水平向下），视线俯角叠加其上。越大落得越近。", AstelMeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES, 0.0, 89.0);
             this.descentMinAngleDegrees = ConfigSpecHelper.floating(builder, "descent_min_angle_degrees", "下坠角下限（度）。抬头时不低于它。", AstelMeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES, 1.0, 89.0);
             this.descentMaxAngleDegrees = ConfigSpecHelper.floating(builder, "descent_max_angle_degrees", "下坠角上限（度）。低头时不高于它。", AstelMeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES, 1.0, 89.0);

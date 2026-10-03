@@ -48,6 +48,12 @@ public class SpiralShardSpell extends EldenRingAbstractSpell {
         public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 22.0;
 
         /**
+         * 最大射程（方块，按实体飞行路径长度；螺旋只在渲染层，不额外计距离）。飞满后直接消失。
+         * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空的魔砾更早消失。
+         */
+        public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+
+        /**
          * 每 tick 最大转向（度）。弱追踪：只缓缓弯中心轴，保持双螺旋外形。
          * 调大 → 更容易拐弯；调小 → 更接近直飞螺旋。
          */

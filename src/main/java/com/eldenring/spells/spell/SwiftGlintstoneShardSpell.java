@@ -41,6 +41,12 @@ public class SwiftGlintstoneShardSpell extends EldenRingAbstractSpell {
         /** 索敌半径（方块）；略短于魔砾。 */
         public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 18.0;
 
+        /**
+         * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
+         * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空的碎片更早消失。
+         */
+        public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+
         /** 每 tick 最大转向（度）；弱追踪，强调「快打快收」。 */
         public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 1.8f;
 

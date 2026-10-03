@@ -74,6 +74,11 @@ public class SpiralShardProjectile extends AbstractGlintstoneProjectile {
     }
 
     @Override
+    protected double maxRangeBlocks() {
+        return SpiralShardSpell.PROJECTILE_MAX_RANGE_BLOCKS;
+    }
+
+    @Override
     protected float maxTurnAngleDegreesPerTick() {
         return SpiralShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
     }

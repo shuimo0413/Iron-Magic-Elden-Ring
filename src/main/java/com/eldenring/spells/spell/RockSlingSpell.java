@@ -78,8 +78,12 @@ public class RockSlingSpell extends EldenRingAbstractSpell {
      */
     public static float PROJECTILE_FLIGHT_SPEED = 0.7f;
 
-    /** 最大射程（方块）。飞过这段距离后碎裂消失。 */
-    public static double PROJECTILE_MAX_RANGE_BLOCKS = 32.0;
+    /**
+     * 最大射程（方块）。飞过这段距离后碎裂消失。
+     * 铁魔法 300 tick 硬寿命从生成起算（含环绕阶段约 30 tick）：默认 180 / 0.7 ≈ 257 tick 飞行，
+     * 合计约 287 tick，接近上限；调大射程、调慢弹速或拉长环绕都可能被提前删除。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 180.0;
 
     /** 发射时索敌半径（方块）。超出此距离的敌人不会被锁定，岩石直飞准星。 */
     public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 28.0;

@@ -8,6 +8,7 @@ import io.redspace.ironsspellbooks.damage.DamageSources;
 import io.redspace.ironsspellbooks.entity.spells.AbstractMagicProjectile;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -39,8 +40,12 @@ import java.util.UUID;
  * 施法者准星射线命中合法目标时优先锁它。粘滞 UUID 只在目标失效后重选。
  * <p>
  * 消失问题说明（重要）：找不到追踪目标时<strong>绝不会</strong> discard，只会直飞。
- * 真正会销毁的只有：撞方块、撞实体后结算、超时、反魔法等。
+ * 真正会销毁的只有：撞方块、撞实体后结算、飞满 {@link #maxRangeBlocks()}、铁魔法 300 tick 超时、反魔法等。
  * 因此「飞一会就没」几乎总是撞到了方块（含被追踪拽进地面），而不是丢目标。
+ * <p>
+ * 射程按<strong>实际飞行路径长度</strong>累计（追踪拐弯、绕目标转圈都算），不是离出生点的直线距离。
+ * 铁魔法 {@code AbstractMagicProjectile} 写死 300 tick 硬寿命且从生成起算，
+ * 射程须满足「射程 ≤ (300 − 发射前 tick) × 弹速」才能真正飞满。
  */
 public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjectile {
 
@@ -73,6 +78,23 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
      * 瞄准点相对目标碰撞箱：0=脚底，1=头顶。取偏上避免扎地。
      */
     private static final double TRACKING_AIM_HEIGHT_FRACTION = 0.7;
+
+    /**
+     * 客户端渲染距离在射程之外再放宽的余量（方块）。
+     * 原版按碰撞箱算，0.3～0.9 格的弹道约 40～100 格外就不画；射程拉长后会半空消失。
+     */
+    private static final double RENDER_DISTANCE_PADDING_BLOCKS = 32.0;
+
+    /**
+     * 渲染距离上限（方块）。射程无上限的弹道（海摩炮弹等）也按这个算，避免无限远仍参与渲染判定。
+     */
+    private static final double MAX_RENDER_DISTANCE_BLOCKS = 256.0;
+
+    /** 存档键：已飞行路径长度。 */
+    private static final String TRAVELED_DISTANCE_TAG = "TraveledDistanceBlocks";
+
+    /** 服务端累计的已飞行路径长度（方块），超过 {@link #maxRangeBlocks()} 即直接消失。 */
+    private double traveledDistanceBlocks;
 
     /** 粘滞追踪目标 UUID；失效只是改直飞，不销毁。*/
     @Nullable
@@ -193,6 +215,15 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         return 0.0f;
     }
 
+    /**
+     * 最大射程（方块，按飞行路径长度）。默认无上限，只受铁魔法 300 tick 寿命约束；
+     * 追踪弹覆写为各自 Spell 的 {@code PROJECTILE_MAX_RANGE_BLOCKS}。
+     * 弯弧 / 结晶 / 海摩炮弹自带射程或寿命逻辑，不覆写。
+     */
+    protected double maxRangeBlocks() {
+        return Double.POSITIVE_INFINITY;
+    }
+
     @Override
     public Optional<Holder<SoundEvent>> getImpactSound() {
         return Optional.of(BuiltInRegistries.SOUND_EVENT.wrapAsHolder(SoundEvents.AMETHYST_BLOCK_HIT));
@@ -205,7 +236,37 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             discard();
             return;
         }
+        Vec3 positionBeforeTick = position();
         super.tick();
+        if (this.isRemoved() || level().isClientSide) {
+            return;
+        }
+        traveledDistanceBlocks += position().distanceTo(positionBeforeTick);
+        // 飞满射程直接静默消失：不刷粒子、不播音、不爆炸、不结算伤害
+        if (traveledDistanceBlocks >= maxRangeBlocks()) {
+            discard();
+        }
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double distanceSquared) {
+        double renderDistanceBlocks = Math.min(
+                MAX_RENDER_DISTANCE_BLOCKS,
+                maxRangeBlocks() + RENDER_DISTANCE_PADDING_BLOCKS
+        );
+        return distanceSquared < renderDistanceBlocks * renderDistanceBlocks;
+    }
+
+    @Override
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putDouble(TRAVELED_DISTANCE_TAG, traveledDistanceBlocks);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        traveledDistanceBlocks = tag.getDouble(TRAVELED_DISTANCE_TAG);
     }
 
     private boolean isFinitePositionAndMotion() {

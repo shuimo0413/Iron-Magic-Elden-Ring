@@ -51,6 +51,13 @@ public class LorettaGreatbowSpell extends EldenRingAbstractSpell {
     public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 32.0;
 
     /**
+     * 最大射程（方块，按飞行路径长度）。飞满后直接消失（不爆炸）。
+     * 须 ≤ 300 tick × 弹速（铁魔法硬寿命），默认 2.2 × 300 = 660 格，留足余量。
+     * 调大 → 远程狙击更稳；调小 → 落空的箭更早消失。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 220.0;
+
+    /**
      * 每 tick 最大转向角（度/tick）。速度高，需要比彗星（2.3）更大的转向才咬得住目标。
      * 调大 → 追踪更黏；调小 → 更像直射。
      */

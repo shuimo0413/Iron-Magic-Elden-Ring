@@ -369,7 +369,7 @@ public final class ModEntities {
             );
 
     /**
-     * 陨石的虚空黑洞：施法者头顶前方的跟随锚点，只刷粒子不渲染模型。
+     * 陨石 / 艾斯提陨石的虚空裂缝：施法者前上方的锚点。由 {@code MeteoriteVoidRenderer} 画锯齿黑洞网格，另刷点缀粒子。
      */
     public static final DeferredHolder<EntityType<?>, EntityType<MeteoriteVoidEntity>> METEORITE_VOID =
             ENTITIES.register("meteorite_void", () ->

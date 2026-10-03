@@ -46,6 +46,11 @@ public class LorettaGreatbowProjectile extends AbstractGlintstoneProjectile {
     }
 
     @Override
+    protected double maxRangeBlocks() {
+        return LorettaGreatbowSpell.PROJECTILE_MAX_RANGE_BLOCKS;
+    }
+
+    @Override
     protected float maxTurnAngleDegreesPerTick() {
         return LorettaGreatbowSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
     }

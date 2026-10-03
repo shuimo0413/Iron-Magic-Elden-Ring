@@ -137,7 +137,7 @@ public class AstelMeteoriteSpell extends EldenRingAbstractSpell {
     public static float PROJECTILE_FLIGHT_SPEED = 0.8f;
 
     /** 直线最大射程（方块）。飞过这段距离还没落地就碎裂消失。 */
-    public static double PROJECTILE_MAX_RANGE_BLOCKS = 48.0;
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 60.0;
 
     /**
      * 平视时的基础下坠角（度，相对水平面向下）。视线俯角会叠加上去。

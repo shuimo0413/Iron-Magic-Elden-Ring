@@ -32,17 +32,11 @@ public final class MeteoriteFx {
     /** 刚出现时的半径比例（相对完全张开）。 */
     private static final double VOID_OPENING_START_RADIUS_FRACTION = 0.12;
 
-    /** 黑核填充区域相对盘面半径的比例。调大 → 黑面更满；调小 → 紫边更宽。 */
-    private static final double VOID_CORE_FILL_RADIUS_FRACTION = 0.72;
-
-    /** 完全张开时每 tick 刷的黑核粒子数。核粒子寿命约 16–24 tick，叠起来才能读成一整块黑面。 */
-    private static final int VOID_CORE_PARTICLES_PER_TICK = 7;
-
-    /** 黑核粒子尺寸倍率（相对重力黑核基准约 0.22–0.32 格）。 */
-    private static final float VOID_CORE_PARTICLE_SIZE_SCALE = 2.4f;
-
-    /** 每 tick 沿盘边刷的旋转紫光数。调大 → 边缘光环更亮更连贯。 */
-    private static final int VOID_RIM_PARTICLES_PER_TICK = 9;
+    /**
+     * 每 tick 沿盘边刷的旋转紫光数。轮廓已由 {@code MeteoriteVoidRenderer} 的不透明网格负责，
+     * 这里只做点缀；调大 → 边缘更热闹，但开光影时容易被泛光糊成一团。
+     */
+    private static final int VOID_RIM_PARTICLES_PER_TICK = 5;
 
     /** 盘边紫光的切向速度（方块/tick）。调大 → 旋得更快、更像漩涡。 */
     private static final double VOID_RIM_SWIRL_SPEED_BLOCKS_PER_TICK = 0.10;
@@ -123,7 +117,19 @@ public final class MeteoriteFx {
     }
 
     /**
-     * 黑洞持续粒子：黑核填充 + 旋转紫边 + 外圈被吸微粒 + 盘边电弧 + 紫雾 + 呼吸蚀环。仅客户端。
+     * 黑洞在给定张开进度下的盘面半径（方块）。粒子与 {@code MeteoriteVoidRenderer} 网格共用，保证两者对齐。
+     *
+     * @param openingProgress 张开进度 0–1（线性），内部做缓出
+     */
+    public static double voidRadiusBlocks(float openingProgress) {
+        float clampedProgress = Mth.clamp(openingProgress, 0.0f, 1.0f);
+        float easedOpening = 1.0f - (1.0f - clampedProgress) * (1.0f - clampedProgress);
+        return VOID_RADIUS_BLOCKS * Mth.lerp(easedOpening, VOID_OPENING_START_RADIUS_FRACTION, 1.0);
+    }
+
+    /**
+     * 黑洞持续粒子（点缀）：旋转紫边 + 外圈被吸微粒 + 盘边电弧 + 紫雾 + 呼吸蚀环。仅客户端。
+     * 黑面与轮廓由 {@code MeteoriteVoidRenderer} 的实体网格画，这里不再铺黑核粒子。
      *
      * @param facing          盘面法线（朝向陨石落区）
      * @param openingProgress 张开进度 0–1
@@ -135,18 +141,9 @@ public final class MeteoriteFx {
         }
         RandomSource random = level.random;
         float easedOpening = 1.0f - (1.0f - openingProgress) * (1.0f - openingProgress);
-        double radiusBlocks = VOID_RADIUS_BLOCKS * Mth.lerp(easedOpening, VOID_OPENING_START_RADIUS_FRACTION, 1.0);
+        double radiusBlocks = voidRadiusBlocks(openingProgress);
         Vec3 discRight = discRightAxis(facing);
         Vec3 discUp = discRight.cross(facing).normalize();
-
-        int coreCount = Math.max(1, Math.round(VOID_CORE_PARTICLES_PER_TICK * easedOpening));
-        float coreSizeScale = VOID_CORE_PARTICLE_SIZE_SCALE * (0.45f + 0.55f * easedOpening);
-        GravityFx.withParticleSizeScale(coreSizeScale, () -> {
-            for (int coreIndex = 0; coreIndex < coreCount; coreIndex++) {
-                Vec3 corePosition = center.add(randomDiscPoint(discRight, discUp, radiusBlocks * VOID_CORE_FILL_RADIUS_FRACTION, random));
-                level.addParticle(ModParticles.GRAVITY_CORE.get(), corePosition.x, corePosition.y, corePosition.z, 0.0, 0.0, 0.0);
-            }
-        });
 
         GravityFx.withParticleSizeScale(1.1f, () -> {
             for (int rimIndex = 0; rimIndex < VOID_RIM_PARTICLES_PER_TICK; rimIndex++) {
@@ -307,20 +304,12 @@ public final class MeteoriteFx {
         });
     }
 
-    /** 盘面右轴：法线 × 世界上方；法线竖直时退回世界 X 轴。 */
-    private static Vec3 discRightAxis(Vec3 facing) {
+    /** 盘面右轴：法线 × 世界上方；法线竖直时退回世界 X 轴。渲染器也用它，保证网格与粒子同一坐标系。 */
+    public static Vec3 discRightAxis(Vec3 facing) {
         Vec3 discRight = facing.cross(new Vec3(0.0, 1.0, 0.0));
         if (discRight.lengthSqr() < 1.0e-8) {
             return new Vec3(1.0, 0.0, 0.0);
         }
         return discRight.normalize();
-    }
-
-    /** 盘面内均匀随机一点（半径用 sqrt，避免全挤在中心）。 */
-    private static Vec3 randomDiscPoint(Vec3 discRight, Vec3 discUp, double radiusBlocks, RandomSource random) {
-        double pointRadius = radiusBlocks * Math.sqrt(random.nextDouble());
-        double azimuthRadians = random.nextDouble() * (Math.PI * 2.0);
-        return discRight.scale(Math.cos(azimuthRadians) * pointRadius)
-                .add(discUp.scale(Math.sin(azimuthRadians) * pointRadius));
     }
 }

@@ -13,7 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 陨石法术的虚空黑洞：施法者头顶前方的锚点实体，本身不渲染，只在客户端每 tick 刷黑洞粒子。
+ * 陨石 / 艾斯提陨石的虚空裂缝：施法者头顶前方的锚点实体。
+ * 客户端由 {@code MeteoriteVoidRenderer} 画不透明锯齿黑洞网格（光影下也清楚），实体 tick 再刷点缀粒子。
  * <p>
  * 服务端由法术每个施法 tick 调 {@link #refreshWhileCasting} 保活并贴回施法者前上方；
  * 连续几 tick 没被刷新（松手 / 打断 / 施法者死亡或换维）就自己收缩消失。
@@ -38,6 +39,12 @@ public class MeteoriteVoidEntity extends Entity {
      * 留 2 tick 余量，避免玩家 tick 与实体 tick 先后顺序造成误判。
      */
     private static final int MAX_TICKS_WITHOUT_REFRESH = 2;
+
+    /**
+     * 客户端最远渲染距离（方块）。碰撞箱只有 0.5 格，原版按碰撞箱算只有约 32 格就不画了；
+     * 裂缝是大型施法视觉，和 clientTrackingRange 对齐放宽。
+     */
+    private static final double MAX_RENDER_DISTANCE_BLOCKS = 96.0;
 
     /** 服务端：距上次被法术刷新过了几 tick。 */
     private int ticksSinceLastRefresh;
@@ -116,6 +123,11 @@ public class MeteoriteVoidEntity extends Entity {
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double distanceSquared) {
+        return distanceSquared < MAX_RENDER_DISTANCE_BLOCKS * MAX_RENDER_DISTANCE_BLOCKS;
     }
 
     /** 只活在一次吟唱里，不进存档。 */

@@ -66,6 +66,12 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
 
         public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 40.0;
 
+        /**
+         * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
+         * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空的流星更早消失。
+         */
+        public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+
         /** 强追踪：高于辉石流星，贴近原作灭亡流星的追击感。 */
         public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 6.2f;
 

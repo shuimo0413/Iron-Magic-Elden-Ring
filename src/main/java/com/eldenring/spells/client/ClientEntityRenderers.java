@@ -17,6 +17,7 @@ import com.eldenring.spells.client.render.glintstone.GlintstoneProjectileRendere
 import com.eldenring.spells.client.render.glintstone.SpiralShardRenderer;
 import com.eldenring.spells.client.render.gravity.GravityBallRenderer;
 import com.eldenring.spells.client.render.gravity.MeteoriteRenderer;
+import com.eldenring.spells.client.render.gravity.MeteoriteVoidRenderer;
 import com.eldenring.spells.client.render.gravity.RockSlingRenderer;
 import com.eldenring.spells.client.render.haima.HaimaCannonModels;
 import com.eldenring.spells.client.render.haima.HaimaCannonRenderer;
@@ -91,7 +92,7 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.GRAVITY_BALL.get(), GravityBallRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCK_SLING.get(), RockSlingRenderer::new);
         event.registerEntityRenderer(ModEntities.METEORITE.get(), MeteoriteRenderer::new);
-        event.registerEntityRenderer(ModEntities.METEORITE_VOID.get(), NoopRenderer::new);
+        event.registerEntityRenderer(ModEntities.METEORITE_VOID.get(), MeteoriteVoidRenderer::new);
         event.registerEntityRenderer(ModEntities.ASTROLOGER.get(), AstrologerRenderer::new);
     }
 

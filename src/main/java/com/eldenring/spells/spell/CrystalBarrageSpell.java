@@ -86,7 +86,7 @@ public class CrystalBarrageSpell extends EldenRingAbstractSpell {
     /**
      * 直线最大射程（方块）。超过就碎裂消失。调大 → 能打到更远；调小 → 必须贴身扫。
      */
-    public static double PROJECTILE_MAX_RANGE_BLOCKS = 12.0;
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 25.0;
 
     /**
      * 相对视线的散射锥半角（度）。左右合计约 28° 的扇面。
