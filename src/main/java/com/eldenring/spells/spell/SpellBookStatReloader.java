@@ -73,6 +73,14 @@ public final class SpellBookStatReloader {
                 GreatGlintstoneShardSpell.SPELL_CAST_TIME_TICKS
         );
         apply(
+                ModSpells.GLINTSTONE_ICECRAG.get(),
+                GlintstoneIcecragSpell.SPELL_BASE_MANA_COST,
+                GlintstoneIcecragSpell.SPELL_MANA_COST_PER_LEVEL,
+                GlintstoneIcecragSpell.SPELL_BASE_SPELL_POWER,
+                GlintstoneIcecragSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                GlintstoneIcecragSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
                 ModSpells.GLINTSTONE_COMET.get(),
                 GlintstoneCometSpell.SPELL_BASE_MANA_COST,
                 GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL,

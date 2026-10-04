@@ -218,6 +218,15 @@ public final class ModItems {
     );
 
     /**
+     * 冰霜辉石精华：辉石冰块等冷辉石咒的铸卷焦点。
+     * 工作台：冰封骨头 + 青/蓝/紫辉石碎片（三色等价）。抄卷时消耗。
+     */
+    public static final DeferredItem<Item> FROST_GLINTSTONE_ESSENCE = ITEMS.register(
+            "frost_glintstone_essence",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE))
+    );
+
+    /**
      * 辉石符文：辉石学派材料符文，与铁魔法学派符文同级。
      * 合成：八个辉石碎片（青/蓝/紫均可）围一圈，中间放空白符文。
      */

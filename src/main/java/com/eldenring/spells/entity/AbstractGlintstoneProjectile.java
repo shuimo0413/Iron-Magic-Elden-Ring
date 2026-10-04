@@ -5,6 +5,7 @@ import com.eldenring.spells.tracking.TrackingTargetFilter;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.damage.DamageSources;
+import io.redspace.ironsspellbooks.damage.SpellDamageSource;
 import io.redspace.ironsspellbooks.entity.spells.AbstractMagicProjectile;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -666,11 +667,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             if (explosionRadiusBlocks() > 0.0f) {
                 dealHitDamage(entityHitResult.getLocation(), hitEntity);
             } else {
-                DamageSources.applyDamage(
-                        hitEntity,
-                        damage,
-                        damageSourceSpell().getDamageSource(this, getOwner())
-                );
+                applySpellDamage(hitEntity, damageSourceSpell().getDamageSource(this, getOwner()));
             }
         }
         consumeEntityImpact(entityHitResult, true);
@@ -681,7 +678,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         float radiusBlocks = explosionRadiusBlocks();
         if (radiusBlocks <= 0.0f) {
             if (primaryHitEntity != null) {
-                DamageSources.applyDamage(primaryHitEntity, damage, damageSource);
+                applySpellDamage(primaryHitEntity, damageSource);
             }
             return;
         }
@@ -690,7 +687,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         AABB explosionSearchBox = new AABB(explosionCenter, explosionCenter).inflate(radiusBlocks);
 
         if (primaryHitEntity != null) {
-            DamageSources.applyDamage(primaryHitEntity, damage, damageSource);
+            applySpellDamage(primaryHitEntity, damageSource);
         }
 
         for (LivingEntity livingEntity : level().getEntitiesOfClass(
@@ -704,7 +701,20 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             if (!isWithinExplosionRadius(livingEntity, explosionCenter, radiusBlocks)) {
                 continue;
             }
-            DamageSources.applyDamage(livingEntity, damage, damageSource);
+            applySpellDamage(livingEntity, damageSource);
+        }
+    }
+
+    /**
+     * 结算法术伤害后给命中生物上附加效果（冻结、减速等）。默认空实现。
+     */
+    protected void afterDamagingTarget(LivingEntity livingTarget) {
+    }
+
+    private void applySpellDamage(Entity hitEntity, SpellDamageSource damageSource) {
+        DamageSources.applyDamage(hitEntity, damage, damageSource);
+        if (hitEntity instanceof LivingEntity livingTarget) {
+            afterDamagingTarget(livingTarget);
         }
     }
 

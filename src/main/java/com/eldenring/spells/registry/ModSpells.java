@@ -22,6 +22,7 @@ import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
+import com.eldenring.spells.spell.GlintstoneIcecragSpell;
 import com.eldenring.spells.spell.GravityBallSpell;
 import com.eldenring.spells.spell.LorettaGreatbowSpell;
 import com.eldenring.spells.spell.CollapsingStarsSpell;
@@ -73,6 +74,10 @@ public final class ModSpells {
     /** 辉石大魔砾：大体积弹，命中小范围爆炸。 */
     public static final Supplier<AbstractSpell> GREAT_GLINTSTONE_SHARD =
             registerSpell(new GreatGlintstoneShardSpell());
+
+    /** 辉石冰块：冷白大魔砾弹，命中爆炸并冻结。 */
+    public static final Supplier<AbstractSpell> GLINTSTONE_ICECRAG =
+            registerSpell(new GlintstoneIcecragSpell());
 
     /** 辉石彗星：介于大魔砾与帚星之间的彗星弹。 */
     public static final Supplier<AbstractSpell> GLINTSTONE_COMET =

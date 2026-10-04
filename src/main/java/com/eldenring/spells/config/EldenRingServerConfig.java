@@ -21,6 +21,7 @@ import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
+import com.eldenring.spells.spell.GlintstoneIcecragSpell;
 import com.eldenring.spells.spell.GravityBallSpell;
 import com.eldenring.spells.spell.LorettaGreatbowSpell;
 import com.eldenring.spells.spell.GreatbladePhalanxSpell;
@@ -69,6 +70,9 @@ public final class EldenRingServerConfig {
     public static final HomingValues GLINTSTONE_PEBBLE;
     public static final HomingValues SWIFT_GLINTSTONE_SHARD;
     public static final HomingValues GREAT_GLINTSTONE_SHARD;
+    public static final HomingValues GLINTSTONE_ICECRAG;
+    public static final ModConfigSpec.IntValue GLINTSTONE_ICECRAG_FREEZE_TICKS;
+    public static final ModConfigSpec.IntValue GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS;
     public static final HomingValues GLINTSTONE_COMET;
     public static final HomingValues COMET;
     public static final HomingValues LORETTA_GREATBOW;
@@ -147,6 +151,37 @@ public final class EldenRingServerConfig {
                 GreatGlintstoneShardSpell.EXPLOSION_RADIUS_BLOCKS,
                 GreatGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
+        GLINTSTONE_ICECRAG = HomingValues.create(builder, "glintstone_icecrag", new HomingSeed(
+                GlintstoneIcecragSpell.SPELL_BASE_MANA_COST,
+                GlintstoneIcecragSpell.SPELL_MANA_COST_PER_LEVEL,
+                GlintstoneIcecragSpell.SPELL_BASE_SPELL_POWER,
+                GlintstoneIcecragSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                GlintstoneIcecragSpell.SPELL_CAST_TIME_TICKS,
+                GlintstoneIcecragSpell.PROJECTILE_FLIGHT_SPEED,
+                GlintstoneIcecragSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
+                GlintstoneIcecragSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                GlintstoneIcecragSpell.SPELL_DAMAGE_PER_SPELL_POWER,
+                GlintstoneIcecragSpell.EXPLOSION_RADIUS_BLOCKS,
+                GlintstoneIcecragSpell.PROJECTILE_MAX_RANGE_BLOCKS
+        ));
+        builder.push("glintstone_icecrag_crowd_control");
+        GLINTSTONE_ICECRAG_FREEZE_TICKS = ConfigSpecHelper.integer(
+                builder,
+                "freeze_ticks",
+                "写入伤害源的冻结 tick（铁魔法命中后会 ×2 进原版冻结槽）。调大更容易一次冻实。",
+                GlintstoneIcecragSpell.SPELL_FREEZE_TICKS,
+                0,
+                400
+        );
+        GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS = ConfigSpecHelper.integer(
+                builder,
+                "chilled_duration_ticks",
+                "命中后 CHILLED 持续 tick。与满冻结槽叠加时会进冰牢。",
+                GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS,
+                0,
+                600
+        );
+        builder.pop();
         GLINTSTONE_COMET = HomingValues.create(builder, "glintstone_comet", new HomingSeed(
                 GlintstoneCometSpell.SPELL_BASE_MANA_COST,
                 GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL,
@@ -362,6 +397,23 @@ public final class EldenRingServerConfig {
                 GreatGlintstoneShardSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
+        applyHoming(GLINTSTONE_ICECRAG, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
+            GlintstoneIcecragSpell.SPELL_BASE_MANA_COST = mana;
+            GlintstoneIcecragSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
+            GlintstoneIcecragSpell.SPELL_BASE_SPELL_POWER = power;
+            GlintstoneIcecragSpell.SPELL_SPELL_POWER_PER_LEVEL = powerPer;
+            GlintstoneIcecragSpell.SPELL_CAST_TIME_TICKS = castTime;
+            GlintstoneIcecragSpell.PROJECTILE_FLIGHT_SPEED = speed;
+            GlintstoneIcecragSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
+            GlintstoneIcecragSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintstoneIcecragSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
+            GlintstoneIcecragSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
+            if (explosion != null) {
+                GlintstoneIcecragSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
+            }
+        });
+        GlintstoneIcecragSpell.SPELL_FREEZE_TICKS = GLINTSTONE_ICECRAG_FREEZE_TICKS.get();
+        GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS = GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS.get();
         applyHoming(GLINTSTONE_COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstoneCometSpell.SPELL_BASE_MANA_COST = mana;
             GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;

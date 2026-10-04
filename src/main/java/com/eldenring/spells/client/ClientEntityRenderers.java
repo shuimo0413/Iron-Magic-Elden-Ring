@@ -69,6 +69,7 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.CRYSTAL_BARRAGE_SHARD.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.CRYSTAL_BURST_SHARD.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GREAT_GLINTSTONE_SHARD.get(), GlintstoneProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.GLINTSTONE_ICECRAG.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GLINTSTONE_COMET.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.LORETTA_GREATBOW.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GLINTSTONE_STAR.get(), GlintstoneProjectileRenderer::new);

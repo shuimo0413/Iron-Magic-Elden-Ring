@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * 焦点物品在取出成品时会被消耗（铁魔法原版行为），因此颜色 / 起源辉石本身就是材料成本。
  * 非本模组法术不干预，避免影响其它学派。
  * <p>
- * 数值来源：产品表「魔法配方」——青 / 蓝 / 紫碎片 + 起源辉石四类材料。
+ * 数值来源：产品表「魔法配方」——青 / 蓝 / 紫碎片 + 起源辉石 + 冰霜辉石精华。
  */
 public final class GlintstoneScrollRecipes {
 
@@ -38,6 +38,7 @@ public final class GlintstoneScrollRecipes {
         putCyan(map, "crystal_barrage");
         putCyan(map, "crystal_burst");
         putCyan(map, "great_glintstone_shard");
+        putFrostEssence(map, "glintstone_icecrag");
         putCyan(map, "glintstone_comet");
         putCyan(map, "glintstone_stars");
         putCyan(map, "star_shower");
@@ -127,6 +128,10 @@ public final class GlintstoneScrollRecipes {
 
     private static void putOrigin(Map<ResourceLocation, Supplier<? extends Item>> map, String spellPath) {
         map.put(spellId(spellPath), ModItems.ORIGIN_GLINTSTONE);
+    }
+
+    private static void putFrostEssence(Map<ResourceLocation, Supplier<? extends Item>> map, String spellPath) {
+        map.put(spellId(spellPath), ModItems.FROST_GLINTSTONE_ESSENCE);
     }
 
     private static ResourceLocation spellId(String path) {

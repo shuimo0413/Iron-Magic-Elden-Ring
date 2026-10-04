@@ -12,7 +12,7 @@ import net.minecraft.world.item.Item;
 public final class ModTags {
     /**
      * 辉石学派触媒：放入铁魔法卷轴锻造台「焦点」槽时可抄辉石系卷轴。
-     * 含青 / 蓝 / 紫碎片与起源辉石（见数据包 tags）；具体哪颗对应哪些咒见
+     * 含青 / 蓝 / 紫碎片、起源辉石与冰霜辉石精华（见数据包 tags）；具体哪颗对应哪些咒见
      * {@link com.eldenring.spells.recipe.GlintstoneScrollRecipes}。不含紫水晶。
      */
     public static final TagKey<Item> GLINTSTONE_FOCUS = ItemTags.create(

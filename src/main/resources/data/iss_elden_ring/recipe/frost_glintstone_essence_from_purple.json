@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "irons_spellbooks:frozen_bone"
+    },
+    {
+      "item": "iss_elden_ring:purple_glintstone_shard"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "iss_elden_ring:frost_glintstone_essence"
+  }
+}

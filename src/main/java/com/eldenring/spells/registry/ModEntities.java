@@ -26,6 +26,7 @@ import com.eldenring.spells.entity.MeteoriteProjectile;
 import com.eldenring.spells.entity.MeteoriteVoidEntity;
 import com.eldenring.spells.entity.RockSlingProjectile;
 import com.eldenring.spells.entity.GreatGlintstoneShardProjectile;
+import com.eldenring.spells.entity.GlintstoneIcecragProjectile;
 import com.eldenring.spells.entity.SpiralShardProjectile;
 import com.eldenring.spells.entity.StarShowerProjectile;
 import com.eldenring.spells.entity.StarlightEntity;
@@ -105,6 +106,15 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("great_glintstone_shard"))
+            );
+
+    public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneIcecragProjectile>> GLINTSTONE_ICECRAG =
+            ENTITIES.register("glintstone_icecrag", () ->
+                    EntityType.Builder.<GlintstoneIcecragProjectile>of(GlintstoneIcecragProjectile::new, MobCategory.MISC)
+                            .sized(0.85f, 0.85f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("glintstone_icecrag"))
             );
 
     public static final DeferredHolder<EntityType<?>, EntityType<GlintstoneCometProjectile>> GLINTSTONE_COMET =

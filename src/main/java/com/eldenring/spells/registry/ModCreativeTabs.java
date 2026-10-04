@@ -50,6 +50,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.CYAN_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());
+                        output.accept(ModItems.FROST_GLINTSTONE_ESSENCE.get());
                         output.accept(ModItems.GLINTSTONE_RUNE.get());
                         output.accept(ModItems.GLINTSTONE_UPGRADE_ORB.get());
                         output.accept(ModItems.ORIGIN_CRYSTAL.get());
@@ -67,6 +68,7 @@ public final class ModCreativeTabs {
                         acceptAllScrollLevels(output, ModSpells.CRYSTAL_BURST);
                         acceptAllScrollLevels(output, ModSpells.CRYSTAL_BARRAGE);
                         acceptAllScrollLevels(output, ModSpells.GREAT_GLINTSTONE_SHARD);
+                        acceptAllScrollLevels(output, ModSpells.GLINTSTONE_ICECRAG);
                         acceptAllScrollLevels(output, ModSpells.GLINTSTONE_COMET);
                         acceptAllScrollLevels(output, ModSpells.GLINTSTONE_STARS);
                         acceptAllScrollLevels(output, ModSpells.STAR_SHOWER);
