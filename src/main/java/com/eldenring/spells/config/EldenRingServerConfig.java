@@ -3,6 +3,7 @@ package com.eldenring.spells.config;
 import com.eldenring.spells.item.AzurStaffBalance;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeEffect;
 import com.eldenring.spells.particle.cometazur.CometAzurFx;
+import com.eldenring.spells.spell.AdulasMoonbladeSpell;
 import com.eldenring.spells.spell.CannonOfHaimaSpell;
 import com.eldenring.spells.spell.CarianGreatswordSpell;
 import com.eldenring.spells.spell.CarianPiercerSpell;
@@ -89,6 +90,7 @@ public final class EldenRingServerConfig {
     public static final CarianSlicerValues CARIAN_SLICER;
     public static final CarianSlicerValues CARIAN_GREATSWORD;
     public static final CarianSlicerValues CARIAN_PIERCER;
+    public static final AdulasMoonbladeValues ADULAS_MOONBLADE;
     public static final MagicGlintbladeValues MAGIC_GLINTBLADE;
     public static final GlintbladePhalanxValues GLINTBLADE_PHALANX;
     public static final GlintbladePhalanxValues CARIAN_PHALANX;
@@ -290,6 +292,7 @@ public final class EldenRingServerConfig {
                 carianPiercerSlashSeed(),
                 CarianSlicerValues::applyPiercer
         );
+        ADULAS_MOONBLADE = AdulasMoonbladeValues.create(builder);
         MAGIC_GLINTBLADE = MagicGlintbladeValues.create(builder);
         GLINTBLADE_PHALANX = GlintbladePhalanxValues.create(
                 builder,
@@ -513,6 +516,7 @@ public final class EldenRingServerConfig {
         CARIAN_SLICER.apply();
         CARIAN_GREATSWORD.apply();
         CARIAN_PIERCER.apply();
+        ADULAS_MOONBLADE.apply();
         MAGIC_GLINTBLADE.apply();
         GLINTBLADE_PHALANX.apply();
         CARIAN_PHALANX.apply();
@@ -2353,6 +2357,103 @@ public final class EldenRingServerConfig {
     /**
      * 岩石球：蓝耗 / 单块伤害 / 岩石数 / 弹速 / 射程 / 索敌 / 转向 / 击退。
      */
+    /**
+     * 亚杜拉的月光剑：书本数值 / 斩击扇形（同卡利亚大剑）/ 剑气弹速、射程、宽度、穿透 / 冻结。
+     */
+    public static final class AdulasMoonbladeValues {
+        private final SpellBookKeys book;
+        private final ModConfigSpec.DoubleValue damagePerSpellPower;
+        private final ModConfigSpec.DoubleValue waveDamagePerSpellPower;
+        private final ModConfigSpec.DoubleValue slashRadiusBlocks;
+        private final ModConfigSpec.DoubleValue slashHalfAngleDegrees;
+        private final ModConfigSpec.DoubleValue slashKnockbackStrength;
+        private final ModConfigSpec.DoubleValue waveFlightSpeed;
+        private final ModConfigSpec.DoubleValue waveMaxRangeBlocks;
+        private final ModConfigSpec.DoubleValue waveStartHalfWidthBlocks;
+        private final ModConfigSpec.DoubleValue waveMaxHalfWidthBlocks;
+        private final ModConfigSpec.IntValue waveMaxEntityHits;
+        private final ModConfigSpec.IntValue freezeTicks;
+        private final ModConfigSpec.IntValue chilledDurationTicks;
+
+        private AdulasMoonbladeValues(
+                SpellBookKeys book,
+                ModConfigSpec.DoubleValue damagePerSpellPower,
+                ModConfigSpec.DoubleValue waveDamagePerSpellPower,
+                ModConfigSpec.DoubleValue slashRadiusBlocks,
+                ModConfigSpec.DoubleValue slashHalfAngleDegrees,
+                ModConfigSpec.DoubleValue slashKnockbackStrength,
+                ModConfigSpec.DoubleValue waveFlightSpeed,
+                ModConfigSpec.DoubleValue waveMaxRangeBlocks,
+                ModConfigSpec.DoubleValue waveStartHalfWidthBlocks,
+                ModConfigSpec.DoubleValue waveMaxHalfWidthBlocks,
+                ModConfigSpec.IntValue waveMaxEntityHits,
+                ModConfigSpec.IntValue freezeTicks,
+                ModConfigSpec.IntValue chilledDurationTicks
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.waveDamagePerSpellPower = waveDamagePerSpellPower;
+            this.slashRadiusBlocks = slashRadiusBlocks;
+            this.slashHalfAngleDegrees = slashHalfAngleDegrees;
+            this.slashKnockbackStrength = slashKnockbackStrength;
+            this.waveFlightSpeed = waveFlightSpeed;
+            this.waveMaxRangeBlocks = waveMaxRangeBlocks;
+            this.waveStartHalfWidthBlocks = waveStartHalfWidthBlocks;
+            this.waveMaxHalfWidthBlocks = waveMaxHalfWidthBlocks;
+            this.waveMaxEntityHits = waveMaxEntityHits;
+            this.freezeTicks = freezeTicks;
+            this.chilledDurationTicks = chilledDurationTicks;
+        }
+
+        static AdulasMoonbladeValues create(ModConfigSpec.Builder builder) {
+            builder.push("adulas_moonblade");
+            AdulasMoonbladeValues values = new AdulasMoonbladeValues(
+                    SpellBookKeys.define(
+                            builder,
+                            AdulasMoonbladeSpell.SPELL_BASE_MANA_COST,
+                            AdulasMoonbladeSpell.SPELL_MANA_COST_PER_LEVEL,
+                            AdulasMoonbladeSpell.SPELL_BASE_SPELL_POWER,
+                            AdulasMoonbladeSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            AdulasMoonbladeSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "每刀近身斩击伤害 = 法强 × 本系数。", AdulasMoonbladeSpell.DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.floating(builder, "wave_damage_per_spell_power", "每道剑气命中一个敌人的伤害 = 法强 × 本系数（默认 0.3 = 斩击的 30%）。与斩击各自结算。", AdulasMoonbladeSpell.WAVE_DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.floating(builder, "slash_radius_blocks", "近身斩击扇形半径（方块）。", AdulasMoonbladeSpell.SLASH_RADIUS_BLOCKS, 0.5, 32.0),
+                    ConfigSpecHelper.floating(builder, "slash_half_angle_degrees", "近身斩击扇形半角（度），相对视线左右各半角。", AdulasMoonbladeSpell.SLASH_HALF_ANGLE_DEGREES, 1.0, 180.0),
+                    ConfigSpecHelper.floating(builder, "slash_knockback_strength", "近身斩击击退强度。0 = 不击退。", AdulasMoonbladeSpell.SLASH_KNOCKBACK_STRENGTH, 0.0, 8.0),
+                    ConfigSpecHelper.floating(builder, "wave_flight_speed", "剑气飞行速度（方块/tick）。", AdulasMoonbladeSpell.WAVE_FLIGHT_SPEED, 0.05, 8.0),
+                    ConfigSpecHelper.floating(builder, "wave_max_range_blocks", "剑气直线最大射程（方块），飞满后碎裂。须满足：射程 ≤ 300 × 弹速。", AdulasMoonbladeSpell.WAVE_MAX_RANGE_BLOCKS, 1.0, 512.0),
+                    ConfigSpecHelper.floating(builder, "wave_start_half_width_blocks", "剑气出手时半宽（方块）。", AdulasMoonbladeSpell.WAVE_START_HALF_WIDTH_BLOCKS, 0.1, 16.0),
+                    ConfigSpecHelper.floating(builder, "wave_max_half_width_blocks", "剑气张满后的半宽（方块），约 10 格内张满。", AdulasMoonbladeSpell.WAVE_MAX_HALF_WIDTH_BLOCKS, 0.1, 16.0),
+                    ConfigSpecHelper.integer(builder, "wave_max_entity_hits", "单道剑气最多结算几个敌人（每个敌人只吃一次）。", AdulasMoonbladeSpell.WAVE_MAX_ENTITY_HITS, 1, 64),
+                    ConfigSpecHelper.integer(builder, "freeze_ticks", "斩击与剑气写入伤害源的冻结 tick（铁魔法命中后 ×2 写入原版冻结槽）。", AdulasMoonbladeSpell.SPELL_FREEZE_TICKS, 0, 1200),
+                    ConfigSpecHelper.integer(builder, "chilled_duration_ticks", "命中后 CHILLED 持续 tick。0 = 不上寒冷。", AdulasMoonbladeSpell.SPELL_CHILLED_DURATION_TICKS, 0, 1200)
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            AdulasMoonbladeSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            AdulasMoonbladeSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            AdulasMoonbladeSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            AdulasMoonbladeSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
+            AdulasMoonbladeSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            AdulasMoonbladeSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            AdulasMoonbladeSpell.WAVE_DAMAGE_PER_SPELL_POWER = waveDamagePerSpellPower.get().floatValue();
+            AdulasMoonbladeSpell.SLASH_RADIUS_BLOCKS = slashRadiusBlocks.get().floatValue();
+            AdulasMoonbladeSpell.SLASH_HALF_ANGLE_DEGREES = slashHalfAngleDegrees.get().floatValue();
+            AdulasMoonbladeSpell.SLASH_KNOCKBACK_STRENGTH = slashKnockbackStrength.get();
+            AdulasMoonbladeSpell.WAVE_FLIGHT_SPEED = waveFlightSpeed.get().floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_RANGE_BLOCKS = waveMaxRangeBlocks.get();
+            AdulasMoonbladeSpell.WAVE_START_HALF_WIDTH_BLOCKS = waveStartHalfWidthBlocks.get().floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_HALF_WIDTH_BLOCKS = waveMaxHalfWidthBlocks.get().floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_ENTITY_HITS = waveMaxEntityHits.get();
+            AdulasMoonbladeSpell.SPELL_FREEZE_TICKS = freezeTicks.get();
+            AdulasMoonbladeSpell.SPELL_CHILLED_DURATION_TICKS = chilledDurationTicks.get();
+        }
+    }
+
     public static final class RockSlingValues {
         private final SpellBookKeys book;
         private final ModConfigSpec.DoubleValue damagePerSpellPower;

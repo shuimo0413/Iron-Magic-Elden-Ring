@@ -39,6 +39,7 @@ public final class GlintstoneScrollRecipes {
         putCyan(map, "crystal_burst");
         putCyan(map, "great_glintstone_shard");
         putFrostEssence(map, "glintstone_icecrag");
+        putFrostEssence(map, "adulas_moonblade");
         putCyan(map, "glintstone_comet");
         putCyan(map, "glintstone_stars");
         putCyan(map, "star_shower");

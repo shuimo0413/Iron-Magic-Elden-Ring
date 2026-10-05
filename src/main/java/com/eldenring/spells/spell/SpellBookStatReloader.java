@@ -201,6 +201,14 @@ public final class SpellBookStatReloader {
                 CarianPiercerSpell.SPELL_CAST_TIME_TICKS
         );
         apply(
+                ModSpells.ADULAS_MOONBLADE.get(),
+                AdulasMoonbladeSpell.SPELL_BASE_MANA_COST,
+                AdulasMoonbladeSpell.SPELL_MANA_COST_PER_LEVEL,
+                AdulasMoonbladeSpell.SPELL_BASE_SPELL_POWER,
+                AdulasMoonbladeSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                AdulasMoonbladeSpell.SPELL_CAST_TIME_TICKS
+        );
+        apply(
                 ModSpells.MAGIC_GLINTBLADE.get(),
                 MagicGlintbladeSpell.SPELL_BASE_MANA_COST,
                 MagicGlintbladeSpell.SPELL_MANA_COST_PER_LEVEL,

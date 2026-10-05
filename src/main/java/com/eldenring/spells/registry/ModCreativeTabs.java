@@ -83,6 +83,7 @@ public final class ModCreativeTabs {
                         acceptAllScrollLevels(output, ModSpells.CANNON_OF_HAIMA);
                         acceptAllScrollLevels(output, ModSpells.CARIAN_SLICER);
                         acceptAllScrollLevels(output, ModSpells.CARIAN_GREATSWORD);
+                        acceptAllScrollLevels(output, ModSpells.ADULAS_MOONBLADE);
                         acceptAllScrollLevels(output, ModSpells.CARIAN_PIERCER);
                         acceptAllScrollLevels(output, ModSpells.MAGIC_GLINTBLADE);
                         acceptAllScrollLevels(output, ModSpells.GLINTBLADE_PHALANX);

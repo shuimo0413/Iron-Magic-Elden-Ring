@@ -1,6 +1,7 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.spell.AdulasMoonbladeSpell;
 import com.eldenring.spells.spell.CarianGreatswordSpell;
 import com.eldenring.spells.spell.CarianPiercerSpell;
 import com.eldenring.spells.spell.CarianPhalanxSpell;
@@ -134,6 +135,10 @@ public final class ModSpells {
     /** 卡利亚大剑：按下第一刀，长按交替两段 0.5 秒大剑斩击；贴图/握点/光轨复用迅剑。 */
     public static final Supplier<AbstractSpell> CARIAN_GREATSWORD =
             registerSpell(new CarianGreatswordSpell());
+
+    /** 亚杜拉的月光剑：施法同卡利亚大剑，每刀额外射出一道冰月牙剑气，命中附带冰冻。 */
+    public static final Supplier<AbstractSpell> ADULAS_MOONBLADE =
+            registerSpell(new AdulasMoonbladeSpell());
 
     /** 卡利亚贯刺：点按突刺一次；剑握点/贴图从大剑拷出。 */
     public static final Supplier<AbstractSpell> CARIAN_PIERCER =

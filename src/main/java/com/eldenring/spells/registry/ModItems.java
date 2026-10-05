@@ -306,6 +306,15 @@ public final class ModItems {
     );
 
     /**
+     * 亚杜拉的月光剑视觉用物品：挥砍时画在手里的冰蓝白像素剑。
+     * 像素形状与卡利亚大剑相同（工具链脚本重染），模型 JSON / display 是自己的。不进创造栏。
+     */
+    public static final DeferredItem<Item> ADULAS_MOONBLADE_SWORD = ITEMS.register(
+            "adulas_moonblade_sword",
+            () -> new Item(new Item.Properties())
+    );
+
+    /**
      * 卡利亚贯刺视觉用物品：贴图从大剑拷出，模型 JSON / display 是贯刺自己的。
      * 不进创造栏。
      */

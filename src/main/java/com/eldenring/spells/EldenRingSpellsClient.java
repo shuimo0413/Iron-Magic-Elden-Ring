@@ -1,5 +1,6 @@
 package com.eldenring.spells;
 
+import com.eldenring.spells.client.AdulasMoonbladeClientHold;
 import com.eldenring.spells.client.CarianGreatswordClientHold;
 import com.eldenring.spells.client.CarianPiercerClientHold;
 import com.eldenring.spells.client.CarianSlicerClientHold;
@@ -70,6 +71,11 @@ public class EldenRingSpellsClient {
             );
             PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     CarianPiercerClientHold.CARIAN_PIERCER_ANIMATION_LAYER,
+                    60,
+                    player -> new ModifierLayer<>()
+            );
+            PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    AdulasMoonbladeClientHold.ADULAS_MOONBLADE_ANIMATION_LAYER,
                     60,
                     player -> new ModifierLayer<>()
             );

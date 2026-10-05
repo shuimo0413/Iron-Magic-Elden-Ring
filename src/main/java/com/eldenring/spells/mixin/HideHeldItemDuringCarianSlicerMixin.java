@@ -1,5 +1,6 @@
 package com.eldenring.spells.mixin;
 
+import com.eldenring.spells.client.AdulasMoonbladeHand;
 import com.eldenring.spells.client.CarianGreatswordHand;
 import com.eldenring.spells.client.CarianPiercerHand;
 import com.eldenring.spells.client.CarianSlicerHand;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * 迅剑、大剑或贯刺挥砍时不要再画手里的法术书 / 卷轴，否则会和像素剑叠在一起。
+ * 迅剑、大剑、贯刺或月光剑挥砍时不要再画手里的法术书 / 卷轴，否则会和像素剑叠在一起。
  */
 @Mixin(ItemInHandLayer.class)
 public abstract class HideHeldItemDuringCarianSlicerMixin {
@@ -34,7 +35,8 @@ public abstract class HideHeldItemDuringCarianSlicerMixin {
     ) {
         if (CarianSlicerHand.shouldShowSword(livingEntity)
                 || CarianGreatswordHand.shouldShowSword(livingEntity)
-                || CarianPiercerHand.shouldShowSword(livingEntity)) {
+                || CarianPiercerHand.shouldShowSword(livingEntity)
+                || AdulasMoonbladeHand.shouldShowSword(livingEntity)) {
             callbackInfo.cancel();
         }
     }

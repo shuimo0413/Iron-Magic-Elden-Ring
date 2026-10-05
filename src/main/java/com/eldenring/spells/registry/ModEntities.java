@@ -1,6 +1,8 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.entity.AdulasMoonbladeEntity;
+import com.eldenring.spells.entity.AdulasMoonbladeWaveProjectile;
 import com.eldenring.spells.entity.astrologer.AstrologerEntity;
 import com.eldenring.spells.entity.CannonOfHaimaProjectile;
 import com.eldenring.spells.entity.CarianGreatswordEntity;
@@ -304,6 +306,30 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("carian_greatsword"))
+            );
+
+    /**
+     * 亚杜拉的月光剑：服务端斩击锚点，无渲染；跟施法者结算扇形伤害并每刀射出剑气。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<AdulasMoonbladeEntity>> ADULAS_MOONBLADE =
+            ENTITIES.register("adulas_moonblade", () ->
+                    EntityType.Builder.<AdulasMoonbladeEntity>of(AdulasMoonbladeEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("adulas_moonblade"))
+            );
+
+    /**
+     * 月光剑剑气：碰撞箱仅作追踪占位；横向命中体积在 WaveCombat 里按当前半宽计算。
+     */
+    public static final DeferredHolder<EntityType<?>, EntityType<AdulasMoonbladeWaveProjectile>> ADULAS_MOONBLADE_WAVE =
+            ENTITIES.register("adulas_moonblade_wave", () ->
+                    EntityType.Builder.<AdulasMoonbladeWaveProjectile>of(AdulasMoonbladeWaveProjectile::new, MobCategory.MISC)
+                            .sized(0.40f, 0.40f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("adulas_moonblade_wave"))
             );
 
     /**
