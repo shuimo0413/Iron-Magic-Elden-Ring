@@ -1,10 +1,10 @@
 package com.eldenring.spells;
 
-import com.eldenring.spells.item.AzurCastCostData;
-import com.eldenring.spells.item.AzurManaCostPolicy;
 import com.eldenring.spells.item.AzurStaffBalance;
 import com.eldenring.spells.registry.ModItems;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.spell.cost.CastManaCostData;
+import com.eldenring.spells.spell.cost.SpellManaCostPolicy;
 import com.mojang.authlib.GameProfile;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.events.SpellCooldownAddedEvent;
@@ -66,14 +66,14 @@ public final class AzurPaymentTests {
     public static void castStartSnapshotSurvivesSwitchingAway(GameTestHelper helper) {
         Fixture f = fixture(helper, CastType.LONG);
         start(f, CastSource.SPELLBOOK);
-        helper.assertTrue(((AzurCastCostData) f.data).eldenRingSpells$getAzurMultiplier()
+        helper.assertTrue(((CastManaCostData) f.data).eldenRingSpells$getManaCostMultiplier()
                 == AzurStaffBalance.manaCostMultiplier(), "start multiplier captured");
         f.player.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.STICK));
         f.data.setMana(100);
         finalPulse(f, CastSource.SPELLBOOK);
         helper.assertTrue(f.spell.casts == 1 && f.data.getMana() == 100 - configuredPrice(),
                 "switching away retains the price of the accelerated cast");
-        helper.assertTrue(((AzurCastCostData) f.data).eldenRingSpells$getAzurMultiplier() == 1.0D,
+        helper.assertTrue(((CastManaCostData) f.data).eldenRingSpells$getManaCostMultiplier() == 1.0D,
                 "completion clears the snapshot");
         helper.succeed();
     }
@@ -216,7 +216,7 @@ public final class AzurPaymentTests {
     }
 
     private static int configuredPrice() {
-        return AzurManaCostPolicy.apply(10, AzurStaffBalance.manaCostMultiplier(), true);
+        return SpellManaCostPolicy.apply(10, AzurStaffBalance.manaCostMultiplier(), true);
     }
 
     private static Fixture fixture(GameTestHelper helper, CastType type) {

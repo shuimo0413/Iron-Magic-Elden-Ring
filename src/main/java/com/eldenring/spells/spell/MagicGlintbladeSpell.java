@@ -2,6 +2,7 @@ package com.eldenring.spells.spell;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
+import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.spell.fx.MagicGlintbladeFx;
@@ -23,7 +24,6 @@ import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Optional;
-import com.eldenring.spells.entity.GlintstoneTrailStyle;
 
 /**
  * 魔法辉剑（Magic Glintblade）：瞬时在身前偏右铺一盘卡利亚漩涡，剑在盘上平躺凝结，完成后追踪飞出。
@@ -37,159 +37,159 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
     // —— 玩法/视觉数字（toml 只覆盖玩法字段）——
     // —— 法术书 / 蓝耗 / 冷却 ——
 
-        /** 1 级蓝耗。高于迅剑、低于大魔砾。 */
-        public static int SPELL_BASE_MANA_COST = 17;
+    /** 1 级蓝耗。高于迅剑、低于大魔砾。 */
+    public static int SPELL_BASE_MANA_COST = 17;
 
-        /** 每升 1 级额外蓝耗。 */
-        public static int SPELL_MANA_COST_PER_LEVEL = 2;
+    /** 每升 1 级额外蓝耗。 */
+    public static int SPELL_MANA_COST_PER_LEVEL = 2;
 
-        /** 1 级法术强度基数。 */
-        public static float SPELL_BASE_SPELL_POWER = 7;
+    /** 1 级法术强度基数。 */
+    public static float SPELL_BASE_SPELL_POWER = 7;
 
-        /** 每级额外法术强度。 */
-        public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
+    /** 每级额外法术强度。 */
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 1;
 
-        /** 吟唱 tick。0 = 瞬时生成漩涡，剑在实体上凝结。 */
-        public static int SPELL_CAST_TIME_TICKS = 0;
+    /** 吟唱 tick。0 = 瞬时生成漩涡，剑在实体上凝结。 */
+    public static int SPELL_CAST_TIME_TICKS = 0;
 
-        /**
-         * 冷却（秒）。可同时挂多柄辉剑，但不要低到无脑铺满。
-         */
-        public static double SPELL_COOLDOWN_SECONDS = 1.5;
+    /**
+     * 冷却（秒）。可同时挂多柄辉剑，但不要低到无脑铺满。
+     */
+    public static double SPELL_COOLDOWN_SECONDS = 1.5;
 
-        /** 最大等级。 */
-        public static int SPELL_MAX_LEVEL = 10;
+    /** 最大等级。 */
+    public static int SPELL_MAX_LEVEL = 10;
 
-        /**
-         * 命中伤害 = 法术强度 × 本系数。
-         * 调大 → 单剑更痛；辉剑本职是「延迟追踪」，单发应略强于迅剑。
-         */
-        public static float DAMAGE_PER_SPELL_POWER = 1.0f;
+    /**
+     * 命中伤害 = 法术强度 × 本系数。
+     * 调大 → 单剑更痛；辉剑本职是「延迟追踪」，单发应略强于迅剑。
+     */
+    public static float DAMAGE_PER_SPELL_POWER = 1.0f;
 
-        // —— 悬停生成点（相对眼睛）——
+    // —— 悬停生成点（相对眼睛）——
 
-        /**
-         * 相对眼睛沿视线前移（方块）。调大 → 剑离脸更远。
-         */
-        public static double HOVER_FORWARD_OFFSET_BLOCKS = 1.35;
+    /**
+     * 相对眼睛沿视线前移（方块）。调大 → 剑离脸更远。
+     */
+    public static double HOVER_FORWARD_OFFSET_BLOCKS = 1.35;
 
-        /**
-         * 相对视线平面向右（方块）。法环辉剑略偏右手外侧。
-         */
-        public static double HOVER_RIGHT_OFFSET_BLOCKS = 0.42;
+    /**
+     * 相对视线平面向右（方块）。法环辉剑略偏右手外侧。
+     */
+    public static double HOVER_RIGHT_OFFSET_BLOCKS = 0.42;
 
-        /**
-         * 相对视线平面向上（方块）。正值 = 略高于准星。
-         */
-        public static double HOVER_UP_OFFSET_BLOCKS = 0.18;
+    /**
+     * 相对视线平面向上（方块）。正值 = 略高于准星。
+     */
+    public static double HOVER_UP_OFFSET_BLOCKS = 0.18;
 
-        /**
-         * 漩涡凝结总时长（tick）。到期后发射。调大 → 更像陷阱；调小 → 更快出手。
-         * 前段只铺漩涡、中段平躺长剑，时序比例见 CastCurve。
-         */
-        public static int HOVER_DURATION_TICKS = 28;
+    /**
+     * 漩涡凝结总时长（tick）。到期后发射。调大 → 更像陷阱；调小 → 更快出手。
+     * 前段只铺漩涡、中段平躺长剑，时序比例见 CastCurve。
+     */
+    public static int HOVER_DURATION_TICKS = 28;
 
-        // —— 飞行 / 追踪 ——
+    // —— 飞行 / 追踪 ——
 
-        /**
-         * 发射后飞行速度（方块/tick，传给 {@code AbstractMagicProjectile#getSpeed()}）。
-         * 调大 → 更难躲开；调小 → 更有「看剑飞来」的时间。
-         */
-        public static float PROJECTILE_FLIGHT_SPEED = 0.82f;
+    /**
+     * 发射后飞行速度（方块/tick，传给 {@code AbstractMagicProjectile#getSpeed()}）。
+     * 调大 → 更难躲开；调小 → 更有「看剑飞来」的时间。
+     */
+    public static float PROJECTILE_FLIGHT_SPEED = 0.82f;
 
-        /**
-         * 追踪索敌半径（方块）。
-         */
-        public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 28.0;
+    /**
+     * 追踪索敌半径（方块）。
+     */
+    public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 28.0;
 
-        /**
-         * 射出后最大射程（方块，按飞行路径长度；凝结阶段不计）。飞满后消失。
-         * 铁魔法 300 tick 硬寿命从生成起算：默认 (300 − 28) × 0.82 ≈ 223 格可飞，128 有余量；
-         * 若把 {@link #HOVER_DURATION_TICKS} 调到约 144 以上就会被提前删除。
-         */
-        public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+    /**
+     * 射出后最大射程（方块，按飞行路径长度；凝结阶段不计）。飞满后消失。
+     * 铁魔法 300 tick 硬寿命从生成起算：默认 (300 − 28) × 0.82 ≈ 223 格可飞，128 有余量；
+     * 若把 {@link #HOVER_DURATION_TICKS} 调到约 144 以上就会被提前删除。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
 
-        /**
-         * 每 tick 允许的最大转向角度（度）。
-         * 辉剑应对标「较强追踪」，比魔砾略狠，但仍能侧移甩掉。
-         */
-        public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 5.5f;
+    /**
+     * 每 tick 允许的最大转向角度（度）。
+     * 辉剑应对标「较强追踪」，比魔砾略狠，但仍能侧移甩掉。
+     */
+    public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 5.5f;
 
-        /**
-         * 发射后再直飞的 tick 数；其间不做追踪。
-         * 避免刚离手就被身旁杂兵拧歪。
-         */
-        public static int PROJECTILE_TRACKING_START_DELAY_TICKS = 3;
+    /**
+     * 发射后再直飞的 tick 数；其间不做追踪。
+     * 避免刚离手就被身旁杂兵拧歪。
+     */
+    public static int PROJECTILE_TRACKING_START_DELAY_TICKS = 3;
 
-        /**
-         * 索敌锥半角（度）：目标须落在当前飞行方向此锥内。
-         */
-        public static float PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES = 38.0f;
+    /**
+     * 索敌锥半角（度）：目标须落在当前飞行方向此锥内。
+     */
+    public static float PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES = 38.0f;
 
-        /** 当前速度过小（近似静止）时跳过本 tick 转向。 */
-        public static double PROJECTILE_MINIMUM_SPEED_FOR_HOMING = 1.0e-4;
+    /** 当前速度过小（近似静止）时跳过本 tick 转向。 */
+    public static double PROJECTILE_MINIMUM_SPEED_FOR_HOMING = 1.0e-4;
 
-        /** 朝向夹角极小时直接对齐（弧度）。 */
-        public static double PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS = 1.0e-5;
+    /** 朝向夹角极小时直接对齐（弧度）。 */
+    public static double PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS = 1.0e-5;
 
-        /**
-         * 瞄准点相对目标碰撞箱：0=脚底，1=头顶。取偏上避免扎地。
-         */
-        public static double TRACKING_AIM_HEIGHT_FRACTION = 0.68;
+    /**
+     * 瞄准点相对目标碰撞箱：0=脚底，1=头顶。取偏上避免扎地。
+     */
+    public static double TRACKING_AIM_HEIGHT_FRACTION = 0.68;
 
-        /**
-         * 未射出前的悬停超时（tick），兜底防止凝结卡住的剑一直挂着。
-         * 射出后不再按 tick 销毁，改看 {@link #PROJECTILE_MAX_RANGE_BLOCKS}。须大于 {@link #HOVER_DURATION_TICKS}。
-         */
-        public static int ENTITY_LIFETIME_TICKS = 90;
+    /**
+     * 未射出前的悬停超时（tick），兜底防止凝结卡住的剑一直挂着。
+     * 射出后不再按 tick 销毁，改看 {@link #PROJECTILE_MAX_RANGE_BLOCKS}。须大于 {@link #HOVER_DURATION_TICKS}。
+     */
+    public static int ENTITY_LIFETIME_TICKS = 90;
 
-        /**
-         * 命中判定相对目标箱子的外扩（方块）。
-         */
-        public static float HIT_DETECTION_INFLATION_BLOCKS = 0.28f;
+    /**
+     * 命中判定相对目标箱子的外扩（方块）。
+     */
+    public static float HIT_DETECTION_INFLATION_BLOCKS = 0.28f;
 
-        // —— 视觉 ——
+    // —— 视觉 ——
 
-        /**
-         * 模型整体缩放。凝结剑要落在 1 格漩涡里，比迅剑明显更小。
-         */
-        public static float SWORD_RENDER_SCALE = 0.52f;
+    /**
+     * 模型整体缩放。凝结剑要落在 1 格漩涡里，比迅剑明显更小。
+     */
+    public static float SWORD_RENDER_SCALE = 0.52f;
 
-        /** 剑身自发光（更深的蓝）。 */
-        public static int SWORD_BODY_COLOR_ARGB = 0xC01038B0;
+    /** 剑身自发光（更深的蓝）。 */
+    public static int SWORD_BODY_COLOR_ARGB = 0xC01038B0;
 
-        /** 剑刃。 */
-        public static int SWORD_BLADE_COLOR_ARGB = 0xD03878F0;
+    /** 剑刃。 */
+    public static int SWORD_BLADE_COLOR_ARGB = 0xD03878F0;
 
-        /** 刃锋。 */
-        public static int SWORD_EDGE_COLOR_ARGB = 0xE0B8D8FF;
+    /** 刃锋。 */
+    public static int SWORD_EDGE_COLOR_ARGB = 0xE0B8D8FF;
 
-        /** 光晕。 */
-        public static int SWORD_GLOW_COLOR_ARGB = 0x881848D0;
+    /** 光晕。 */
+    public static int SWORD_GLOW_COLOR_ARGB = 0x881848D0;
 
-        /** 飞行光轨外辉。 */
-        public static int TRAIL_GLOW_COLOR_ARGB = 0xAA2460E8;
+    /** 飞行光轨外辉。 */
+    public static int TRAIL_GLOW_COLOR_ARGB = 0xAA2460E8;
 
-        /** 飞行光轨光芯。 */
-        public static int TRAIL_CORE_COLOR_ARGB = 0xE0D0ECFF;
+    /** 飞行光轨光芯。 */
+    public static int TRAIL_CORE_COLOR_ARGB = 0xE0D0ECFF;
 
-        /**
-         * 飞行连续光轨：较短较细，强调「剑划过」而不是彗星尾。
-         */
-        public static com.eldenring.spells.entity.GlintstoneTrailStyle TRAIL_STYLE = new com.eldenring.spells.entity.GlintstoneTrailStyle(
-                4.8,
-                0.045f,
-                0.010f,
-                0.22f,
-                0.10f,
-                20
-        );
+    /**
+     * 飞行连续光轨：较短较细，强调「剑划过」而不是彗星尾。
+     */
+    public static GlintstoneTrailStyle TRAIL_STYLE = new GlintstoneTrailStyle(
+            4.8,
+            0.045f,
+            0.010f,
+            0.22f,
+            0.10f,
+            20
+    );
 
-        /** 飞行点缀粒子强度。 */
-        public static float TRAIL_PARTICLE_INTENSITY = 0.7f;
+    /** 飞行点缀粒子强度。 */
+    public static float TRAIL_PARTICLE_INTENSITY = 0.7f;
 
-        /** 命中爆裂粒子强度。 */
-        public static float IMPACT_PARTICLE_INTENSITY = 1.35f;
+    /** 命中爆裂粒子强度。 */
+    public static float IMPACT_PARTICLE_INTENSITY = 1.35f;
 
     private final ResourceLocation spellResourceLocation =
             ResourceLocation.fromNamespaceAndPath(EldenRingSpellsMod.MOD_ID, "magic_glintblade");

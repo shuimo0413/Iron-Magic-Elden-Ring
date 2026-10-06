@@ -273,25 +273,6 @@ public final class GlintstoneFx {
         }
     }
 
-    /**
-     * @deprecated 飞行拖尾已改为几何光束；请改用 {@link #trailAccents}。
-     */
-    @Deprecated
-    public static void cometTrailSegment(
-            Level level,
-            double x,
-            double y,
-            double z,
-            Vec3 motion,
-            float intensity,
-            float taper01,
-            GlintstoneTrailStyle trailStyle
-    ) {
-        if (taper01 <= 0.08f) {
-            trailAccents(level, x, y, z, motion, intensity, trailStyle);
-        }
-    }
-
     public static void impact(Level level, double x, double y, double z) {
         impact(level, x, y, z, 1.0f);
     }

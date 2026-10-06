@@ -2,10 +2,10 @@ package com.eldenring.spells;
 
 import com.eldenring.spells.recipe.EquipmentUpgradeRecipe;
 import com.eldenring.spells.item.AzurStaffBalance;
-import com.eldenring.spells.item.AzurManaCostPolicyTest;
 import com.eldenring.spells.network.AzurStaffSettingsPayload;
 import com.eldenring.spells.registry.ModItems;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.spell.cost.SpellManaCostPolicyTest;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainerMutable;
 import io.redspace.ironsspellbooks.item.SpellBook;
@@ -33,7 +33,7 @@ public final class EquipmentProgressionTests {
 
     @GameTest(template = "empty", timeoutTicks = 40)
     public static void pureManaCostBoundaries(GameTestHelper helper) {
-        AzurManaCostPolicyTest.main(new String[0]);
+        SpellManaCostPolicyTest.main(new String[0]);
         helper.succeed();
     }
 

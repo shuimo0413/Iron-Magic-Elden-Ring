@@ -48,7 +48,7 @@ public final class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GLINTSTONE_MIST =
             PARTICLE_TYPES.register("glintstone_mist", () -> new SimpleParticleType(false));
 
-    /** 卡利亚斩击新月 — 迅剑挥砍点缀，宝蓝弯弧。 */
+    /** 卡利亚斩击新月 — 宝蓝弯弧。当前无 Provider 也无生成点（迅剑刀光已改走拖尾渲染），仅保留类型与贴图备用。 */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CARIAN_SLASH =
             PARTICLE_TYPES.register("carian_slash", () -> new SimpleParticleType(false));
 

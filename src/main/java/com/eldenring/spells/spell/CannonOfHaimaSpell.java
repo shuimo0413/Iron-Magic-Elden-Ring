@@ -233,7 +233,7 @@ public class CannonOfHaimaSpell extends EldenRingAbstractSpell {
     }
 
     /**
-     * 服务端：头顶法阵 + 沿视线抛出受重力的炮弹。
+     * 服务端：沿视线抛出受重力的炮弹。
      */
     @Override
     public void onCast(

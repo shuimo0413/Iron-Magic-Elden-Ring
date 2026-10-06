@@ -37,6 +37,8 @@ public final class EldenRingConfigs {
             if (config.getSpec() == EldenRingServerConfig.SPEC) {
                 AzurStaffBalance.resetDefaults();
                 PrimalGlintstoneBladeEffect.reset();
+                EldenRingServerConfig.applySpellDefaults();
+                SpellBookStatReloader.reloadAll();
             }
             return;
         }

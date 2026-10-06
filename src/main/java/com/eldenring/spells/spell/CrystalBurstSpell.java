@@ -1,10 +1,10 @@
 package com.eldenring.spells.spell;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.spell.helper.CrystalBurstCasting;
+import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.CastSource;

@@ -2,6 +2,7 @@ package com.eldenring.spells.spell;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.SwiftGlintstoneShardProjectile;
+import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.sigil.AcademySigilFx;
 import com.eldenring.spells.spell.helper.GlintstoneCastHelper;
@@ -19,7 +20,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
-import com.eldenring.spells.entity.GlintstoneTrailStyle;
 
 /**
  * 辉石迅魔砾：魔砾的「走位连射」变体。
@@ -32,86 +32,85 @@ public class SwiftGlintstoneShardSpell extends EldenRingAbstractSpell {
 
     // —— 玩法/视觉数字（toml 只覆盖玩法字段）——
     // -------------------------------------------------------------------------
-        // 弹道飞行与追踪
-        // -------------------------------------------------------------------------
+    // 弹道飞行与追踪
+    // -------------------------------------------------------------------------
 
-        /** 飞行速度（方块/tick）；高于魔砾，更难侧移躲开。 */
-        public static float PROJECTILE_FLIGHT_SPEED = 1.65f;
+    /** 飞行速度（方块/tick）；高于魔砾，更难侧移躲开。 */
+    public static float PROJECTILE_FLIGHT_SPEED = 1.65f;
 
-        /** 索敌半径（方块）；略短于魔砾。 */
-        public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 18.0;
+    /** 索敌半径（方块）；略短于魔砾。 */
+    public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 18.0;
 
-        /**
-         * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
-         * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空的碎片更早消失。
-         */
-        public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+    /**
+     * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
+     * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空的碎片更早消失。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
 
-        /** 每 tick 最大转向（度）；弱追踪，强调「快打快收」。 */
-        public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 1.8f;
+    /** 每 tick 最大转向（度）；弱追踪，强调「快打快收」。 */
+    public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 1.8f;
 
-        /** 出手直飞 tick 数。 */
-        public static int PROJECTILE_TRACKING_START_DELAY_TICKS = 3;
+    /** 出手直飞 tick 数。 */
+    public static int PROJECTILE_TRACKING_START_DELAY_TICKS = 3;
 
-        /** 索敌锥半角（度）。 */
-        public static float PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES = 28.0f;
+    /** 索敌锥半角（度）。 */
+    public static float PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES = 28.0f;
 
-        /** 生成点沿视线前移（方块）。 */
-        public static double PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS = 0.35;
+    /** 生成点沿视线前移（方块）。 */
+    public static double PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS = 0.35;
 
-        public static double PROJECTILE_MINIMUM_SPEED_FOR_HOMING = 1.0e-4;
-        public static double PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS = 1.0e-5;
+    public static double PROJECTILE_MINIMUM_SPEED_FOR_HOMING = 1.0e-4;
+    public static double PROJECTILE_DIRECTION_ALIGN_EPSILON_RADIANS = 1.0e-5;
 
-        // -------------------------------------------------------------------------
-        // 彗星头视觉（更细、更亮的针状感）
-        // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // 彗星头视觉（更细、更亮的针状感）
+    // -------------------------------------------------------------------------
 
-        /** 径向缩小，读成细针而不是小圆石。 */
-        public static float COMET_HEAD_BODY_SCALE_RADIAL = 0.22f;
+    /** 径向缩小，读成细针而不是小圆石。 */
+    public static float COMET_HEAD_BODY_SCALE_RADIAL = 0.22f;
 
-        /** 沿飞行轴拉长。调大 → 更像示踪弹。 */
-        public static float COMET_HEAD_BODY_SCALE_ALONG = 0.70f;
+    /** 沿飞行轴拉长。调大 → 更像示踪弹。 */
+    public static float COMET_HEAD_BODY_SCALE_ALONG = 0.70f;
 
-        public static float COMET_HEAD_BODY_SCALE = COMET_HEAD_BODY_SCALE_RADIAL;
-        public static float COMET_HEAD_GLOW_SCALE = 0.42f;
-        public static float COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE = 1.85f;
-        public static float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.06f;
-        public static float COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK = 26.0f;
+    public static float COMET_HEAD_GLOW_SCALE = 0.42f;
+    public static float COMET_HEAD_GLOW_ALONG_FLIGHT_SCALE = 1.85f;
+    public static float COMET_HEAD_GLOW_PULSE_AMPLITUDE = 0.06f;
+    public static float COMET_HEAD_GLOW_SPIN_DEGREES_PER_TICK = 26.0f;
 
-        public static float COMET_HEAD_CORE_RED = 0.20f;
-        public static float COMET_HEAD_CORE_GREEN = 0.92f;
-        public static float COMET_HEAD_CORE_BLUE = 1.0f;
+    public static float COMET_HEAD_CORE_RED = 0.20f;
+    public static float COMET_HEAD_CORE_GREEN = 0.92f;
+    public static float COMET_HEAD_CORE_BLUE = 1.0f;
 
-        public static float COMET_HEAD_GLOW_RED = 0.18f;
-        public static float COMET_HEAD_GLOW_GREEN = 0.95f;
-        public static float COMET_HEAD_GLOW_BLUE = 1.0f;
-        public static float COMET_HEAD_GLOW_ALPHA = 1.0f;
+    public static float COMET_HEAD_GLOW_RED = 0.18f;
+    public static float COMET_HEAD_GLOW_GREEN = 0.95f;
+    public static float COMET_HEAD_GLOW_BLUE = 1.0f;
+    public static float COMET_HEAD_GLOW_ALPHA = 1.0f;
 
-        /**
-         * 迅魔砾曲线光轨：高速细亮示踪线，无螺旋细丝。
-         */
-        public static com.eldenring.spells.entity.GlintstoneTrailStyle TRAIL_STYLE =
-                new com.eldenring.spells.entity.GlintstoneTrailStyle(14.0, 0.028f, 0.006f, 0.12f, 0.04f, 36);
+    /**
+     * 迅魔砾曲线光轨：高速细亮示踪线，无螺旋细丝。
+     */
+    public static GlintstoneTrailStyle TRAIL_STYLE =
+            new GlintstoneTrailStyle(14.0, 0.028f, 0.006f, 0.12f, 0.04f, 36);
 
-        /** 拖尾点缀强度倍率；不影响几何光束长宽。 */
-        public static float TRAIL_PARTICLE_INTENSITY = 0.35f;
-        public static float IMPACT_PARTICLE_INTENSITY = 1.05f;
-        public static float CAST_BURST_PARTICLE_INTENSITY = 0.8f;
+    /** 拖尾点缀强度倍率；不影响几何光束长宽。 */
+    public static float TRAIL_PARTICLE_INTENSITY = 0.35f;
+    public static float IMPACT_PARTICLE_INTENSITY = 1.05f;
+    public static float CAST_BURST_PARTICLE_INTENSITY = 0.8f;
 
-        // -------------------------------------------------------------------------
-        // 法术数值
-        // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // 法术数值
+    // -------------------------------------------------------------------------
 
-        public static int SPELL_BASE_MANA_COST = 11;
-        public static int SPELL_MANA_COST_PER_LEVEL = 2;
-        public static float SPELL_BASE_SPELL_POWER = 4;
-        public static float SPELL_SPELL_POWER_PER_LEVEL = 0.5f;
-        public static int SPELL_CAST_TIME_TICKS = 0;
-        public static double SPELL_COOLDOWN_SECONDS = 0.7;
-        /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
-        public static int SPELL_MAX_LEVEL = 10;
-        public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
-        public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.55;
+    public static int SPELL_BASE_MANA_COST = 11;
+    public static int SPELL_MANA_COST_PER_LEVEL = 2;
+    public static float SPELL_BASE_SPELL_POWER = 4;
+    public static float SPELL_SPELL_POWER_PER_LEVEL = 0.5f;
+    public static int SPELL_CAST_TIME_TICKS = 0;
+    public static double SPELL_COOLDOWN_SECONDS = 0.7;
+    /** 最大等级种子（数值表）；运行时还可被铁魔法 JSON 覆盖。 */
+    public static int SPELL_MAX_LEVEL = 10;
+    public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;
+    public static double SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS = 0.55;
 
     /** 注册 ID：{@code iss_elden_ring:swift_glintstone_shard}。 */
     private final ResourceLocation spellResourceLocation =

@@ -10,9 +10,8 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 
 /**
- * 冰霜星辰粒子：贴图（32×32，来自 {@code 粒子库/tool/gen_frost_star_particles.py}）已烘焙
- * 深冰蓝 → 浅青 → 冷白配色，着色只做极轻的冷色偏移，保留贴图本身的冷白高光。
- * <p>
+ * 冰霜星辰粒子
+ * 深冰蓝 → 浅青 → 冷白配色，着色只做极轻的冷色偏移，保留贴图本身的冷白高光
  * 十三种贴图共用本类，用 {@link Kind} 区分手感。
  */
 public class FrostParticle extends TextureSheetParticle {

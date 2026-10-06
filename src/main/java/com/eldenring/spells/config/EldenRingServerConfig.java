@@ -352,15 +352,46 @@ public final class EldenRingServerConfig {
     }
 
     /**
+     * 为 true 时 {@link #read} 返回 Spec 默认值而不是 toml 当前值。
+     * 仅在 {@link #applySpellDefaults()} 执行期间置位；配置卸载后底层数据已清空，不能再调 {@code get()}。
+     */
+    private static boolean readSpecDefaults;
+
+    /**
+     * 读取一个配置项：平时是 toml 当前值，{@link #applySpellDefaults()} 期间是 Spec 默认值。
+     */
+    private static <T> T read(ModConfigSpec.ConfigValue<T> configValue) {
+        return readSpecDefaults ? configValue.getDefault() : configValue.get();
+    }
+
+    /**
      * 把 toml 写回各 Spell 运行时字段。视觉 / 动画常量保持 Java 默认。
      */
     public static void apply() {
-        AzurStaffBalance.configure(AZUR_CAST_TIME_REDUCTION.get(), AZUR_MANA_COST_MULTIPLIER.get());
+        AzurStaffBalance.configure(read(AZUR_CAST_TIME_REDUCTION), read(AZUR_MANA_COST_MULTIPLIER));
         PrimalGlintstoneBladeEffect.configure(
-                PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION.get(),
-                PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION.get(),
-                PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS.get()
+                read(PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION),
+                read(PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION),
+                read(PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS)
         );
+        applySpellFields();
+    }
+
+    /**
+     * 配置卸载（退出世界 / 断开服务器）时把 Spell 运行时字段恢复为 Spec 默认值，
+     * 避免上一个世界的 toml 数值残留到下一次加载之前。
+     * 法杖与护符由各自的 reset 方法处理，这里不碰。
+     */
+    public static void applySpellDefaults() {
+        readSpecDefaults = true;
+        try {
+            applySpellFields();
+        } finally {
+            readSpecDefaults = false;
+        }
+    }
+
+    private static void applySpellFields() {
         applyHoming(GLINTSTONE_PEBBLE, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstonePebbleSpell.SPELL_BASE_MANA_COST = mana;
             GlintstonePebbleSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -415,8 +446,8 @@ public final class EldenRingServerConfig {
                 GlintstoneIcecragSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
-        GlintstoneIcecragSpell.SPELL_FREEZE_TICKS = GLINTSTONE_ICECRAG_FREEZE_TICKS.get();
-        GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS = GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS.get();
+        GlintstoneIcecragSpell.SPELL_FREEZE_TICKS = read(GLINTSTONE_ICECRAG_FREEZE_TICKS);
+        GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS = read(GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS);
         applyHoming(GLINTSTONE_COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstoneCometSpell.SPELL_BASE_MANA_COST = mana;
             GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -533,34 +564,34 @@ public final class EldenRingServerConfig {
 
     private static void applyHoming(HomingValues values, HomingTarget target) {
         target.accept(
-                values.baseManaCost.get(),
-                values.manaCostPerLevel.get(),
-                values.baseSpellPower.get().floatValue(),
-                values.spellPowerPerLevel.get().floatValue(),
-                values.castTimeTicks.get(),
-                values.projectileFlightSpeed.get().floatValue(),
-                values.projectileTrackingRangeBlocks.get(),
-                values.projectileMaxTurnAngleDegreesPerTick.get().floatValue(),
-                values.spellDamagePerSpellPower.get().floatValue(),
-                values.explosionRadiusBlocks == null ? null : values.explosionRadiusBlocks.get().floatValue(),
-                values.projectileMaxRangeBlocks.get()
+                read(values.baseManaCost),
+                read(values.manaCostPerLevel),
+                read(values.baseSpellPower).floatValue(),
+                read(values.spellPowerPerLevel).floatValue(),
+                read(values.castTimeTicks),
+                read(values.projectileFlightSpeed).floatValue(),
+                read(values.projectileTrackingRangeBlocks),
+                read(values.projectileMaxTurnAngleDegreesPerTick).floatValue(),
+                read(values.spellDamagePerSpellPower).floatValue(),
+                values.explosionRadiusBlocks == null ? null : read(values.explosionRadiusBlocks).floatValue(),
+                read(values.projectileMaxRangeBlocks)
         );
     }
 
     private static void applyVolley(VolleyValues values, VolleyTarget target) {
         target.accept(
-                values.baseManaCost.get(),
-                values.manaCostPerLevel.get(),
-                values.baseSpellPower.get().floatValue(),
-                values.spellPowerPerLevel.get().floatValue(),
-                values.castTimeTicks.get(),
-                values.projectileFlightSpeed.get().floatValue(),
-                values.projectileTrackingRangeBlocks.get(),
-                values.projectileMaxTurnAngleDegreesPerTick.get().floatValue(),
-                values.spellDamagePerSpellPower.get().floatValue(),
-                values.projectileCount.get(),
-                values.projectileSpawnStaggerTicks.get(),
-                values.projectileMaxRangeBlocks.get()
+                read(values.baseManaCost),
+                read(values.manaCostPerLevel),
+                read(values.baseSpellPower).floatValue(),
+                read(values.spellPowerPerLevel).floatValue(),
+                read(values.castTimeTicks),
+                read(values.projectileFlightSpeed).floatValue(),
+                read(values.projectileTrackingRangeBlocks),
+                read(values.projectileMaxTurnAngleDegreesPerTick).floatValue(),
+                read(values.spellDamagePerSpellPower).floatValue(),
+                read(values.projectileCount),
+                read(values.projectileSpawnStaggerTicks),
+                read(values.projectileMaxRangeBlocks)
         );
     }
 
@@ -840,17 +871,17 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            SpiralShardSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            SpiralShardSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            SpiralShardSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            SpiralShardSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            SpiralShardSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            SpiralShardSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
-            SpiralShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
-            SpiralShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
-            SpiralShardSpell.PROJECTILE_MAX_RANGE_BLOCKS = flight.maxRange.get();
-            SpiralShardSpell.SPELL_DAMAGE_PER_SPELL_POWER = flight.damage.get().floatValue();
-            SpiralShardSpell.PROJECTILE_MAX_ENTITY_HITS = maxEntityHits.get();
+            SpiralShardSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            SpiralShardSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            SpiralShardSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            SpiralShardSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            SpiralShardSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            SpiralShardSpell.PROJECTILE_FLIGHT_SPEED = read(flight.speed).floatValue();
+            SpiralShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = read(flight.range);
+            SpiralShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = read(flight.turn).floatValue();
+            SpiralShardSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(flight.maxRange);
+            SpiralShardSpell.SPELL_DAMAGE_PER_SPELL_POWER = read(flight.damage).floatValue();
+            SpiralShardSpell.PROJECTILE_MAX_ENTITY_HITS = read(maxEntityHits);
         }
     }
 
@@ -904,17 +935,17 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            FoundingRainOfStarsSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            FoundingRainOfStarsSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            FoundingRainOfStarsSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            FoundingRainOfStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            FoundingRainOfStarsSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            FoundingRainOfStarsSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            FoundingRainOfStarsSpell.RAIN_DROPS_PER_TICK = rainDropsPerTick.get();
-            FoundingRainOfStarsSpell.RAIN_DROP_FALL_SPEED_BLOCKS_PER_TICK = rainDropFallSpeed.get().floatValue();
-            FoundingRainOfStarsSpell.RAIN_ZONE_DAMAGE_INTERVAL_TICKS = rainZoneDamageIntervalTicks.get();
-            FoundingRainOfStarsSpell.OVERHEAD_CLOUD_RADIUS_BLOCKS = overheadCloudRadiusBlocks.get();
-            FoundingRainOfStarsSpell.OVERHEAD_CLOUD_LIFETIME_TICKS = overheadCloudLifetimeTicks.get();
+            FoundingRainOfStarsSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            FoundingRainOfStarsSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            FoundingRainOfStarsSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            FoundingRainOfStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            FoundingRainOfStarsSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            FoundingRainOfStarsSpell.SPELL_DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            FoundingRainOfStarsSpell.RAIN_DROPS_PER_TICK = read(rainDropsPerTick);
+            FoundingRainOfStarsSpell.RAIN_DROP_FALL_SPEED_BLOCKS_PER_TICK = read(rainDropFallSpeed).floatValue();
+            FoundingRainOfStarsSpell.RAIN_ZONE_DAMAGE_INTERVAL_TICKS = read(rainZoneDamageIntervalTicks);
+            FoundingRainOfStarsSpell.OVERHEAD_CLOUD_RADIUS_BLOCKS = read(overheadCloudRadiusBlocks);
+            FoundingRainOfStarsSpell.OVERHEAD_CLOUD_LIFETIME_TICKS = read(overheadCloudLifetimeTicks);
         }
     }
 
@@ -969,13 +1000,13 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            StarlightSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            StarlightSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            StarlightSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            StarlightSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            StarlightSpell.STAR_DURATION_TICKS = starDurationTicks.get();
-            StarlightSpell.LIGHT_LEVEL = lightLevel.get();
+            StarlightSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            StarlightSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            StarlightSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            StarlightSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            StarlightSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            StarlightSpell.STAR_DURATION_TICKS = read(starDurationTicks);
+            StarlightSpell.LIGHT_LEVEL = read(lightLevel);
         }
     }
 
@@ -1021,15 +1052,15 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            TerraMagicaSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            TerraMagicaSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            TerraMagicaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            TerraMagicaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            TerraMagicaSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            TerraMagicaSpell.ZONE_RADIUS_BLOCKS = zoneRadiusBlocks.get().floatValue();
-            TerraMagicaSpell.ZONE_BASE_DURATION_TICKS = zoneBaseDurationTicks.get();
-            TerraMagicaSpell.ZONE_DURATION_TICKS_PER_LEVEL = zoneDurationTicksPerLevel.get();
-            TerraMagicaSpell.SPELL_POWER_BONUS_MULTIPLIED_TOTAL = spellPowerBonusMultipliedTotal.get();
+            TerraMagicaSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            TerraMagicaSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            TerraMagicaSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            TerraMagicaSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            TerraMagicaSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            TerraMagicaSpell.ZONE_RADIUS_BLOCKS = read(zoneRadiusBlocks).floatValue();
+            TerraMagicaSpell.ZONE_BASE_DURATION_TICKS = read(zoneBaseDurationTicks);
+            TerraMagicaSpell.ZONE_DURATION_TICKS_PER_LEVEL = read(zoneDurationTicksPerLevel);
+            TerraMagicaSpell.SPELL_POWER_BONUS_MULTIPLIED_TOTAL = read(spellPowerBonusMultipliedTotal);
         }
     }
 
@@ -1079,16 +1110,16 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            CometAzurSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            CometAzurSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CometAzurSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            CometAzurSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            CometAzurSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            CometAzurSpell.STARTUP_DURATION_TICKS = startupDurationTicks.get();
-            CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS = jetBeamMaxRangeBlocks.get();
-            CometAzurSpell.JET_BEAM_DAMAGE_RADIUS_BLOCKS = jetBeamDamageRadiusBlocks.get().floatValue();
-            CometAzurSpell.JET_BEAM_DAMAGE_INTERVAL_TICKS = jetBeamDamageIntervalTicks.get();
-            CometAzurSpell.JET_BEAM_DAMAGE_PER_SPELL_POWER = jetBeamDamagePerSpellPower.get().floatValue();
+            CometAzurSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            CometAzurSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            CometAzurSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            CometAzurSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            CometAzurSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            CometAzurSpell.STARTUP_DURATION_TICKS = read(startupDurationTicks);
+            CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS = read(jetBeamMaxRangeBlocks);
+            CometAzurSpell.JET_BEAM_DAMAGE_RADIUS_BLOCKS = read(jetBeamDamageRadiusBlocks).floatValue();
+            CometAzurSpell.JET_BEAM_DAMAGE_INTERVAL_TICKS = read(jetBeamDamageIntervalTicks);
+            CometAzurSpell.JET_BEAM_DAMAGE_PER_SPELL_POWER = read(jetBeamDamagePerSpellPower).floatValue();
             CometAzurFx.JET_PARTICLE_MAX_ALONG_BLOCKS = (float) CometAzurSpell.JET_BEAM_MAX_RANGE_BLOCKS;
         }
     }
@@ -1143,17 +1174,17 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            GavelOfHaimaSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            GavelOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            GavelOfHaimaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            GavelOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            GavelOfHaimaSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            GavelOfHaimaSpell.DIRECT_HIT_DAMAGE_PER_SPELL_POWER = directHitDamage.get().floatValue();
-            GavelOfHaimaSpell.SHOCKWAVE_DAMAGE_PER_SPELL_POWER = shockwaveDamage.get().floatValue();
-            GavelOfHaimaSpell.DIRECT_HIT_RADIUS_BLOCKS = directHitRadius.get().floatValue();
-            GavelOfHaimaSpell.SHOCKWAVE_RADIUS_BLOCKS = shockwaveRadius.get().floatValue();
-            GavelOfHaimaSpell.DIRECT_HIT_KNOCKBACK_STRENGTH = directHitKnockback.get();
-            GavelOfHaimaSpell.SHOCKWAVE_KNOCKBACK_STRENGTH = shockwaveKnockback.get();
+            GavelOfHaimaSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            GavelOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            GavelOfHaimaSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            GavelOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            GavelOfHaimaSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            GavelOfHaimaSpell.DIRECT_HIT_DAMAGE_PER_SPELL_POWER = read(directHitDamage).floatValue();
+            GavelOfHaimaSpell.SHOCKWAVE_DAMAGE_PER_SPELL_POWER = read(shockwaveDamage).floatValue();
+            GavelOfHaimaSpell.DIRECT_HIT_RADIUS_BLOCKS = read(directHitRadius).floatValue();
+            GavelOfHaimaSpell.SHOCKWAVE_RADIUS_BLOCKS = read(shockwaveRadius).floatValue();
+            GavelOfHaimaSpell.DIRECT_HIT_KNOCKBACK_STRENGTH = read(directHitKnockback);
+            GavelOfHaimaSpell.SHOCKWAVE_KNOCKBACK_STRENGTH = read(shockwaveKnockback);
         }
     }
 
@@ -1202,15 +1233,15 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            CannonOfHaimaSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            CannonOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CannonOfHaimaSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            CannonOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            CannonOfHaimaSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            CannonOfHaimaSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            CannonOfHaimaSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadius.get().floatValue();
-            CannonOfHaimaSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            CannonOfHaimaSpell.EXPLOSION_KNOCKBACK_STRENGTH = knockback.get();
+            CannonOfHaimaSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            CannonOfHaimaSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            CannonOfHaimaSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            CannonOfHaimaSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            CannonOfHaimaSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            CannonOfHaimaSpell.DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            CannonOfHaimaSpell.EXPLOSION_RADIUS_BLOCKS = read(explosionRadius).floatValue();
+            CannonOfHaimaSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            CannonOfHaimaSpell.EXPLOSION_KNOCKBACK_STRENGTH = read(knockback);
         }
     }
 
@@ -1294,15 +1325,15 @@ public final class EldenRingServerConfig {
 
         void apply() {
             applyTarget.accept(
-                    book.baseManaCost.get(),
-                    book.manaCostPerLevel.get(),
-                    book.baseSpellPower.get().floatValue(),
-                    book.spellPowerPerLevel.get().floatValue(),
-                    book.castTimeTicks.get(),
-                    damagePerSpellPower.get().floatValue(),
-                    slashRadiusBlocks.get().floatValue(),
-                    slashHalfAngleDegrees.get().floatValue(),
-                    slashKnockbackStrength.get()
+                    read(book.baseManaCost),
+                    read(book.manaCostPerLevel),
+                    read(book.baseSpellPower).floatValue(),
+                    read(book.spellPowerPerLevel).floatValue(),
+                    read(book.castTimeTicks),
+                    read(damagePerSpellPower).floatValue(),
+                    read(slashRadiusBlocks).floatValue(),
+                    read(slashHalfAngleDegrees).floatValue(),
+                    read(slashKnockbackStrength)
             );
         }
 
@@ -1497,17 +1528,17 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            MagicGlintbladeSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            MagicGlintbladeSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            MagicGlintbladeSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            MagicGlintbladeSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            MagicGlintbladeSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            MagicGlintbladeSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            MagicGlintbladeSpell.HOVER_DURATION_TICKS = hoverDurationTicks.get();
-            MagicGlintbladeSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
-            MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
-            MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
-            MagicGlintbladeSpell.PROJECTILE_MAX_RANGE_BLOCKS = flight.maxRange.get();
+            MagicGlintbladeSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            MagicGlintbladeSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            MagicGlintbladeSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            MagicGlintbladeSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            MagicGlintbladeSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            MagicGlintbladeSpell.DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            MagicGlintbladeSpell.HOVER_DURATION_TICKS = read(hoverDurationTicks);
+            MagicGlintbladeSpell.PROJECTILE_FLIGHT_SPEED = read(flight.speed).floatValue();
+            MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = read(flight.range);
+            MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = read(flight.turn).floatValue();
+            MagicGlintbladeSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(flight.maxRange);
         }
     }
 
@@ -1612,19 +1643,19 @@ public final class EldenRingServerConfig {
 
         void apply() {
             applyTarget.accept(
-                    book.baseManaCost.get(),
-                    book.manaCostPerLevel.get(),
-                    book.baseSpellPower.get().floatValue(),
-                    book.spellPowerPerLevel.get().floatValue(),
-                    book.castTimeTicks.get(),
-                    damagePerSpellPower.get().floatValue(),
-                    bladeCount.get(),
-                    autoLaunchRangeBlocks.get(),
-                    hoverLifetimeTicks.get(),
-                    flight.speed.get().floatValue(),
-                    flight.range.get(),
-                    flight.turn.get().floatValue(),
-                    flight.maxRange.get()
+                    read(book.baseManaCost),
+                    read(book.manaCostPerLevel),
+                    read(book.baseSpellPower).floatValue(),
+                    read(book.spellPowerPerLevel).floatValue(),
+                    read(book.castTimeTicks),
+                    read(damagePerSpellPower).floatValue(),
+                    read(bladeCount),
+                    read(autoLaunchRangeBlocks),
+                    read(hoverLifetimeTicks),
+                    read(flight.speed).floatValue(),
+                    read(flight.range),
+                    read(flight.turn).floatValue(),
+                    read(flight.maxRange)
             );
         }
 
@@ -1893,16 +1924,16 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            CrystalBarrageSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            CrystalBarrageSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CrystalBarrageSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            CrystalBarrageSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            CrystalBarrageSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            CrystalBarrageSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            CrystalBarrageSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            CrystalBarrageSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
-            CrystalBarrageSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
-            CrystalBarrageSpell.SHARD_SPAWN_INTERVAL_TICKS = shardSpawnIntervalTicks.get();
+            CrystalBarrageSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            CrystalBarrageSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            CrystalBarrageSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            CrystalBarrageSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            CrystalBarrageSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            CrystalBarrageSpell.SPELL_DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            CrystalBarrageSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            CrystalBarrageSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(maxRangeBlocks);
+            CrystalBarrageSpell.SCATTER_HALF_ANGLE_DEGREES = read(scatterHalfAngleDegrees).floatValue();
+            CrystalBarrageSpell.SHARD_SPAWN_INTERVAL_TICKS = read(shardSpawnIntervalTicks);
         }
     }
 
@@ -1990,16 +2021,16 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            CrystalBurstSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            CrystalBurstSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CrystalBurstSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            CrystalBurstSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            CrystalBurstSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            CrystalBurstSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            CrystalBurstSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            CrystalBurstSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
-            CrystalBurstSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
-            CrystalBurstSpell.PROJECTILE_COUNT = projectileCount.get();
+            CrystalBurstSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            CrystalBurstSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            CrystalBurstSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            CrystalBurstSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            CrystalBurstSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            CrystalBurstSpell.SPELL_DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            CrystalBurstSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            CrystalBurstSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(maxRangeBlocks);
+            CrystalBurstSpell.SCATTER_HALF_ANGLE_DEGREES = read(scatterHalfAngleDegrees).floatValue();
+            CrystalBurstSpell.PROJECTILE_COUNT = read(projectileCount);
         }
     }
 
@@ -2098,17 +2129,17 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            GlintstoneArcSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            GlintstoneArcSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            GlintstoneArcSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            GlintstoneArcSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            GlintstoneArcSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            GlintstoneArcSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            GlintstoneArcSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            GlintstoneArcSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
-            GlintstoneArcSpell.ARC_START_HALF_WIDTH_BLOCKS = startHalfWidthBlocks.get().floatValue();
-            GlintstoneArcSpell.ARC_MAX_HALF_WIDTH_BLOCKS = maxHalfWidthBlocks.get().floatValue();
-            GlintstoneArcSpell.PROJECTILE_MAX_ENTITY_HITS = maxEntityHits.get();
+            GlintstoneArcSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            GlintstoneArcSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            GlintstoneArcSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            GlintstoneArcSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            GlintstoneArcSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            GlintstoneArcSpell.SPELL_DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            GlintstoneArcSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            GlintstoneArcSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(maxRangeBlocks);
+            GlintstoneArcSpell.ARC_START_HALF_WIDTH_BLOCKS = read(startHalfWidthBlocks).floatValue();
+            GlintstoneArcSpell.ARC_MAX_HALF_WIDTH_BLOCKS = read(maxHalfWidthBlocks).floatValue();
+            GlintstoneArcSpell.PROJECTILE_MAX_ENTITY_HITS = read(maxEntityHits);
         }
     }
 
@@ -2207,17 +2238,17 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            GravityBallSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            GravityBallSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            GravityBallSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            GravityBallSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            GravityBallSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            GravityBallSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
-            GravityBallSpell.HIT_RADIUS_BLOCKS = hitRadiusBlocks.get().floatValue();
-            GravityBallSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1 = pullBlocksAtLevel1.get();
-            GravityBallSpell.SUCTION_PULL_BLOCKS_PER_LEVEL = pullBlocksPerLevel.get();
-            GravityBallSpell.SUCTION_STAND_OFF_BLOCKS = standOffBlocks.get();
+            GravityBallSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            GravityBallSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            GravityBallSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            GravityBallSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            GravityBallSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            GravityBallSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(maxRangeBlocks);
+            GravityBallSpell.HIT_RADIUS_BLOCKS = read(hitRadiusBlocks).floatValue();
+            GravityBallSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1 = read(pullBlocksAtLevel1);
+            GravityBallSpell.SUCTION_PULL_BLOCKS_PER_LEVEL = read(pullBlocksPerLevel);
+            GravityBallSpell.SUCTION_STAND_OFF_BLOCKS = read(standOffBlocks);
         }
     }
 
@@ -2338,19 +2369,19 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            CollapsingStarsSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            CollapsingStarsSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            CollapsingStarsSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            CollapsingStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            CollapsingStarsSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            CollapsingStarsSpell.PROJECTILE_COUNT = projectileCount.get();
-            CollapsingStarsSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
-            CollapsingStarsSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            CollapsingStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
-            CollapsingStarsSpell.HIT_RADIUS_BLOCKS = hitRadiusBlocks.get().floatValue();
-            CollapsingStarsSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1 = pullBlocksAtLevel1.get();
-            CollapsingStarsSpell.SUCTION_PULL_BLOCKS_PER_LEVEL = pullBlocksPerLevel.get();
-            CollapsingStarsSpell.SUCTION_STAND_OFF_BLOCKS = standOffBlocks.get();
+            CollapsingStarsSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            CollapsingStarsSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            CollapsingStarsSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            CollapsingStarsSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            CollapsingStarsSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            CollapsingStarsSpell.PROJECTILE_COUNT = read(projectileCount);
+            CollapsingStarsSpell.SCATTER_HALF_ANGLE_DEGREES = read(scatterHalfAngleDegrees).floatValue();
+            CollapsingStarsSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            CollapsingStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(maxRangeBlocks);
+            CollapsingStarsSpell.HIT_RADIUS_BLOCKS = read(hitRadiusBlocks).floatValue();
+            CollapsingStarsSpell.SUCTION_PULL_BLOCKS_AT_LEVEL_1 = read(pullBlocksAtLevel1);
+            CollapsingStarsSpell.SUCTION_PULL_BLOCKS_PER_LEVEL = read(pullBlocksPerLevel);
+            CollapsingStarsSpell.SUCTION_STAND_OFF_BLOCKS = read(standOffBlocks);
         }
     }
 
@@ -2434,23 +2465,23 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            AdulasMoonbladeSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            AdulasMoonbladeSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            AdulasMoonbladeSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            AdulasMoonbladeSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            AdulasMoonbladeSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            AdulasMoonbladeSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            AdulasMoonbladeSpell.WAVE_DAMAGE_PER_SPELL_POWER = waveDamagePerSpellPower.get().floatValue();
-            AdulasMoonbladeSpell.SLASH_RADIUS_BLOCKS = slashRadiusBlocks.get().floatValue();
-            AdulasMoonbladeSpell.SLASH_HALF_ANGLE_DEGREES = slashHalfAngleDegrees.get().floatValue();
-            AdulasMoonbladeSpell.SLASH_KNOCKBACK_STRENGTH = slashKnockbackStrength.get();
-            AdulasMoonbladeSpell.WAVE_FLIGHT_SPEED = waveFlightSpeed.get().floatValue();
-            AdulasMoonbladeSpell.WAVE_MAX_RANGE_BLOCKS = waveMaxRangeBlocks.get();
-            AdulasMoonbladeSpell.WAVE_START_HALF_WIDTH_BLOCKS = waveStartHalfWidthBlocks.get().floatValue();
-            AdulasMoonbladeSpell.WAVE_MAX_HALF_WIDTH_BLOCKS = waveMaxHalfWidthBlocks.get().floatValue();
-            AdulasMoonbladeSpell.WAVE_MAX_ENTITY_HITS = waveMaxEntityHits.get();
-            AdulasMoonbladeSpell.SPELL_FREEZE_TICKS = freezeTicks.get();
-            AdulasMoonbladeSpell.SPELL_CHILLED_DURATION_TICKS = chilledDurationTicks.get();
+            AdulasMoonbladeSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            AdulasMoonbladeSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            AdulasMoonbladeSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            AdulasMoonbladeSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            AdulasMoonbladeSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            AdulasMoonbladeSpell.DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            AdulasMoonbladeSpell.WAVE_DAMAGE_PER_SPELL_POWER = read(waveDamagePerSpellPower).floatValue();
+            AdulasMoonbladeSpell.SLASH_RADIUS_BLOCKS = read(slashRadiusBlocks).floatValue();
+            AdulasMoonbladeSpell.SLASH_HALF_ANGLE_DEGREES = read(slashHalfAngleDegrees).floatValue();
+            AdulasMoonbladeSpell.SLASH_KNOCKBACK_STRENGTH = read(slashKnockbackStrength);
+            AdulasMoonbladeSpell.WAVE_FLIGHT_SPEED = read(waveFlightSpeed).floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_RANGE_BLOCKS = read(waveMaxRangeBlocks);
+            AdulasMoonbladeSpell.WAVE_START_HALF_WIDTH_BLOCKS = read(waveStartHalfWidthBlocks).floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_HALF_WIDTH_BLOCKS = read(waveMaxHalfWidthBlocks).floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_ENTITY_HITS = read(waveMaxEntityHits);
+            AdulasMoonbladeSpell.SPELL_FREEZE_TICKS = read(freezeTicks);
+            AdulasMoonbladeSpell.SPELL_CHILLED_DURATION_TICKS = read(chilledDurationTicks);
         }
     }
 
@@ -2508,18 +2539,18 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            RockSlingSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            RockSlingSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            RockSlingSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            RockSlingSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            RockSlingSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            RockSlingSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            RockSlingSpell.ROCK_COUNT = rockCount.get();
-            RockSlingSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            RockSlingSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
-            RockSlingSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = trackingRangeBlocks.get();
-            RockSlingSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = maxTurnAngleDegreesPerTick.get().floatValue();
-            RockSlingSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
+            RockSlingSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            RockSlingSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            RockSlingSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            RockSlingSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            RockSlingSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            RockSlingSpell.SPELL_DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            RockSlingSpell.ROCK_COUNT = read(rockCount);
+            RockSlingSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            RockSlingSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(maxRangeBlocks);
+            RockSlingSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = read(trackingRangeBlocks);
+            RockSlingSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = read(maxTurnAngleDegreesPerTick).floatValue();
+            RockSlingSpell.KNOCKBACK_STRENGTH = read(knockbackStrength).floatValue();
         }
     }
 
@@ -2600,23 +2631,23 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            MeteoriteSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            MeteoriteSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            MeteoriteSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            MeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            MeteoriteSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            MeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            MeteoriteSpell.VOID_OPENING_DURATION_TICKS = voidOpeningDurationTicks.get();
-            MeteoriteSpell.METEORITE_SPAWN_INTERVAL_TICKS = spawnIntervalTicks.get();
-            MeteoriteSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            MeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
-            MeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES = descentBaseAngleDegrees.get().floatValue();
-            MeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES = descentMinAngleDegrees.get().floatValue();
-            MeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES = descentMaxAngleDegrees.get().floatValue();
-            MeteoriteSpell.DESCENT_JITTER_DEGREES = descentJitterDegrees.get().floatValue();
-            MeteoriteSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
-            MeteoriteSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadiusBlocks.get().floatValue();
-            MeteoriteSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
+            MeteoriteSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            MeteoriteSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            MeteoriteSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            MeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            MeteoriteSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            MeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            MeteoriteSpell.VOID_OPENING_DURATION_TICKS = read(voidOpeningDurationTicks);
+            MeteoriteSpell.METEORITE_SPAWN_INTERVAL_TICKS = read(spawnIntervalTicks);
+            MeteoriteSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            MeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(maxRangeBlocks);
+            MeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES = read(descentBaseAngleDegrees).floatValue();
+            MeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES = read(descentMinAngleDegrees).floatValue();
+            MeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES = read(descentMaxAngleDegrees).floatValue();
+            MeteoriteSpell.DESCENT_JITTER_DEGREES = read(descentJitterDegrees).floatValue();
+            MeteoriteSpell.SCATTER_HALF_ANGLE_DEGREES = read(scatterHalfAngleDegrees).floatValue();
+            MeteoriteSpell.EXPLOSION_RADIUS_BLOCKS = read(explosionRadiusBlocks).floatValue();
+            MeteoriteSpell.KNOCKBACK_STRENGTH = read(knockbackStrength).floatValue();
         }
     }
 
@@ -2692,34 +2723,34 @@ public final class EldenRingServerConfig {
         }
 
         void apply() {
-            AstelMeteoriteSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
-            AstelMeteoriteSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
-            AstelMeteoriteSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
-            AstelMeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
-            AstelMeteoriteSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
-            AstelMeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
-            AstelMeteoriteSpell.CAST_WINDUP_TICKS = castWindupTicks.get();
-            AstelMeteoriteSpell.MAX_CONCURRENT_RIFTS = maxConcurrentRifts.get();
-            AstelMeteoriteSpell.METEORITES_PER_RIFT_MIN = meteoritesPerRiftMin.get();
-            AstelMeteoriteSpell.METEORITES_PER_RIFT_MAX = meteoritesPerRiftMax.get();
-            AstelMeteoriteSpell.RIFT_OPENING_DURATION_TICKS = riftOpeningDurationTicks.get();
-            AstelMeteoriteSpell.RIFT_METEORITE_INTERVAL_TICKS = riftMeteoriteIntervalTicks.get();
-            AstelMeteoriteSpell.RIFT_SPAWN_INTERVAL_TICKS = riftSpawnIntervalTicks.get();
-            AstelMeteoriteSpell.RIFT_FAN_HALF_ANGLE_DEGREES = riftFanHalfAngleDegrees.get().floatValue();
-            AstelMeteoriteSpell.RIFT_FACING_SPREAD_FRACTION = riftFacingSpreadFraction.get().floatValue();
-            AstelMeteoriteSpell.RIFT_FORWARD_MIN_BLOCKS = riftForwardMinBlocks.get();
-            AstelMeteoriteSpell.RIFT_FORWARD_MAX_BLOCKS = riftForwardMaxBlocks.get();
-            AstelMeteoriteSpell.RIFT_HEIGHT_MIN_BLOCKS = riftHeightMinBlocks.get();
-            AstelMeteoriteSpell.RIFT_HEIGHT_MAX_BLOCKS = riftHeightMaxBlocks.get();
-            AstelMeteoriteSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
-            AstelMeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
-            AstelMeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES = descentBaseAngleDegrees.get().floatValue();
-            AstelMeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES = descentMinAngleDegrees.get().floatValue();
-            AstelMeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES = descentMaxAngleDegrees.get().floatValue();
-            AstelMeteoriteSpell.DESCENT_JITTER_DEGREES = descentJitterDegrees.get().floatValue();
-            AstelMeteoriteSpell.METEORITE_YAW_JITTER_DEGREES = meteoriteYawJitterDegrees.get().floatValue();
-            AstelMeteoriteSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadiusBlocks.get().floatValue();
-            AstelMeteoriteSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
+            AstelMeteoriteSpell.SPELL_BASE_MANA_COST = read(book.baseManaCost);
+            AstelMeteoriteSpell.SPELL_MANA_COST_PER_LEVEL = read(book.manaCostPerLevel);
+            AstelMeteoriteSpell.SPELL_BASE_SPELL_POWER = read(book.baseSpellPower).floatValue();
+            AstelMeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL = read(book.spellPowerPerLevel).floatValue();
+            AstelMeteoriteSpell.SPELL_CAST_TIME_TICKS = read(book.castTimeTicks);
+            AstelMeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER = read(damagePerSpellPower).floatValue();
+            AstelMeteoriteSpell.CAST_WINDUP_TICKS = read(castWindupTicks);
+            AstelMeteoriteSpell.MAX_CONCURRENT_RIFTS = read(maxConcurrentRifts);
+            AstelMeteoriteSpell.METEORITES_PER_RIFT_MIN = read(meteoritesPerRiftMin);
+            AstelMeteoriteSpell.METEORITES_PER_RIFT_MAX = read(meteoritesPerRiftMax);
+            AstelMeteoriteSpell.RIFT_OPENING_DURATION_TICKS = read(riftOpeningDurationTicks);
+            AstelMeteoriteSpell.RIFT_METEORITE_INTERVAL_TICKS = read(riftMeteoriteIntervalTicks);
+            AstelMeteoriteSpell.RIFT_SPAWN_INTERVAL_TICKS = read(riftSpawnIntervalTicks);
+            AstelMeteoriteSpell.RIFT_FAN_HALF_ANGLE_DEGREES = read(riftFanHalfAngleDegrees).floatValue();
+            AstelMeteoriteSpell.RIFT_FACING_SPREAD_FRACTION = read(riftFacingSpreadFraction).floatValue();
+            AstelMeteoriteSpell.RIFT_FORWARD_MIN_BLOCKS = read(riftForwardMinBlocks);
+            AstelMeteoriteSpell.RIFT_FORWARD_MAX_BLOCKS = read(riftForwardMaxBlocks);
+            AstelMeteoriteSpell.RIFT_HEIGHT_MIN_BLOCKS = read(riftHeightMinBlocks);
+            AstelMeteoriteSpell.RIFT_HEIGHT_MAX_BLOCKS = read(riftHeightMaxBlocks);
+            AstelMeteoriteSpell.PROJECTILE_FLIGHT_SPEED = read(flightSpeed).floatValue();
+            AstelMeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS = read(maxRangeBlocks);
+            AstelMeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES = read(descentBaseAngleDegrees).floatValue();
+            AstelMeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES = read(descentMinAngleDegrees).floatValue();
+            AstelMeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES = read(descentMaxAngleDegrees).floatValue();
+            AstelMeteoriteSpell.DESCENT_JITTER_DEGREES = read(descentJitterDegrees).floatValue();
+            AstelMeteoriteSpell.METEORITE_YAW_JITTER_DEGREES = read(meteoriteYawJitterDegrees).floatValue();
+            AstelMeteoriteSpell.EXPLOSION_RADIUS_BLOCKS = read(explosionRadiusBlocks).floatValue();
+            AstelMeteoriteSpell.KNOCKBACK_STRENGTH = read(knockbackStrength).floatValue();
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.eldenring.spells.spell;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.entity.LorettaGreatbowProjectile;
+import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.spell.fx.LorettaGreatbowFx;

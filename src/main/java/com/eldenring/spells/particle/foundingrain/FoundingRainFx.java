@@ -1,17 +1,16 @@
 package com.eldenring.spells.particle.foundingrain;
 
-import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
-
+import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.particle.foundingrain.OverheadNebulaAccentOptions.Accent;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModParticles;
+import com.eldenring.spells.spell.FoundingRainOfStarsSpell;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import com.eldenring.spells.entity.GlintstoneTrailStyle;
 
 /**
  * 创星雨粒子助手。手里星云仍走 {@code GlintstoneFx.starRiver}；
@@ -216,7 +215,7 @@ public final class FoundingRainFx {
          * 雨点光带：短、细、几乎不点缀粒子。长度单位方块；点数上限配合下落速度，
          * 大约保留 3 tick 真实路径，看起来是一根针而不是彗星尾巴。
          */
-        public static com.eldenring.spells.entity.GlintstoneTrailStyle RAIN_DROP_TRAIL_STYLE = new com.eldenring.spells.entity.GlintstoneTrailStyle(
+        public static GlintstoneTrailStyle RAIN_DROP_TRAIL_STYLE = new GlintstoneTrailStyle(
                 3.2,
                 0.038f,
                 0.007f,

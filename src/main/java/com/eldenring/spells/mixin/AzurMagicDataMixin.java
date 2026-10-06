@@ -1,6 +1,6 @@
 package com.eldenring.spells.mixin;
 
-import com.eldenring.spells.item.AzurCastCostData;
+import com.eldenring.spells.spell.cost.CastManaCostData;
 import com.eldenring.spells.spell.cost.SpellManaCostCalculator;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MagicData.class)
-public abstract class AzurMagicDataMixin implements AzurCastCostData {
+public abstract class AzurMagicDataMixin implements CastManaCostData {
     @Shadow
     private ServerPlayer serverPlayer;
 

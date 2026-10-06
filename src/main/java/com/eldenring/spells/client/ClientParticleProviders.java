@@ -1,7 +1,6 @@
 package com.eldenring.spells.client;
 
 import com.eldenring.spells.particle.carian.CarianParticle;
-import com.eldenring.spells.particle.carian.CarianSlashParticle;
 import com.eldenring.spells.particle.frost.FrostParticle;
 import com.eldenring.spells.particle.gravity.GravityParticle;
 import com.eldenring.spells.particle.cometazur.CometAzurInboundParticle;
@@ -38,7 +37,6 @@ public final class ClientParticleProviders {
         event.registerSpriteSet(ModParticles.GLINTSTONE_MOTE.get(), GlintstoneMoteParticle.Provider::new);
         event.registerSpriteSet(ModParticles.GLINTSTONE_FLARE.get(), GlintstoneFlareParticle.Provider::new);
         event.registerSpriteSet(ModParticles.GLINTSTONE_MIST.get(), GlintstoneMistParticle.Provider::new);
-        event.registerSpriteSet(ModParticles.CARIAN_SLASH.get(), CarianSlashParticle.Provider::new);
         event.registerSpriteSet(ModParticles.CARIAN_SPARK.get(), sprites -> new CarianParticle.Provider(sprites, CarianParticle.Kind.SPARK));
         event.registerSpriteSet(ModParticles.CARIAN_GLOW.get(), sprites -> new CarianParticle.Provider(sprites, CarianParticle.Kind.GLOW));
         event.registerSpriteSet(ModParticles.CARIAN_SHARD.get(), sprites -> new CarianParticle.Provider(sprites, CarianParticle.Kind.SHARD));
