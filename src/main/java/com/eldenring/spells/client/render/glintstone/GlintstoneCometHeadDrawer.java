@@ -1,6 +1,7 @@
 package com.eldenring.spells.client.render.glintstone;
 
 import com.eldenring.spells.client.render.ProjectileOrientation;
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.eldenring.spells.entity.GlintstoneVisualStyle;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -130,7 +131,7 @@ public final class GlintstoneCometHeadDrawer {
             GlintstoneVisualStyle visualStyle
     ) {
         VertexConsumer bodyConsumer = bufferSource.getBuffer(
-                RenderType.entityTranslucentEmissive(visualStyle.bodyTexture())
+                ShaderDepthProxy.solidEmissive(visualStyle.bodyTexture())
         );
         if (visualStyle.usesSpikedCrystalCluster()) {
             cometBodyRoot.getChild(GlintstoneCometModels.SPIKED_CLUSTER_CORE_PART).render(
@@ -203,6 +204,17 @@ public final class GlintstoneCometHeadDrawer {
                 red, green, blue,
                 alpha
         );
+
+        // 内层光晕的深度代理：只留贴图中心够实的一团，光影下弹头不会只剩一粒晶核。
+        poseStack.pushPose();
+        poseStack.scale(pulseScale, pulseScale, pulseScale);
+        poseStack.mulPose(entityRenderDispatcher.cameraOrientation());
+        ShaderDepthProxy.putBillboard(
+                bufferSource.getBuffer(ShaderDepthProxy.depthOnly(visualStyle.glowTexture())),
+                poseStack.last().pose(),
+                1.0f
+        );
+        poseStack.popPose();
     }
 
     /**

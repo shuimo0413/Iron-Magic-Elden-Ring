@@ -152,6 +152,31 @@ public class CometAzurJetRenderer extends EntityRenderer<CometAzurJetEntity> {
                 animationTicks
         );
 
+        // 中管与内球同几何重提交为深度代理。管内有螺旋细丝，必须等全部颜色层画完再提交，否则原版也会被管壁挡住。
+        VertexConsumer depthProxyConsumer = bufferSource.getBuffer(
+                ShaderDepthProxy.depthOnly(GlintstoneCometModels.TRAIL_BEAM_TEXTURE)
+        );
+        renderCylinderShell(
+                poseStack,
+                depthProxyConsumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                beamLengthBlocks,
+                mouthRadius,
+                tipRadius,
+                ShaderDepthProxy.proxyColor(CometAzurFx.JET_BEAM_MID_COLOR_ARGB)
+        );
+        CometAzurJetMesh.renderOriginSphere(
+                poseStack,
+                depthProxyConsumer,
+                forwardAxis,
+                rightAxis,
+                upAxis,
+                CometAzurFx.JET_BEAM_ORIGIN_SPHERE_RADIUS_BLOCKS * 0.62f,
+                ShaderDepthProxy.proxyColor(CometAzurFx.JET_BEAM_CORE_COLOR_ARGB)
+        );
+
         super.render(entity, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
     }
 

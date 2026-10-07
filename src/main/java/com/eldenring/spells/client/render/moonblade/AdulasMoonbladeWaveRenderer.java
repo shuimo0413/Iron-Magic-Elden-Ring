@@ -1,5 +1,6 @@
 package com.eldenring.spells.client.render.moonblade;
 
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.eldenring.spells.entity.AdulasMoonbladeWaveProjectile;
 import com.eldenring.spells.entity.GlintstoneVisualStyle;
 import com.eldenring.spells.spell.combat.GlintstoneArcCombat;
@@ -117,6 +118,20 @@ public class AdulasMoonbladeWaveRenderer extends EntityRenderer<AdulasMoonbladeW
                 CORE_LIFT_BLOCKS,
                 halfAngleRadians,
                 CORE_COLOR_ARGB
+        );
+
+        // 亮核同几何重提交为深度代理（在颜色层之后），光影下剑气不会被天空 / 冰面吃掉。
+        drawSymmetricCrescent(
+                matrix,
+                bufferSource.getBuffer(ShaderDepthProxy.depthOnly(GlintstoneVisualStyle.COMET_GLOW_TEXTURE)),
+                arcBasis,
+                outerRadiusBlocks,
+                coreRadiusBlocks,
+                coreRadiusBlocks * CORE_BELLY_THICKNESS_FRACTION,
+                CORE_HEIGHT_BLOCKS,
+                CORE_LIFT_BLOCKS,
+                halfAngleRadians,
+                ShaderDepthProxy.proxyColor(CORE_COLOR_ARGB)
         );
         poseStack.popPose();
 

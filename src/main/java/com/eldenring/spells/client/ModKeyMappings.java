@@ -11,9 +11,7 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * 追踪排除菜单热键：默认「按住 X + 按下 C」。
- * <p>
- * 原版无法把任意键注册成修饰键，故拆成两个可在「控制」里改的 {@link KeyMapping}。
+ * 追踪排除设置热键：默认单键 {@code P}，可在「控制」里改绑。
  */
 @EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class ModKeyMappings {
@@ -23,35 +21,24 @@ public final class ModKeyMappings {
     public static final String CATEGORY = "key.categories.iss_elden_ring";
 
     /**
-     * 和弦修饰键，默认 {@code X}：须按住才响应打开键。
+     * 打开追踪排除设置界面，默认 {@code P}。
+     * <p>
+     * 键名不沿用旧的 {@code tracking_ignore_open}，让老存档里保存的旧 C 绑定失效、统一回到默认 P。
      */
-    public static KeyMapping trackingIgnoreMenuModifier;
-
-    /**
-     * 打开追踪排除菜单，默认 {@code C}：在修饰键按住时 consume 一次按下。
-     */
-    public static KeyMapping trackingIgnoreMenuOpen;
+    public static KeyMapping trackingIgnoreMenu;
 
     private ModKeyMappings() {
     }
 
     @SubscribeEvent
     public static void register(RegisterKeyMappingsEvent event) {
-        trackingIgnoreMenuModifier = new KeyMapping(
-                "key.iss_elden_ring.tracking_ignore_modifier",
+        trackingIgnoreMenu = new KeyMapping(
+                "key.iss_elden_ring.tracking_ignore_menu",
                 KeyConflictContext.IN_GAME,
                 InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_X,
+                GLFW.GLFW_KEY_P,
                 CATEGORY
         );
-        trackingIgnoreMenuOpen = new KeyMapping(
-                "key.iss_elden_ring.tracking_ignore_open",
-                KeyConflictContext.IN_GAME,
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_C,
-                CATEGORY
-        );
-        event.register(trackingIgnoreMenuModifier);
-        event.register(trackingIgnoreMenuOpen);
+        event.register(trackingIgnoreMenu);
     }
 }

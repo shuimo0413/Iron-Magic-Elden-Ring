@@ -76,6 +76,9 @@ public class StarlightRenderer extends EntityRenderer<StarlightEntity> {
      */
     private static final int FADE_TICKS = 24;
 
+    /** 淡出系数低于此值（0~1）后不再写深度。调高 → 更早退回纯颜色层。 */
+    private static final float DEPTH_WRITE_MIN_FADE_ALPHA = 0.5f;
+
     public StarlightRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.shadowRadius = 0.0f;
@@ -142,6 +145,15 @@ public class StarlightRenderer extends EntityRenderer<StarlightEntity> {
                 packCyan(fadeAlpha, 1.0f),
                 fullBright
         );
+
+        // 星体的深度代理（颜色层之后）；寿命末段淡出时停止写深度，避免光影下留一块暗星影。
+        if (fadeAlpha >= DEPTH_WRITE_MIN_FADE_ALPHA) {
+            ShaderDepthProxy.putBillboard(
+                    bufferSource.getBuffer(ShaderDepthProxy.depthOnly(STAR_TEXTURE)),
+                    poseMatrix,
+                    STAR_HALF_SIZE_BLOCKS
+            );
+        }
 
         poseStack.popPose();
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);

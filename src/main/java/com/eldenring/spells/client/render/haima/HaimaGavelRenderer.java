@@ -1,5 +1,6 @@
 package com.eldenring.spells.client.render.haima;
 
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.eldenring.spells.entity.GavelOfHaimaEntity;
 import com.eldenring.spells.spell.curve.GavelOfHaimaCastCurve;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -32,6 +33,12 @@ public class HaimaGavelRenderer extends EntityRenderer<GavelOfHaimaEntity> {
     private static final int HAMMER_HEAD_COLOR_ARGB = 0xC820F0E8;
     private static final int HAMMER_CAP_COLOR_ARGB = 0xD040FFF0;
     private static final int HAMMER_GLOW_COLOR_ARGB = 0x8800E8D8;
+
+    /**
+     * 淡出系数低于此值（0~1）后锤身与光晕不再写深度。
+     * 半透明到快消失还写深度，光影下会留下一块偏暗的锤影，并挡住身后的粒子。调高 → 更早退回纯颜色层。
+     */
+    private static final float DEPTH_WRITE_MIN_FADE_ALPHA = 0.5f;
 
     private final ModelPart gavelRoot;
 
@@ -78,8 +85,10 @@ public class HaimaGavelRenderer extends EntityRenderer<GavelOfHaimaEntity> {
         int headColor = applyAlpha(HAMMER_HEAD_COLOR_ARGB, fadeAlpha);
         int glowColor = applyAlpha(HAMMER_GLOW_COLOR_ARGB, fadeAlpha * 0.85f);
 
-        VertexConsumer bodyConsumer = bufferSource.getBuffer(
-                RenderType.entityTranslucentEmissive(HaimaGavelModels.GAVEL_BODY_TEXTURE)
+        boolean writesDepth = fadeAlpha >= DEPTH_WRITE_MIN_FADE_ALPHA;
+        VertexConsumer bodyConsumer = bufferSource.getBuffer(writesDepth
+                ? ShaderDepthProxy.solidEmissive(HaimaGavelModels.GAVEL_BODY_TEXTURE)
+                : RenderType.entityTranslucentEmissive(HaimaGavelModels.GAVEL_BODY_TEXTURE)
         );
         gavelRoot.getChild(HaimaGavelModels.HANDLE_PART).render(
                 poseStack,
@@ -153,6 +162,13 @@ public class HaimaGavelRenderer extends EntityRenderer<GavelOfHaimaEntity> {
 
         drawGlowQuad(poseStack, bufferSource, pulse * 1.55f, red, green, blue, (int) (alpha * 0.4f));
         drawGlowQuad(poseStack, bufferSource, pulse, red, green, blue, alpha);
+        if (fadeAlpha >= DEPTH_WRITE_MIN_FADE_ALPHA) {
+            ShaderDepthProxy.putBillboard(
+                    bufferSource.getBuffer(ShaderDepthProxy.depthOnly(HaimaGavelModels.GAVEL_GLOW_TEXTURE)),
+                    poseStack.last().pose(),
+                    pulse * 0.5f
+            );
+        }
         poseStack.popPose();
     }
 

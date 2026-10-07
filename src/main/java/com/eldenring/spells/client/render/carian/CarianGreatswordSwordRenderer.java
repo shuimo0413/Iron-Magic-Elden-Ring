@@ -1,6 +1,7 @@
 package com.eldenring.spells.client.render.carian;
 
 import com.eldenring.spells.client.CarianGreatswordHand;
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -80,7 +81,7 @@ public final class CarianGreatswordSwordRenderer {
         );
         applyHandleIntoPalm(poseStack);
         VertexConsumer vertexConsumer = bufferSource.getBuffer(
-                RenderType.entityTranslucentEmissive(InventoryMenu.BLOCK_ATLAS)
+                ShaderDepthProxy.solidEmissive(InventoryMenu.BLOCK_ATLAS)
         );
         for (BakedModel renderPassModel : bakedModel.getRenderPasses(swordStack, true)) {
             itemRenderer.renderModelLists(

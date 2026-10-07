@@ -5,7 +5,6 @@ import com.eldenring.spells.particle.cometazur.CometAzurFx;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.spell.data.CometAzurCastData;
-import com.eldenring.spells.spell.helper.ArmorPiercingSpellDamageSource;
 import com.eldenring.spells.spell.helper.CometAzurCasting;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -74,10 +73,13 @@ public class CometAzurSpell extends EldenRingAbstractSpell {
         this.castTime = SPELL_CAST_TIME_TICKS;
     }
 
-    /** 起源咒：无视护甲（辉石抗性仍生效）。 */
+    /**
+     * 喷流 tick 间隔短于原版受伤无敌帧，必须把 i-frame 清零。
+     * 伤害类型走默认辉石魔法（{@code is_magic}），不再强制 {@code bypasses_armor}。
+     */
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
-        return ArmorPiercingSpellDamageSource.source(projectile, attacker, this).setIFrames(0);
+        return super.getDamageSource(projectile, attacker).setIFrames(0);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.eldenring.spells.client.render.gravity;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.eldenring.spells.entity.GravityBallProjectile;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -110,6 +111,18 @@ public class GravityBallRenderer extends EntityRenderer<GravityBallProjectile> {
                 CORE_HALF_SIZE_BLOCKS,
                 packVoid(CORE_OPACITY),
                 fullBright
+        );
+
+        // 黑核与蚀环的深度代理，放在全部颜色层之后；外晕太淡，不写深度。
+        ShaderDepthProxy.putBillboard(
+                bufferSource.getBuffer(ShaderDepthProxy.depthOnly(ECLIPSE_TEXTURE)),
+                poseStack.last().pose(),
+                ECLIPSE_HALF_SIZE_BLOCKS
+        );
+        ShaderDepthProxy.putBillboard(
+                bufferSource.getBuffer(ShaderDepthProxy.depthOnly(CORE_TEXTURE)),
+                poseStack.last().pose(),
+                CORE_HALF_SIZE_BLOCKS
         );
 
         poseStack.popPose();

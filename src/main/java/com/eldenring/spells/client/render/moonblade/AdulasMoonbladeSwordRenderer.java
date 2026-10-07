@@ -1,6 +1,7 @@
 package com.eldenring.spells.client.render.moonblade;
 
 import com.eldenring.spells.client.AdulasMoonbladeHand;
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -65,7 +66,7 @@ public final class AdulasMoonbladeSwordRenderer {
         );
         applyHandleIntoPalm(poseStack);
         VertexConsumer vertexConsumer = bufferSource.getBuffer(
-                RenderType.entityTranslucentEmissive(InventoryMenu.BLOCK_ATLAS)
+                ShaderDepthProxy.solidEmissive(InventoryMenu.BLOCK_ATLAS)
         );
         for (BakedModel renderPassModel : bakedModel.getRenderPasses(swordStack, true)) {
             itemRenderer.renderModelLists(

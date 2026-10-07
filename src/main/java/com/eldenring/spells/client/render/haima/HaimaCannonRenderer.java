@@ -1,5 +1,6 @@
 package com.eldenring.spells.client.render.haima;
 
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.eldenring.spells.client.render.glintstone.GlintstoneTrailRenderer;
 import com.eldenring.spells.entity.CannonOfHaimaProjectile;
 import com.eldenring.spells.spell.CannonOfHaimaSpell;
@@ -93,7 +94,7 @@ public class HaimaCannonRenderer extends EntityRenderer<CannonOfHaimaProjectile>
         poseStack.scale(scale, scale, scale);
 
         VertexConsumer bodyConsumer = bufferSource.getBuffer(
-                RenderType.entityTranslucentEmissive(HaimaCannonModels.CANNONBALL_BODY_TEXTURE)
+                ShaderDepthProxy.solidEmissive(HaimaCannonModels.CANNONBALL_BODY_TEXTURE)
         );
         cannonballRoot.getChild(HaimaCannonModels.CORE_PART).render(
                 poseStack,
@@ -145,6 +146,11 @@ public class HaimaCannonRenderer extends EntityRenderer<CannonOfHaimaProjectile>
 
         drawGlowQuad(poseStack, bufferSource, pulse * 1.65f, red, green, blue, (int) (alpha * 0.38f));
         drawGlowQuad(poseStack, bufferSource, pulse, red, green, blue, alpha);
+        ShaderDepthProxy.putBillboard(
+                bufferSource.getBuffer(ShaderDepthProxy.depthOnly(HaimaCannonModels.CANNONBALL_GLOW_TEXTURE)),
+                poseStack.last().pose(),
+                pulse * 0.5f
+        );
         poseStack.popPose();
     }
 

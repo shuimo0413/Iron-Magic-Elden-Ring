@@ -43,7 +43,7 @@ public final class TrailHistoryBuffer {
                 return;
             } else {
                 accumulatedLengthBlocks += distanceBlocks;
-            }
+            }   
         }
 
         worldPositions.addLast(worldPosition);

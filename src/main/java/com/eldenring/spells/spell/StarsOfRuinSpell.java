@@ -5,7 +5,6 @@ import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
 import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModSchools;
-import com.eldenring.spells.spell.helper.ArmorPiercingSpellDamageSource;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -206,11 +205,11 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
 
     /**
      * 12连发间隔短于原版受伤无敌帧，必须把 i-frame 清零，否则后几发会被吞成骗伤。
-     * 起源咒：伤害源无视护甲（辉石抗性仍生效）。
+     * 伤害类型走默认辉石魔法（{@code is_magic}），不再强制 {@code bypasses_armor}。
      */
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
-        return ArmorPiercingSpellDamageSource.source(projectile, attacker, this).setIFrames(0);
+        return super.getDamageSource(projectile, attacker).setIFrames(0);
     }
 
     /**

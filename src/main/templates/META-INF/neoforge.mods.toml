@@ -81,14 +81,6 @@ Adds Lands Between-themed spells and schools.
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    # 可选：有 MaFgLib（malilib NeoForge 移植）时，追踪排除走 Tweakerge 同款配置界面（右上角可切换模组）
-    modId="mafglib"
-    type="optional"
-    versionRange="[0.4.3,)"
-    ordering="AFTER"
-    side="CLIENT"
-
-[[dependencies.${mod_id}]]
     # 可选主目标：Apotheosis x Iron's Spellbooks Compat（CurseForge 显示名；modId=irons_apothic）。
     # 无此模组可正常游玩；有则加载本模组辉石学派词缀/宝石 datapack，杖/书进 staff/spellbook 分类。
     modId="irons_apothic"

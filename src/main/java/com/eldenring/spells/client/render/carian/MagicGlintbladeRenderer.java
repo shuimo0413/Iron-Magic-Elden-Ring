@@ -1,6 +1,7 @@
 package com.eldenring.spells.client.render.carian;
 
 import com.eldenring.spells.client.render.ProjectileOrientation;
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.eldenring.spells.client.render.glintstone.GlintstoneTrailRenderer;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
@@ -95,7 +96,7 @@ public class MagicGlintbladeRenderer<T extends MagicGlintbladeEntity> extends En
 
         if (swordScale > 0.02f) {
             VertexConsumer bodyConsumer = bufferSource.getBuffer(
-                    RenderType.entityTranslucentEmissive(MagicGlintbladeModels.GLINTBLADE_BODY_TEXTURE)
+                    ShaderDepthProxy.solidEmissive(MagicGlintbladeModels.GLINTBLADE_BODY_TEXTURE)
             );
             swordRoot.getChild(MagicGlintbladeModels.POMMEL_PART).render(
                     poseStack, bodyConsumer, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
@@ -196,6 +197,11 @@ public class MagicGlintbladeRenderer<T extends MagicGlintbladeEntity> extends En
                 .setColor(color).setUv(0.0f, 0.0f)
                 .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT)
                 .setNormal(0.0f, 0.0f, 1.0f);
+        ShaderDepthProxy.putBillboard(
+                bufferSource.getBuffer(ShaderDepthProxy.depthOnly(MagicGlintbladeModels.GLINTBLADE_GLOW_TEXTURE)),
+                matrix,
+                0.5f
+        );
         poseStack.popPose();
     }
 }

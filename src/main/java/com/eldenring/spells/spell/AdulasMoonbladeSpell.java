@@ -58,9 +58,9 @@ public class AdulasMoonbladeSpell extends EldenRingAbstractSpell {
     public static int SPELL_MANA_COST_PER_LEVEL = 4;
 
     /** 1 级攻击力（数值表）。斩击与剑气各吃一次。 */
-    public static float SPELL_BASE_SPELL_POWER = 9;
+    public static float SPELL_BASE_SPELL_POWER = 5;
 
-    /** 每升一级额外攻击力（数值表），满级 15。 */
+    /** 每升一级额外攻击力（数值表），满级 11。 */
     public static float SPELL_SPELL_POWER_PER_LEVEL = 1.5f;
 
     /**
