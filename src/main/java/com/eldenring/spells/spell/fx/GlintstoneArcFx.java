@@ -53,6 +53,12 @@ public final class GlintstoneArcFx {
      */
     private static final int DISCARD_FLARE_COUNT = 2;
 
+    /**
+     * 刃从出手半宽张到最大半宽所需的飞行距离（方块）。与射程解耦：射程调长后刃仍在约 14 格内铺满，
+     * 之后保持最大半宽飞完剩余射程。调大 → 张开更慢、近身更窄；调小 → 出手没多远就铺满。
+     */
+    private static final double ARC_FULL_SPREAD_DISTANCE_BLOCKS = 14.0;
+
     private GlintstoneArcFx() {
     }
 
@@ -214,8 +220,8 @@ public final class GlintstoneArcFx {
      * @param traveledBlocks 已飞行直线距离（方块）
      */
     public static float halfWidthAtDistance(double traveledBlocks) {
-        float maxRange = (float) Math.max(0.5, GlintstoneArcSpell.PROJECTILE_MAX_RANGE_BLOCKS);
-        float travelFraction = Mth.clamp((float) traveledBlocks / maxRange, 0.0f, 1.0f);
+        float fullSpreadDistance = (float) ARC_FULL_SPREAD_DISTANCE_BLOCKS;
+        float travelFraction = Mth.clamp((float) traveledBlocks / fullSpreadDistance, 0.0f, 1.0f);
         float spreadEase = 1.0f - (1.0f - travelFraction) * (1.0f - travelFraction);
         return Mth.lerp(
                 spreadEase,

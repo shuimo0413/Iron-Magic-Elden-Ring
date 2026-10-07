@@ -61,8 +61,19 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
     private static final EntityDataAccessor<Float> DATA_HOVER_PITCH_DEGREES =
             SynchedEntityData.defineId(MagicGlintbladeEntity.class, EntityDataSerializers.FLOAT);
 
+    /**
+     * 客户端渲染距离在射程之外再放宽的余量（方块）。
+     */
+    private static final double RENDER_DISTANCE_PADDING_BLOCKS = 32.0;
+
+    /** 渲染距离上限（方块）。 */
+    private static final double MAX_RENDER_DISTANCE_BLOCKS = 256.0;
+
     /** 仅客户端写入的真实飞行历史。 */
     private final TrailHistoryBuffer clientTrailHistory = new TrailHistoryBuffer();
+
+    /** 服务端累计的射出后飞行路径长度（方块）。实体不进存档，无需写 NBT。 */
+    private double traveledDistanceBlocks;
 
     /** 生成时记下的发射方向；悬停结束时若没有更好目标就用它。 */
     protected Vec3 storedLaunchDirection = new Vec3(0.0, 0.0, 1.0);
@@ -270,14 +281,39 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
             return;
         }
 
+        Vec3 positionBeforeTick = position();
         super.tick();
+        if (this.isRemoved() || level().isClientSide) {
+            return;
+        }
+        traveledDistanceBlocks += position().distanceTo(positionBeforeTick);
+        if (traveledDistanceBlocks >= maxRangeBlocks()) {
+            discard();
+        }
     }
 
     /**
-     * 寿命到点就销毁。魔法辉剑用「生成起算」的总寿命；圆阵跟手 / 飞行分段算。
+     * 未射出前的悬停超时。射出后不再按 tick 销毁，改由 {@link #maxRangeBlocks()} 按飞行距离判定。
      */
     protected boolean shouldDiscardForLifetime() {
-        return tickCount >= entityLifetimeTicks();
+        return !hasLaunched() && tickCount >= entityLifetimeTicks();
+    }
+
+    /**
+     * 射出后最大射程（方块，按飞行路径长度）。悬停 / 凝结阶段不计距离。
+     * 铁魔法 300 tick 硬寿命从生成起算，须满足「射程 ≤ (300 − 射出前 tick) × 弹速」。
+     */
+    protected double maxRangeBlocks() {
+        return MagicGlintbladeSpell.PROJECTILE_MAX_RANGE_BLOCKS;
+    }
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double distanceSquared) {
+        double renderDistanceBlocks = Math.min(
+                MAX_RENDER_DISTANCE_BLOCKS,
+                maxRangeBlocks() + RENDER_DISTANCE_PADDING_BLOCKS
+        );
+        return distanceSquared < renderDistanceBlocks * renderDistanceBlocks;
     }
 
     /**

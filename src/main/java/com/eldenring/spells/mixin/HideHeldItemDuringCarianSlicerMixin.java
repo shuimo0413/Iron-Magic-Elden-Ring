@@ -1,6 +1,7 @@
 package com.eldenring.spells.mixin;
 
 import com.eldenring.spells.client.CarianGreatswordHand;
+import com.eldenring.spells.client.AdulasMoonbladeHand;
 import com.eldenring.spells.client.CarianPiercerHand;
 import com.eldenring.spells.client.CarianSlicerHand;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -34,7 +35,8 @@ public abstract class HideHeldItemDuringCarianSlicerMixin {
     ) {
         if (CarianSlicerHand.shouldShowSword(livingEntity)
                 || CarianGreatswordHand.shouldShowSword(livingEntity)
-                || CarianPiercerHand.shouldShowSword(livingEntity)) {
+                || CarianPiercerHand.shouldShowSword(livingEntity)
+                || AdulasMoonbladeHand.shouldShowSword(livingEntity)) {
             callbackInfo.cancel();
         }
     }

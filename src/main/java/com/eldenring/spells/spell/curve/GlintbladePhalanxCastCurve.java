@@ -36,12 +36,6 @@ public final class GlintbladePhalanxCastCurve {
     public static final int LAUNCH_STAGGER_TICKS = 4;
 
     /**
-     * 射出后最长飞行（tick）。跟手阶段不走这条，超时在 Spell 的 hover 寿命里。
-     * 调大 → 追得更久；调小 → 很快自己碎。
-     */
-    public static final int FLIGHT_LIFETIME_TICKS = 72;
-
-    /**
      * 相对魔法辉剑网格的视觉倍率。辉剑圆阵 / 卡利亚圆阵都是 1。
      * 巨剑阵用 {@link #GREATBLADE_SWORD_VISUAL_SCALE} 原地放大，不另做模型。
      */

@@ -7,8 +7,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.common.Mod;
 /**
- * 检测默认 X+C 和弦：修饰键按住且打开键刚按下、且当前无 Screen 时打开追踪排除菜单。
- * 有 MaFgLib 时打开 malilib 风格界面（可与 Tweakerge 右上角互切）；否则简易屏。
+ * 检测追踪排除设置热键（默认 P）：在游戏内且当前没有打开任何界面时，按下即打开 {@link TrackingIgnoreScreen}。
  */
 @Mod.EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class TrackingIgnoreKeyHandler {
@@ -25,15 +24,9 @@ public final class TrackingIgnoreKeyHandler {
         if (minecraft.player == null || minecraft.screen != null) {
             return;
         }
-        if (ModKeyMappings.trackingIgnoreMenuModifier == null || ModKeyMappings.trackingIgnoreMenuOpen == null) {
+        if (ModKeyMappings.trackingIgnoreMenu == null || !ModKeyMappings.trackingIgnoreMenu.consumeClick()) {
             return;
         }
-        if (!ModKeyMappings.trackingIgnoreMenuModifier.isDown()) {
-            return;
-        }
-        if (!ModKeyMappings.trackingIgnoreMenuOpen.consumeClick()) {
-            return;
-        }
-        TrackingIgnoreGuiOpener.open();
+        minecraft.setScreen(new TrackingIgnoreScreen());
     }
 }

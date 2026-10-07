@@ -16,7 +16,7 @@ import net.minecraft.world.damagesource.DamageType;
 public final class ModDamageTypes {
     /**
      * 辉石魔法伤害：所有辉石学派法术的默认 DamageSource 类型（含起源三咒：毁灭流星 / 创星雨 / 彗星亚兹勒）。
-     * 起源三咒另经 {@code spell.helper.ArmorPiercingSpellDamageSource} 无视护甲；类型本身不挂 {@code bypasses_armor}。
+     * 类型本身不挂 {@code bypasses_armor}；起源三咒与魔砾一样走默认 {@code SpellDamageSource}。
      */
     public static final ResourceKey<DamageType> GLINTSTONE_MAGIC = ResourceKey.create(
             Registries.DAMAGE_TYPE,

@@ -9,7 +9,8 @@ import io.redspace.ironsspellbooks.gui.overlays.SpellWheelOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(SpellWheelOverlay.class)
+// remap = false：目标是铁魔法自己的类与方法，成品 jar 里不混淆，refmap 里查不到映射
+@Mixin(value = SpellWheelOverlay.class, remap = false)
 public abstract class AzurSpellWheelCostMixin {
     @WrapOperation(method = "render", at = @At(value = "INVOKE",
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))

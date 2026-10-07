@@ -66,6 +66,13 @@ public class StarShowerSpell extends EldenRingAbstractSpell {
 
         public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 34.0;
 
+    /**
+     * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
+     * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空弹道更早消失。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+
+
         /** 强追踪：贴近原作「朝目标飞去」。 */
         public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 5.2f;
 

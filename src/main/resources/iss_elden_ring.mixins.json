@@ -1,7 +1,9 @@
 {
   "required": true,
+  "minVersion": "0.8",
   "package": "com.eldenring.spells.mixin",
   "compatibilityLevel": "JAVA_17",
+  "refmap": "iss_elden_ring.refmap.json",
   "mixins": [
     "ScrollForgeMenuMixin",
     "AzurMagicDataMixin",

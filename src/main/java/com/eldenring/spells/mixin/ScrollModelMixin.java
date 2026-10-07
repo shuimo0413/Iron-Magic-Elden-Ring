@@ -17,7 +17,8 @@ import java.util.Optional;
  * 铁魔法通用卷轴按学派切模型（{@code item/scroll_<school>}）。
  * 辉石法术改用每道咒自己的 {@code item/<spell>_scroll}，创造栏里的通用卷轴才能显示 Wiki 图标。
  */
-@Mixin(ScrollModel.class)
+// remap = false：目标是铁魔法自己的类与方法，成品 jar 里不混淆，refmap 里查不到映射
+@Mixin(value = ScrollModel.class, remap = false)
 public abstract class ScrollModelMixin {
 
     /**

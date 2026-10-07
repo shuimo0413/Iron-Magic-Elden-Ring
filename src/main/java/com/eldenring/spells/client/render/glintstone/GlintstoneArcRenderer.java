@@ -1,5 +1,6 @@
 package com.eldenring.spells.client.render.glintstone;
 
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.eldenring.spells.entity.GlintstoneArcProjectile;
 import com.eldenring.spells.entity.GlintstoneVisualStyle;
 import com.eldenring.spells.spell.combat.GlintstoneArcCombat;
@@ -66,6 +67,12 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
      */
     private static final float ARC_LIFT_BLOCKS = 0.06f;
 
+    /**
+     * 由内往外数，前几层月牙额外写深度（光影下保留下来的层数）。
+     * 外两层 alpha 只有 0xC0 / 0xA0，写深度会在天空上留下偏暗的淡层；调大 → 光影下涟漪更完整但边缘发灰。
+     */
+    private static final int DEPTH_PROXY_LAYER_COUNT = 2;
+
     public GlintstoneArcRenderer(EntityRendererProvider.Context context) {
         super(context);
         this.shadowRadius = 0.0f;
@@ -113,6 +120,25 @@ public class GlintstoneArcRenderer extends EntityRenderer<GlintstoneArcProjectil
                     CRESCENT_HEIGHT_BLOCKS[layerIndex],
                     halfAngleRadians,
                     CRESCENT_COLOR_ARGB[layerIndex]
+            );
+        }
+
+        // 内侧较实的几层同几何重提交为深度代理，必须在全部颜色层之后，否则会挡掉外层涟漪。
+        VertexConsumer depthProxyConsumer = bufferSource.getBuffer(
+                ShaderDepthProxy.depthOnly(GlintstoneVisualStyle.COMET_GLOW_TEXTURE)
+        );
+        for (int layerIndex = 0; layerIndex < DEPTH_PROXY_LAYER_COUNT; layerIndex++) {
+            float layerRadiusBlocks = maxRadiusBlocks * CRESCENT_RADIUS_SCALES[layerIndex];
+            drawSymmetricCrescent(
+                    matrix,
+                    depthProxyConsumer,
+                    arcBasis,
+                    maxRadiusBlocks,
+                    layerRadiusBlocks,
+                    layerRadiusBlocks * CRESCENT_BELLY_THICKNESS_FRACTION,
+                    CRESCENT_HEIGHT_BLOCKS[layerIndex],
+                    halfAngleRadians,
+                    ShaderDepthProxy.proxyColor(CRESCENT_COLOR_ARGB[layerIndex])
             );
         }
         poseStack.popPose();

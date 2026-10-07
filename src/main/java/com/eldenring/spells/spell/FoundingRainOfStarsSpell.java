@@ -4,7 +4,6 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.FoundingRainOfStarsEntity;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModSchools;
-import com.eldenring.spells.spell.helper.ArmorPiercingSpellDamageSource;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -100,11 +99,11 @@ public class FoundingRainOfStarsSpell extends EldenRingAbstractSpell {
     /**
      * 雨幕是持续范围伤，必须带上与结算间隔相同的 i-frame。
      * 默认铁魔法伤害若 i-frame 为 0，会在一次红闪里叠两下，体感骗伤。
-     * 起源咒：伤害源无视护甲（辉石抗性仍生效）。
+     * 伤害类型走默认辉石魔法（{@code is_magic}），不再强制 {@code bypasses_armor}。
      */
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
-        return ArmorPiercingSpellDamageSource.source(projectile, attacker, this)
+        return super.getDamageSource(projectile, attacker)
                 .setIFrames(RAIN_ZONE_DAMAGE_INTERVAL_TICKS);
     }
 

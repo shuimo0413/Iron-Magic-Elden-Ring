@@ -102,6 +102,13 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
          */
         public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 28.0;
 
+    /**
+     * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
+     * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空弹道更早消失。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+
+
         /**
          * 每 tick 允许的最大转向角度（度）。
          * 辉剑应对标「较强追踪」，比魔砾略狠，但仍能侧移甩掉。
@@ -131,7 +138,8 @@ public class MagicGlintbladeSpell extends EldenRingAbstractSpell {
         public static double TRACKING_AIM_HEIGHT_FRACTION = 0.68;
 
         /**
-         * 实体总寿命（含悬停）。到期 discard。
+         * 发射前凝结超时（tick）。射出后不再按总寿命销毁，改看 {@link #PROJECTILE_MAX_RANGE_BLOCKS}。
+         * 须大于 {@link #HOVER_DURATION_TICKS}。
          */
         public static int ENTITY_LIFETIME_TICKS = 90;
 

@@ -50,6 +50,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.CYAN_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());
+                        output.accept(ModItems.FROST_GLINTSTONE_ESSENCE.get());
                         output.accept(ModItems.GLINTSTONE_RUNE.get());
                         output.accept(ModItems.GLINTSTONE_UPGRADE_ORB.get());
                         output.accept(ModItems.ORIGIN_CRYSTAL.get());
@@ -67,6 +68,7 @@ public final class ModCreativeTabs {
                         acceptAllScrollLevels(output, ModSpells.CRYSTAL_BURST);
                         acceptAllScrollLevels(output, ModSpells.CRYSTAL_BARRAGE);
                         acceptAllScrollLevels(output, ModSpells.GREAT_GLINTSTONE_SHARD);
+                        acceptAllScrollLevels(output, ModSpells.GLINTSTONE_ICECRAG);
                         acceptAllScrollLevels(output, ModSpells.GLINTSTONE_COMET);
                         acceptAllScrollLevels(output, ModSpells.GLINTSTONE_STARS);
                         acceptAllScrollLevels(output, ModSpells.STAR_SHOWER);
@@ -81,13 +83,18 @@ public final class ModCreativeTabs {
                         acceptAllScrollLevels(output, ModSpells.CANNON_OF_HAIMA);
                         acceptAllScrollLevels(output, ModSpells.CARIAN_SLICER);
                         acceptAllScrollLevels(output, ModSpells.CARIAN_GREATSWORD);
+                        acceptAllScrollLevels(output, ModSpells.ADULAS_MOONBLADE);
                         acceptAllScrollLevels(output, ModSpells.CARIAN_PIERCER);
                         acceptAllScrollLevels(output, ModSpells.MAGIC_GLINTBLADE);
                         acceptAllScrollLevels(output, ModSpells.GLINTBLADE_PHALANX);
                         acceptAllScrollLevels(output, ModSpells.CARIAN_PHALANX);
                         acceptAllScrollLevels(output, ModSpells.GREATBLADE_PHALANX);
+                        acceptAllScrollLevels(output, ModSpells.LORETTA_GREATBOW);
                         acceptAllScrollLevels(output, ModSpells.GRAVITY_BALL);
                         acceptAllScrollLevels(output, ModSpells.COLLAPSING_STARS);
+                        acceptAllScrollLevels(output, ModSpells.ROCK_SLING);
+                        acceptAllScrollLevels(output, ModSpells.METEORITE);
+                        acceptAllScrollLevels(output, ModSpells.METEORITE_OF_ASTEL);
                     })
                     .build());
 

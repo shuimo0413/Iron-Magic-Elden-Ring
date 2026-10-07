@@ -36,6 +36,12 @@ public class StarShowerProjectile extends AbstractGlintstoneProjectile {
     }
 
     @Override
+    protected double maxRangeBlocks() {
+        return StarShowerSpell.PROJECTILE_MAX_RANGE_BLOCKS;
+    }
+
+
+    @Override
     protected float maxTurnAngleDegreesPerTick() {
         return StarShowerSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
     }

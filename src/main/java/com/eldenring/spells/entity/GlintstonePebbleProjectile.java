@@ -36,6 +36,12 @@ public class GlintstonePebbleProjectile extends AbstractGlintstoneProjectile {
     }
 
     @Override
+    protected double maxRangeBlocks() {
+        return GlintstonePebbleSpell.PROJECTILE_MAX_RANGE_BLOCKS;
+    }
+
+
+    @Override
     protected float maxTurnAngleDegreesPerTick() {
         return GlintstonePebbleSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
     }

@@ -1,6 +1,7 @@
 package com.eldenring.spells;
 
 import com.eldenring.spells.client.CarianGreatswordClientHold;
+import com.eldenring.spells.client.AdulasMoonbladeClientHold;
 import com.eldenring.spells.client.CarianPiercerClientHold;
 import com.eldenring.spells.client.CarianSlicerClientHold;
 import com.eldenring.spells.client.ClientEntityRenderers;
@@ -49,7 +50,6 @@ public class EldenRingSpellsClient {
                 "Iron's Spells 'n Spellbooks: Elden Ring client ready. Player={}",
                 Minecraft.getInstance().getUser().getName()
         );
-        event.enqueueWork(com.eldenring.spells.client.TrackingIgnoreGuiOpener::tryRegisterMalilibConfigScreen);
         // 十字面片水晶必须走 cutout，否则透明像素会糊成黑块
         event.enqueueWork(() -> {
             for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
@@ -71,6 +71,11 @@ public class EldenRingSpellsClient {
             );
             PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     CarianPiercerClientHold.CARIAN_PIERCER_ANIMATION_LAYER,
+                    60,
+                    player -> new ModifierLayer<>()
+            );
+            PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    AdulasMoonbladeClientHold.ADULAS_MOONBLADE_ANIMATION_LAYER,
                     60,
                     player -> new ModifierLayer<>()
             );

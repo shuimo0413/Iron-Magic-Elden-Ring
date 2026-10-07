@@ -33,6 +33,13 @@ public class GlintstoneCometSpell extends EldenRingAbstractSpell {
     // —— 玩法/视觉数字（toml 只覆盖玩法字段）——
     public static float PROJECTILE_FLIGHT_SPEED = 1.2f;
         public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 29.0;
+
+    /**
+     * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
+     * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空弹道更早消失。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+
         public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 2.3f;
         public static int PROJECTILE_TRACKING_START_DELAY_TICKS = 5;
         public static float PROJECTILE_TRACKING_ACQUIRE_CONE_HALF_ANGLE_DEGREES = 34.0f;

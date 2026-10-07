@@ -4,6 +4,7 @@ import com.eldenring.spells.item.AzurStaffBalance;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeEffect;
 import com.eldenring.spells.particle.cometazur.CometAzurFx;
 import com.eldenring.spells.spell.CannonOfHaimaSpell;
+import com.eldenring.spells.spell.AdulasMoonbladeSpell;
 import com.eldenring.spells.spell.CarianGreatswordSpell;
 import com.eldenring.spells.spell.CarianPiercerSpell;
 import com.eldenring.spells.spell.CarianPhalanxSpell;
@@ -21,8 +22,13 @@ import com.eldenring.spells.spell.GlintstoneCometSpell;
 import com.eldenring.spells.spell.GlintstonePebbleSpell;
 import com.eldenring.spells.spell.GlintstoneStarsSpell;
 import com.eldenring.spells.spell.GreatGlintstoneShardSpell;
+import com.eldenring.spells.spell.GlintstoneIcecragSpell;
 import com.eldenring.spells.spell.GravityBallSpell;
 import com.eldenring.spells.spell.GreatbladePhalanxSpell;
+import com.eldenring.spells.spell.LorettaGreatbowSpell;
+import com.eldenring.spells.spell.MeteoriteSpell;
+import com.eldenring.spells.spell.AstelMeteoriteSpell;
+import com.eldenring.spells.spell.RockSlingSpell;
 import com.eldenring.spells.spell.MagicGlintbladeSpell;
 import com.eldenring.spells.spell.SpiralShardSpell;
 import com.eldenring.spells.spell.StarShowerSpell;
@@ -64,8 +70,12 @@ public final class EldenRingServerConfig {
     public static final HomingValues GLINTSTONE_PEBBLE;
     public static final HomingValues SWIFT_GLINTSTONE_SHARD;
     public static final HomingValues GREAT_GLINTSTONE_SHARD;
+    public static final HomingValues GLINTSTONE_ICECRAG;
+    public static final ForgeConfigSpec.IntValue GLINTSTONE_ICECRAG_FREEZE_TICKS;
+    public static final ForgeConfigSpec.IntValue GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS;
     public static final HomingValues GLINTSTONE_COMET;
     public static final HomingValues COMET;
+    public static final HomingValues LORETTA_GREATBOW;
     public static final VolleyValues GLINTSTONE_STARS;
     public static final VolleyValues STAR_SHOWER;
     public static final VolleyValues STARS_OF_RUIN;
@@ -79,6 +89,7 @@ public final class EldenRingServerConfig {
     public static final CarianSlicerValues CARIAN_SLICER;
     public static final CarianSlicerValues CARIAN_GREATSWORD;
     public static final CarianSlicerValues CARIAN_PIERCER;
+    public static final AdulasMoonbladeValues ADULAS_MOONBLADE;
     public static final MagicGlintbladeValues MAGIC_GLINTBLADE;
     public static final GlintbladePhalanxValues GLINTBLADE_PHALANX;
     public static final GlintbladePhalanxValues CARIAN_PHALANX;
@@ -88,6 +99,9 @@ public final class EldenRingServerConfig {
     public static final GlintstoneArcValues GLINTSTONE_ARC;
     public static final GravityBallValues GRAVITY_BALL;
     public static final CollapsingStarsValues COLLAPSING_STARS;
+    public static final RockSlingValues ROCK_SLING;
+    public static final MeteoriteValues METEORITE;
+    public static final AstelMeteoriteValues METEORITE_OF_ASTEL;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -109,7 +123,8 @@ public final class EldenRingServerConfig {
                 GlintstonePebbleSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 GlintstonePebbleSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 GlintstonePebbleSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                null
+                null,
+                GlintstonePebbleSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         SWIFT_GLINTSTONE_SHARD = HomingValues.create(builder, "swift_glintstone_shard", new HomingSeed(
                 SwiftGlintstoneShardSpell.SPELL_BASE_MANA_COST,
@@ -121,7 +136,8 @@ public final class EldenRingServerConfig {
                 SwiftGlintstoneShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 SwiftGlintstoneShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 SwiftGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                null
+                null,
+                SwiftGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         GREAT_GLINTSTONE_SHARD = HomingValues.create(builder, "great_glintstone_shard", new HomingSeed(
                 GreatGlintstoneShardSpell.SPELL_BASE_MANA_COST,
@@ -133,8 +149,40 @@ public final class EldenRingServerConfig {
                 GreatGlintstoneShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 GreatGlintstoneShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 GreatGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                GreatGlintstoneShardSpell.EXPLOSION_RADIUS_BLOCKS
+                GreatGlintstoneShardSpell.EXPLOSION_RADIUS_BLOCKS,
+                GreatGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
+        GLINTSTONE_ICECRAG = HomingValues.create(builder, "glintstone_icecrag", new HomingSeed(
+                GlintstoneIcecragSpell.SPELL_BASE_MANA_COST,
+                GlintstoneIcecragSpell.SPELL_MANA_COST_PER_LEVEL,
+                GlintstoneIcecragSpell.SPELL_BASE_SPELL_POWER,
+                GlintstoneIcecragSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                GlintstoneIcecragSpell.SPELL_CAST_TIME_TICKS,
+                GlintstoneIcecragSpell.PROJECTILE_FLIGHT_SPEED,
+                GlintstoneIcecragSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
+                GlintstoneIcecragSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                GlintstoneIcecragSpell.SPELL_DAMAGE_PER_SPELL_POWER,
+                GlintstoneIcecragSpell.EXPLOSION_RADIUS_BLOCKS,
+                GlintstoneIcecragSpell.PROJECTILE_MAX_RANGE_BLOCKS
+        ));
+        builder.push("glintstone_icecrag_crowd_control");
+        GLINTSTONE_ICECRAG_FREEZE_TICKS = ConfigSpecHelper.integer(
+                builder,
+                "freeze_ticks",
+                "写入伤害源的冻结 tick（铁魔法命中后会 ×2 进原版冻结槽）。调大更容易一次冻实。",
+                GlintstoneIcecragSpell.SPELL_FREEZE_TICKS,
+                0,
+                400
+        );
+        GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS = ConfigSpecHelper.integer(
+                builder,
+                "chilled_duration_ticks",
+                "命中后 CHILLED 持续 tick。与满冻结槽叠加时会进冰牢。",
+                GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS,
+                0,
+                600
+        );
+        builder.pop();
         GLINTSTONE_COMET = HomingValues.create(builder, "glintstone_comet", new HomingSeed(
                 GlintstoneCometSpell.SPELL_BASE_MANA_COST,
                 GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL,
@@ -145,7 +193,8 @@ public final class EldenRingServerConfig {
                 GlintstoneCometSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 GlintstoneCometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 GlintstoneCometSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                GlintstoneCometSpell.EXPLOSION_RADIUS_BLOCKS
+                GlintstoneCometSpell.EXPLOSION_RADIUS_BLOCKS,
+                GlintstoneCometSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         COMET = HomingValues.create(builder, "comet", new HomingSeed(
                 CometSpell.SPELL_BASE_MANA_COST,
@@ -157,7 +206,21 @@ public final class EldenRingServerConfig {
                 CometSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                 CometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 CometSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                CometSpell.EXPLOSION_RADIUS_BLOCKS
+                CometSpell.EXPLOSION_RADIUS_BLOCKS,
+                CometSpell.PROJECTILE_MAX_RANGE_BLOCKS
+        ));
+        LORETTA_GREATBOW = HomingValues.create(builder, "loretta_greatbow", new HomingSeed(
+                LorettaGreatbowSpell.SPELL_BASE_MANA_COST,
+                LorettaGreatbowSpell.SPELL_MANA_COST_PER_LEVEL,
+                LorettaGreatbowSpell.SPELL_BASE_SPELL_POWER,
+                LorettaGreatbowSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                LorettaGreatbowSpell.SPELL_CAST_TIME_TICKS,
+                LorettaGreatbowSpell.PROJECTILE_FLIGHT_SPEED,
+                LorettaGreatbowSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
+                LorettaGreatbowSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                LorettaGreatbowSpell.SPELL_DAMAGE_PER_SPELL_POWER,
+                LorettaGreatbowSpell.EXPLOSION_RADIUS_BLOCKS,
+                LorettaGreatbowSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
 
         GLINTSTONE_STARS = VolleyValues.create(builder, "glintstone_stars", new VolleySeed(
@@ -171,7 +234,8 @@ public final class EldenRingServerConfig {
                 GlintstoneStarsSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 GlintstoneStarsSpell.SPELL_DAMAGE_PER_SPELL_POWER,
                 GlintstoneStarsSpell.PROJECTILE_COUNT,
-                GlintstoneStarsSpell.PROJECTILE_SPAWN_STAGGER_TICKS
+                GlintstoneStarsSpell.PROJECTILE_SPAWN_STAGGER_TICKS,
+                GlintstoneStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         STAR_SHOWER = VolleyValues.create(builder, "star_shower", new VolleySeed(
                 StarShowerSpell.SPELL_BASE_MANA_COST,
@@ -184,7 +248,8 @@ public final class EldenRingServerConfig {
                 StarShowerSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 StarShowerSpell.SPELL_DAMAGE_PER_SPELL_POWER,
                 StarShowerSpell.PROJECTILE_COUNT,
-                StarShowerSpell.PROJECTILE_SPAWN_STAGGER_TICKS
+                StarShowerSpell.PROJECTILE_SPAWN_STAGGER_TICKS,
+                StarShowerSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         STARS_OF_RUIN = VolleyValues.create(builder, "stars_of_ruin", new VolleySeed(
                 StarsOfRuinSpell.SPELL_BASE_MANA_COST,
@@ -197,7 +262,8 @@ public final class EldenRingServerConfig {
                 StarsOfRuinSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                 StarsOfRuinSpell.SPELL_DAMAGE_PER_SPELL_POWER,
                 StarsOfRuinSpell.PROJECTILE_COUNT,
-                StarsOfRuinSpell.PROJECTILE_SPAWN_STAGGER_TICKS
+                StarsOfRuinSpell.PROJECTILE_SPAWN_STAGGER_TICKS,
+                StarsOfRuinSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
 
         SPIRAL_SHARD = SpiralValues.create(builder);
@@ -226,6 +292,7 @@ public final class EldenRingServerConfig {
                 CarianSlicerValues::applyPiercer
         );
         MAGIC_GLINTBLADE = MagicGlintbladeValues.create(builder);
+        ADULAS_MOONBLADE = AdulasMoonbladeValues.create(builder);
         GLINTBLADE_PHALANX = GlintbladePhalanxValues.create(
                 builder,
                 "glintblade_phalanx",
@@ -252,6 +319,9 @@ public final class EldenRingServerConfig {
         GLINTSTONE_ARC = GlintstoneArcValues.create(builder);
         GRAVITY_BALL = GravityBallValues.create(builder);
         COLLAPSING_STARS = CollapsingStarsValues.create(builder);
+        ROCK_SLING = RockSlingValues.create(builder);
+        METEORITE = MeteoriteValues.create(builder);
+        METEORITE_OF_ASTEL = AstelMeteoriteValues.create(builder);
 
         builder.push("equipment").push("azur_staff");
         AZUR_CAST_TIME_REDUCTION = builder
@@ -290,7 +360,7 @@ public final class EldenRingServerConfig {
                 PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION.get(),
                 PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS.get()
         );
-        applyHoming(GLINTSTONE_PEBBLE, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(GLINTSTONE_PEBBLE, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstonePebbleSpell.SPELL_BASE_MANA_COST = mana;
             GlintstonePebbleSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             GlintstonePebbleSpell.SPELL_BASE_SPELL_POWER = power;
@@ -299,9 +369,10 @@ public final class EldenRingServerConfig {
             GlintstonePebbleSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GlintstonePebbleSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GlintstonePebbleSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintstonePebbleSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             GlintstonePebbleSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
         });
-        applyHoming(SWIFT_GLINTSTONE_SHARD, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(SWIFT_GLINTSTONE_SHARD, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             SwiftGlintstoneShardSpell.SPELL_BASE_MANA_COST = mana;
             SwiftGlintstoneShardSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             SwiftGlintstoneShardSpell.SPELL_BASE_SPELL_POWER = power;
@@ -310,9 +381,10 @@ public final class EldenRingServerConfig {
             SwiftGlintstoneShardSpell.PROJECTILE_FLIGHT_SPEED = speed;
             SwiftGlintstoneShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             SwiftGlintstoneShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            SwiftGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             SwiftGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
         });
-        applyHoming(GREAT_GLINTSTONE_SHARD, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(GREAT_GLINTSTONE_SHARD, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GreatGlintstoneShardSpell.SPELL_BASE_MANA_COST = mana;
             GreatGlintstoneShardSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             GreatGlintstoneShardSpell.SPELL_BASE_SPELL_POWER = power;
@@ -321,12 +393,30 @@ public final class EldenRingServerConfig {
             GreatGlintstoneShardSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GreatGlintstoneShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GreatGlintstoneShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GreatGlintstoneShardSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             GreatGlintstoneShardSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             if (explosion != null) {
                 GreatGlintstoneShardSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
-        applyHoming(GLINTSTONE_COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(GLINTSTONE_ICECRAG, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
+            GlintstoneIcecragSpell.SPELL_BASE_MANA_COST = mana;
+            GlintstoneIcecragSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
+            GlintstoneIcecragSpell.SPELL_BASE_SPELL_POWER = power;
+            GlintstoneIcecragSpell.SPELL_SPELL_POWER_PER_LEVEL = powerPer;
+            GlintstoneIcecragSpell.SPELL_CAST_TIME_TICKS = castTime;
+            GlintstoneIcecragSpell.PROJECTILE_FLIGHT_SPEED = speed;
+            GlintstoneIcecragSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
+            GlintstoneIcecragSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintstoneIcecragSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
+            GlintstoneIcecragSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
+            if (explosion != null) {
+                GlintstoneIcecragSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
+            }
+        });
+        GlintstoneIcecragSpell.SPELL_FREEZE_TICKS = GLINTSTONE_ICECRAG_FREEZE_TICKS.get();
+        GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS = GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS.get();
+        applyHoming(GLINTSTONE_COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstoneCometSpell.SPELL_BASE_MANA_COST = mana;
             GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             GlintstoneCometSpell.SPELL_BASE_SPELL_POWER = power;
@@ -335,12 +425,13 @@ public final class EldenRingServerConfig {
             GlintstoneCometSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GlintstoneCometSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GlintstoneCometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintstoneCometSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             GlintstoneCometSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             if (explosion != null) {
                 GlintstoneCometSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
-        applyHoming(COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion) -> {
+        applyHoming(COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             CometSpell.SPELL_BASE_MANA_COST = mana;
             CometSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             CometSpell.SPELL_BASE_SPELL_POWER = power;
@@ -349,13 +440,29 @@ public final class EldenRingServerConfig {
             CometSpell.PROJECTILE_FLIGHT_SPEED = speed;
             CometSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             CometSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            CometSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             CometSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             if (explosion != null) {
                 CometSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
+        applyHoming(LORETTA_GREATBOW, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
+            LorettaGreatbowSpell.SPELL_BASE_MANA_COST = mana;
+            LorettaGreatbowSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
+            LorettaGreatbowSpell.SPELL_BASE_SPELL_POWER = power;
+            LorettaGreatbowSpell.SPELL_SPELL_POWER_PER_LEVEL = powerPer;
+            LorettaGreatbowSpell.SPELL_CAST_TIME_TICKS = castTime;
+            LorettaGreatbowSpell.PROJECTILE_FLIGHT_SPEED = speed;
+            LorettaGreatbowSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
+            LorettaGreatbowSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            LorettaGreatbowSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
+            LorettaGreatbowSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
+            if (explosion != null) {
+                LorettaGreatbowSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
+            }
+        });
 
-        applyVolley(GLINTSTONE_STARS, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger) -> {
+        applyVolley(GLINTSTONE_STARS, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger, maxRange) -> {
             GlintstoneStarsSpell.SPELL_BASE_MANA_COST = mana;
             GlintstoneStarsSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             GlintstoneStarsSpell.SPELL_BASE_SPELL_POWER = power;
@@ -364,11 +471,12 @@ public final class EldenRingServerConfig {
             GlintstoneStarsSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GlintstoneStarsSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GlintstoneStarsSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintstoneStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             GlintstoneStarsSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             GlintstoneStarsSpell.PROJECTILE_COUNT = count;
             GlintstoneStarsSpell.PROJECTILE_SPAWN_STAGGER_TICKS = stagger;
         });
-        applyVolley(STAR_SHOWER, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger) -> {
+        applyVolley(STAR_SHOWER, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger, maxRange) -> {
             StarShowerSpell.SPELL_BASE_MANA_COST = mana;
             StarShowerSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             StarShowerSpell.SPELL_BASE_SPELL_POWER = power;
@@ -377,11 +485,12 @@ public final class EldenRingServerConfig {
             StarShowerSpell.PROJECTILE_FLIGHT_SPEED = speed;
             StarShowerSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             StarShowerSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            StarShowerSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             StarShowerSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             StarShowerSpell.PROJECTILE_COUNT = count;
             StarShowerSpell.PROJECTILE_SPAWN_STAGGER_TICKS = stagger;
         });
-        applyVolley(STARS_OF_RUIN, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger) -> {
+        applyVolley(STARS_OF_RUIN, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, count, stagger, maxRange) -> {
             StarsOfRuinSpell.SPELL_BASE_MANA_COST = mana;
             StarsOfRuinSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
             StarsOfRuinSpell.SPELL_BASE_SPELL_POWER = power;
@@ -390,6 +499,7 @@ public final class EldenRingServerConfig {
             StarsOfRuinSpell.PROJECTILE_FLIGHT_SPEED = speed;
             StarsOfRuinSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             StarsOfRuinSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            StarsOfRuinSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
             StarsOfRuinSpell.SPELL_DAMAGE_PER_SPELL_POWER = damage;
             StarsOfRuinSpell.PROJECTILE_COUNT = count;
             StarsOfRuinSpell.PROJECTILE_SPAWN_STAGGER_TICKS = stagger;
@@ -405,6 +515,7 @@ public final class EldenRingServerConfig {
         CARIAN_SLICER.apply();
         CARIAN_GREATSWORD.apply();
         CARIAN_PIERCER.apply();
+        ADULAS_MOONBLADE.apply();
         MAGIC_GLINTBLADE.apply();
         GLINTBLADE_PHALANX.apply();
         CARIAN_PHALANX.apply();
@@ -414,6 +525,9 @@ public final class EldenRingServerConfig {
         GLINTSTONE_ARC.apply();
         GRAVITY_BALL.apply();
         COLLAPSING_STARS.apply();
+        ROCK_SLING.apply();
+        METEORITE.apply();
+        METEORITE_OF_ASTEL.apply();
     }
 
     private static void applyHoming(HomingValues values, HomingTarget target) {
@@ -427,7 +541,8 @@ public final class EldenRingServerConfig {
                 values.projectileTrackingRangeBlocks.get(),
                 values.projectileMaxTurnAngleDegreesPerTick.get().floatValue(),
                 values.spellDamagePerSpellPower.get().floatValue(),
-                values.explosionRadiusBlocks == null ? null : values.explosionRadiusBlocks.get().floatValue()
+                values.explosionRadiusBlocks == null ? null : values.explosionRadiusBlocks.get().floatValue(),
+                values.projectileMaxRangeBlocks.get()
         );
     }
 
@@ -443,7 +558,8 @@ public final class EldenRingServerConfig {
                 values.projectileMaxTurnAngleDegreesPerTick.get().floatValue(),
                 values.spellDamagePerSpellPower.get().floatValue(),
                 values.projectileCount.get(),
-                values.projectileSpawnStaggerTicks.get()
+                values.projectileSpawnStaggerTicks.get(),
+                values.projectileMaxRangeBlocks.get()
         );
     }
 
@@ -457,7 +573,8 @@ public final class EldenRingServerConfig {
             double trackingRange,
             float turnAngle,
             float damage,
-            Float explosionRadius
+            Float explosionRadius,
+            double maxRangeBlocks
     ) {
     }
 
@@ -472,7 +589,8 @@ public final class EldenRingServerConfig {
             float turnAngle,
             float damage,
             int projectileCount,
-            int staggerTicks
+            int staggerTicks,
+            double maxRangeBlocks
     ) {
     }
 
@@ -488,7 +606,8 @@ public final class EldenRingServerConfig {
                 double range,
                 float turn,
                 float damage,
-                Float explosion
+                Float explosion,
+                double maxRange
         );
     }
 
@@ -505,7 +624,8 @@ public final class EldenRingServerConfig {
                 float turn,
                 float damage,
                 int count,
-                int stagger
+                int stagger,
+                double maxRange
         );
     }
 
@@ -523,6 +643,7 @@ public final class EldenRingServerConfig {
         public final ForgeConfigSpec.DoubleValue projectileMaxTurnAngleDegreesPerTick;
         public final ForgeConfigSpec.DoubleValue spellDamagePerSpellPower;
         public final ForgeConfigSpec.DoubleValue explosionRadiusBlocks;
+        public final ForgeConfigSpec.DoubleValue projectileMaxRangeBlocks;
 
         private HomingValues(
                 SpellBookKeys book,
@@ -539,6 +660,7 @@ public final class EldenRingServerConfig {
             this.projectileMaxTurnAngleDegreesPerTick = flight.turn;
             this.spellDamagePerSpellPower = flight.damage;
             this.explosionRadiusBlocks = explosionRadiusBlocks;
+            this.projectileMaxRangeBlocks = flight.maxRange;
         }
 
         static HomingValues create(ForgeConfigSpec.Builder builder, String section, HomingSeed seed) {
@@ -575,6 +697,7 @@ public final class EldenRingServerConfig {
         public final ForgeConfigSpec.DoubleValue spellDamagePerSpellPower;
         public final ForgeConfigSpec.IntValue projectileCount;
         public final ForgeConfigSpec.IntValue projectileSpawnStaggerTicks;
+        public final ForgeConfigSpec.DoubleValue projectileMaxRangeBlocks;
 
         private VolleyValues(
                 SpellBookKeys book,
@@ -593,6 +716,7 @@ public final class EldenRingServerConfig {
             this.spellDamagePerSpellPower = flight.damage;
             this.projectileCount = projectileCount;
             this.projectileSpawnStaggerTicks = projectileSpawnStaggerTicks;
+            this.projectileMaxRangeBlocks = flight.maxRange;
         }
 
         static VolleyValues create(ForgeConfigSpec.Builder builder, String section, VolleySeed seed) {
@@ -602,7 +726,7 @@ public final class EldenRingServerConfig {
             );
             HomingFlightKeys flight = HomingFlightKeys.define(builder, new HomingSeed(
                     seed.baseMana, seed.manaPerLevel, seed.basePower, seed.powerPerLevel, seed.castTime,
-                    seed.flightSpeed, seed.trackingRange, seed.turnAngle, seed.damage, null
+                    seed.flightSpeed, seed.trackingRange, seed.turnAngle, seed.damage, null, seed.maxRangeBlocks
             ), true);
             ForgeConfigSpec.IntValue count = ConfigSpecHelper.integer(
                     builder, "projectile_count", "单次施法弹数。", seed.projectileCount, 1, 32
@@ -640,11 +764,15 @@ public final class EldenRingServerConfig {
         }
     }
 
+    /**
+     * 追踪弹道共用飞行键。{@code maxRange} 按实际飞行路径长度计，悬停 / 凝结阶段不计。
+     */
     private record HomingFlightKeys(
             ForgeConfigSpec.DoubleValue speed,
             ForgeConfigSpec.DoubleValue range,
             ForgeConfigSpec.DoubleValue turn,
-            ForgeConfigSpec.DoubleValue damage
+            ForgeConfigSpec.DoubleValue damage,
+            ForgeConfigSpec.DoubleValue maxRange
     ) {
         static HomingFlightKeys define(ForgeConfigSpec.Builder builder, HomingSeed seed, boolean includeDamage) {
             return new HomingFlightKeys(
@@ -653,7 +781,16 @@ public final class EldenRingServerConfig {
                     ConfigSpecHelper.floating(builder, "projectile_max_turn_angle_degrees_per_tick", "每 tick 最大转向（度）。越小越像法环轻追踪。", seed.turnAngle, 0.0, 180.0),
                     includeDamage
                             ? ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "最终伤害 = 法术强度 × 本系数。", seed.damage, 0.0, 20.0)
-                            : null
+                            : null,
+                    ConfigSpecHelper.floating(
+                            builder,
+                            "projectile_max_range_blocks",
+                            "最大射程（方块，按飞行路径长度，悬停阶段不计）。飞满后直接消失（无伤害、无爆炸）。"
+                                    + "铁魔法弹道从生成起最多活 300 tick，须满足：射程 ≤ (300 − 发射前 tick) × 弹速，否则会被提前删除。",
+                            seed.maxRangeBlocks,
+                            1.0,
+                            512.0
+                    )
             );
         }
     }
@@ -689,7 +826,8 @@ public final class EldenRingServerConfig {
                     SpiralShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                     SpiralShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                     SpiralShardSpell.SPELL_DAMAGE_PER_SPELL_POWER,
-                    null
+                    null,
+                    SpiralShardSpell.PROJECTILE_MAX_RANGE_BLOCKS
             ), true);
             SpiralValues values = new SpiralValues(
                     book,
@@ -709,6 +847,7 @@ public final class EldenRingServerConfig {
             SpiralShardSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
             SpiralShardSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
             SpiralShardSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
+            SpiralShardSpell.PROJECTILE_MAX_RANGE_BLOCKS = flight.maxRange.get();
             SpiralShardSpell.SPELL_DAMAGE_PER_SPELL_POWER = flight.damage.get().floatValue();
             SpiralShardSpell.PROJECTILE_MAX_ENTITY_HITS = maxEntityHits.get();
         }
@@ -1306,6 +1445,103 @@ public final class EldenRingServerConfig {
         );
     }
 
+    /**
+     * 亚杜拉的月光剑：书本数值 / 斩击扇形（同卡利亚大剑）/ 剑气弹速、射程、宽度、穿透 / 冻结。
+     */
+    public static final class AdulasMoonbladeValues {
+        private final SpellBookKeys book;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.DoubleValue waveDamagePerSpellPower;
+        private final ForgeConfigSpec.DoubleValue slashRadiusBlocks;
+        private final ForgeConfigSpec.DoubleValue slashHalfAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue slashKnockbackStrength;
+        private final ForgeConfigSpec.DoubleValue waveFlightSpeed;
+        private final ForgeConfigSpec.DoubleValue waveMaxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue waveStartHalfWidthBlocks;
+        private final ForgeConfigSpec.DoubleValue waveMaxHalfWidthBlocks;
+        private final ForgeConfigSpec.IntValue waveMaxEntityHits;
+        private final ForgeConfigSpec.IntValue freezeTicks;
+        private final ForgeConfigSpec.IntValue chilledDurationTicks;
+
+        private AdulasMoonbladeValues(
+                SpellBookKeys book,
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.DoubleValue waveDamagePerSpellPower,
+                ForgeConfigSpec.DoubleValue slashRadiusBlocks,
+                ForgeConfigSpec.DoubleValue slashHalfAngleDegrees,
+                ForgeConfigSpec.DoubleValue slashKnockbackStrength,
+                ForgeConfigSpec.DoubleValue waveFlightSpeed,
+                ForgeConfigSpec.DoubleValue waveMaxRangeBlocks,
+                ForgeConfigSpec.DoubleValue waveStartHalfWidthBlocks,
+                ForgeConfigSpec.DoubleValue waveMaxHalfWidthBlocks,
+                ForgeConfigSpec.IntValue waveMaxEntityHits,
+                ForgeConfigSpec.IntValue freezeTicks,
+                ForgeConfigSpec.IntValue chilledDurationTicks
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.waveDamagePerSpellPower = waveDamagePerSpellPower;
+            this.slashRadiusBlocks = slashRadiusBlocks;
+            this.slashHalfAngleDegrees = slashHalfAngleDegrees;
+            this.slashKnockbackStrength = slashKnockbackStrength;
+            this.waveFlightSpeed = waveFlightSpeed;
+            this.waveMaxRangeBlocks = waveMaxRangeBlocks;
+            this.waveStartHalfWidthBlocks = waveStartHalfWidthBlocks;
+            this.waveMaxHalfWidthBlocks = waveMaxHalfWidthBlocks;
+            this.waveMaxEntityHits = waveMaxEntityHits;
+            this.freezeTicks = freezeTicks;
+            this.chilledDurationTicks = chilledDurationTicks;
+        }
+
+        static AdulasMoonbladeValues create(ForgeConfigSpec.Builder builder) {
+            builder.push("adulas_moonblade");
+            AdulasMoonbladeValues values = new AdulasMoonbladeValues(
+                    SpellBookKeys.define(
+                            builder,
+                            AdulasMoonbladeSpell.SPELL_BASE_MANA_COST,
+                            AdulasMoonbladeSpell.SPELL_MANA_COST_PER_LEVEL,
+                            AdulasMoonbladeSpell.SPELL_BASE_SPELL_POWER,
+                            AdulasMoonbladeSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            AdulasMoonbladeSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "每刀近身斩击伤害 = 法强 × 本系数。", AdulasMoonbladeSpell.DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.floating(builder, "wave_damage_per_spell_power", "每道剑气命中一个敌人的伤害 = 法强 × 本系数（默认 0.3 = 斩击的 30%）。与斩击各自结算。", AdulasMoonbladeSpell.WAVE_DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.floating(builder, "slash_radius_blocks", "近身斩击扇形半径（方块）。", AdulasMoonbladeSpell.SLASH_RADIUS_BLOCKS, 0.5, 32.0),
+                    ConfigSpecHelper.floating(builder, "slash_half_angle_degrees", "近身斩击扇形半角（度），相对视线左右各半角。", AdulasMoonbladeSpell.SLASH_HALF_ANGLE_DEGREES, 1.0, 180.0),
+                    ConfigSpecHelper.floating(builder, "slash_knockback_strength", "近身斩击击退强度。0 = 不击退。", AdulasMoonbladeSpell.SLASH_KNOCKBACK_STRENGTH, 0.0, 8.0),
+                    ConfigSpecHelper.floating(builder, "wave_flight_speed", "剑气飞行速度（方块/tick）。", AdulasMoonbladeSpell.WAVE_FLIGHT_SPEED, 0.05, 8.0),
+                    ConfigSpecHelper.floating(builder, "wave_max_range_blocks", "剑气直线最大射程（方块），飞满后碎裂。须满足：射程 ≤ 300 × 弹速。", AdulasMoonbladeSpell.WAVE_MAX_RANGE_BLOCKS, 1.0, 512.0),
+                    ConfigSpecHelper.floating(builder, "wave_start_half_width_blocks", "剑气出手时半宽（方块）。", AdulasMoonbladeSpell.WAVE_START_HALF_WIDTH_BLOCKS, 0.1, 16.0),
+                    ConfigSpecHelper.floating(builder, "wave_max_half_width_blocks", "剑气张满后的半宽（方块），约 10 格内张满。", AdulasMoonbladeSpell.WAVE_MAX_HALF_WIDTH_BLOCKS, 0.1, 16.0),
+                    ConfigSpecHelper.integer(builder, "wave_max_entity_hits", "单道剑气最多结算几个敌人（每个敌人只吃一次）。", AdulasMoonbladeSpell.WAVE_MAX_ENTITY_HITS, 1, 64),
+                    ConfigSpecHelper.integer(builder, "freeze_ticks", "斩击与剑气写入伤害源的冻结 tick（铁魔法命中后 ×2 写入原版冻结槽）。", AdulasMoonbladeSpell.SPELL_FREEZE_TICKS, 0, 1200),
+                    ConfigSpecHelper.integer(builder, "chilled_duration_ticks", "命中后 CHILLED 持续 tick。0 = 不上寒冷。", AdulasMoonbladeSpell.SPELL_CHILLED_DURATION_TICKS, 0, 1200)
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            AdulasMoonbladeSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            AdulasMoonbladeSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            AdulasMoonbladeSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            AdulasMoonbladeSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
+            AdulasMoonbladeSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            AdulasMoonbladeSpell.DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            AdulasMoonbladeSpell.WAVE_DAMAGE_PER_SPELL_POWER = waveDamagePerSpellPower.get().floatValue();
+            AdulasMoonbladeSpell.SLASH_RADIUS_BLOCKS = slashRadiusBlocks.get().floatValue();
+            AdulasMoonbladeSpell.SLASH_HALF_ANGLE_DEGREES = slashHalfAngleDegrees.get().floatValue();
+            AdulasMoonbladeSpell.SLASH_KNOCKBACK_STRENGTH = slashKnockbackStrength.get();
+            AdulasMoonbladeSpell.WAVE_FLIGHT_SPEED = waveFlightSpeed.get().floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_RANGE_BLOCKS = waveMaxRangeBlocks.get();
+            AdulasMoonbladeSpell.WAVE_START_HALF_WIDTH_BLOCKS = waveStartHalfWidthBlocks.get().floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_HALF_WIDTH_BLOCKS = waveMaxHalfWidthBlocks.get().floatValue();
+            AdulasMoonbladeSpell.WAVE_MAX_ENTITY_HITS = waveMaxEntityHits.get();
+            AdulasMoonbladeSpell.SPELL_FREEZE_TICKS = freezeTicks.get();
+            AdulasMoonbladeSpell.SPELL_CHILLED_DURATION_TICKS = chilledDurationTicks.get();
+        }
+    }
+
     public static final class MagicGlintbladeValues {
         private final SpellBookKeys book;
         private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
@@ -1348,7 +1584,8 @@ public final class EldenRingServerConfig {
                             MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
                             MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
                             MagicGlintbladeSpell.DAMAGE_PER_SPELL_POWER,
-                            null
+                            null,
+                            MagicGlintbladeSpell.PROJECTILE_MAX_RANGE_BLOCKS
                     ), false)
             );
             builder.pop();
@@ -1366,6 +1603,7 @@ public final class EldenRingServerConfig {
             MagicGlintbladeSpell.PROJECTILE_FLIGHT_SPEED = flight.speed.get().floatValue();
             MagicGlintbladeSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = flight.range.get();
             MagicGlintbladeSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = flight.turn.get().floatValue();
+            MagicGlintbladeSpell.PROJECTILE_MAX_RANGE_BLOCKS = flight.maxRange.get();
         }
     }
 
@@ -1459,7 +1697,8 @@ public final class EldenRingServerConfig {
                             seed.trackingRange,
                             seed.turnAngle,
                             seed.damage,
-                            null
+                            null,
+                            seed.maxRangeBlocks
                     ), false),
                     applyTarget
             );
@@ -1480,7 +1719,8 @@ public final class EldenRingServerConfig {
                     hoverLifetimeTicks.get(),
                     flight.speed.get().floatValue(),
                     flight.range.get(),
-                    flight.turn.get().floatValue()
+                    flight.turn.get().floatValue(),
+                    flight.maxRange.get()
             );
         }
 
@@ -1496,7 +1736,8 @@ public final class EldenRingServerConfig {
                 int hover,
                 float speed,
                 double range,
-                float turn
+                float turn,
+                double maxRange
         ) {
             GlintbladePhalanxSpell.SPELL_BASE_MANA_COST = mana;
             GlintbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -1510,6 +1751,7 @@ public final class EldenRingServerConfig {
             GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GlintbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
         }
 
         private static void applyCarian(
@@ -1524,7 +1766,8 @@ public final class EldenRingServerConfig {
                 int hover,
                 float speed,
                 double range,
-                float turn
+                float turn,
+                double maxRange
         ) {
             CarianPhalanxSpell.SPELL_BASE_MANA_COST = mana;
             CarianPhalanxSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -1538,6 +1781,7 @@ public final class EldenRingServerConfig {
             CarianPhalanxSpell.PROJECTILE_FLIGHT_SPEED = speed;
             CarianPhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             CarianPhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            CarianPhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
         }
 
         private static void applyGreatblade(
@@ -1552,7 +1796,8 @@ public final class EldenRingServerConfig {
                 int hover,
                 float speed,
                 double range,
-                float turn
+                float turn,
+                double maxRange
         ) {
             GreatbladePhalanxSpell.SPELL_BASE_MANA_COST = mana;
             GreatbladePhalanxSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -1566,6 +1811,7 @@ public final class EldenRingServerConfig {
             GreatbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED = speed;
             GreatbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = range;
             GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = turn;
+            GreatbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRange;
         }
     }
 
@@ -1581,7 +1827,8 @@ public final class EldenRingServerConfig {
             int hoverLifetimeTicks,
             float flightSpeed,
             double trackingRange,
-            float turnAngle
+            float turnAngle,
+            double maxRangeBlocks
     ) {
     }
 
@@ -1599,7 +1846,8 @@ public final class EldenRingServerConfig {
                 int hover,
                 float speed,
                 double range,
-                float turn
+                float turn,
+                double maxRange
         );
     }
 
@@ -1616,7 +1864,8 @@ public final class EldenRingServerConfig {
                 GlintbladePhalanxSpell.HOVER_LIFETIME_TICKS,
                 GlintbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED,
                 GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
-                GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                GlintbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS
         );
     }
 
@@ -1633,7 +1882,8 @@ public final class EldenRingServerConfig {
                 CarianPhalanxSpell.HOVER_LIFETIME_TICKS,
                 CarianPhalanxSpell.PROJECTILE_FLIGHT_SPEED,
                 CarianPhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
-                CarianPhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                CarianPhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                CarianPhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS
         );
     }
 
@@ -1650,7 +1900,8 @@ public final class EldenRingServerConfig {
                 GreatbladePhalanxSpell.HOVER_LIFETIME_TICKS,
                 GreatbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED,
                 GreatbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
-                GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                GreatbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS
         );
     }
 
@@ -2012,7 +2263,7 @@ public final class EldenRingServerConfig {
                             "弹道最大射程（方块）。飞过这段距离后消失。默认 25。",
                             GravityBallSpell.PROJECTILE_MAX_RANGE_BLOCKS,
                             1.0,
-                            128.0
+                            512.0
                     ),
                     ConfigSpecHelper.floating(
                             builder,
@@ -2143,7 +2394,7 @@ public final class EldenRingServerConfig {
                             "弹道最大射程（方块）。飞过这段距离后消失。",
                             CollapsingStarsSpell.PROJECTILE_MAX_RANGE_BLOCKS,
                             1.0,
-                            128.0
+                            512.0
                     ),
                     ConfigSpecHelper.floating(
                             builder,
@@ -2198,4 +2449,274 @@ public final class EldenRingServerConfig {
             CollapsingStarsSpell.SUCTION_STAND_OFF_BLOCKS = standOffBlocks.get();
         }
     }
+
+    public static final class RockSlingValues {
+        private final SpellBookKeys book;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.IntValue rockCount;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue maxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue trackingRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue maxTurnAngleDegreesPerTick;
+        private final ForgeConfigSpec.DoubleValue knockbackStrength;
+
+        private RockSlingValues(
+                SpellBookKeys book,
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.IntValue rockCount,
+                ForgeConfigSpec.DoubleValue flightSpeed,
+                ForgeConfigSpec.DoubleValue maxRangeBlocks,
+                ForgeConfigSpec.DoubleValue trackingRangeBlocks,
+                ForgeConfigSpec.DoubleValue maxTurnAngleDegreesPerTick,
+                ForgeConfigSpec.DoubleValue knockbackStrength
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.rockCount = rockCount;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.trackingRangeBlocks = trackingRangeBlocks;
+            this.maxTurnAngleDegreesPerTick = maxTurnAngleDegreesPerTick;
+            this.knockbackStrength = knockbackStrength;
+        }
+
+        static RockSlingValues create(ForgeConfigSpec.Builder builder) {
+            builder.push("rock_sling");
+            RockSlingValues values = new RockSlingValues(
+                    SpellBookKeys.define(
+                            builder,
+                            RockSlingSpell.SPELL_BASE_MANA_COST,
+                            RockSlingSpell.SPELL_MANA_COST_PER_LEVEL,
+                            RockSlingSpell.SPELL_BASE_SPELL_POWER,
+                            RockSlingSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            RockSlingSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "单块岩石伤害 = 法强 × 本系数。每块独立结算，全中约为 3 倍。", RockSlingSpell.SPELL_DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.integer(builder, "rock_count", "一次凝聚的岩石数量（横排）。", RockSlingSpell.ROCK_COUNT, 1, 7),
+                    ConfigSpecHelper.floating(builder, "projectile_flight_speed", "岩石飞行速度（方块/tick）。越大越难躲。", RockSlingSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0),
+                    ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离后碎裂。铁魔法弹道从生成起最多活 300 tick（含约 30 tick 环绕），须满足：射程 ≤ (300 − 发射前 tick) × 弹速。", RockSlingSpell.PROJECTILE_MAX_RANGE_BLOCKS, 1.0, 512.0),
+                    ConfigSpecHelper.floating(builder, "projectile_tracking_range_blocks", "发射时索敌半径（方块）。", RockSlingSpell.PROJECTILE_TRACKING_RANGE_BLOCKS, 0.0, 128.0),
+                    ConfigSpecHelper.floating(builder, "projectile_max_turn_angle_degrees_per_tick", "飞行中每 tick 最大转向（度）。0 = 不追踪。", RockSlingSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK, 0.0, 180.0),
+                    ConfigSpecHelper.floating(builder, "knockback_strength", "单块命中击退强度（原版 knockback，受击退抗性削减）。0 = 不击退。", RockSlingSpell.KNOCKBACK_STRENGTH, 0.0, 8.0)
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            RockSlingSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            RockSlingSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            RockSlingSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            RockSlingSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
+            RockSlingSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            RockSlingSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            RockSlingSpell.ROCK_COUNT = rockCount.get();
+            RockSlingSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            RockSlingSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            RockSlingSpell.PROJECTILE_TRACKING_RANGE_BLOCKS = trackingRangeBlocks.get();
+            RockSlingSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = maxTurnAngleDegreesPerTick.get().floatValue();
+            RockSlingSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
+        }
+    }
+
+    /**
+     * 陨石：蓝耗（每 10 tick 一次）/ 单颗伤害 / 张开时长 / 出弹间隔 / 弹速 / 射程 / 下坠角 / 散布 / 爆炸 / 击退。
+     */
+    public static final class MeteoriteValues {
+        private final SpellBookKeys book;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.IntValue voidOpeningDurationTicks;
+        private final ForgeConfigSpec.IntValue spawnIntervalTicks;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue maxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue descentBaseAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue descentMinAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue descentMaxAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue descentJitterDegrees;
+        private final ForgeConfigSpec.DoubleValue scatterHalfAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue explosionRadiusBlocks;
+        private final ForgeConfigSpec.DoubleValue knockbackStrength;
+
+        private MeteoriteValues(
+                SpellBookKeys book,
+                ForgeConfigSpec.DoubleValue damagePerSpellPower,
+                ForgeConfigSpec.IntValue voidOpeningDurationTicks,
+                ForgeConfigSpec.IntValue spawnIntervalTicks,
+                ForgeConfigSpec.DoubleValue flightSpeed,
+                ForgeConfigSpec.DoubleValue maxRangeBlocks,
+                ForgeConfigSpec.DoubleValue descentBaseAngleDegrees,
+                ForgeConfigSpec.DoubleValue descentMinAngleDegrees,
+                ForgeConfigSpec.DoubleValue descentMaxAngleDegrees,
+                ForgeConfigSpec.DoubleValue descentJitterDegrees,
+                ForgeConfigSpec.DoubleValue scatterHalfAngleDegrees,
+                ForgeConfigSpec.DoubleValue explosionRadiusBlocks,
+                ForgeConfigSpec.DoubleValue knockbackStrength
+        ) {
+            this.book = book;
+            this.damagePerSpellPower = damagePerSpellPower;
+            this.voidOpeningDurationTicks = voidOpeningDurationTicks;
+            this.spawnIntervalTicks = spawnIntervalTicks;
+            this.flightSpeed = flightSpeed;
+            this.maxRangeBlocks = maxRangeBlocks;
+            this.descentBaseAngleDegrees = descentBaseAngleDegrees;
+            this.descentMinAngleDegrees = descentMinAngleDegrees;
+            this.descentMaxAngleDegrees = descentMaxAngleDegrees;
+            this.descentJitterDegrees = descentJitterDegrees;
+            this.scatterHalfAngleDegrees = scatterHalfAngleDegrees;
+            this.explosionRadiusBlocks = explosionRadiusBlocks;
+            this.knockbackStrength = knockbackStrength;
+        }
+
+        static MeteoriteValues create(ForgeConfigSpec.Builder builder) {
+            builder.push("meteorite");
+            MeteoriteValues values = new MeteoriteValues(
+                    SpellBookKeys.define(
+                            builder,
+                            MeteoriteSpell.SPELL_BASE_MANA_COST,
+                            MeteoriteSpell.SPELL_MANA_COST_PER_LEVEL,
+                            MeteoriteSpell.SPELL_BASE_SPELL_POWER,
+                            MeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                            MeteoriteSpell.SPELL_CAST_TIME_TICKS
+                    ),
+                    ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "单颗陨石（含落地爆炸）伤害 = 法强 × 本系数。", MeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER, 0.0, 20.0),
+                    ConfigSpecHelper.integer(builder, "void_opening_duration_ticks", "黑洞张开时长（tick），期间不落陨石。20=1 秒。", MeteoriteSpell.VOID_OPENING_DURATION_TICKS, 0, 200),
+                    ConfigSpecHelper.integer(builder, "meteorite_spawn_interval_ticks", "相邻两颗陨石间隔（tick）。10=每秒 2 颗。", MeteoriteSpell.METEORITE_SPAWN_INTERVAL_TICKS, 1, 40),
+                    ConfigSpecHelper.floating(builder, "projectile_flight_speed", "陨石飞行速度（方块/tick）。越大越难躲。", MeteoriteSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0),
+                    ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离还没落地就碎裂。", MeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS, 4.0, 512.0),
+                    ConfigSpecHelper.floating(builder, "descent_base_angle_degrees", "平视时的下坠角（度，相对水平向下），视线俯角叠加其上。越大落得越近。", MeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES, 0.0, 89.0),
+                    ConfigSpecHelper.floating(builder, "descent_min_angle_degrees", "下坠角下限（度）。抬头时不低于它。", MeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES, 1.0, 89.0),
+                    ConfigSpecHelper.floating(builder, "descent_max_angle_degrees", "下坠角上限（度）。低头时不高于它。", MeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES, 1.0, 89.0),
+                    ConfigSpecHelper.floating(builder, "descent_jitter_degrees", "下坠角随机抖动（度，±），让落点前后错开。", MeteoriteSpell.DESCENT_JITTER_DEGREES, 0.0, 30.0),
+                    ConfigSpecHelper.floating(builder, "scatter_half_angle_degrees", "左右散布半角（度）。越大落区扇面越宽。", MeteoriteSpell.SCATTER_HALF_ANGLE_DEGREES, 0.0, 60.0),
+                    ConfigSpecHelper.floating(builder, "explosion_radius_blocks", "落地爆炸半径（方块）。范围内每个敌人各吃一次伤害。", MeteoriteSpell.EXPLOSION_RADIUS_BLOCKS, 0.0, 8.0),
+                    ConfigSpecHelper.floating(builder, "knockback_strength", "爆炸击退强度（原版 knockback，受击退抗性削减）。0 = 不击退。", MeteoriteSpell.KNOCKBACK_STRENGTH, 0.0, 8.0)
+            );
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            MeteoriteSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            MeteoriteSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            MeteoriteSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            MeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
+            MeteoriteSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            MeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            MeteoriteSpell.VOID_OPENING_DURATION_TICKS = voidOpeningDurationTicks.get();
+            MeteoriteSpell.METEORITE_SPAWN_INTERVAL_TICKS = spawnIntervalTicks.get();
+            MeteoriteSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            MeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            MeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES = descentBaseAngleDegrees.get().floatValue();
+            MeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES = descentMinAngleDegrees.get().floatValue();
+            MeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES = descentMaxAngleDegrees.get().floatValue();
+            MeteoriteSpell.DESCENT_JITTER_DEGREES = descentJitterDegrees.get().floatValue();
+            MeteoriteSpell.SCATTER_HALF_ANGLE_DEGREES = scatterHalfAngleDegrees.get().floatValue();
+            MeteoriteSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadiusBlocks.get().floatValue();
+            MeteoriteSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
+        }
+    }
+
+    /**
+     * 艾斯提陨石：蓝耗（每 10 tick 一次）/ 单颗伤害 / 裂缝数量与节奏 / 扇形选点 / 弹速 / 射程 / 下坠角 / 爆炸 / 击退。
+     */
+    public static final class AstelMeteoriteValues {
+        private final SpellBookKeys book;
+        private final ForgeConfigSpec.DoubleValue damagePerSpellPower;
+        private final ForgeConfigSpec.IntValue castWindupTicks;
+        private final ForgeConfigSpec.IntValue maxConcurrentRifts;
+        private final ForgeConfigSpec.IntValue meteoritesPerRiftMin;
+        private final ForgeConfigSpec.IntValue meteoritesPerRiftMax;
+        private final ForgeConfigSpec.IntValue riftOpeningDurationTicks;
+        private final ForgeConfigSpec.IntValue riftMeteoriteIntervalTicks;
+        private final ForgeConfigSpec.IntValue riftSpawnIntervalTicks;
+        private final ForgeConfigSpec.DoubleValue riftFanHalfAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue riftFacingSpreadFraction;
+        private final ForgeConfigSpec.DoubleValue riftForwardMinBlocks;
+        private final ForgeConfigSpec.DoubleValue riftForwardMaxBlocks;
+        private final ForgeConfigSpec.DoubleValue riftHeightMinBlocks;
+        private final ForgeConfigSpec.DoubleValue riftHeightMaxBlocks;
+        private final ForgeConfigSpec.DoubleValue flightSpeed;
+        private final ForgeConfigSpec.DoubleValue maxRangeBlocks;
+        private final ForgeConfigSpec.DoubleValue descentBaseAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue descentMinAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue descentMaxAngleDegrees;
+        private final ForgeConfigSpec.DoubleValue descentJitterDegrees;
+        private final ForgeConfigSpec.DoubleValue meteoriteYawJitterDegrees;
+        private final ForgeConfigSpec.DoubleValue explosionRadiusBlocks;
+        private final ForgeConfigSpec.DoubleValue knockbackStrength;
+
+        /** 按 toml 中出现的顺序逐项定义；调用前后由 {@link #create} 负责 push / pop。 */
+        private AstelMeteoriteValues(ForgeConfigSpec.Builder builder) {
+            this.book = SpellBookKeys.define(
+                    builder,
+                    AstelMeteoriteSpell.SPELL_BASE_MANA_COST,
+                    AstelMeteoriteSpell.SPELL_MANA_COST_PER_LEVEL,
+                    AstelMeteoriteSpell.SPELL_BASE_SPELL_POWER,
+                    AstelMeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL,
+                    AstelMeteoriteSpell.SPELL_CAST_TIME_TICKS
+            );
+            this.damagePerSpellPower = ConfigSpecHelper.floating(builder, "spell_damage_per_spell_power", "单颗陨石（含落地爆炸）伤害 = 法强 × 本系数。", AstelMeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER, 0.0, 20.0);
+            this.castWindupTicks = ConfigSpecHelper.integer(builder, "cast_windup_ticks", "起手蓄力时长（tick）：只张开第一道裂缝，不落陨石、不开其它裂缝。20=1 秒，同陨石。", AstelMeteoriteSpell.CAST_WINDUP_TICKS, 0, 200);
+            this.maxConcurrentRifts = ConfigSpecHelper.integer(builder, "max_concurrent_rifts", "同时存活的虚空裂缝上限（道）。", AstelMeteoriteSpell.MAX_CONCURRENT_RIFTS, 1, 8);
+            this.meteoritesPerRiftMin = ConfigSpecHelper.integer(builder, "meteorites_per_rift_min", "每道裂缝最少落几颗陨石后坍缩。", AstelMeteoriteSpell.METEORITES_PER_RIFT_MIN, 1, 10);
+            this.meteoritesPerRiftMax = ConfigSpecHelper.integer(builder, "meteorites_per_rift_max", "每道裂缝最多落几颗陨石后坍缩。", AstelMeteoriteSpell.METEORITES_PER_RIFT_MAX, 1, 10);
+            this.riftOpeningDurationTicks = ConfigSpecHelper.integer(builder, "rift_opening_duration_ticks", "裂缝张开时长（tick），期间不落陨石。", AstelMeteoriteSpell.RIFT_OPENING_DURATION_TICKS, 1, 100);
+            this.riftMeteoriteIntervalTicks = ConfigSpecHelper.integer(builder, "rift_meteorite_interval_ticks", "同一道裂缝相邻两颗陨石的间隔（tick）。", AstelMeteoriteSpell.RIFT_METEORITE_INTERVAL_TICKS, 1, 40);
+            this.riftSpawnIntervalTicks = ConfigSpecHelper.integer(builder, "rift_spawn_interval_ticks", "两次开新裂缝之间的最短间隔（tick）。", AstelMeteoriteSpell.RIFT_SPAWN_INTERVAL_TICKS, 1, 40);
+            this.riftFanHalfAngleDegrees = ConfigSpecHelper.floating(builder, "rift_fan_half_angle_degrees", "裂缝选点扇形半角（度，相对施法者朝向）。越大覆盖越宽。", AstelMeteoriteSpell.RIFT_FAN_HALF_ANGLE_DEGREES, 0.0, 90.0);
+            this.riftFacingSpreadFraction = ConfigSpecHelper.floating(builder, "rift_facing_spread_fraction", "裂缝朝向保留位置偏角的比例（0–1）。越小陨石越集中砸向正前方；1 = 朝向与位置一致。", AstelMeteoriteSpell.RIFT_FACING_SPREAD_FRACTION, 0.0, 1.0);
+            this.riftForwardMinBlocks = ConfigSpecHelper.floating(builder, "rift_forward_min_blocks", "裂缝中心最小水平前移（方块）。", AstelMeteoriteSpell.RIFT_FORWARD_MIN_BLOCKS, 0.0, 16.0);
+            this.riftForwardMaxBlocks = ConfigSpecHelper.floating(builder, "rift_forward_max_blocks", "裂缝中心最大水平前移（方块）。", AstelMeteoriteSpell.RIFT_FORWARD_MAX_BLOCKS, 0.0, 16.0);
+            this.riftHeightMinBlocks = ConfigSpecHelper.floating(builder, "rift_height_min_blocks", "裂缝中心最小上抬高度（方块，相对眼睛）。", AstelMeteoriteSpell.RIFT_HEIGHT_MIN_BLOCKS, 0.0, 16.0);
+            this.riftHeightMaxBlocks = ConfigSpecHelper.floating(builder, "rift_height_max_blocks", "裂缝中心最大上抬高度（方块，相对眼睛）。", AstelMeteoriteSpell.RIFT_HEIGHT_MAX_BLOCKS, 0.0, 16.0);
+            this.flightSpeed = ConfigSpecHelper.floating(builder, "projectile_flight_speed", "陨石飞行速度（方块/tick）。越大越难躲。", AstelMeteoriteSpell.PROJECTILE_FLIGHT_SPEED, 0.05, 8.0);
+            this.maxRangeBlocks = ConfigSpecHelper.floating(builder, "projectile_max_range_blocks", "最大射程（方块）。飞过这段距离还没落地就碎裂。", AstelMeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS, 4.0, 512.0);
+            this.descentBaseAngleDegrees = ConfigSpecHelper.floating(builder, "descent_base_angle_degrees", "平视时的下坠角（度，相对水平向下），视线俯角叠加其上。越大落得越近。", AstelMeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES, 0.0, 89.0);
+            this.descentMinAngleDegrees = ConfigSpecHelper.floating(builder, "descent_min_angle_degrees", "下坠角下限（度）。抬头时不低于它。", AstelMeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES, 1.0, 89.0);
+            this.descentMaxAngleDegrees = ConfigSpecHelper.floating(builder, "descent_max_angle_degrees", "下坠角上限（度）。低头时不高于它。", AstelMeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES, 1.0, 89.0);
+            this.descentJitterDegrees = ConfigSpecHelper.floating(builder, "descent_jitter_degrees", "下坠角随机抖动（度，±），让落点前后错开。", AstelMeteoriteSpell.DESCENT_JITTER_DEGREES, 0.0, 30.0);
+            this.meteoriteYawJitterDegrees = ConfigSpecHelper.floating(builder, "meteorite_yaw_jitter_degrees", "单颗陨石相对所在裂缝朝向的左右随机偏转（度，±）。", AstelMeteoriteSpell.METEORITE_YAW_JITTER_DEGREES, 0.0, 45.0);
+            this.explosionRadiusBlocks = ConfigSpecHelper.floating(builder, "explosion_radius_blocks", "落地爆炸半径（方块）。范围内每个敌人各吃一次伤害。", AstelMeteoriteSpell.EXPLOSION_RADIUS_BLOCKS, 0.0, 8.0);
+            this.knockbackStrength = ConfigSpecHelper.floating(builder, "knockback_strength", "爆炸击退强度（原版 knockback，受击退抗性削减）。0 = 不击退。", AstelMeteoriteSpell.KNOCKBACK_STRENGTH, 0.0, 8.0);
+        }
+
+        static AstelMeteoriteValues create(ForgeConfigSpec.Builder builder) {
+            builder.push("meteorite_of_astel");
+            AstelMeteoriteValues values = new AstelMeteoriteValues(builder);
+            builder.pop();
+            return values;
+        }
+
+        void apply() {
+            AstelMeteoriteSpell.SPELL_BASE_MANA_COST = book.baseManaCost.get();
+            AstelMeteoriteSpell.SPELL_MANA_COST_PER_LEVEL = book.manaCostPerLevel.get();
+            AstelMeteoriteSpell.SPELL_BASE_SPELL_POWER = book.baseSpellPower.get().floatValue();
+            AstelMeteoriteSpell.SPELL_SPELL_POWER_PER_LEVEL = book.spellPowerPerLevel.get().floatValue();
+            AstelMeteoriteSpell.SPELL_CAST_TIME_TICKS = book.castTimeTicks.get();
+            AstelMeteoriteSpell.SPELL_DAMAGE_PER_SPELL_POWER = damagePerSpellPower.get().floatValue();
+            AstelMeteoriteSpell.CAST_WINDUP_TICKS = castWindupTicks.get();
+            AstelMeteoriteSpell.MAX_CONCURRENT_RIFTS = maxConcurrentRifts.get();
+            AstelMeteoriteSpell.METEORITES_PER_RIFT_MIN = meteoritesPerRiftMin.get();
+            AstelMeteoriteSpell.METEORITES_PER_RIFT_MAX = meteoritesPerRiftMax.get();
+            AstelMeteoriteSpell.RIFT_OPENING_DURATION_TICKS = riftOpeningDurationTicks.get();
+            AstelMeteoriteSpell.RIFT_METEORITE_INTERVAL_TICKS = riftMeteoriteIntervalTicks.get();
+            AstelMeteoriteSpell.RIFT_SPAWN_INTERVAL_TICKS = riftSpawnIntervalTicks.get();
+            AstelMeteoriteSpell.RIFT_FAN_HALF_ANGLE_DEGREES = riftFanHalfAngleDegrees.get().floatValue();
+            AstelMeteoriteSpell.RIFT_FACING_SPREAD_FRACTION = riftFacingSpreadFraction.get().floatValue();
+            AstelMeteoriteSpell.RIFT_FORWARD_MIN_BLOCKS = riftForwardMinBlocks.get();
+            AstelMeteoriteSpell.RIFT_FORWARD_MAX_BLOCKS = riftForwardMaxBlocks.get();
+            AstelMeteoriteSpell.RIFT_HEIGHT_MIN_BLOCKS = riftHeightMinBlocks.get();
+            AstelMeteoriteSpell.RIFT_HEIGHT_MAX_BLOCKS = riftHeightMaxBlocks.get();
+            AstelMeteoriteSpell.PROJECTILE_FLIGHT_SPEED = flightSpeed.get().floatValue();
+            AstelMeteoriteSpell.PROJECTILE_MAX_RANGE_BLOCKS = maxRangeBlocks.get();
+            AstelMeteoriteSpell.DESCENT_BASE_ANGLE_DEGREES = descentBaseAngleDegrees.get().floatValue();
+            AstelMeteoriteSpell.DESCENT_MIN_ANGLE_DEGREES = descentMinAngleDegrees.get().floatValue();
+            AstelMeteoriteSpell.DESCENT_MAX_ANGLE_DEGREES = descentMaxAngleDegrees.get().floatValue();
+            AstelMeteoriteSpell.DESCENT_JITTER_DEGREES = descentJitterDegrees.get().floatValue();
+            AstelMeteoriteSpell.METEORITE_YAW_JITTER_DEGREES = meteoriteYawJitterDegrees.get().floatValue();
+            AstelMeteoriteSpell.EXPLOSION_RADIUS_BLOCKS = explosionRadiusBlocks.get().floatValue();
+            AstelMeteoriteSpell.KNOCKBACK_STRENGTH = knockbackStrength.get().floatValue();
+        }
+    }
+
 }

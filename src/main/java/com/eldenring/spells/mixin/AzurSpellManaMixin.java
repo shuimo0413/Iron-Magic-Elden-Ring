@@ -22,7 +22,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AbstractSpell.class)
+// remap = false：目标是铁魔法自己的类与方法，成品 jar 里不混淆，refmap 里查不到映射
+@Mixin(value = AbstractSpell.class, remap = false)
 public abstract class AzurSpellManaMixin {
     @ModifyExpressionValue(method = "canBeCastedBy", at = @At(value = "INVOKE",
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))

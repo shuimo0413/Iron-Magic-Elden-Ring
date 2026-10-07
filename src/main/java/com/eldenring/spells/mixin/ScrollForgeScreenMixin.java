@@ -18,7 +18,8 @@ import java.util.List;
  * 会编成 invokedynamic，Mixin 扫不到调用点。改为在 {@code generateSpellList} 返回后
  * 剔除不匹配焦点的卡片，并用 {@link ScreenRemoveWidgetInvoker} 卸掉按钮，避免残留可点控件。
  */
-@Mixin(ScrollForgeScreen.class)
+// remap = false：目标是铁魔法自己的类与方法，成品 jar 里不混淆，refmap 里查不到映射
+@Mixin(value = ScrollForgeScreen.class, remap = false)
 public abstract class ScrollForgeScreenMixin {
 
     /** 铁魔法原版字段类型为 {@code List<SpellCardInfo>}；用原始类型以便 removeIf。 */

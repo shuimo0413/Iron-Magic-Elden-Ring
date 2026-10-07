@@ -1,5 +1,6 @@
 package com.eldenring.spells.client.render.glintstone;
 
+import com.eldenring.spells.client.render.ShaderDepthProxy;
 import com.eldenring.spells.entity.GlintstoneTrailStyle;
 import com.eldenring.spells.entity.GlintstoneVisualStyle;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -155,6 +156,28 @@ public final class GlintstoneTrailRenderer {
                 unpackGreen(coreColorArgb),
                 unpackBlue(coreColorArgb),
                 235
+        );
+
+        // 外层几何的深度代理，必须在所有颜色层之后提交；alpha 裁切只留下贴图中心够实的一条带。
+        VertexConsumer depthProxyConsumer = bufferSource.getBuffer(
+                ShaderDepthProxy.depthOnly(GlintstoneCometModels.TRAIL_BEAM_TEXTURE)
+        );
+        putRibbonLayer(
+                depthProxyConsumer,
+                poseMatrix,
+                renderOriginWorld,
+                renderPoints,
+                sideDirections,
+                cumulativeDistances,
+                totalLengthBlocks,
+                trailStyle.tailHalfWidthBlocks() * GlintstoneTrailStyle.BEAM_OUTER_WIDTH_SCALE,
+                trailStyle.headHalfWidthBlocks() * GlintstoneTrailStyle.BEAM_OUTER_WIDTH_SCALE,
+                1.0f,
+                0.0f,
+                unpackRed(glowColorArgb),
+                unpackGreen(glowColorArgb),
+                unpackBlue(glowColorArgb),
+                ShaderDepthProxy.PROXY_VERTEX_ALPHA
         );
     }
 

@@ -16,7 +16,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  * 仅改客户端列表不够——玩家仍可通过选咒数据包指定任意辉石咒；
  * 这里在 {@code setupResultSlot} 阻断错误焦点产出卷轴。
  */
-@Mixin(ScrollForgeMenu.class)
+// remap = false：目标是铁魔法自己的类与方法，成品 jar 里不混淆，refmap 里查不到映射
+@Mixin(value = ScrollForgeMenu.class, remap = false)
 public abstract class ScrollForgeMenuMixin {
 
     @Shadow

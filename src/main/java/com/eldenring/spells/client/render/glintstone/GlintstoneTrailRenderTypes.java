@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.RenderType;
  * 辉石弹道光轨 RenderType。
  * <p>
  * 外层半透明保证白天天空上仍有体积；内层加法只加亮、不把尾迹染成塑料片。
+ * 两者都只写颜色；光影下的深度由 {@link com.eldenring.spells.client.render.ShaderDepthProxy} 补。
  */
 public final class GlintstoneTrailRenderTypes {
 

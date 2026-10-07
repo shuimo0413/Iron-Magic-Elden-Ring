@@ -51,15 +51,6 @@ description='''${mod_description}'''
     side="BOTH"
 
 [[dependencies.${mod_id}]]
-    # Optional: MaFgLib (malilib port). Tracking-ignore GUI uses it when present.
-    # 1.20.1 line is 0.1.x (older than 1.21.1's 0.4.x).
-    modId="mafglib"
-    mandatory=false
-    versionRange="[0.1,)"
-    ordering="AFTER"
-    side="CLIENT"
-
-[[dependencies.${mod_id}]]
     # Optional: Apotheosis 7.x on 1.20.1 (not 8.x). Armor can still take affixes via vanilla categories.
     # irons_apothic is NeoForge 1.21.1-only; its datapack lives under compat/neoforge-1.21.1-only/ on this branch.
     modId="apotheosis"

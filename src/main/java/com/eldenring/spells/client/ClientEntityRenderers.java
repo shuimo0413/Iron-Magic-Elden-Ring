@@ -7,6 +7,8 @@ import com.eldenring.spells.client.render.FoundingRainNebulaRenderer;
 import com.eldenring.spells.client.render.StarlightRenderer;
 import com.eldenring.spells.client.render.TerraMagicaZoneRenderer;
 import com.eldenring.spells.client.render.carian.CarianGreatswordHandLayer;
+import com.eldenring.spells.client.render.moonblade.AdulasMoonbladeHandLayer;
+import com.eldenring.spells.client.render.moonblade.AdulasMoonbladeWaveRenderer;
 import com.eldenring.spells.client.render.carian.CarianPiercerHandLayer;
 import com.eldenring.spells.client.render.carian.CarianSlicerHandLayer;
 import com.eldenring.spells.client.render.carian.MagicGlintbladeModels;
@@ -16,6 +18,9 @@ import com.eldenring.spells.client.render.glintstone.GlintstoneCometModels;
 import com.eldenring.spells.client.render.glintstone.GlintstoneProjectileRenderer;
 import com.eldenring.spells.client.render.glintstone.SpiralShardRenderer;
 import com.eldenring.spells.client.render.gravity.GravityBallRenderer;
+import com.eldenring.spells.client.render.gravity.MeteoriteRenderer;
+import com.eldenring.spells.client.render.gravity.MeteoriteVoidRenderer;
+import com.eldenring.spells.client.render.gravity.RockSlingRenderer;
 import com.eldenring.spells.client.render.haima.HaimaCannonModels;
 import com.eldenring.spells.client.render.haima.HaimaCannonRenderer;
 import com.eldenring.spells.client.render.haima.HaimaGavelModels;
@@ -64,7 +69,9 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.CRYSTAL_BARRAGE_SHARD.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.CRYSTAL_BURST_SHARD.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GREAT_GLINTSTONE_SHARD.get(), GlintstoneProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.GLINTSTONE_ICECRAG.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GLINTSTONE_COMET.get(), GlintstoneProjectileRenderer::new);
+        event.registerEntityRenderer(ModEntities.LORETTA_GREATBOW.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.GLINTSTONE_STAR.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.STAR_SHOWER.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.STARS_OF_RUIN.get(), GlintstoneProjectileRenderer::new);
@@ -79,11 +86,16 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.GAVEL_OF_HAIMA.get(), HaimaGavelRenderer::new);
         event.registerEntityRenderer(ModEntities.CARIAN_SLICER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.CARIAN_GREATSWORD.get(), NoopRenderer::new);
+        event.registerEntityRenderer(ModEntities.ADULAS_MOONBLADE.get(), NoopRenderer::new);
+        event.registerEntityRenderer(ModEntities.ADULAS_MOONBLADE_WAVE.get(), AdulasMoonbladeWaveRenderer::new);
         event.registerEntityRenderer(ModEntities.CARIAN_PIERCER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.CANNON_OF_HAIMA.get(), HaimaCannonRenderer::new);
         event.registerEntityRenderer(ModEntities.MAGIC_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.PHALANX_GLINTBLADE.get(), MagicGlintbladeRenderer::new);
         event.registerEntityRenderer(ModEntities.GRAVITY_BALL.get(), GravityBallRenderer::new);
+        event.registerEntityRenderer(ModEntities.ROCK_SLING.get(), RockSlingRenderer::new);
+        event.registerEntityRenderer(ModEntities.METEORITE.get(), MeteoriteRenderer::new);
+        event.registerEntityRenderer(ModEntities.METEORITE_VOID.get(), MeteoriteVoidRenderer::new);
         event.registerEntityRenderer(ModEntities.ASTROLOGER.get(), AstrologerRenderer::new);
     }
 
@@ -102,6 +114,10 @@ public final class ClientEntityRenderers {
                         event.getContext().getItemInHandRenderer()
                 ));
                 playerRenderer.addLayer(new CarianGreatswordHandLayer(
+                        playerRenderer,
+                        event.getContext().getItemInHandRenderer()
+                ));
+                playerRenderer.addLayer(new AdulasMoonbladeHandLayer(
                         playerRenderer,
                         event.getContext().getItemInHandRenderer()
                 ));

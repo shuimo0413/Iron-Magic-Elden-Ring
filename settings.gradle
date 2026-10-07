@@ -13,6 +13,12 @@ pluginManagement {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
         }
+        // MixinGradle（org.spongepowered.mixin）：Forge 1.20.1 不认 mods.toml 的 [[mixins]]，
+        // 要靠它生成 refmap 并把 MixinConfigs 写进 jar 清单 / runClient 启动参数
+        maven {
+            name = 'Sponge'
+            url = 'https://repo.spongepowered.org/repository/maven-public/'
+        }
         gradlePluginPortal()
     }
 }

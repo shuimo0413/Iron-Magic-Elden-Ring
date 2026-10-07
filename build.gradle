@@ -8,6 +8,8 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    // 必须排在 ForgeGradle 之后：它要读 FG 的 reobf / runs 配置
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 version = mod_version
@@ -91,8 +93,21 @@ minecraft {
     }
 }
 
+// Forge 1.20.1 只认 jar 清单里的 MixinConfigs（mods.toml 的 [[mixins]] 是 NeoForge 专属，会被忽略）。
+// config：写入 MANIFEST.MF 的 MixinConfigs，并给所有 runs 加 -mixin.config 启动参数。
+// add：编译时生成 refmap，生产环境把注入目标的 named 名映射到 SRG 名。
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
+
 repositories {
     maven { url = 'https://maven.aliyun.com/repository/public' }
+    maven {
+        // Mixin 注解处理器（refmap 生成）
+        name = "Sponge"
+        url = "https://repo.spongepowered.org/repository/maven-public/"
+    }
     maven {
         name = "Iron's Maven - Release"
         url = "https://code.redspace.io/releases"
@@ -133,6 +148,9 @@ configurations {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
+    // 生成 ${mod_id}.refmap.json；版本对齐 Forge 47.x 内置的 Mixin 0.8.5
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     // Iron's Spells 'n Spellbooks — full jar（弹道 / MagicManager / DamageSources 属非 api 包）
     // fg.deobf：把发布的 SRG 成品 jar 重映射到开发环境映射。
     compileOnly fg.deobf("io.redspace:irons_spellbooks:${irons_spellbooks_version}")
@@ -152,13 +170,7 @@ dependencies {
     localRuntime fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}")
 
     // 开发客户端工具：只进 runClient，不打进本模组 jar
-    // MaFgLib：编译期需要（client/malilib/）；不要进 localRuntime——
-    // 其 mixin 在 parchment userdev + mixin.env.remapRefMap 下会炸（与 Tweakerge 同类问题）。
-    // 正式整合包里玩家自装 MaFgLib 即可启用追踪排除 GUI；runClient 走无 malilib 回退路径。
-    compileOnly "maven.modrinth:mafglib:${mafglib_version}"
-    // localRuntime "maven.modrinth:mafglib:${mafglib_version}"
-    // Tweakerge / Freecam：同上，暂不进 localRuntime。
-    // localRuntime "maven.modrinth:tweakerge:${tweakerge_version}"
+    // Freecam：暂不进 localRuntime（mixin 在 parchment userdev + mixin.env.remapRefMap 下可能会炸）。
     // localRuntime "maven.modrinth:freecam:${freecam_version}"
 
     // MixinExtras：NeoForge 内置，Forge 1.20.1 不带。Azur 经济 mixin 依赖其 @WrapOperation 等。

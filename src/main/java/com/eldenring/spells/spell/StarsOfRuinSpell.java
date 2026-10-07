@@ -4,7 +4,6 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
 import com.eldenring.spells.particle.glintstone.GlintstoneFx;
 import com.eldenring.spells.registry.ModSchools;
-import com.eldenring.spells.spell.helper.ArmorPiercingSpellDamageSource;
 import io.redspace.ironsspellbooks.api.config.DefaultConfig;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -65,6 +64,13 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
         public static float PROJECTILE_FLIGHT_SPEED = 1.22f;
 
         public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 40.0;
+
+    /**
+     * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
+     * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空弹道更早消失。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 128.0;
+
 
         /** 强追踪：高于辉石流星，贴近原作灭亡流星的追击感。 */
         public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 6.2f;
@@ -212,11 +218,11 @@ public class StarsOfRuinSpell extends EldenRingAbstractSpell {
 
     /**
      * 12连发间隔短于原版受伤无敌帧，必须把 i-frame 清零，否则后几发会被吞成骗伤。
-     * 起源咒：伤害源无视护甲（辉石抗性仍生效）。
+     * 伤害类型走默认辉石魔法（{@code is_magic}），不再强制 {@code bypasses_armor}。
      */
     @Override
     public SpellDamageSource getDamageSource(Entity projectile, Entity attacker) {
-        return ArmorPiercingSpellDamageSource.source(projectile, attacker, this).setIFrames(0);
+        return super.getDamageSource(projectile, attacker).setIFrames(0);
     }
 
     /**

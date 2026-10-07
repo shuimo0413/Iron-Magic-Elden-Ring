@@ -4,6 +4,8 @@ import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.entity.astrologer.AstrologerEntity;
 import com.eldenring.spells.entity.CannonOfHaimaProjectile;
 import com.eldenring.spells.entity.CarianGreatswordEntity;
+import com.eldenring.spells.entity.AdulasMoonbladeEntity;
+import com.eldenring.spells.entity.AdulasMoonbladeWaveProjectile;
 import com.eldenring.spells.entity.CarianPiercerEntity;
 import com.eldenring.spells.entity.CarianSlicerEntity;
 import com.eldenring.spells.entity.CometProjectile;
@@ -15,13 +17,18 @@ import com.eldenring.spells.entity.CrystalBurstShardProjectile;
 import com.eldenring.spells.entity.GavelOfHaimaEntity;
 import com.eldenring.spells.entity.GlintstoneArcProjectile;
 import com.eldenring.spells.entity.GlintstoneCometProjectile;
+import com.eldenring.spells.entity.LorettaGreatbowProjectile;
 import com.eldenring.spells.entity.MagicGlintbladeEntity;
 import com.eldenring.spells.entity.PhalanxGlintbladeEntity;
 import com.eldenring.spells.entity.GlintstonePebbleProjectile;
 import com.eldenring.spells.entity.GlintstoneStarProjectile;
 import com.eldenring.spells.entity.GlintstoneStarVolleyEntity;
 import com.eldenring.spells.entity.GravityBallProjectile;
+import com.eldenring.spells.entity.MeteoriteProjectile;
+import com.eldenring.spells.entity.MeteoriteVoidEntity;
+import com.eldenring.spells.entity.RockSlingProjectile;
 import com.eldenring.spells.entity.GreatGlintstoneShardProjectile;
+import com.eldenring.spells.entity.GlintstoneIcecragProjectile;
 import com.eldenring.spells.entity.SpiralShardProjectile;
 import com.eldenring.spells.entity.StarShowerProjectile;
 import com.eldenring.spells.entity.StarlightEntity;
@@ -102,6 +109,15 @@ public final class ModEntities {
                             .build(id("great_glintstone_shard"))
             );
 
+    public static final RegistryObject<EntityType<GlintstoneIcecragProjectile>> GLINTSTONE_ICECRAG =
+            ENTITIES.register("glintstone_icecrag", () ->
+                    EntityType.Builder.<GlintstoneIcecragProjectile>of(GlintstoneIcecragProjectile::new, MobCategory.MISC)
+                            .sized(0.85f, 0.85f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("glintstone_icecrag"))
+            );
+
     public static final RegistryObject<EntityType<GlintstoneCometProjectile>> GLINTSTONE_COMET =
             ENTITIES.register("glintstone_comet", () ->
                     EntityType.Builder.<GlintstoneCometProjectile>of(GlintstoneCometProjectile::new, MobCategory.MISC)
@@ -109,6 +125,15 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("glintstone_comet"))
+            );
+
+    public static final RegistryObject<EntityType<LorettaGreatbowProjectile>> LORETTA_GREATBOW =
+            ENTITIES.register("loretta_greatbow", () ->
+                    EntityType.Builder.<LorettaGreatbowProjectile>of(LorettaGreatbowProjectile::new, MobCategory.MISC)
+                            .sized(0.95f, 0.95f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("loretta_greatbow"))
             );
 
     public static final RegistryObject<EntityType<GlintstoneStarProjectile>> GLINTSTONE_STAR =
@@ -283,6 +308,35 @@ public final class ModEntities {
 
     /**
      * 卡利亚贯刺：服务端突刺锚点，无渲染；跟施法者结算扇形伤害。
+                                 .build(id("carian_greatsword"))
+            );
+
+    /**
+     * 亚杜拉的月光剑：服务端斩击锚点，无渲染；跟施法者结算扇形伤害并每刀射出剑气。
+     */
+    public static final RegistryObject<EntityType<AdulasMoonbladeEntity>> ADULAS_MOONBLADE =
+            ENTITIES.register("adulas_moonblade", () ->
+                    EntityType.Builder.<AdulasMoonbladeEntity>of(AdulasMoonbladeEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("adulas_moonblade"))
+            );
+
+    /**
+     * 月光剑剑气：碰撞箱仅作追踪占位；横向命中体积在 WaveCombat 里按当前半宽计算。
+     */
+    public static final RegistryObject<EntityType<AdulasMoonbladeWaveProjectile>> ADULAS_MOONBLADE_WAVE =
+            ENTITIES.register("adulas_moonblade_wave", () ->
+                    EntityType.Builder.<AdulasMoonbladeWaveProjectile>of(AdulasMoonbladeWaveProjectile::new, MobCategory.MISC)
+                            .sized(0.40f, 0.40f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("adulas_moonblade_wave"))
+            );
+
+    /**
+     * 卡利亚贯刺：服务端突刺锚点，无渲染；跟施法者结算扇形伤害。
      */
     public static final RegistryObject<EntityType<CarianPiercerEntity>> CARIAN_PIERCER =
             ENTITIES.register("carian_piercer", () ->
@@ -327,6 +381,47 @@ public final class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("gravity_ball"))
+            );
+
+    /**
+     * 观星者：中立辉石商人法师。仅随观星台结构或生成蛋出现，不自然刷新。
+                                 .build(id("gravity_ball"))
+            );
+
+    /**
+     * 岩石球：蓄力时悬停在施法者身前，满蓄后飞出。碰撞箱按满尺寸岩石取。
+     */
+    public static final RegistryObject<EntityType<RockSlingProjectile>> ROCK_SLING =
+            ENTITIES.register("rock_sling", () ->
+                    EntityType.Builder.<RockSlingProjectile>of(RockSlingProjectile::new, MobCategory.MISC)
+                            .sized(0.7f, 0.7f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("rock_sling"))
+            );
+
+    /**
+     * 陨石：从虚空黑洞倾斜砸下的不追踪石块。碰撞箱按满尺寸陨石取。
+     */
+    public static final RegistryObject<EntityType<MeteoriteProjectile>> METEORITE =
+            ENTITIES.register("meteorite", () ->
+                    EntityType.Builder.<MeteoriteProjectile>of(MeteoriteProjectile::new, MobCategory.MISC)
+                            .sized(0.8f, 0.8f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build(id("meteorite"))
+            );
+
+    /**
+     * 陨石 / 艾斯提陨石的虚空裂缝：施法者前上方的锚点。由 {@code MeteoriteVoidRenderer} 画锯齿黑洞网格，另刷点缀粒子。
+     */
+    public static final RegistryObject<EntityType<MeteoriteVoidEntity>> METEORITE_VOID =
+            ENTITIES.register("meteorite_void", () ->
+                    EntityType.Builder.<MeteoriteVoidEntity>of(MeteoriteVoidEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(96)
+                            .updateInterval(1)
+                            .build(id("meteorite_void"))
             );
 
     /**

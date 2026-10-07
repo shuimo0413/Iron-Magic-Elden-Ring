@@ -219,6 +219,15 @@ public final class ModItems {
     );
 
     /**
+     * 冰霜辉石精华：辉石冰块等冷辉石咒的铸卷焦点。
+     * 工作台：冰封骨头 + 青/蓝/紫辉石碎片（三色等价）。抄卷时消耗。
+     */
+    public static final RegistryObject<Item> FROST_GLINTSTONE_ESSENCE = ITEMS.register(
+            "frost_glintstone_essence",
+            () -> new Item(new Item.Properties().rarity(Rarity.RARE))
+    );
+
+    /**
      * 辉石符文：辉石学派材料符文，与铁魔法学派符文同级。
      * 合成：八个辉石碎片（青/蓝/紫均可）围一圈，中间放空白符文。
      */
@@ -294,6 +303,15 @@ public final class ModItems {
      */
     public static final RegistryObject<Item> CARIAN_GREATSWORD_SWORD = ITEMS.register(
             "carian_greatsword_sword",
+            () -> new Item(new Item.Properties())
+    );
+
+    /**
+     * 亚杜拉的月光剑视觉用物品：挥砍时画在手里的冰蓝白像素剑。
+     * 像素形状与卡利亚大剑相同（工具链脚本重染），模型 JSON / display 是自己的。不进创造栏。
+     */
+    public static final RegistryObject<Item> ADULAS_MOONBLADE_SWORD = ITEMS.register(
+            "adulas_moonblade_sword",
             () -> new Item(new Item.Properties())
     );
 

@@ -60,6 +60,8 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
     private double projectileTrackingRangeBlocks = GlintbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
     private float projectileMaxTurnAngleDegreesPerTick =
             GlintbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK;
+    /** 射出后最大射程（方块）。三种圆阵各自从 SpawnSpec 写入。 */
+    private double projectileMaxRangeBlocks = GlintbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS;
     @Nullable
     private AbstractSpell damageSpell;
 
@@ -104,6 +106,7 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
         this.projectileFlightSpeed = spawnSpec.projectileFlightSpeed();
         this.projectileTrackingRangeBlocks = spawnSpec.projectileTrackingRangeBlocks();
         this.projectileMaxTurnAngleDegreesPerTick = spawnSpec.projectileMaxTurnAngleDegreesPerTick();
+        this.projectileMaxRangeBlocks = spawnSpec.projectileMaxRangeBlocks();
         this.damageSpell = spawnSpec.sourceSpell();
         setDamage(spawnSpec.damagePerBlade());
         refreshDimensions();
@@ -188,12 +191,17 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
         super.trailParticles();
     }
 
+    /**
+     * 跟手阶段按 hover 寿命销毁；射出后交给父类按 {@link #maxRangeBlocks()} 飞行距离判定。
+     */
     @Override
     protected boolean shouldDiscardForLifetime() {
-        if (!hasLaunched()) {
-            return tickCount >= hoverLifetimeTicks;
-        }
-        return ticksSinceLaunch() >= GlintbladePhalanxCastCurve.FLIGHT_LIFETIME_TICKS;
+        return !hasLaunched() && tickCount >= hoverLifetimeTicks;
+    }
+
+    @Override
+    protected double maxRangeBlocks() {
+        return projectileMaxRangeBlocks;
     }
 
     @Override
@@ -314,6 +322,7 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
         tag.putFloat("FlightSpeed", projectileFlightSpeed);
         tag.putDouble("TrackingRange", projectileTrackingRangeBlocks);
         tag.putFloat("TurnAngle", projectileMaxTurnAngleDegreesPerTick);
+        tag.putDouble("MaxRange", projectileMaxRangeBlocks);
         if (damageSpell != null) {
             tag.putString("DamageSpell", damageSpell.getSpellResource().toString());
         }
@@ -340,6 +349,9 @@ public class PhalanxGlintbladeEntity extends MagicGlintbladeEntity {
         }
         if (tag.contains("TurnAngle")) {
             this.projectileMaxTurnAngleDegreesPerTick = tag.getFloat("TurnAngle");
+        }
+        if (tag.contains("MaxRange")) {
+            this.projectileMaxRangeBlocks = tag.getDouble("MaxRange");
         }
         if (tag.contains("DamageSpell")) {
             ResourceLocation spellId = ResourceLocation.tryParse(tag.getString("DamageSpell"));

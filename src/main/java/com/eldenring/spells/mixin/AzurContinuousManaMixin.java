@@ -11,7 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(MagicManager.class)
+// remap = false：目标是铁魔法自己的类与方法，成品 jar 里不混淆，refmap 里查不到映射
+@Mixin(value = MagicManager.class, remap = false)
 public abstract class AzurContinuousManaMixin {
     @WrapOperation(method = "lambda$tick$0", at = @At(value = "INVOKE",
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))

@@ -85,6 +85,13 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
     public static double PROJECTILE_TRACKING_RANGE_BLOCKS = 28.0;
 
     /**
+     * 最大射程（方块，按飞行路径长度）。飞满后直接消失。
+     * 须 ≤ 300 tick × 弹速（铁魔法硬寿命）。调小 → 落空弹道更早消失。
+     */
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 50.0;
+
+
+    /**
      * 每 tick 允许的最大转向角度（度）。大剑转向比小辉剑钝一点。
      */
     public static float PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK = 4.5f;
@@ -173,7 +180,8 @@ public class GreatbladePhalanxSpell extends EldenRingAbstractSpell {
                             GlintbladePhalanxCastCurve.GREATBLADE_SWORD_VISUAL_SCALE,
                             GreatbladePhalanxSpell.PROJECTILE_FLIGHT_SPEED,
                             GreatbladePhalanxSpell.PROJECTILE_TRACKING_RANGE_BLOCKS,
-                            GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK
+                            GreatbladePhalanxSpell.PROJECTILE_MAX_TURN_ANGLE_DEGREES_PER_TICK,
+                            GreatbladePhalanxSpell.PROJECTILE_MAX_RANGE_BLOCKS
                     )
             );
         }

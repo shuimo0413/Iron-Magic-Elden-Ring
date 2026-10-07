@@ -10,7 +10,8 @@ import io.redspace.ironsspellbooks.util.TooltipsUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(TooltipsUtils.class)
+// remap = false：目标是铁魔法自己的类与方法，成品 jar 里不混淆，refmap 里查不到映射
+@Mixin(value = TooltipsUtils.class, remap = false)
 public abstract class AzurTooltipCostMixin {
     @WrapOperation(method = "formatActiveSpellTooltip", at = @At(value = "INVOKE",
             target = "Lio/redspace/ironsspellbooks/api/spells/AbstractSpell;getManaCost(I)I"))

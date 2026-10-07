@@ -68,7 +68,7 @@ public class CollapsingStarsSpell extends EldenRingAbstractSpell {
     /**
      * 弹道最大射程（方块）。飞过这段距离后 discard。
      */
-    public static double PROJECTILE_MAX_RANGE_BLOCKS = 22.0;
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 25.0;
 
     /**
      * 相对视线的散射锥半角（度）。左右合计约 48°。

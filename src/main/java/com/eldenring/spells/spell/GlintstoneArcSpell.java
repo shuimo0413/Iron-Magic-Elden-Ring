@@ -78,7 +78,7 @@ public class GlintstoneArcSpell extends EldenRingAbstractSpell {
     /**
      * 直线最大射程（方块）。超过就碎裂消失。调大 → 能扫到更远；调小 → 必须贴身放。
      */
-    public static double PROJECTILE_MAX_RANGE_BLOCKS = 14.0;
+    public static double PROJECTILE_MAX_RANGE_BLOCKS = 25.0;
 
     /**
      * 出手时弯弧半宽（方块）。左右合计约 3.2 格。
