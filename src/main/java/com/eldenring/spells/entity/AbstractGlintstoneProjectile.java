@@ -97,9 +97,22 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     /** 服务端累计的已飞行路径长度（方块），超过 {@link #maxRangeBlocks()} 即直接消失。 */
     private double traveledDistanceBlocks;
 
+    /**
+     * 没有锁定目标时，两次全范围索敌之间的间隔（tick）。
+     * <p>
+     * 索敌要扫追踪半径内所有生物并对通过锥角的候选做方块射线，是追踪弹最贵的一步；
+     * 弹道最多活 300 tick，每 tick 都扫会让齐射类法术（群星、毁灭流星）开销成倍放大。
+     * 调大更省性能，但空中「发现新目标」最多晚这么多 tick；调到 1 即恢复每 tick 索敌。
+     * 锁定目标失效的那一 tick 会立刻重索一次，不受此间隔影响。
+     */
+    private static final int TARGET_REACQUIRE_INTERVAL_TICKS = 4;
+
     /** 粘滞追踪目标 UUID；失效只是改直飞，不销毁。*/
     @Nullable
     private UUID lockedTrackingTargetUuid;
+
+    /** 下一次允许全范围索敌的 tickCount；仅服务端使用，不存档（读档后立刻索一次即可）。 */
+    private int nextTargetAcquireTick;
 
     /**
      * 仅客户端 tick 写入的真实飞行历史；不参与网络同步与存档。
@@ -435,11 +448,17 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
                 return lockedLiving;
             }
             lockedTrackingTargetUuid = null;
+            nextTargetAcquireTick = tickCount;
         }
 
+        if (tickCount < nextTargetAcquireTick) {
+            return null;
+        }
         LivingEntity bestTrackableTarget = findBestTrackableTarget();
         if (bestTrackableTarget != null) {
             lockedTrackingTargetUuid = bestTrackableTarget.getUUID();
+        } else {
+            nextTargetAcquireTick = tickCount + TARGET_REACQUIRE_INTERVAL_TICKS;
         }
         return bestTrackableTarget;
     }
@@ -449,6 +468,9 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
      */
     @Nullable
     private LivingEntity findBestTrackableTarget() {
+        if (getDeltaMovement().length() < minimumSpeedForHoming()) {
+            return null;
+        }
         Entity ownerEntity = getOwner();
         AABB searchBoundingBox = getBoundingBox().inflate(trackingRangeBlocks());
         List<LivingEntity> candidates = level().getEntitiesOfClass(
@@ -465,9 +487,16 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             return lookRayTarget;
         }
 
-        return candidates.stream()
-                .min(Comparator.comparingDouble(this::acquireScore))
-                .orElse(null);
+        LivingEntity bestCandidate = null;
+        double bestScore = Double.MAX_VALUE;
+        for (LivingEntity candidate : candidates) {
+            double score = acquireScore(candidate);
+            if (score < bestScore) {
+                bestScore = score;
+                bestCandidate = candidate;
+            }
+        }
+        return bestCandidate;
     }
 
     /**
@@ -587,14 +616,12 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         return angleFromFlightAxisDegrees <= maxReachableAngleDegrees;
     }
 
+    /**
+     * 新目标硬过滤。按开销从低到高排：身份 / 距离 → 锥角 → 转向预算 → 方块射线，
+     * 射线（最贵）只对前面全部通过的候选做一次。调用方已保证弹速足够追踪。
+     */
     private boolean canAcquireTrackingLivingEntity(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
-        if (!canContinueTrackingLivingEntity(candidateEntity, ownerEntity)) {
-            return false;
-        }
-
-        Vec3 currentDeltaMovement = getDeltaMovement();
-        double currentSpeed = currentDeltaMovement.length();
-        if (currentSpeed < minimumSpeedForHoming()) {
+        if (!isTrackableIgnoringLineOfSight(candidateEntity, ownerEntity)) {
             return false;
         }
 
@@ -610,6 +637,15 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     }
 
     private boolean canContinueTrackingLivingEntity(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
+        return isTrackableIgnoringLineOfSight(candidateEntity, ownerEntity)
+                && hasClearLineOfSightToward(candidateEntity);
+    }
+
+    /**
+     * 不含视线的廉价过滤：存活、非主人/盟友、在追踪半径内、通过玩家追踪偏好。
+     * 距离放在偏好查询之前，搜索框角落里的生物先被筛掉。
+     */
+    private boolean isTrackableIgnoringLineOfSight(LivingEntity candidateEntity, @Nullable Entity ownerEntity) {
         if (!candidateEntity.isAlive() || candidateEntity.isSpectator()) {
             return false;
         }
@@ -619,16 +655,13 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
                 || candidateEntity.isAlliedTo(ownerEntity))) {
             return false;
         }
-        if (!TrackingTargetFilter.allowsTracking(ownerEntity, candidateEntity)) {
-            return false;
-        }
 
         double trackingRange = trackingRangeBlocks();
         if (distanceToSqr(candidateEntity) > trackingRange * trackingRange) {
             return false;
         }
 
-        return hasClearLineOfSightToward(candidateEntity);
+        return TrackingTargetFilter.allowsTracking(ownerEntity, candidateEntity);
     }
 
     /**
