@@ -74,17 +74,17 @@ public class LorettaGreatbowSpell extends EldenRingAbstractSpell {
     /** 每升 1 级额外蓝耗（数值表：2，满级 7 级为 37）。 */
     public static int SPELL_MANA_COST_PER_LEVEL = 2;
 
-    /** 1 级攻击力（数值表：10）。 */
-    public static float SPELL_BASE_SPELL_POWER = 10;
+    /** 1 级攻击力（数值表：12）。 */
+    public static float SPELL_BASE_SPELL_POWER = 12;
 
     /** 每级额外攻击力（数值表：1.5，满级 7 级为 19）。 */
     public static float SPELL_SPELL_POWER_PER_LEVEL = 1.5f;
 
     /**
-     * 蓄力时长（tick）。40 = 2 秒拉弓。
+     * 蓄力时长（tick）
      * 调大 → 更容易被打断；调小 → 更接近瞬发。
      */
-    public static int SPELL_CAST_TIME_TICKS = 40;
+    public static int SPELL_CAST_TIME_TICKS = 30;
 
     /** 命中伤害 = 数值表攻击力 × 本系数（再乘铁魔法法强加成）。 */
     public static float SPELL_DAMAGE_PER_SPELL_POWER = 1.0f;

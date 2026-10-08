@@ -83,8 +83,19 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
      */
     protected int launchedAtTick;
 
+    /**
+     * 没有锁定目标时，两次全范围索敌之间的间隔（tick）。
+     * 剑阵一次射出多把剑，每把每 tick 都扫追踪半径内所有生物会成倍放大开销。
+     * 调大更省性能，但空中发现新目标最多晚这么多 tick；调到 1 即恢复每 tick 索敌。
+     * 锁定目标失效的那一 tick 会立刻重索一次，不受此间隔影响。
+     */
+    private static final int TARGET_REACQUIRE_INTERVAL_TICKS = 4;
+
     @Nullable
     private UUID lockedTrackingTargetUuid;
+
+    /** 下一次允许全范围索敌的 tickCount；仅服务端使用，不存档。 */
+    private int nextTargetAcquireTick;
 
     public MagicGlintbladeEntity(EntityType<? extends MagicGlintbladeEntity> entityType, Level level) {
         super(entityType, level);
@@ -605,10 +616,16 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
                 return lockedLiving;
             }
             lockedTrackingTargetUuid = null;
+            nextTargetAcquireTick = tickCount;
+        }
+        if (tickCount < nextTargetAcquireTick) {
+            return null;
         }
         LivingEntity acquired = findLaunchTargetAlongFlight();
         if (acquired != null) {
             lockedTrackingTargetUuid = acquired.getUUID();
+        } else {
+            nextTargetAcquireTick = tickCount + TARGET_REACQUIRE_INTERVAL_TICKS;
         }
         return acquired;
     }
