@@ -4,16 +4,15 @@ import com.eldenring.spells.particle.frost.FrostFx;
 import com.eldenring.spells.registry.ModEntities;
 import com.eldenring.spells.registry.ModSpells;
 import com.eldenring.spells.spell.GlintstoneIcecragSpell;
+import com.eldenring.spells.spell.helper.FrostHelper;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
-import io.redspace.ironsspellbooks.registries.MobEffectRegistry;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * 辉石冰块弹道：大魔砾同体型，冷白彗星头，拖尾/命中改冰霜粒子，命中上 chilled。
+ * 辉石冰块弹道：大魔砾同体型，冷白彗星头，拖尾/命中改冰霜粒子，命中后原版结霜（不冻进冰牢）。
  */
 public class GlintstoneIcecragProjectile extends AbstractGlintstoneProjectile {
 
@@ -116,11 +115,7 @@ public class GlintstoneIcecragProjectile extends AbstractGlintstoneProjectile {
 
     @Override
     protected void afterDamagingTarget(LivingEntity livingTarget) {
-        int chilledDurationTicks = GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS;
-        if (chilledDurationTicks <= 0) {
-            return;
-        }
-        livingTarget.addEffect(new MobEffectInstance(MobEffectRegistry.CHILLED.get(), chilledDurationTicks));
+        FrostHelper.applyFrost(livingTarget, GlintstoneIcecragSpell.SPELL_FROST_SECONDS);
     }
 
     @Override

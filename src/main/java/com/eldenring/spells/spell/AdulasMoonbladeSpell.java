@@ -37,7 +37,7 @@ import java.util.Optional;
  *   <li>手里是冰蓝白的月光剑，刀光蓝白，沿刃粒子换成冰霜系（{@link com.eldenring.spells.spell.fx.AdulasMoonbladeFx}）；</li>
  *   <li>每一刀命中帧在扇形斩击之外，再沿视线射出一道单层冰月牙剑气
  *       （{@link com.eldenring.spells.entity.AdulasMoonbladeWaveProjectile}），留下一路冰雾；</li>
- *   <li>斩击与剑气各结算一次攻击力，两段都会叠铁魔法冻结并上 {@code CHILLED}；</li>
+ *   <li>斩击与剑气各结算一次攻击力，两段命中都会让目标原版结霜（冻伤扣血），不会冻进冰牢；</li>
  *   <li>法强吃辉石 + 冰霜超额（同辉石冰块）。</li>
  * </ul>
  * 客户端动作 / 手持剑 / 光轨见 {@link com.eldenring.spells.client.AdulasMoonbladeClientHold}；
@@ -102,13 +102,10 @@ public class AdulasMoonbladeSpell extends EldenRingAbstractSpell {
     public static int WAVE_MAX_ENTITY_HITS = 10;
 
     /**
-     * 写入伤害源的冻结 tick。铁魔法命中后会 ×2 写入原版冻结槽。
-     * 调大 → 连斩更快冻实；调小 → 要多挨几下才满槽。
+     * 命中后原版完全冻结持续秒数（结霜 + 每 2 秒一次冻伤扣血 + 减速），见 {@link com.eldenring.spells.spell.helper.FrostHelper}。
+     * 连斩只刷新不叠加；调大 → 冻伤扣血次数更多。0 = 不结霜。
      */
-    public static int SPELL_FREEZE_TICKS = 80;
-
-    /** 命中后 {@code CHILLED} 持续 tick。与满冻结槽叠加时会进铁魔法冰牢。 */
-    public static int SPELL_CHILLED_DURATION_TICKS = 100;
+    public static int SPELL_FROST_SECONDS = 4;
 
     private final ResourceLocation spellResourceLocation =
             new ResourceLocation(EldenRingSpellsMod.MOD_ID, "adulas_moonblade");
@@ -175,13 +172,12 @@ public class AdulasMoonbladeSpell extends EldenRingAbstractSpell {
     }
 
     /**
-     * 连斩 + 剑气要吃满每一下，取消无敌帧；同时写入冻结 tick。
+     * 连斩 + 剑气要吃满每一下，取消无敌帧。结霜在命中后单独写冻结槽，不走伤害源。
      */
     @Override
     public SpellDamageSource getDamageSource(@Nullable Entity projectile, Entity attacker) {
         return super.getDamageSource(projectile, attacker)
-                .setIFrames(0)
-                .setFreezeTicks(SPELL_FREEZE_TICKS);
+                .setIFrames(0);
     }
 
     @Override
@@ -201,7 +197,7 @@ public class AdulasMoonbladeSpell extends EldenRingAbstractSpell {
                 ),
                 Component.translatable(
                         "ui.irons_spellbooks.freeze_time",
-                        Utils.timeFromTicks(SPELL_FREEZE_TICKS, 2)
+                        Utils.timeFromTicks(SPELL_FROST_SECONDS * 20, 2)
                 ),
                 Component.translatable("ui.iss_elden_ring.hold_to_combo")
         );

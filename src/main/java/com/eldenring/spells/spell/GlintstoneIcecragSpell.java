@@ -15,7 +15,6 @@ import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.api.util.Utils;
-import io.redspace.ironsspellbooks.damage.SpellDamageSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -27,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * 辉石冰块：大魔砾体型的浸寒辉石弹，命中小范围爆炸并叠铁魔法冻结。
+ * 辉石冰块：大魔砾体型的浸寒辉石弹，命中小范围爆炸，被炸到的目标原版结霜（冻伤扣血），不会冻进冰牢。
  * <p>
  * 学派登记为辉石；法强额外吃冰霜学派超额（辉石法强 + 冰霜法强 - 1）。
  */
@@ -55,15 +54,10 @@ public class GlintstoneIcecragSpell extends EldenRingAbstractSpell {
     public static float EXPLOSION_RADIUS_BLOCKS = 1.8f;
 
     /**
-     * 写入伤害源的冻结 tick。铁魔法命中后会 ×2 写入原版冻结槽。
-     * 调大更容易一次冻实；调小要连命中才满槽。
+     * 命中后原版完全冻结持续秒数（结霜 + 每 2 秒一次冻伤扣血 + 减速），见 {@link com.eldenring.spells.spell.helper.FrostHelper}。
+     * 连续命中只刷新不叠加；调大 → 冻伤扣血次数更多。0 = 不结霜。
      */
-    public static int SPELL_FREEZE_TICKS = 80;
-
-    /**
-     * 命中后 {@code CHILLED} 持续 tick。与满冻结槽叠加时会进铁魔法冰牢。
-     */
-    public static int SPELL_CHILLED_DURATION_TICKS = 100;
+    public static int SPELL_FROST_SECONDS = 4;
 
     public static float COMET_HEAD_BODY_SCALE_RADIAL = 1.05f;
     public static float COMET_HEAD_BODY_SCALE_ALONG = 0.85f;
@@ -130,7 +124,7 @@ public class GlintstoneIcecragSpell extends EldenRingAbstractSpell {
                 ),
                 Component.translatable(
                         "ui.irons_spellbooks.freeze_time",
-                        Utils.timeFromTicks(GlintstoneIcecragSpell.SPELL_FREEZE_TICKS, 2)
+                        Utils.timeFromTicks(GlintstoneIcecragSpell.SPELL_FROST_SECONDS * 20, 2)
                 )
         );
     }
@@ -188,12 +182,6 @@ public class GlintstoneIcecragSpell extends EldenRingAbstractSpell {
         double glintstonePower = ModSchools.GLINTSTONE.get().getPowerFor(livingEntity);
         double icePower = SchoolRegistry.ICE.get().getPowerFor(livingEntity);
         return glintstonePower + icePower - 1.0;
-    }
-
-    @Override
-    public SpellDamageSource getDamageSource(@Nullable Entity projectile, Entity attacker) {
-        return super.getDamageSource(projectile, attacker)
-                .setFreezeTicks(GlintstoneIcecragSpell.SPELL_FREEZE_TICKS);
     }
 
     @Override
