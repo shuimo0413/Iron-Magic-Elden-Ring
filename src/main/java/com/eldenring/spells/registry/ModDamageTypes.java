@@ -11,8 +11,7 @@ import net.minecraft.world.damagesource.DamageType;
  * <p>
  * 须同步挂到 {@code #iss_elden_ring:glintstone_magic}，并经由
  * {@code data/neoforge/tags/damage_type/is_magic.json} 并入 {@code #neoforge:is_magic}，
- * 否则伤害数字 / 其它模组会把它当成物理伤害（铁魔法本体各学派同此约定）。
- */
+ * 否则伤害数字 / 其它模组会把它当成物理伤害（铁魔法本体各学派同此约定）。 */
 public final class ModDamageTypes {
     /**
      * 辉石魔法伤害：所有辉石学派法术的默认 DamageSource 类型（含起源三咒：毁灭流星 / 创星雨 / 彗星亚兹勒）。

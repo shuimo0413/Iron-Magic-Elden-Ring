@@ -439,6 +439,8 @@ public final class GlintstoneTrailRenderer {
      * 每个路径点按“轨迹切线 × 视线”计算横向方向，并在相邻点间保持符号一致，
      * 防止急转弯时 ribbon 突然翻面。
      */
+    // 妈的这个算法放到洛谷能有绿题水平（review）
+    // 如果说光轨是一条纸带，那么这段代码决定纸带在每个位置往哪个方向展开
     private static List<Vec3> buildStableSideDirections(List<Vec3> points, Vec3 cameraWorld) {
         List<Vec3> sideDirections = new ArrayList<>(points.size());
         Vec3 previousSideDirection = null;
@@ -472,6 +474,9 @@ public final class GlintstoneTrailRenderer {
         }
         return sideDirections;
     }
+
+
+    // ==========================================================
 
     private static void putRibbonLayer(
             VertexConsumer consumer,

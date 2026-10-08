@@ -246,6 +246,9 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
      * 服务端：头顶学院法阵 + 沿视线生成魔砾弹道。
      * 末尾 {@code super.onCast} 不能省，铁魔法靠它收尾音效和内部状态。
      */
+
+//    review
+//    玩家用卷轴 / 法术书施法，铁魔法调用 `GlintstonePebbleSpell.onCast`
     @Override
     public void onCast(
             Level level,
@@ -254,8 +257,19 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
             CastSource castSource,
             MagicData playerMagicData
     ) {
+//        !level.isClientSide → 只在服务端执行下面逻辑
         if (!level.isClientSide) {
             AcademySigilFx.spawnAboveHead(level, castingEntity);
+
+//调用工具类 GlintstoneCastHelper，沿着施法者视线方向生成辉石法球
+//GlintstonePebbleProjectile::new：投射物构造方法引用，用来创建投射物实例
+//PROJECTILE_SPAWN_FORWARD_OFFSET_BLOCKS：投射物生成点距离施法者向前偏移多少格（防止法术贴脸打到自己）
+//SPELL_CAST_BURST_FORWARD_OFFSET_BLOCKS：爆发特效的向前偏移
+//1.0f：投射物速度倍率
+//getDamageAmount(spellLevel, castingEntity)：根据法术等级 + 施法者属性计算最终伤害
+//castingEntity.getLookAngle()：使用施法者当前视线向量作为飞行方向
+//true：一般代表 “是否为友方施法、是否忽略施法者自身碰撞”
+
             GlintstoneCastHelper.spawnAlongLook(
                     level,
                     castingEntity,
@@ -268,6 +282,8 @@ public class GlintstonePebbleSpell extends EldenRingAbstractSpell {
                     true
             );
         }
+//        super.onCast()调用父类的施放逻辑。
+//        父类通常负责：扣魔力、设置法术冷却、播放基础施法音效、记录施法状态。
         super.onCast(level, spellLevel, castingEntity, castSource, playerMagicData);
     }
 

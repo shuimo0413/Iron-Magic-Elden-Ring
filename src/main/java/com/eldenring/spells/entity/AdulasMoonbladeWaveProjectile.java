@@ -30,7 +30,7 @@ import java.util.UUID;
 /**
  * 亚杜拉的月光剑剑气：从辉石弯弧复制的直飞月牙，只有一道，冰蓝白配色，一路留下冰雾。
  * <p>
- * 不追踪。每个敌人只结算一次（伤害源带冻结 + 命中上 {@code CHILLED}），
+ * 不追踪。每个敌人只结算一次（命中后原版结霜，不冻进冰牢），
  * 穿透次数耗尽、撞墙或飞满射程后碎裂。碰撞箱只作客户端追踪占位，真正打人走 {@link AdulasMoonbladeWaveCombat}。
  */
 public class AdulasMoonbladeWaveProjectile extends AbstractGlintstoneProjectile {
@@ -166,7 +166,7 @@ public class AdulasMoonbladeWaveProjectile extends AbstractGlintstoneProjectile 
             );
             if (hitEntity instanceof LivingEntity livingEntityAfterHit) {
                 livingEntityAfterHit.invulnerableTime = 0;
-                AdulasMoonbladeCombat.applyChill(livingEntityAfterHit);
+                AdulasMoonbladeCombat.applyFrost(livingEntityAfterHit);
             }
             AdulasMoonbladeFx.waveHitSpark(
                     level(),

@@ -59,6 +59,9 @@ public final class GlintstoneCastHelper {
      * @param shootDirection                 飞行方向；单发法术传 {@code castingEntity.getLookAngle()} 即可
      * @param playCastBurst                  调用点仍可传；实际是否刷光由 {@link #SPAWN_FRONT_CAST_BURST} 总闸决定
      */
+
+//    review
+//    释放魔法
     public static AbstractGlintstoneProjectile spawnAlongLook(
             Level level,
             LivingEntity castingEntity,
@@ -105,17 +108,19 @@ public final class GlintstoneCastHelper {
             Vec3 lookPlaneOffset,
             boolean playCastBurst
     ) {
+//        用工厂造实体
         AbstractGlintstoneProjectile projectile = projectileFactory.apply(level, castingEntity);
         Vec3 lookDirection = castingEntity.getLookAngle().normalize();
         Vec3 normalizedShootDirection = shootDirection.normalize();
 
         // 眼睛位置减去半高：setPos 用的是实体脚底，要让碰撞箱中心落在视线高度上，否则弹会从下巴底下飞出。
+//        计算理想出生点：眼睛前方一段距离
         Vec3 eyePosition = castingEntity.getEyePosition();
         Vec3 desiredSpawnPosition = eyePosition
                 .subtract(0, projectile.getBbHeight() * 0.5, 0)
                 .add(lookDirection.scale(spawnForwardOffsetBlocks))
                 .add(lookPlaneOffset);
-
+//  666还在微调
         Vec3 spawnPosition = resolveSpawnPositionClearOfBlocks(
                 level,
                 castingEntity,
@@ -123,6 +128,7 @@ public final class GlintstoneCastHelper {
                 desiredSpawnPosition,
                 lookDirection
         );
+        //  666还在微调
         spawnPosition = nudgeSpawnSoProjectileBoxIsClear(
                 level,
                 projectile,
@@ -130,7 +136,7 @@ public final class GlintstoneCastHelper {
                 eyePosition,
                 lookDirection
         );
-
+//      实体位置、发射方向设置，然后放置到世界
         projectile.setPos(spawnPosition);
         projectile.shoot(normalizedShootDirection);
         // AbstractMagicProjectile 用实体朝向做渲染/粒子轴向；必须与速度方向一致，否则彗星头会拧着飞。
@@ -139,11 +145,13 @@ public final class GlintstoneCastHelper {
                 normalizedShootDirection.y,
                 normalizedShootDirection.horizontalDistance()
         ) * Mth.RAD_TO_DEG);
-        projectile.setYRot(yawDegrees);
+//        YRot(yaw)：水平旋转（左右转头）
+//        XRot(pitch)：俯仰旋转（抬头低头）
+        projectile.setYRot(yawDegrees); // 设置实体朝向
         projectile.setXRot(pitchDegrees);
-        projectile.setDamage(damageAmount);
-        level.addFreshEntity(projectile);
-
+        projectile.setDamage(damageAmount);  // 赋值伤害，把实体加入世界
+        level.addFreshEntity(projectile); //addFreshEntity 之后，每 tick 都会执行铁魔法 AbstractMagicProjectile.tick()
+//        施法爆发粒子，默认关闭（实则基本所有的魔法都有）
         if (SPAWN_FRONT_CAST_BURST && playCastBurst) {
             Vec3 castBurstPosition = spawnPosition.add(lookDirection.scale(castBurstForwardOffsetBlocks));
             GlintstoneFx.castBurst(

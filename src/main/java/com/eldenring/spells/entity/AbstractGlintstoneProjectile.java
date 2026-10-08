@@ -48,6 +48,10 @@ import java.util.UUID;
  * 铁魔法 {@code AbstractMagicProjectile} 写死 300 tick 硬寿命且从生成起算，
  * 射程须满足「射程 ≤ (300 − 发射前 tick) × 弹速」才能真正飞满。
  */
+
+//  review
+//  操你妈这么阴
+
 public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjectile {
 
     /**
@@ -127,15 +131,15 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         super(entityType, level);
         this.setNoGravity(true);
     }
-
+//    飞行速度
     protected abstract float flightSpeed();
-
+//    追踪最大搜索范围，20 格
     protected abstract double trackingRangeBlocks();
-
+//    每 tick 最多能转多少度
     protected abstract float maxTurnAngleDegreesPerTick();
-
+//      发射后延迟多少开始造成伤害
     protected abstract int trackingStartDelayTicks();
-
+//      锥形锁敌半角
     protected abstract float trackingAcquireConeHalfAngleDegrees();
 
     protected abstract double minimumSpeedForHoming();
@@ -170,6 +174,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         return position();
     }
 
+//
     @Override
     public void trailParticles() {
         Vec3 deltaMovement = getDeltaMovement();
@@ -371,15 +376,17 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         return super.canHitEntity(targetEntity);
     }
 
+//    resolveTrackingTarget：选目标（我该追谁）
+//    handleEntityHoming：怎么转向飞向已经选中的目标
     @Override
-    protected void handleEntityHoming() {
+    protected void handleEntityHoming() {    // 此项目的魔法追踪算法（review）
         if (level().isClientSide) {
             return;
         }
         if (tickCount < trackingStartDelayTicks()) {
             return;
         }
-
+//          飞行的过程中寻找目标
         LivingEntity trackingTarget = resolveTrackingTarget();
         // 找不到/ 丢失目标：保持当前速度直飞，绝不 discard
         if (trackingTarget == null) {
@@ -437,7 +444,8 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
                 box.getCenter().z
         );
     }
-
+//    resolveTrackingTarget：选目标（我该追谁）
+//handleEntityHoming：怎么转向飞向已经选中的目标
     @Nullable
     private LivingEntity resolveTrackingTarget() {
         Entity ownerEntity = getOwner();
@@ -455,7 +463,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
             return null;
         }
         LivingEntity bestTrackableTarget = findBestTrackableTarget();
-        if (bestTrackableTarget != null) {
+        if (bestTrackableTarget != null) {       // lockedTrackingTargetUuid：成员变量，存当前锁定目标的 UUID。
             lockedTrackingTargetUuid = bestTrackableTarget.getUUID();
         } else {
             nextTargetAcquireTick = tickCount + TARGET_REACQUIRE_INTERVAL_TICKS;
@@ -466,8 +474,11 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     /**
      * 在合法候选中选最优追踪目标：施法者准星射线命中优先，否则角度主导打分。
      */
+
+//    大范围扫描、筛选候选目标集合，然后选出最优目标。（review）
     @Nullable
     private LivingEntity findBestTrackableTarget() {
+//        返回找到的最佳活体目标，找不到返回null。
         if (getDeltaMovement().length() < minimumSpeedForHoming()) {
             return null;
         }
@@ -486,11 +497,11 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         if (lookRayTarget != null) {
             return lookRayTarget;
         }
-
+//    准星射线优先目标，找不到则按打分结果选最优
         LivingEntity bestCandidate = null;
         double bestScore = Double.MAX_VALUE;
         for (LivingEntity candidate : candidates) {
-            double score = acquireScore(candidate);
+            double score = acquireScore(candidate); // 还有个锁敌分数，牛逼
             if (score < bestScore) {
                 bestScore = score;
                 bestCandidate = candidate;

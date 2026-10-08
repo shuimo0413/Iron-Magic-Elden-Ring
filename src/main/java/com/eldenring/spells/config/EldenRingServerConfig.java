@@ -67,13 +67,11 @@ public final class EldenRingServerConfig {
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION;
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION;
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS;
-
     public static final HomingValues GLINTSTONE_PEBBLE;
     public static final HomingValues SWIFT_GLINTSTONE_SHARD;
     public static final HomingValues GREAT_GLINTSTONE_SHARD;
     public static final HomingValues GLINTSTONE_ICECRAG;
-    public static final ModConfigSpec.IntValue GLINTSTONE_ICECRAG_FREEZE_TICKS;
-    public static final ModConfigSpec.IntValue GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS;
+    public static final ModConfigSpec.IntValue GLINTSTONE_ICECRAG_FROST_SECONDS;
     public static final HomingValues GLINTSTONE_COMET;
     public static final HomingValues COMET;
     public static final HomingValues LORETTA_GREATBOW;
@@ -167,21 +165,13 @@ public final class EldenRingServerConfig {
                 GlintstoneIcecragSpell.PROJECTILE_MAX_RANGE_BLOCKS
         ));
         builder.push("glintstone_icecrag_crowd_control");
-        GLINTSTONE_ICECRAG_FREEZE_TICKS = ConfigSpecHelper.integer(
+        GLINTSTONE_ICECRAG_FROST_SECONDS = ConfigSpecHelper.integer(
                 builder,
-                "freeze_ticks",
-                "写入伤害源的冻结 tick（铁魔法命中后会 ×2 进原版冻结槽）。调大更容易一次冻实。",
-                GlintstoneIcecragSpell.SPELL_FREEZE_TICKS,
+                "frost_seconds",
+                "命中后原版完全冻结（结霜 + 冻伤扣血）持续秒数。连续命中只刷新不叠加；0 = 不结霜。不会冻进冰牢。",
+                GlintstoneIcecragSpell.SPELL_FROST_SECONDS,
                 0,
-                400
-        );
-        GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS = ConfigSpecHelper.integer(
-                builder,
-                "chilled_duration_ticks",
-                "命中后 CHILLED 持续 tick。与满冻结槽叠加时会进冰牢。",
-                GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS,
-                0,
-                600
+                60
         );
         builder.pop();
         GLINTSTONE_COMET = HomingValues.create(builder, "glintstone_comet", new HomingSeed(
@@ -446,8 +436,7 @@ public final class EldenRingServerConfig {
                 GlintstoneIcecragSpell.EXPLOSION_RADIUS_BLOCKS = explosion;
             }
         });
-        GlintstoneIcecragSpell.SPELL_FREEZE_TICKS = read(GLINTSTONE_ICECRAG_FREEZE_TICKS);
-        GlintstoneIcecragSpell.SPELL_CHILLED_DURATION_TICKS = read(GLINTSTONE_ICECRAG_CHILLED_DURATION_TICKS);
+        GlintstoneIcecragSpell.SPELL_FROST_SECONDS = read(GLINTSTONE_ICECRAG_FROST_SECONDS);
         applyHoming(GLINTSTONE_COMET, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstoneCometSpell.SPELL_BASE_MANA_COST = mana;
             GlintstoneCometSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
@@ -2403,8 +2392,7 @@ public final class EldenRingServerConfig {
         private final ModConfigSpec.DoubleValue waveStartHalfWidthBlocks;
         private final ModConfigSpec.DoubleValue waveMaxHalfWidthBlocks;
         private final ModConfigSpec.IntValue waveMaxEntityHits;
-        private final ModConfigSpec.IntValue freezeTicks;
-        private final ModConfigSpec.IntValue chilledDurationTicks;
+        private final ModConfigSpec.IntValue frostSeconds;
 
         private AdulasMoonbladeValues(
                 SpellBookKeys book,
@@ -2418,8 +2406,7 @@ public final class EldenRingServerConfig {
                 ModConfigSpec.DoubleValue waveStartHalfWidthBlocks,
                 ModConfigSpec.DoubleValue waveMaxHalfWidthBlocks,
                 ModConfigSpec.IntValue waveMaxEntityHits,
-                ModConfigSpec.IntValue freezeTicks,
-                ModConfigSpec.IntValue chilledDurationTicks
+                ModConfigSpec.IntValue frostSeconds
         ) {
             this.book = book;
             this.damagePerSpellPower = damagePerSpellPower;
@@ -2432,8 +2419,7 @@ public final class EldenRingServerConfig {
             this.waveStartHalfWidthBlocks = waveStartHalfWidthBlocks;
             this.waveMaxHalfWidthBlocks = waveMaxHalfWidthBlocks;
             this.waveMaxEntityHits = waveMaxEntityHits;
-            this.freezeTicks = freezeTicks;
-            this.chilledDurationTicks = chilledDurationTicks;
+            this.frostSeconds = frostSeconds;
         }
 
         static AdulasMoonbladeValues create(ModConfigSpec.Builder builder) {
@@ -2457,8 +2443,7 @@ public final class EldenRingServerConfig {
                     ConfigSpecHelper.floating(builder, "wave_start_half_width_blocks", "剑气出手时半宽（方块）。", AdulasMoonbladeSpell.WAVE_START_HALF_WIDTH_BLOCKS, 0.1, 16.0),
                     ConfigSpecHelper.floating(builder, "wave_max_half_width_blocks", "剑气张满后的半宽（方块），约 10 格内张满。", AdulasMoonbladeSpell.WAVE_MAX_HALF_WIDTH_BLOCKS, 0.1, 16.0),
                     ConfigSpecHelper.integer(builder, "wave_max_entity_hits", "单道剑气最多结算几个敌人（每个敌人只吃一次）。", AdulasMoonbladeSpell.WAVE_MAX_ENTITY_HITS, 1, 64),
-                    ConfigSpecHelper.integer(builder, "freeze_ticks", "斩击与剑气写入伤害源的冻结 tick（铁魔法命中后 ×2 写入原版冻结槽）。", AdulasMoonbladeSpell.SPELL_FREEZE_TICKS, 0, 1200),
-                    ConfigSpecHelper.integer(builder, "chilled_duration_ticks", "命中后 CHILLED 持续 tick。0 = 不上寒冷。", AdulasMoonbladeSpell.SPELL_CHILLED_DURATION_TICKS, 0, 1200)
+                    ConfigSpecHelper.integer(builder, "frost_seconds", "斩击与剑气命中后原版完全冻结（结霜 + 冻伤扣血）持续秒数。连续命中只刷新不叠加；0 = 不结霜。不会冻进冰牢。", AdulasMoonbladeSpell.SPELL_FROST_SECONDS, 0, 60)
             );
             builder.pop();
             return values;
@@ -2480,8 +2465,7 @@ public final class EldenRingServerConfig {
             AdulasMoonbladeSpell.WAVE_START_HALF_WIDTH_BLOCKS = read(waveStartHalfWidthBlocks).floatValue();
             AdulasMoonbladeSpell.WAVE_MAX_HALF_WIDTH_BLOCKS = read(waveMaxHalfWidthBlocks).floatValue();
             AdulasMoonbladeSpell.WAVE_MAX_ENTITY_HITS = read(waveMaxEntityHits);
-            AdulasMoonbladeSpell.SPELL_FREEZE_TICKS = read(freezeTicks);
-            AdulasMoonbladeSpell.SPELL_CHILLED_DURATION_TICKS = read(chilledDurationTicks);
+            AdulasMoonbladeSpell.SPELL_FROST_SECONDS = read(frostSeconds);
         }
     }
 
