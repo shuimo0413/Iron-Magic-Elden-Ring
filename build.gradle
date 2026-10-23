@@ -182,6 +182,9 @@ dependencies {
     // 迅剑连斩要按刀镜像重播 PlayerAnimator 动作，编译期就要看见这些类
     compileOnly "dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}"
     localRuntime "dev.kosmx.player-anim:player-animation-lib-forge:${player_animator_version}"
+    // 魔法之湖群系：TerraBlender Region / SurfaceRuleManager。玩家需自行安装（mods.toml 声明 required）
+    compileOnly "maven.modrinth:terrablender:${terrablender_version}"
+    localRuntime "maven.modrinth:terrablender:${terrablender_version}"
 
     // 开发客户端工具：只进 runClient，不打进本模组 jar
     // freecam_version 是 Modrinth version id（NeoForge 构建），不要改成 1.3.0+mc1.21.1
