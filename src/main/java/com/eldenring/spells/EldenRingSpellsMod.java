@@ -18,6 +18,7 @@ import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.registry.ModSpells;
 import com.eldenring.spells.registry.ModRecipes;
+import com.eldenring.spells.worldgen.biome.ModTerraBlender;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -56,5 +57,7 @@ public class EldenRingSpellsMod {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("Iron's Spells 'n Spellbooks: Elden Ring loaded (Iron's Spells dependency OK).");
+        // 魔法之湖：TerraBlender Region / 地表规则（非线程安全，须回主线程）
+        event.enqueueWork(ModTerraBlender::register);
     }
 }

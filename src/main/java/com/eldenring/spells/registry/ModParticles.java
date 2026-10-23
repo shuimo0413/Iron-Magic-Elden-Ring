@@ -526,6 +526,12 @@ public final class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> FROST_MOTE =
             PARTICLE_TYPES.register("frost_mote", () -> new SimpleParticleType(false));
 
+    /**
+     * 魔法之湖飘浮微光（淡幽蓝）。群系 JSON 环境粒子 + 湖面光带头部掉落。贴图复用 {@code frost_mote} 三帧。
+     */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MAGIC_LAKE_MOTE =
+            PARTICLE_TYPES.register("magic_lake_mote", () -> new SimpleParticleType(false));
+
     private ModParticles() {
     }
 

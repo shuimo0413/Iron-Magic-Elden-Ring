@@ -2,6 +2,7 @@ package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.worldgen.GlintstoneCaveFeature;
+import com.eldenring.spells.worldgen.MagicLakeShallowsFeature;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
@@ -21,6 +22,12 @@ public final class ModFeatures {
      */
     public static final DeferredHolder<Feature<?>, Feature<NoneFeatureConfiguration>> GLINTSTONE_CAVE =
             FEATURES.register("glintstone_cave", () -> new GlintstoneCaveFeature(NoneFeatureConfiguration.CODEC));
+
+    /**
+     * 魔法之湖浅湖整平：深水垫底到 ≤ 2 格、低地淹成浅水、高处留作小岛。只由魔法之湖群系 JSON 引用。
+     */
+    public static final DeferredHolder<Feature<?>, Feature<NoneFeatureConfiguration>> MAGIC_LAKE_SHALLOWS =
+            FEATURES.register("magic_lake_shallows", () -> new MagicLakeShallowsFeature(NoneFeatureConfiguration.CODEC));
 
     private ModFeatures() {
     }

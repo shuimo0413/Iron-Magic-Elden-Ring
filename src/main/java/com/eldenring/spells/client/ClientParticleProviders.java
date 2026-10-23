@@ -18,6 +18,7 @@ import com.eldenring.spells.particle.glintstone.GlintstoneMistParticle;
 import com.eldenring.spells.particle.glintstone.GlintstoneMoteParticle;
 import com.eldenring.spells.particle.glintstone.GlintstoneShardParticle;
 import com.eldenring.spells.particle.glintstone.GlintstoneSparkParticle;
+import com.eldenring.spells.particle.magiclake.MagicLakeMoteParticle;
 import com.eldenring.spells.particle.starriver.StarRiverParticle;
 import com.eldenring.spells.registry.ModParticles;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -150,5 +151,6 @@ public final class ClientParticleProviders {
         event.registerSpriteSet(ModParticles.FROST_SPARKLE.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.SPARKLE));
         event.registerSpriteSet(ModParticles.FROST_AURA.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.AURA));
         event.registerSpriteSet(ModParticles.FROST_MOTE.get(), sprites -> new FrostParticle.Provider(sprites, FrostParticle.Kind.MOTE));
+        event.registerSpriteSet(ModParticles.MAGIC_LAKE_MOTE.get(), MagicLakeMoteParticle.Provider::new);
     }
 }

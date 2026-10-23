@@ -7,6 +7,7 @@ import com.eldenring.spells.client.CarianSlicerClientHold;
 import com.eldenring.spells.client.ClientEntityRenderers;
 import com.eldenring.spells.client.ClientItemModels;
 import com.eldenring.spells.client.ClientParticleProviders;
+import com.eldenring.spells.client.biome.EldenRingOverworldEffects;
 import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModFluids;
 import com.eldenring.spells.registry.ModItems;
@@ -18,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -26,6 +28,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -34,7 +37,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
 
 /**
- * 客户端入口：粒子 / 实体渲染 / 卷轴模型 / 魔法书 Curios 渲染。
+ * 客户端入口：粒子 / 实体渲染 / 卷轴模型 / 魔法书 Curios 渲染 / 主世界光照贴图（魔法之湖提亮）。
  */
 @Mod(value = EldenRingSpellsMod.MOD_ID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
@@ -110,6 +113,14 @@ public class EldenRingSpellsClient {
                 return waterFlow;
             }
         }, ModFluids.ORIGIN_POTION_TYPE.get());
+    }
+
+    /**
+     * 魔法之湖夜间提亮：用继承原版的主世界效果覆盖 {@code minecraft:overworld}，只改光照贴图颜色。
+     */
+    @SubscribeEvent
+    static void registerDimensionSpecialEffects(RegisterDimensionSpecialEffectsEvent event) {
+        event.register(BuiltinDimensionTypes.OVERWORLD_EFFECTS, new EldenRingOverworldEffects());
     }
 
     @SubscribeEvent

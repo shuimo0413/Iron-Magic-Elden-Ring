@@ -6,7 +6,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * 世界生成等「进游戏前就要定下来」的数值。
  * <p>
  * 文件：{@code config/iss_elden_ring-common.toml}（客户端与服务端各读各的，不联网同步）。
- * 整合包改矿洞密度放这里；改完需新区块或新世界才看得到。
+ * 整合包改矿洞密度、魔法之湖 Region 权重放这里；改完需新区块或新世界才看得到。
  * <p>
  * {@code defineInRange} 绑 toml；{@link #apply()} 写到下面这组运行时字段。逻辑读运行时字段，不读 Spec {@code .get()}。
  * 噪声盐写死在 {@code GlintstoneCaveFeature}，不开放配置。
@@ -42,6 +42,14 @@ public final class EldenRingCommonConfig {
     /** 单 chunk 水晶簇硬上限。 */
     public static int caveMaxClustersPerChunk = 64;
 
+    /**
+     * 魔法之湖 TerraBlender Region 权重（无单位，与其它模组 Region 及原版 Region 相对比较）。
+     * 魔法之湖定位为「稀有但一出现就是一大片」：分到这个 Region 的区域里，除山地外的内陆基本都是湖。
+     * 默认 1 = 稀有；调大 → 这种大湖区域出现得更频繁（单片湖大小不变，大小由 TerraBlender 的 overworld_region_size 决定）；
+     * 0 = 不注册 Region，群系不生成。只在游戏启动时读取一次。
+     */
+    public static int magicLakeRegionWeight = 1;
+
     private static final ModConfigSpec.DoubleValue CAVE_REGION_NOISE_CELL_SIZE_CHUNKS;
     private static final ModConfigSpec.DoubleValue CAVE_CHUNK_NOISE_CELL_SIZE_CHUNKS;
     private static final ModConfigSpec.DoubleValue CAVE_REGION_PRESENCE_THRESHOLD;
@@ -55,6 +63,7 @@ public final class EldenRingCommonConfig {
     private static final ModConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_BLOCK_CHANCE;
     private static final ModConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_STONE_CHANCE;
     private static final ModConfigSpec.IntValue CAVE_MAX_CLUSTERS_PER_CHUNK;
+    private static final ModConfigSpec.IntValue MAGIC_LAKE_REGION_WEIGHT;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -170,6 +179,21 @@ public final class EldenRingCommonConfig {
         );
 
         builder.pop();
+
+        builder.comment(
+                "魔法之湖群系（TerraBlender）。只在游戏启动时读取，改完需重启并进入新区块才生效。"
+        );
+        builder.push("magic_lake");
+        MAGIC_LAKE_REGION_WEIGHT = ConfigSpecHelper.integer(
+                builder,
+                "region_weight",
+                "TerraBlender Region 权重。默认 1 = 稀有；调大 → 大湖区域更常见（单片湖大小不变，该区域内除山地外的内陆基本都是湖）；0 = 不生成。",
+                magicLakeRegionWeight,
+                0,
+                100
+        );
+        builder.pop();
+
         SPEC = builder.build();
     }
 
@@ -193,5 +217,6 @@ public final class EldenRingCommonConfig {
         caveSurfaceClusterOnBlockChance = CAVE_SURFACE_CLUSTER_ON_BLOCK_CHANCE.get().floatValue();
         caveSurfaceClusterOnStoneChance = CAVE_SURFACE_CLUSTER_ON_STONE_CHANCE.get().floatValue();
         caveMaxClustersPerChunk = CAVE_MAX_CLUSTERS_PER_CHUNK.get();
+        magicLakeRegionWeight = MAGIC_LAKE_REGION_WEIGHT.get();
     }
 }
