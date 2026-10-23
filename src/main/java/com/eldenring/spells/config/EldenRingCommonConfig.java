@@ -44,11 +44,11 @@ public final class EldenRingCommonConfig {
 
     /**
      * 魔法之湖 TerraBlender Region 权重（无单位，与其它模组 Region 及原版 Region 相对比较）。
-     * 魔法之湖定位为「稀有但一出现就是一大片」：分到这个 Region 的区域里，除山地外的内陆基本都是湖。
-     * 默认 1 = 稀有；调大 → 这种大湖区域出现得更频繁（单片湖大小不变，大小由 TerraBlender 的 overworld_region_size 决定）；
-     * 0 = 不注册 Region，群系不生成。只在游戏启动时读取一次。
+     * 分到这个 Region 的区域里，只有湿度高的团块变成湖，其余地方和原版一模一样；
+     * 所以权重只决定「多大比例的世界有可能出湖」，单片湖大小由 {@code MagicLakeRegion.LAKE_HUMIDITY_MIN} 决定。
+     * 默认 5：调大 → 湖更常见；调小 → 更稀有；0 = 不注册 Region，群系不生成。只在游戏启动时读取一次。
      */
-    public static int magicLakeRegionWeight = 1;
+    public static int magicLakeRegionWeight = 5;
 
     private static final ModConfigSpec.DoubleValue CAVE_REGION_NOISE_CELL_SIZE_CHUNKS;
     private static final ModConfigSpec.DoubleValue CAVE_CHUNK_NOISE_CELL_SIZE_CHUNKS;
@@ -187,7 +187,7 @@ public final class EldenRingCommonConfig {
         MAGIC_LAKE_REGION_WEIGHT = ConfigSpecHelper.integer(
                 builder,
                 "region_weight",
-                "TerraBlender Region 权重。默认 1 = 稀有；调大 → 大湖区域更常见（单片湖大小不变，该区域内除山地外的内陆基本都是湖）；0 = 不生成。",
+                "TerraBlender Region 权重。只决定多大比例的世界有可能出湖（该区域内只有湿度高的团块是湖，其余同原版），不影响单片湖大小。默认 5；调大 → 湖更常见；0 = 不生成。",
                 magicLakeRegionWeight,
                 0,
                 100

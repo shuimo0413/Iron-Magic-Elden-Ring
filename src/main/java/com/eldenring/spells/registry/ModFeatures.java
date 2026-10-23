@@ -2,6 +2,7 @@ package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.worldgen.GlintstoneCaveFeature;
+import com.eldenring.spells.worldgen.MagicLakeGlintstoneFeature;
 import com.eldenring.spells.worldgen.MagicLakeShallowsFeature;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -28,6 +29,12 @@ public final class ModFeatures {
      */
     public static final DeferredHolder<Feature<?>, Feature<NoneFeatureConfiguration>> MAGIC_LAKE_SHALLOWS =
             FEATURES.register("magic_lake_shallows", () -> new MagicLakeShallowsFeature(NoneFeatureConfiguration.CODEC));
+
+    /**
+     * 魔法之湖辉石水晶点缀：湖中立柱 / 陆地露头，每处随机一色（三色等概率）。只由魔法之湖群系 JSON 引用。
+     */
+    public static final DeferredHolder<Feature<?>, Feature<NoneFeatureConfiguration>> MAGIC_LAKE_GLINTSTONE =
+            FEATURES.register("magic_lake_glintstone", () -> new MagicLakeGlintstoneFeature(NoneFeatureConfiguration.CODEC));
 
     private ModFeatures() {
     }

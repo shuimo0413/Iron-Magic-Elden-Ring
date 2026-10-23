@@ -1,6 +1,7 @@
 package com.eldenring.spells.worldgen;
 
 import com.eldenring.spells.registry.ModBiomes;
+import com.eldenring.spells.worldgen.biome.MagicLakeSurfaceRules;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.QuartPos;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
@@ -23,21 +25,24 @@ import net.minecraft.world.level.levelgen.synth.SimplexNoise;
 /**
  * 魔法之湖浅湖整平：把群系内的原始地形「压扁」成大片 1–2 格浅水 + 贴着水面的低矮小岛。
  * <p>
- * TerraBlender 只决定群系放在哪，不控制地形高度；魔法之湖覆盖的是原版除山地以外的内陆，
- * 原地形有平原也有丘陵，所以在群系 JSON 的 {@code lakes} 步骤（地表规则之后、本区块植被之前）逐列修整：
+ * TerraBlender 只决定群系放在哪，不控制地形高度；魔法之湖是内陆湿度团块里的平地和丘陵（山地 / 高原除外，
+ * 见 {@code MagicLakeRegion}），原地形有平原、河谷也有丘陵，所以在群系 JSON 的 {@code lakes} 步骤
+ * （地表规则之后、本区块植被之前）逐列修整：
  * <ul>
  *   <li><b>高度压缩</b>：每列「高出水面的高度」先减去下沉量（8–14 格），再乘以保留比例 0.15。
  *       结果 &lt; 0 的变成浅水，≥ 0 的成为小岛。平原、森林全部淹没，只有较高的丘陵剩下 2–3 格高的矮岛，
  *       岛的边缘正好落在水面高度，不会出现「岛比水面高好几格」的断崖。陆地刻意压到最少，湖面优先</li>
  *   <li><b>边界渐变</b>：在本区块周围 ±24 格按 8 格网格采样群系，算出每列「深入湖区的程度」，
  *       湖心完全压平，靠近相邻群系逐渐过渡回原地形，形成约 24 格长的湖岸坡</li>
- *   <li><b>水太深</b>：用石头垫高，湖底铺砾石 / 黏土 / 泥，水深 1 格为主、2 格为辅</li>
+ *   <li><b>水太深</b>：用石头垫高，水深 1 格为主、2 格为辅。湖底材质取
+ *       {@code MagicLakeSurfaceRules#lakebedStateAt}（原版河床风格），和地表规则铺的天然湖底同一套分布，不出接缝</li>
  * </ul>
  * 相邻区块的植被可能先于本区块整平就长到本区块的陆地上（原版先装饰完邻居再轮到这里），
  * 所以压低 / 淹水时会一并清掉贴地的草、甘蔗等，并在找地面时跳过邻居树冠伸过来的树叶。
  * <p>
  * 每区块执行一次，只写当前区块 16×16 列，只处理水面高度处群系为魔法之湖的列；每列只处理一次
- * （压低不是幂等操作，不能扩到邻居区块重复执行）。
+ * （压低不是幂等操作，不能扩到邻居区块重复执行）。Region 把湖下方的溶洞 / 繁茂洞穴点也切成了魔法之湖，
+ * 所以原地形较高、y=62 落在洞穴群系深度的列同样会被整平，湖面不会被切成长条。
  * 噪声尺度 / 阈值是地形外观参数，写死不进 toml（同种子同地形，避免改配置后新旧区块错位）。
  */
 public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfiguration> {
@@ -46,8 +51,6 @@ public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfigura
     private static final long FLOOR_DEPTH_NOISE_SALT = 0x4D41_4C41_4B45_0001L;
     /** 陆地下沉量噪声盐。 */
     private static final long SINK_NOISE_SALT = 0x4D41_4C41_4B45_0002L;
-    /** 湖底材质噪声盐。 */
-    private static final long LAKEBED_MATERIAL_NOISE_SALT = 0x4D41_4C41_4B45_0003L;
 
     /**
      * 湖底深度噪声的水平尺度（方块）。越大 → 1 格浅滩 / 2 格水域的斑块越大、越平缓。
@@ -101,13 +104,6 @@ public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfigura
     /** 清理贴地植物时最多往上看几格（方块）：高草丛 2 格、甘蔗最高 3 格，留 1 格余量。 */
     private static final int PLANT_CLEAR_MAX_HEIGHT_BLOCKS = 4;
 
-    /** 湖底材质噪声尺度（方块）。越大 → 砾石 / 黏土 / 泥成片越大。 */
-    private static final double LAKEBED_MATERIAL_NOISE_SCALE_BLOCKS = 12.0;
-    /** 湖底材质噪声低于此值 → 砾石。 */
-    private static final double LAKEBED_GRAVEL_NOISE_MAX = -0.30;
-    /** 湖底材质噪声高于此值 → 泥；介于两者之间 → 黏土。调大 → 泥更少、湖底更灰。 */
-    private static final double LAKEBED_MUD_NOISE_MIN = 0.50;
-
     public MagicLakeShallowsFeature(Codec<NoneFeatureConfiguration> codec) {
         super(codec);
     }
@@ -120,7 +116,7 @@ public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfigura
         // 每次新建噪声：只有几百个 int 的置换表，开销小，且天然线程安全（世界生成多线程）
         SimplexNoise floorDepthNoise = new SimplexNoise(RandomSource.create(worldSeed ^ FLOOR_DEPTH_NOISE_SALT));
         SimplexNoise sinkNoise = new SimplexNoise(RandomSource.create(worldSeed ^ SINK_NOISE_SALT));
-        SimplexNoise lakebedMaterialNoise = new SimplexNoise(RandomSource.create(worldSeed ^ LAKEBED_MATERIAL_NOISE_SALT));
+        RandomState randomState = level.getLevel().getChunkSource().randomState();
 
         int waterSurfaceY = context.chunkGenerator().getSeaLevel() - 1;
         BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
@@ -147,7 +143,7 @@ public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfigura
                         worldZ / FLOOR_DEPTH_NOISE_SCALE_BLOCKS
                 ) > DEEP_FLOOR_NOISE_THRESHOLD ? MAX_WATER_DEPTH_BLOCKS : 1;
                 int deepestLakebedY = waterSurfaceY - floorDepthBlocks;
-                BlockState lakebedState = pickLakebedState(lakebedMaterialNoise, worldX, worldZ);
+                BlockState lakebedState = MagicLakeSurfaceRules.lakebedStateAt(randomState, worldX, worldZ);
 
                 if (groundY >= waterSurfaceY) {
                     if (chunkCoreFactorNodes == null) {
@@ -401,22 +397,5 @@ public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfigura
             }
         }
         return placedAnyWater;
-    }
-
-    /**
-     * 湖底材质：砾石 / 黏土 / 泥按低频噪声成片分布，整体偏灰，配合清冷色调。
-     */
-    private static BlockState pickLakebedState(SimplexNoise lakebedMaterialNoise, int worldX, int worldZ) {
-        double materialNoise = lakebedMaterialNoise.getValue(
-                worldX / LAKEBED_MATERIAL_NOISE_SCALE_BLOCKS,
-                worldZ / LAKEBED_MATERIAL_NOISE_SCALE_BLOCKS
-        );
-        if (materialNoise < LAKEBED_GRAVEL_NOISE_MAX) {
-            return Blocks.GRAVEL.defaultBlockState();
-        }
-        if (materialNoise > LAKEBED_MUD_NOISE_MIN) {
-            return Blocks.MUD.defaultBlockState();
-        }
-        return Blocks.CLAY.defaultBlockState();
     }
 }
