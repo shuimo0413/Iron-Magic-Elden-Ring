@@ -32,8 +32,9 @@ import net.minecraft.world.level.levelgen.synth.SimplexNoise;
  *   <li><b>高度压缩</b>：每列「高出水面的高度」先减去下沉量（8–14 格），再乘以保留比例 0.15。
  *       结果 &lt; 0 的变成浅水，≥ 0 的成为小岛。平原、森林全部淹没，只有较高的丘陵剩下 2–3 格高的矮岛，
  *       岛的边缘正好落在水面高度，不会出现「岛比水面高好几格」的断崖。陆地刻意压到最少，湖面优先</li>
- *   <li><b>边界渐变</b>：在本区块周围 ±24 格按 8 格网格采样群系，算出每列「深入湖区的程度」，
- *       湖心完全压平，靠近相邻群系逐渐过渡回原地形，形成约 24 格长的湖岸坡</li>
+ *   <li><b>边界断崖</b>：在本区块周围 ±12 格按 4 格网格采样群系，算出每列「深入湖区的程度」。
+ *       参照湖之利耶尼亚「从断崖下去就是湖」：群系边界那一列已压低约 60%，和群系外原地形之间留一道断崖，
+ *       再用约 12 格的短坡压到湖面；湖心完全压平</li>
  *   <li><b>水太深</b>：用石头垫高，水深 1 格为主、2 格为辅。湖底材质取
  *       {@code MagicLakeSurfaceRules#lakebedStateAt}（原版河床风格），和地表规则铺的天然湖底同一套分布，不出接缝</li>
  * </ul>
@@ -84,21 +85,25 @@ public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfigura
     private static final double ISLAND_HEIGHT_KEEP_RATIO = 0.15;
 
     /**
-     * 边界渐变的群系采样网格间距（方块）。必须整除 8 和 {@link #CORE_FACTOR_RADIUS_BLOCKS}。
+     * 边界渐变的群系采样网格间距（方块）。必须整除 16 和 {@link #CORE_FACTOR_RADIUS_BLOCKS}。
+     * 4 格正好等于群系本身的分辨率（1 个 quart），再细也采不出更多信息。
      */
-    private static final int CORE_FACTOR_GRID_SPACING_BLOCKS = 8;
+    private static final int CORE_FACTOR_GRID_SPACING_BLOCKS = 4;
     /**
-     * 边界渐变半径（方块）：统计每个网格点周围 ±此距离内落在魔法之湖的比例。
+     * 边界渐变半径（方块）：统计每个网格点周围 ±此距离内落在魔法之湖的比例，
+     * 湖岸坡的长度约等于这个值（从群系边界往湖内）。
      * 越大 → 湖岸到相邻群系的过渡坡越长越缓，但岸边陆地越多、窄条湖区压得越不彻底；
-     * 越小 → 湖面一直铺到群系边界附近，湖岸坡更陡。
+     * 越小 → 湖面一直铺到群系边界附近，湖岸坡更陡、更像断崖。
      */
-    private static final int CORE_FACTOR_RADIUS_BLOCKS = 24;
+    private static final int CORE_FACTOR_RADIUS_BLOCKS = 12;
     /**
      * 湖区比例低于此值时完全不压低（0–1）。群系边界线上比例约 0.5，
-     * 取 0.3 让边界处已被压低一截（不留台阶），窄条湖区也基本能压平。
+     * 配合 {@link #computeEaseOutCoreFactor} 的缓出曲线，0.2 让边界那一列就已压低约 60%，
+     * 和群系外原地形之间留下一道断崖（利耶尼亚那种），剩下约 40% 在半径内的短坡上收完。
+     * 调小 → 边界断崖更高、坡更短；调大 → 断崖变矮、过渡更平缓（0.3 + smoothstep 时边界只压 20%）。
      */
-    private static final float CORE_FACTOR_START_FRACTION = 0.3f;
-    /** 本区块 3×3 个网格节点（区块内偏移 0 / 8 / 16 格），供逐列双线性插值。 */
+    private static final float CORE_FACTOR_START_FRACTION = 0.2f;
+    /** 本区块每轴网格节点数（间距 4 格时为 5：区块内偏移 0 / 4 / 8 / 12 / 16 格），供逐列双线性插值。 */
     private static final int CHUNK_GRID_NODES_PER_AXIS = 16 / CORE_FACTOR_GRID_SPACING_BLOCKS + 1;
 
     /** 清理贴地植物时最多往上看几格（方块）：高草丛 2 格、甘蔗最高 3 格，留 1 格余量。 */
@@ -202,7 +207,7 @@ public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfigura
 
     /**
      * 在本区块周围 ±{@link #CORE_FACTOR_RADIUS_BLOCKS} 格按网格直接向群系源采样（不依赖邻居区块是否已加载），
-     * 算出本区块 3×3 个节点的「深入湖区程度」（0 = 群系边界外沿，1 = 湖心）。
+     * 算出本区块各网格节点的「深入湖区程度」（0 = 不压低，1 = 湖心完全压扁）。
      */
     private static float[][] sampleChunkCoreFactorNodes(
             FeaturePlaceContext<NoneFeatureConfiguration> context,
@@ -246,16 +251,24 @@ public final class MagicLakeShallowsFeature extends Feature<NoneFeatureConfigura
                     }
                 }
                 float magicLakeFraction = magicLakeSampleCount / (float) windowSampleCount;
-                float linearFactor = Mth.clamp(
-                        (magicLakeFraction - CORE_FACTOR_START_FRACTION) / (1.0f - CORE_FACTOR_START_FRACTION),
-                        0.0f,
-                        1.0f
-                );
-                // smoothstep：坡顶坡底都平缓过渡，不出现折角
-                coreFactorNodes[nodeX][nodeZ] = linearFactor * linearFactor * (3.0f - 2.0f * linearFactor);
+                coreFactorNodes[nodeX][nodeZ] = computeEaseOutCoreFactor(magicLakeFraction);
             }
         }
         return coreFactorNodes;
+    }
+
+    /**
+     * 湖区比例 → 深入湖区程度（0–1）。用缓出曲线 {@code 1 - (1 - x)²}：
+     * 刚进湖区就压低一大截（边界处形成断崖），越往湖心增长越慢，坡底平缓地并进湖面、不出折角。
+     */
+    private static float computeEaseOutCoreFactor(float magicLakeFraction) {
+        float linearFactor = Mth.clamp(
+                (magicLakeFraction - CORE_FACTOR_START_FRACTION) / (1.0f - CORE_FACTOR_START_FRACTION),
+                0.0f,
+                1.0f
+        );
+        float remainingFactor = 1.0f - linearFactor;
+        return 1.0f - remainingFactor * remainingFactor;
     }
 
     private static float interpolateCoreFactor(float[][] coreFactorNodes, int localX, int localZ) {
