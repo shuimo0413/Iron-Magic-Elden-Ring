@@ -48,9 +48,10 @@ public final class ModEntities {
             DeferredRegister.create(Registries.ENTITY_TYPE, EldenRingSpellsMod.MOD_ID);
 
     public static final DeferredHolder<EntityType<?>, EntityType<GlintstonePebbleProjectile>> GLINTSTONE_PEBBLE =
+            // 碰撞箱与铁魔法 Magic Missile（0.5×0.5）对齐，命中搜索盒不再偏小
             ENTITIES.register("glintstone_pebble", () ->
                     EntityType.Builder.<GlintstonePebbleProjectile>of(GlintstonePebbleProjectile::new, MobCategory.MISC)
-                            .sized(0.4f, 0.4f)
+                            .sized(0.5f, 0.5f)
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build(id("glintstone_pebble"))
