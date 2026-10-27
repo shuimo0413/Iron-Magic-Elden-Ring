@@ -21,13 +21,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,11 +46,6 @@ import java.util.function.Supplier;
 public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjectile {
 
     /**
-     * 命中射线相对目标碰撞箱的外扩（方块）。
-     */
-    private static final float HIT_DETECTION_INFLATION_BLOCKS = 0.35f;
-
-    /**
      * 施法者准星射线命中检测时，目标碰撞箱外扩（方块）。
      */
     private static final float LOOK_RAY_HIT_INFLATION_BLOCKS = 0.30f;
@@ -73,11 +64,6 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
      * 转向预算松弛 [0,1]。调小则近处大偏角更难被锁。
      */
     private static final double TURN_BUDGET_SLACK = 0.85;
-
-    /**
-     * 瞄准点相对目标碰撞箱：0=脚底，1=头顶。取偏上避免扎地。
-     */
-    private static final double TRACKING_AIM_HEIGHT_FRACTION = 0.7;
 
     /**
      * 客户端渲染距离在射程之外再放宽的余量（方块）。
@@ -219,10 +205,10 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         return flightSpeed();
     }
 
-    @Override
-    public float getHitDetectionInflation() {
-        return HIT_DETECTION_INFLATION_BLOCKS;
-    }
+    /**
+     * 命中外扩沿用铁魔法 {@code AbstractMagicProjectile} 默认 0.3（与 Magic Missile 相同）。
+     * 不要再覆写加厚/改射线原点——上一轮自创中心射线 + 抬高瞄准反而让小弹打不中。
+     */
 
     protected float explosionRadiusBlocks() {
         return 0.0f;
@@ -297,71 +283,10 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     }
 
     /**
-     * 实体 / 方块命中同一 tick 都结算（主人已由 {@link #canHitEntity} 排除）。
-     * <p>
-     * 曾用「前 N tick 忽略方块」防出生嵌块立刻消失，但会让弹道在头几格穿墙
-     * （魔砾约 0.7 格/tick × 4 tick ≈ 2.8 格）。生成清障已由
-     * {@link com.eldenring.spells.spell.helper.GlintstoneCastHelper} 负责，不再需要宽限。
+     * 命中检测不覆写：直接走铁魔法 {@link AbstractMagicProjectile#handleHitDetection()}，
+     * 与 Magic Missile 相同——脚底 {@code position()} 射线、方块先截断路径、inflation 0.3。
+     * 生成清障由 {@link com.eldenring.spells.spell.helper.GlintstoneCastHelper} 负责。
      */
-    @Override
-    public void handleHitDetection() {
-        Vec3 startPosition = position();
-        Vec3 destination = startPosition.add(getDeltaMovement());
-        BlockHitResult blockCollision = level().clip(new ClipContext(
-                startPosition,
-                destination,
-                ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE,
-                this
-        ));
-        if (collidesWithBlocks() && blockCollision.getType() != HitResult.Type.MISS) {
-            destination = blockCollision.getLocation();
-        }
-
-        for (HitResult hitResult : raycastEntitiesAlongPath(destination, startPosition)) {
-            if (!(hitResult instanceof EntityHitResult entityHitResult)) {
-                continue;
-            }
-            if (entityHitResult.getType() != HitResult.Type.MISS
-                    // Forge 的 EVENT_BUS.post(...) 直接返回「是否被取消」，不像 NeoForge 返回事件对象。
-                    && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult))) {
-                onHit(entityHitResult);
-            }
-            if (this.isRemoved()) {
-                return;
-            }
-        }
-
-        if (collidesWithBlocks()
-                && blockCollision.getType() != HitResult.Type.MISS
-                && !this.isRemoved()
-                && !MinecraftForge.EVENT_BUS.post(new ProjectileImpactEvent(this, blockCollision))) {
-            onHit(blockCollision);
-        }
-    }
-
-    private List<HitResult> raycastEntitiesAlongPath(Vec3 destination, Vec3 startPosition) {
-        AABB searchBox = getBoundingBox().expandTowards(destination.subtract(startPosition)).inflate(0.1);
-        List<HitResult> hits = new ArrayList<>();
-        List<Entity> alreadyHitEntities = new ArrayList<>();
-        for (Entity target : level().getEntities(this, searchBox, this::canHitEntity)) {
-            if (alreadyHitEntities.contains(target)) {
-                continue;
-            }
-            HitResult hit = Utils.checkEntityIntersecting(
-                    target,
-                    startPosition,
-                    destination,
-                    getHitDetectionInflation()
-            );
-            if (hit.getType() != HitResult.Type.MISS) {
-                hits.add(hit);
-                alreadyHitEntities.add(target);
-            }
-        }
-        hits.sort(Comparator.comparingDouble(hit -> hit.getLocation().distanceToSqr(startPosition)));
-        return hits;
-    }
 
     @Override
     protected boolean canHitEntity(@NotNull Entity targetEntity) {
@@ -397,7 +322,7 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         }
 
         Vec3 currentFlightDirection = currentDeltaMovement.normalize();
-        // 瞄躯干偏上，降低追地面怪时把弹道拽进地板
+        // 瞄准点与铁魔法 AbstractMagicProjectile.handleEntityHoming 一致：碰撞箱中心 + 速度提前量
         Vec3 aimPoint = aimPointOnTarget(trackingTarget);
         Vec3 vectorTowardTarget = aimPoint.subtract(getBoundingBox().getCenter());
         double distanceTowardTarget = vectorTowardTarget.length();
@@ -433,13 +358,12 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         setDeltaMovement(limitedTurnDirection.scale(currentSpeed));
     }
 
+    /**
+     * 追踪瞄准点：与铁魔法默认 homing 相同——{@code getBoundingBox().getCenter().add(getDeltaMovement())}。
+     * 不要再抬高 Y（会让小怪被瞄到头顶上空，魔砾直接飞过打不中）。
+     */
     private static Vec3 aimPointOnTarget(LivingEntity target) {
-        AABB box = target.getBoundingBox();
-        return new Vec3(
-                box.getCenter().x,
-                Mth.lerp(TRACKING_AIM_HEIGHT_FRACTION, box.minY, box.maxY),
-                box.getCenter().z
-        );
+        return target.getBoundingBox().getCenter().add(target.getDeltaMovement());
     }
 
     @Nullable
@@ -748,6 +672,10 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     protected void afterDamagingTarget(LivingEntity livingTarget) {
     }
 
+    /**
+     * 结算法术伤害。结算方式对齐铁魔法 Magic Missile：直接 {@link DamageSources#applyDamage}，
+     * 命中前不清无敌帧（与 MagicMissileProjectile#onHitEntity 一致）。
+     */
     private void applySpellDamage(Entity hitEntity, SpellDamageSource damageSource) {
         DamageSources.applyDamage(hitEntity, damage, damageSource);
         if (hitEntity instanceof LivingEntity livingTarget) {
