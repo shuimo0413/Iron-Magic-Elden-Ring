@@ -102,7 +102,8 @@ public final class MagicLakeRegion extends Region {
             }
         }
         EldenRingSpellsMod.LOGGER.info(
-                "Magic Lake region carved {} of {} vanilla climate points.",
+                "Magic Lake region carved {} of {} vanilla climate points into iss_elden_ring:magic_lake "
+                        + "(also feeds TerraBlender possibleBiomes for /locate & Nature's Compass).",
                 carvedPointCount,
                 vanillaOverworldPoints.size()
         );

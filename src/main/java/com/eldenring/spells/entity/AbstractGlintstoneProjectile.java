@@ -56,8 +56,12 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
 
     /**
      * 命中射线相对目标碰撞箱的外扩（方块）。
+     * <p>
+     * 命中是「线 vs 目标 BB」，弹道 {@code sized()} 几乎不加厚这条射线；
+     * 0.35 对银鱼/蝙蝠等小/快目标偏紧，易几何漏检。0.75 折中：补小目标容错，
+     * 过大则可能隔薄墙误伤。
      */
-    private static final float HIT_DETECTION_INFLATION_BLOCKS = 0.35f;
+    private static final float HIT_DETECTION_INFLATION_BLOCKS = 0.75f;
 
     /**
      * 施法者准星射线命中检测时，目标碰撞箱外扩（方块）。
@@ -83,6 +87,12 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
      * 瞄准点相对目标碰撞箱：0=脚底，1=头顶。取偏上避免扎地。
      */
     private static final double TRACKING_AIM_HEIGHT_FRACTION = 0.7;
+
+    /**
+     * 追踪瞄准点相对目标脚底的最低高度（方块）。
+     * 矮碰撞箱上 0.7 分位仍贴近地面时，用此值抬高，减轻末段扎地假命中；对飞怪无害。
+     */
+    private static final double TRACKING_AIM_MIN_HEIGHT_ABOVE_FEET_BLOCKS = 0.55;
 
     /**
      * 客户端渲染距离在射程之外再放宽的余量（方块）。
@@ -299,38 +309,52 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     }
 
     /**
-     * 实体 / 方块命中同一 tick 都结算（主人已由 {@link #canHitEntity} 排除）。
+     * 实体 / 方块按沿程距离裁决（主人已由 {@link #canHitEntity} 排除）。
      * <p>
-     * 曾用「前 N tick 忽略方块」防出生嵌块立刻消失，但会让弹道在头几格穿墙
-     * （魔砾约 0.7 格/tick × 4 tick ≈ 2.8 格）。生成清障已由
-     * {@link com.eldenring.spells.spell.helper.GlintstoneCastHelper} 负责，不再需要宽限。
+     * 射线从碰撞箱中心出发（与追踪 / LOS 一致），实体扫完整本 tick 位移，
+     * 不先用方块命中截断路径——避免贴地/贴叶时「地板略近于实体 → 只播命中特效、零伤害」。
+     * 曾用「前 N tick 忽略方块」防出生嵌块，但会穿墙；清障已由
+     * {@link com.eldenring.spells.spell.helper.GlintstoneCastHelper} 负责。
      */
     @Override
     public void handleHitDetection() {
-        Vec3 startPosition = position();
-        Vec3 destination = startPosition.add(getDeltaMovement());
+        // 脚底 position() 比视觉彗星头低约半个碰撞箱，贴地时易先撞地板
+        Vec3 startPosition = getBoundingBox().getCenter();
+        Vec3 fullPathDestination = startPosition.add(getDeltaMovement());
         BlockHitResult blockCollision = level().clip(new ClipContext(
                 startPosition,
-                destination,
+                fullPathDestination,
                 ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.NONE,
                 this
         ));
-        if (collidesWithBlocks() && blockCollision.getType() != HitResult.Type.MISS) {
-            destination = blockCollision.getLocation();
-        }
 
-        for (HitResult hitResult : raycastEntitiesAlongPath(destination, startPosition)) {
-            if (!(hitResult instanceof EntityHitResult entityHitResult)) {
-                continue;
+        List<HitResult> entityHitsAlongFullPath = raycastEntitiesAlongPath(fullPathDestination, startPosition);
+        double blockHitDistanceSquared = blockCollision.getType() == HitResult.Type.MISS
+                ? Double.POSITIVE_INFINITY
+                : blockCollision.getLocation().distanceToSqr(startPosition);
+        boolean hasEntityHitCloserOrEqualThanBlock = !entityHitsAlongFullPath.isEmpty()
+                && entityHitsAlongFullPath.get(0).getLocation().distanceToSqr(startPosition)
+                <= blockHitDistanceSquared;
+
+        if (hasEntityHitCloserOrEqualThanBlock) {
+            for (HitResult hitResult : entityHitsAlongFullPath) {
+                // 只结算方块命中点之前（含等距）的实体，避免穿透打穿墙后的目标
+                if (hitResult.getLocation().distanceToSqr(startPosition) > blockHitDistanceSquared) {
+                    break;
+                }
+                if (!(hitResult instanceof EntityHitResult entityHitResult)) {
+                    continue;
+                }
+                if (entityHitResult.getType() != HitResult.Type.MISS
+                        && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult)).isCanceled()) {
+                    onHit(entityHitResult);
+                }
+                if (this.isRemoved()) {
+                    return;
+                }
             }
-            if (entityHitResult.getType() != HitResult.Type.MISS
-                    && !NeoForge.EVENT_BUS.post(new ProjectileImpactEvent(this, entityHitResult)).isCanceled()) {
-                onHit(entityHitResult);
-            }
-            if (this.isRemoved()) {
-                return;
-            }
+            return;
         }
 
         if (collidesWithBlocks()
@@ -436,13 +460,16 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         setDeltaMovement(limitedTurnDirection.scale(currentSpeed));
     }
 
+    /**
+     * 追踪瞄准点：躯干偏上 + 速度提前量 + 最低离地高度。
+     * 提前量对齐铁魔法默认 homing，减轻快移/飞怪滞后；最低高度减轻矮怪末段扎地。
+     */
     private static Vec3 aimPointOnTarget(LivingEntity target) {
         AABB box = target.getBoundingBox();
-        return new Vec3(
-                box.getCenter().x,
-                Mth.lerp(TRACKING_AIM_HEIGHT_FRACTION, box.minY, box.maxY),
-                box.getCenter().z
-        );
+        double aimY = Mth.lerp(TRACKING_AIM_HEIGHT_FRACTION, box.minY, box.maxY);
+        aimY = Math.max(aimY, target.getY() + TRACKING_AIM_MIN_HEIGHT_ABOVE_FEET_BLOCKS);
+        Vec3 aimPoint = new Vec3(box.getCenter().x, aimY, box.getCenter().z);
+        return aimPoint.add(target.getDeltaMovement());
     }
 //    resolveTrackingTarget：选目标（我该追谁）
 //handleEntityHoming：怎么转向飞向已经选中的目标
@@ -755,7 +782,15 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
     protected void afterDamagingTarget(LivingEntity livingTarget) {
     }
 
+    /**
+     * 结算法术伤害。命中前清原版无敌帧，避免「已 onHitEntity、特效已播、hurt 被吞仍 discard」。
+     * 与 {@link GlintstoneArcProjectile} 一致；{@code setIFrames(0)} 只改成功受伤之后的帧，解不开本次 hurt 前已有帧。
+     */
     private void applySpellDamage(Entity hitEntity, SpellDamageSource damageSource) {
+        if (hitEntity instanceof LivingEntity livingTarget) {
+            livingTarget.invulnerableTime = 0;
+            livingTarget.hurtTime = 0;
+        }
         DamageSources.applyDamage(hitEntity, damage, damageSource);
         if (hitEntity instanceof LivingEntity livingTarget) {
             afterDamagingTarget(livingTarget);

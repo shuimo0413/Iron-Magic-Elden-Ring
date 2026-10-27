@@ -6,7 +6,8 @@
     "ScrollForgeMenuMixin",
     "AzurMagicDataMixin",
     "AzurSpellManaMixin",
-    "AzurContinuousManaMixin"
+    "AzurContinuousManaMixin",
+    "BiomeSourcePossibleBiomesAccessor"
   ],
   "client": [
     "ScrollModelMixin",

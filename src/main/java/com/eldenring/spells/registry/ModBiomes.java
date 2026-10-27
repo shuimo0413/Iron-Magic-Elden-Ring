@@ -11,6 +11,8 @@ import net.minecraft.world.level.biome.Biome;
  * 1.21.1 群系是动态注册表，不走 DeferredRegister。
  * <p>
  * 放进主世界靠 TerraBlender（见 {@code worldgen/biome/ModTerraBlender}）。
+ * 仅有注册表条目不足以让 {@code /locate biome} / Nature's Compass 探测到：它们还要求群系出现在
+ * 主世界 {@code BiomeSource#possibleBiomes()} 里（TB 会 append；兜底见 {@code MagicLakeLocatorCompat}）。
  * 群系 id 一旦发布不要改名：旧存档区块里记的是 id，改名后那片群系会变成未知。
  */
 public final class ModBiomes {
