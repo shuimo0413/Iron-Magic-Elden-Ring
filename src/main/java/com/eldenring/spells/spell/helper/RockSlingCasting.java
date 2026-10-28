@@ -185,9 +185,13 @@ public final class RockSlingCasting {
 
     /**
      * 发射目标：准星直接点中的合法敌人优先；否则取视线锥内「角度主导、距离次之」最优者。
+     * 非玩家施法返回 {@code null}：岩石汇聚到视线落点，发射后也不追踪。
      */
     @Nullable
     private static LivingEntity findLaunchTarget(Level level, LivingEntity caster) {
+        if (!TrackingTargetFilter.ownerCanTrack(caster)) {
+            return null;
+        }
         double trackingRangeBlocks = RockSlingSpell.PROJECTILE_TRACKING_RANGE_BLOCKS;
         Vec3 eyePosition = caster.getEyePosition();
         Vec3 lookDirection = caster.getLookAngle().normalize();

@@ -12,17 +12,30 @@ import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.common.util.FakePlayer;
 
 /**
  * 辉石系索敌 / 追踪的排除过滤：先盟友规则，再按施法者偏好排除。
  * <p>
- * 仅当弹道 {@code owner} 是 {@link Player} 时读取其 Attachment；女仆 / 怪等非玩家施法一律
- * {@link TrackingIgnorePrefs#DEFAULT}，不猜测主人、不硬依赖其它 mod。
+ * 追踪只对真玩家施法生效（见 {@link #ownerCanTrack(Entity)}）：其它 mod 的 NPC、本 mod 观星者、
+ * FakePlayer 施法一律直飞，不进入索敌。玩家的偏好读其 Attachment。
+ * <p>
+ * 辉剑圆阵的「触发目标」仍走 {@link #allowsTracking}，非玩家取 {@link TrackingIgnorePrefs#DEFAULT}，
+ * 不猜测主人、不硬依赖其它 mod。
  * <p>
  * 分类是<strong>保守排除</strong>：认不出的模组生物落在「未分类」，不会被任何排除项踢掉。
  */
 public final class TrackingTargetFilter {
     private TrackingTargetFilter() {
+    }
+
+    /**
+     * 弹道主人是否允许飞行中追踪 / 发射时自动锁敌：仅真玩家。
+     * 其它 mod 的 NPC、本 mod 观星者、FakePlayer（机器施法）一律沿施法视线直飞，
+     * 避免它们的视线 / 阵营实现与辉石索敌算法不兼容。
+     */
+    public static boolean ownerCanTrack(@Nullable Entity ownerEntity) {
+        return ownerEntity instanceof Player && !(ownerEntity instanceof FakePlayer);
     }
 
     /**

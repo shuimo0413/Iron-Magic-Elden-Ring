@@ -309,6 +309,10 @@ public abstract class AbstractGlintstoneProjectile extends AbstractMagicProjecti
         if (level().isClientSide) {
             return;
         }
+        // 非玩家施法（其它 mod NPC、观星者等）一律直飞
+        if (!TrackingTargetFilter.ownerCanTrack(getOwner())) {
+            return;
+        }
         if (tickCount < trackingStartDelayTicks()) {
             return;
         }

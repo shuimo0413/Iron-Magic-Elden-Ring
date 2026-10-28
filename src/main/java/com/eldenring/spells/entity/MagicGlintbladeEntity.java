@@ -523,6 +523,10 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         if (!hasLaunched() || level().isClientSide) {
             return;
         }
+        // 非玩家施法（含 NPC 的辉剑圆阵）射出后不拐弯
+        if (!TrackingTargetFilter.ownerCanTrack(getOwner())) {
+            return;
+        }
         int elapsedTicksSinceLaunch = ticksSinceLaunch();
         if (elapsedTicksSinceLaunch < projectileTrackingStartDelayTicks()) {
             return;
@@ -574,9 +578,16 @@ public class MagicGlintbladeEntity extends AbstractMagicProjectile {
         setDeltaMovement(limitedTurnDirection.scale(currentSpeed));
     }
 
+    /**
+     * 凝结结束时的发射锁敌。非玩家施法返回 {@code null}，沿生成时视线射出。
+     * 辉剑圆阵覆写本方法作为触发判定，不受此门影响。
+     */
     @Nullable
     protected LivingEntity findLaunchTarget() {
         Entity ownerEntity = getOwner();
+        if (!TrackingTargetFilter.ownerCanTrack(ownerEntity)) {
+            return null;
+        }
         Vec3 searchOrigin = getBoundingBox().getCenter();
         double trackingRange = projectileTrackingRangeBlocks();
         AABB searchBox = new AABB(searchOrigin, searchOrigin).inflate(trackingRange);
