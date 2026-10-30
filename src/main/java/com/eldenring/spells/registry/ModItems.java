@@ -5,6 +5,7 @@ import com.eldenring.spells.item.AstrologerArmorItem;
 import com.eldenring.spells.item.AstrologerStaffItem;
 import com.eldenring.spells.item.AzurGlintstoneStaffItem;
 import com.eldenring.spells.item.CelestialMageArmorItem;
+import com.eldenring.spells.item.LusatGlintstoneStaffItem;
 import com.eldenring.spells.item.OriginPotionItem;
 import com.eldenring.spells.config.EldenRingServerConfig;
 import com.eldenring.spells.item.talisman.MageSphereItem;
@@ -118,6 +119,15 @@ public final class ModItems {
     public static final DeferredItem<Item> AZUR_GLINTSTONE_STAFF = ITEMS.register(
             "azur_glintstone_staff",
             AzurGlintstoneStaffItem::new
+    );
+
+    /**
+     * 卢瑟特的辉石杖：铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
+     * 主手可右键施法；通用法术强度 +35%，主手持有时全学派蓝耗 +50%（倍率由服务端配置决定）。
+     */
+    public static final DeferredItem<Item> LUSAT_GLINTSTONE_STAFF = ITEMS.register(
+            "lusat_glintstone_staff",
+            LusatGlintstoneStaffItem::new
     );
 
     /**

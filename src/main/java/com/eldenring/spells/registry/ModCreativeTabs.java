@@ -41,6 +41,7 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.ORIGIN_CODEX.get());
                         output.accept(ModItems.ASTROLOGER_STAFF.get());
                         output.accept(ModItems.AZUR_GLINTSTONE_STAFF.get());
+                        output.accept(ModItems.LUSAT_GLINTSTONE_STAFF.get());
                         // 观星者套装暂不可制作，不进创造栏；物品仍注册，供观星者 NPC 穿着
                         output.accept(ModItems.CELESTIAL_MAGE_HAT.get());
                         output.accept(ModItems.CELESTIAL_MAGE_ROBE.get());

@@ -31,6 +31,15 @@
       ],
       "value": "irons_apothic:staff"
     },
+    "iss_elden_ring:lusat_glintstone_staff": {
+      "neoforge:conditions": [
+        {
+          "type": "neoforge:mod_loaded",
+          "modid": "irons_apothic"
+        }
+      ],
+      "value": "irons_apothic:staff"
+    },
     "iss_elden_ring:star_codex": {
       "neoforge:conditions": [
         {

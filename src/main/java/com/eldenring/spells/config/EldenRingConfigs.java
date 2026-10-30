@@ -3,6 +3,7 @@ package com.eldenring.spells.config;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.spell.SpellBookStatReloader;
 import com.eldenring.spells.item.AzurStaffBalance;
+import com.eldenring.spells.item.LusatStaffBalance;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeEffect;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -36,6 +37,7 @@ public final class EldenRingConfigs {
         if (event instanceof ModConfigEvent.Unloading) {
             if (config.getSpec() == EldenRingServerConfig.SPEC) {
                 AzurStaffBalance.resetDefaults();
+                LusatStaffBalance.resetDefaults();
                 PrimalGlintstoneBladeEffect.reset();
                 EldenRingServerConfig.applySpellDefaults();
                 SpellBookStatReloader.reloadAll();

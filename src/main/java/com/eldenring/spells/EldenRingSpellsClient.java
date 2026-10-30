@@ -85,13 +85,14 @@ public class EldenRingSpellsClient {
     }
 
     /**
-     * 观星杖 / 亚兹勒的辉石杖复用铁魔法法杖握持姿势（抬臂），否则会像普通物品一样僵硬下垂。
+     * 观星杖 / 亚兹勒的辉石杖 / 卢瑟特的辉石杖复用铁魔法法杖握持姿势（抬臂），否则会像普通物品一样僵硬下垂。
      * 起源药剂流体：水贴图 + 青色染色，供炼药锅罐内显示。
      */
     @SubscribeEvent
     static void registerClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerItem(new ClientStaffItemExtensions(), ModItems.ASTROLOGER_STAFF.get());
         event.registerItem(new ClientStaffItemExtensions(), ModItems.AZUR_GLINTSTONE_STAFF.get());
+        event.registerItem(new ClientStaffItemExtensions(), ModItems.LUSAT_GLINTSTONE_STAFF.get());
 
         // 0xAARRGGBB：不透明青（对齐碎片 mid #2FADA2）
         final int originPotionTintArgb = 0xFF2FADA2;
