@@ -6,7 +6,7 @@
       "conditions": {
         "items": [
           {
-            "items": "#iss_elden_ring:glintstone_shards"
+            "tag": "iss_elden_ring:glintstone_shards"
           }
         ]
       }

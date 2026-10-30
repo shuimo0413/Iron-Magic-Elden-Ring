@@ -6,7 +6,9 @@
       "conditions": {
         "items": [
           {
-            "items": "irons_spellbooks:magic_cloth"
+            "items": [
+              "irons_spellbooks:magic_cloth"
+            ]
           }
         ]
       }

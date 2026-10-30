@@ -1,6 +1,7 @@
 package com.eldenring.spells.spell.cost;
 
 import com.eldenring.spells.item.AzurStaffBalance;
+import com.eldenring.spells.item.LusatStaffBalance;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeEffect;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -17,6 +18,7 @@ public final class SpellManaCostCalculator {
 
     public static double currentMultiplier(Player player) {
         return AzurStaffBalance.currentMultiplier(player)
+                * LusatStaffBalance.currentMultiplier(player)
                 * PrimalGlintstoneBladeEffect.currentManaCostMultiplier(player);
     }
 

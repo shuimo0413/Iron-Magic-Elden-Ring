@@ -6,7 +6,9 @@
       "conditions": {
         "items": [
           {
-            "items": "iss_elden_ring:glintstone_rune"
+            "items": [
+              "iss_elden_ring:glintstone_rune"
+            ]
           }
         ]
       }

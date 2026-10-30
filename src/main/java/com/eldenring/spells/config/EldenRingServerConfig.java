@@ -1,6 +1,7 @@
 package com.eldenring.spells.config;
 
 import com.eldenring.spells.item.AzurStaffBalance;
+import com.eldenring.spells.item.LusatStaffBalance;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeEffect;
 import com.eldenring.spells.particle.cometazur.CometAzurFx;
 import com.eldenring.spells.spell.CannonOfHaimaSpell;
@@ -63,6 +64,7 @@ public final class EldenRingServerConfig {
     public static final double ORIGIN_CODEX_MAX_MANA_BONUS = 300.0D;
     public static final ForgeConfigSpec.DoubleValue AZUR_CAST_TIME_REDUCTION;
     public static final ForgeConfigSpec.DoubleValue AZUR_MANA_COST_MULTIPLIER;
+    public static final ForgeConfigSpec.DoubleValue LUSAT_MANA_COST_MULTIPLIER;
     public static final ForgeConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION;
     public static final ForgeConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION;
     public static final ForgeConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS;
@@ -322,6 +324,12 @@ public final class EldenRingServerConfig {
                 .defineInRange("manaCostMultiplier", AzurStaffBalance.DEFAULT_MANA_COST_MULTIPLIER, 1.0D, 10.0D);
         builder.pop(2);
 
+        builder.push("equipment").push("lusat_staff");
+        LUSAT_MANA_COST_MULTIPLIER = builder
+                .comment("All-school mana multiplier while held in the main hand; retained for an active cast.")
+                .defineInRange("manaCostMultiplier", LusatStaffBalance.DEFAULT_MANA_COST_MULTIPLIER, 1.0D, 10.0D);
+        builder.pop(2);
+
         builder.push("equipment").push("primal_glintstone_blade");
         PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION = builder
                 .comment("Maximum-health reduction while equipped. 0.15 means 15 percent.")
@@ -345,6 +353,7 @@ public final class EldenRingServerConfig {
      */
     public static void apply() {
         AzurStaffBalance.configure(AZUR_CAST_TIME_REDUCTION.get(), AZUR_MANA_COST_MULTIPLIER.get());
+        LusatStaffBalance.configure(LUSAT_MANA_COST_MULTIPLIER.get());
         PrimalGlintstoneBladeEffect.configure(
                 PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION.get(),
                 PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION.get(),

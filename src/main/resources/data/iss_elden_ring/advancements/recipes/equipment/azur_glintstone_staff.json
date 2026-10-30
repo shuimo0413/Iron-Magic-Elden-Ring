@@ -6,7 +6,9 @@
       "conditions": {
         "items": [
           {
-            "items": "iss_elden_ring:origin_crystal"
+            "items": [
+              "iss_elden_ring:origin_crystal"
+            ]
           }
         ]
       }
