@@ -1,0 +1,10 @@
+{
+  "attack": [
+    "iss_elden_ring:great_glintstone_shard",
+    "iss_elden_ring:swift_glintstone_shard"
+  ],
+  "defense": [],
+  "movement": [],
+  "support": [],
+  "spell_quality": { "min": 0.35, "max": 0.70 }
+}

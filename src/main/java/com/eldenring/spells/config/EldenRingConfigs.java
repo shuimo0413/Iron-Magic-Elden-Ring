@@ -1,6 +1,7 @@
 package com.eldenring.spells.config;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.entity.academy.AcademyScholarBalance;
 import com.eldenring.spells.spell.SpellBookStatReloader;
 import com.eldenring.spells.item.AzurStaffBalance;
 import com.eldenring.spells.item.LusatStaffBalance;
@@ -42,6 +43,7 @@ public final class EldenRingConfigs {
                 AzurStaffBalance.resetDefaults();
                 LusatStaffBalance.resetDefaults();
                 PrimalGlintstoneBladeEffect.reset();
+                AcademyScholarBalance.resetDefaults();
             }
             return;
         }

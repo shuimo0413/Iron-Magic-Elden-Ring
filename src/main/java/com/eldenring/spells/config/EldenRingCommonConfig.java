@@ -54,7 +54,6 @@ public final class EldenRingCommonConfig {
     private static final ForgeConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_BLOCK_CHANCE;
     private static final ForgeConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_STONE_CHANCE;
     private static final ForgeConfigSpec.IntValue CAVE_MAX_CLUSTERS_PER_CHUNK;
-
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
         builder.comment(

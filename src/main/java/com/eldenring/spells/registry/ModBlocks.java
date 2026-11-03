@@ -1,6 +1,7 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.block.MagicRealmBlock;
 import com.eldenring.spells.world.GlintstoneColor;
 import net.minecraft.world.level.block.AmethystBlock;
 import net.minecraft.world.level.block.AmethystClusterBlock;
@@ -17,7 +18,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * 辉石矿物方块注册：每色一套水晶簇 / 水晶块。
+ * 方块注册：每色一套辉石水晶簇 / 水晶块，外加魔法之境光带方块。
  * <p>
  * 逻辑类不按颜色复制；颜色数据在 {@link GlintstoneColor}。
  * 墙上水晶只保留最大簇一档（无小/中/大芽）。不生长、无建材、无矿石。
@@ -35,6 +36,22 @@ public final class ModBlocks {
             BY_COLOR.put(color, ColorSet.register(color));
         }
     }
+
+    /**
+     * 魔法之境：水平半径 64 格内刷魔法光带的纯视觉方块（覆盖并集，叠放不增密）。
+     * 亮度 7 只是让方块本身带点微光；活塞推不动，保证覆盖源坐标不会悄悄迁移。
+     */
+    public static final RegistryObject<Block> MAGIC_REALM = BLOCKS.register(
+            "magic_realm",
+            () -> new MagicRealmBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_LIGHT_BLUE)
+                    .strength(3.0F, 6.0F)
+                    .sound(SoundType.AMETHYST)
+                    .lightLevel(state -> 7)
+                    .requiresCorrectToolForDrops()
+                    .pushReaction(PushReaction.BLOCK)
+            )
+    );
 
     private ModBlocks() {
     }

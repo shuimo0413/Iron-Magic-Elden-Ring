@@ -1,0 +1,10 @@
+{
+  "attack": [
+    "iss_elden_ring:glintstone_stars",
+    "iss_elden_ring:star_shower"
+  ],
+  "defense": [],
+  "movement": [],
+  "support": [],
+  "spell_quality": { "min": 0.35, "max": 0.70 }
+}

@@ -1,6 +1,8 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.entity.academy.AcademyClassroom;
+import com.eldenring.spells.entity.academy.AcademyScholarEntity;
 import com.eldenring.spells.entity.astrologer.AstrologerEntity;
 import com.eldenring.spells.entity.CannonOfHaimaProjectile;
 import com.eldenring.spells.entity.CarianGreatswordEntity;
@@ -436,7 +438,33 @@ public final class ModEntities {
                             .build(id("astrologer"))
             );
 
+    /**
+     * 学院学者：主动攻击玩家的辉石法师，四间教室各一种实体类型、共用 {@link AcademyScholarEntity}。
+     * 目前只经刷怪蛋生成；学院建筑做好后再接结构刷怪。
+     */
+    public static final RegistryObject<EntityType<AcademyScholarEntity>> KAROLOS_SCHOLAR =
+            registerAcademyScholar(AcademyClassroom.KAROLOS);
+    public static final RegistryObject<EntityType<AcademyScholarEntity>> TWINSAGE_SCHOLAR =
+            registerAcademyScholar(AcademyClassroom.TWINSAGE);
+    public static final RegistryObject<EntityType<AcademyScholarEntity>> LAZULI_SCHOLAR =
+            registerAcademyScholar(AcademyClassroom.LAZULI);
+    public static final RegistryObject<EntityType<AcademyScholarEntity>> OLIVINUS_SCHOLAR =
+            registerAcademyScholar(AcademyClassroom.OLIVINUS);
+
     private ModEntities() {
+    }
+
+    /** 学者与观星者同为人形施法者：碰撞箱 0.6×1.8 方块，客户端同步距离 64 方块。 */
+    private static RegistryObject<EntityType<AcademyScholarEntity>> registerAcademyScholar(AcademyClassroom classroom) {
+        return ENTITIES.register(classroom.entityPath(), () ->
+                EntityType.Builder.<AcademyScholarEntity>of(
+                                (entityType, level) -> new AcademyScholarEntity(entityType, level, classroom),
+                                MobCategory.MONSTER
+                        )
+                        .sized(0.6f, 1.8f)
+                        .clientTrackingRange(64)
+                        .build(id(classroom.entityPath()))
+        );
     }
 
     private static String id(String path) {

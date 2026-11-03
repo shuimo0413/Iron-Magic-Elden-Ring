@@ -1,0 +1,10 @@
+{
+  "attack": [
+    "iss_elden_ring:magic_glintblade",
+    "iss_elden_ring:crystal_burst"
+  ],
+  "defense": [],
+  "movement": [],
+  "support": [],
+  "spell_quality": { "min": 0.35, "max": 0.70 }
+}

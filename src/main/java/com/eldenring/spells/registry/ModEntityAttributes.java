@@ -1,5 +1,6 @@
 package com.eldenring.spells.registry;
 
+import com.eldenring.spells.entity.academy.AcademyScholarEntity;
 import com.eldenring.spells.entity.astrologer.AstrologerEntity;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -16,5 +17,9 @@ public final class ModEntityAttributes {
 
     private static void onAttributeCreate(EntityAttributeCreationEvent event) {
         event.put(ModEntities.ASTROLOGER.get(), AstrologerEntity.prepareAttributes().build());
+        event.put(ModEntities.KAROLOS_SCHOLAR.get(), AcademyScholarEntity.prepareAttributes().build());
+        event.put(ModEntities.TWINSAGE_SCHOLAR.get(), AcademyScholarEntity.prepareAttributes().build());
+        event.put(ModEntities.LAZULI_SCHOLAR.get(), AcademyScholarEntity.prepareAttributes().build());
+        event.put(ModEntities.OLIVINUS_SCHOLAR.get(), AcademyScholarEntity.prepareAttributes().build());
     }
 }
