@@ -1,0 +1,10 @@
+{
+  "attack": [
+    "iss_elden_ring:glintstone_comet",
+    "iss_elden_ring:spiral_shard"
+  ],
+  "defense": [],
+  "movement": [],
+  "support": [],
+  "spell_quality": { "min": 0.35, "max": 0.70 }
+}

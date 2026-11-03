@@ -5,6 +5,7 @@ import com.eldenring.spells.network.AzurStaffSettingsPayload;
 import com.eldenring.spells.network.TrackingIgnorePrefsPayload;
 import com.eldenring.spells.registry.ModAttachments;
 import com.eldenring.spells.registry.ModAttributes;
+import com.eldenring.spells.registry.ModBlockEntities;
 import com.eldenring.spells.registry.ModBlocks;
 import com.eldenring.spells.registry.ModCreativeTabs;
 import com.eldenring.spells.registry.ModEffects;
@@ -18,7 +19,6 @@ import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.registry.ModSpells;
 import com.eldenring.spells.registry.ModRecipes;
-import com.eldenring.spells.worldgen.biome.ModTerraBlender;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -40,6 +40,7 @@ public class EldenRingSpellsMod {
         ModEffects.register(modEventBus);
         // 方块必须先于物品：BlockItem 依赖方块 DeferredHolder
         ModBlocks.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
         ModFluids.register(modEventBus);
         ModItems.register(modEventBus);
         ModRecipes.register(modEventBus);
@@ -57,7 +58,5 @@ public class EldenRingSpellsMod {
 
     private void commonSetup(FMLCommonSetupEvent event) {
         LOGGER.info("Iron's Spells 'n Spellbooks: Elden Ring loaded (Iron's Spells dependency OK).");
-        // 魔法之湖：TerraBlender Region / 地表规则（非线程安全，须回主线程）
-        event.enqueueWork(ModTerraBlender::register);
     }
 }

@@ -1,5 +1,6 @@
 package com.eldenring.spells.config;
 
+import com.eldenring.spells.entity.academy.AcademyScholarBalance;
 import com.eldenring.spells.item.AzurStaffBalance;
 import com.eldenring.spells.item.LusatStaffBalance;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeEffect;
@@ -69,6 +70,11 @@ public final class EldenRingServerConfig {
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION;
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION;
     public static final ModConfigSpec.DoubleValue PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS;
+    public static final ModConfigSpec.DoubleValue ACADEMY_SCHOLAR_MAX_HEALTH;
+    public static final ModConfigSpec.DoubleValue ACADEMY_SCHOLAR_MOVEMENT_SPEED;
+    public static final ModConfigSpec.DoubleValue ACADEMY_SCHOLAR_FOLLOW_RANGE_BLOCKS;
+    public static final ModConfigSpec.IntValue ACADEMY_SCHOLAR_ATTACK_INTERVAL_MIN_TICKS;
+    public static final ModConfigSpec.IntValue ACADEMY_SCHOLAR_ATTACK_INTERVAL_MAX_TICKS;
     public static final HomingValues GLINTSTONE_PEBBLE;
     public static final HomingValues SWIFT_GLINTSTONE_SHARD;
     public static final HomingValues GREAT_GLINTSTONE_SHARD;
@@ -343,6 +349,24 @@ public final class EldenRingServerConfig {
                 .defineInRange("spellPowerBonus", 0.07D, 0.0D, 10.0D);
         builder.pop(2);
 
+        builder.push("mobs").push("academy_scholar");
+        ACADEMY_SCHOLAR_MAX_HEALTH = builder
+                .comment("Max health of academy scholars. Applied when a scholar first spawns.")
+                .defineInRange("maxHealth", AcademyScholarBalance.DEFAULT_MAX_HEALTH, 1.0D, 1024.0D);
+        ACADEMY_SCHOLAR_MOVEMENT_SPEED = builder
+                .comment("Base movement speed attribute (zombie is 0.23). Applied when a scholar first spawns.")
+                .defineInRange("movementSpeed", AcademyScholarBalance.DEFAULT_MOVEMENT_SPEED, 0.0D, 1.0D);
+        ACADEMY_SCHOLAR_FOLLOW_RANGE_BLOCKS = builder
+                .comment("Target detection range in blocks. Applied when a scholar first spawns.")
+                .defineInRange("followRangeBlocks", AcademyScholarBalance.DEFAULT_FOLLOW_RANGE_BLOCKS, 1.0D, 128.0D);
+        ACADEMY_SCHOLAR_ATTACK_INTERVAL_MIN_TICKS = builder
+                .comment("Ticks between casts when the target is close. Applied when a scholar is loaded or spawned.")
+                .defineInRange("attackIntervalMinTicks", AcademyScholarBalance.DEFAULT_ATTACK_INTERVAL_MIN_TICKS, 1, 1200);
+        ACADEMY_SCHOLAR_ATTACK_INTERVAL_MAX_TICKS = builder
+                .comment("Ticks between casts at the edge of casting range. Values below the minimum use the minimum.")
+                .defineInRange("attackIntervalMaxTicks", AcademyScholarBalance.DEFAULT_ATTACK_INTERVAL_MAX_TICKS, 1, 1200);
+        builder.pop(2);
+
         SPEC = builder.build();
     }
 
@@ -372,6 +396,13 @@ public final class EldenRingServerConfig {
                 read(PRIMAL_GLINTSTONE_BLADE_MAX_HEALTH_REDUCTION),
                 read(PRIMAL_GLINTSTONE_BLADE_MANA_COST_REDUCTION),
                 read(PRIMAL_GLINTSTONE_BLADE_SPELL_POWER_BONUS)
+        );
+        AcademyScholarBalance.configure(
+                read(ACADEMY_SCHOLAR_MAX_HEALTH),
+                read(ACADEMY_SCHOLAR_MOVEMENT_SPEED),
+                read(ACADEMY_SCHOLAR_FOLLOW_RANGE_BLOCKS),
+                read(ACADEMY_SCHOLAR_ATTACK_INTERVAL_MIN_TICKS),
+                read(ACADEMY_SCHOLAR_ATTACK_INTERVAL_MAX_TICKS)
         );
         applySpellFields();
     }

@@ -1,6 +1,7 @@
 package com.eldenring.spells.config;
 
 import com.eldenring.spells.EldenRingSpellsMod;
+import com.eldenring.spells.entity.academy.AcademyScholarBalance;
 import com.eldenring.spells.spell.SpellBookStatReloader;
 import com.eldenring.spells.item.AzurStaffBalance;
 import com.eldenring.spells.item.LusatStaffBalance;
@@ -16,7 +17,7 @@ import net.neoforged.fml.event.config.ModConfigEvent;
  * 整合包改数值的入口：
  * <ul>
  *   <li>{@code config/iss_elden_ring-server.toml} — 伤害、弹速、范围、蓝耗基数等玩法数字</li>
- *   <li>{@code config/iss_elden_ring-common.toml} — 辉石矿洞密度、魔法之湖 Region 权重</li>
+ *   <li>{@code config/iss_elden_ring-common.toml} — 辉石矿洞密度</li>
  *   <li>{@code config/irons_spellbooks_spell_config/iss_elden_ring/*.json} — 冷却、最大等级、开关、蓝耗/法强倍率</li>
  * </ul>
  */
@@ -39,6 +40,7 @@ public final class EldenRingConfigs {
                 AzurStaffBalance.resetDefaults();
                 LusatStaffBalance.resetDefaults();
                 PrimalGlintstoneBladeEffect.reset();
+                AcademyScholarBalance.resetDefaults();
                 EldenRingServerConfig.applySpellDefaults();
                 SpellBookStatReloader.reloadAll();
             }
@@ -50,7 +52,7 @@ public final class EldenRingConfigs {
             EldenRingSpellsMod.LOGGER.info("Applied iss_elden_ring-server.toml to Spell fields.");
         } else if (config.getSpec() == EldenRingCommonConfig.SPEC) {
             EldenRingCommonConfig.apply();
-            EldenRingSpellsMod.LOGGER.info("Applied iss_elden_ring-common.toml to cave / biome fields.");
+            EldenRingSpellsMod.LOGGER.info("Applied iss_elden_ring-common.toml to cave fields.");
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.eldenring.spells.client;
 
+import com.eldenring.spells.client.render.academy.AcademyScholarRenderer;
 import com.eldenring.spells.client.render.astrologer.AstrologerRenderer;
 import com.eldenring.spells.client.render.CometAzurJetRenderer;
 import com.eldenring.spells.client.render.FoundingRainDropRenderer;
@@ -99,6 +100,10 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.METEORITE.get(), MeteoriteRenderer::new);
         event.registerEntityRenderer(ModEntities.METEORITE_VOID.get(), MeteoriteVoidRenderer::new);
         event.registerEntityRenderer(ModEntities.ASTROLOGER.get(), AstrologerRenderer::new);
+        event.registerEntityRenderer(ModEntities.KAROLOS_SCHOLAR.get(), AcademyScholarRenderer::new);
+        event.registerEntityRenderer(ModEntities.TWINSAGE_SCHOLAR.get(), AcademyScholarRenderer::new);
+        event.registerEntityRenderer(ModEntities.LAZULI_SCHOLAR.get(), AcademyScholarRenderer::new);
+        event.registerEntityRenderer(ModEntities.OLIVINUS_SCHOLAR.get(), AcademyScholarRenderer::new);
     }
 
     /**

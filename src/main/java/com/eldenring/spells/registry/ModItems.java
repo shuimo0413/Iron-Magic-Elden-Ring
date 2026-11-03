@@ -5,8 +5,10 @@ import com.eldenring.spells.item.AstrologerArmorItem;
 import com.eldenring.spells.item.AstrologerStaffItem;
 import com.eldenring.spells.item.AzurGlintstoneStaffItem;
 import com.eldenring.spells.item.CelestialMageArmorItem;
+import com.eldenring.spells.item.GlintstoneCrownArmorItem;
 import com.eldenring.spells.item.LusatGlintstoneStaffItem;
 import com.eldenring.spells.item.OriginPotionItem;
+import com.eldenring.spells.item.RayaLucariaRobeArmorItem;
 import com.eldenring.spells.config.EldenRingServerConfig;
 import com.eldenring.spells.item.talisman.MageSphereItem;
 import com.eldenring.spells.item.talisman.PrimalGlintstoneBladeItem;
@@ -28,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.minecraft.world.item.BlockItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -48,6 +51,9 @@ import java.util.function.Supplier;
 public final class ModItems {
     public static final DeferredRegister.Items ITEMS =
             DeferredRegister.createItems(EldenRingSpellsMod.MOD_ID);
+
+    /** 学院学者生成蛋底色（RGB）：雷亚卢卡利亚长袍深蓝。 */
+    private static final int ACADEMY_ROBE_EGG_COLOR = 0x22305E;
 
     /**
      * 星星法典：辉石学派魔法书。
@@ -164,6 +170,20 @@ public final class ModItems {
             () -> new AstrologerArmorItem(
                     ArmorItem.Type.BOOTS,
                     schoolArmorProperties(ArmorItem.Type.BOOTS)
+            )
+    );
+
+    /** 学院辉石头冠：四种造型各自注册，沿用铁魔法学派头盔的耐久和法术属性。 */
+    public static final DeferredItem<Item> KAROLOS_GLINTSTONE_CROWN = registerGlintstoneCrown("karolos_glintstone_crown");
+    public static final DeferredItem<Item> LAZULI_GLINTSTONE_CROWN = registerGlintstoneCrown("lazuli_glintstone_crown");
+    public static final DeferredItem<Item> OLIVINUS_GLINTSTONE_CROWN = registerGlintstoneCrown("olivinus_glintstone_crown");
+    public static final DeferredItem<Item> TWINSAGE_GLINTSTONE_CROWN = registerGlintstoneCrown("twinsage_glintstone_crown");
+
+    /** 学院长袍：整件占用胸甲槽，沿用学派胸甲属性，并提供一个可灌注法术槽。 */
+    public static final DeferredItem<Item> RAYA_LUCARIA_ROBE = ITEMS.register(
+            "raya_lucaria_robe",
+            () -> new RayaLucariaRobeArmorItem(
+                    schoolArmorProperties(ArmorItem.Type.CHESTPLATE)
             )
     );
 
@@ -367,6 +387,30 @@ public final class ModItems {
             )
     );
 
+    /**
+     * 学院学者生成蛋：底色统一为雷亚卢卡利亚长袍的深蓝，斑点色区分教室
+     *（卡勒罗斯金、双贤青铜、拉兹利青金石蓝、奥利维尼斯橄榄绿）。
+     */
+    public static final DeferredItem<Item> KAROLOS_SCHOLAR_SPAWN_EGG = ITEMS.register(
+            "karolos_scholar_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.KAROLOS_SCHOLAR, ACADEMY_ROBE_EGG_COLOR, 0xD9B44A, new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> TWINSAGE_SCHOLAR_SPAWN_EGG = ITEMS.register(
+            "twinsage_scholar_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.TWINSAGE_SCHOLAR, ACADEMY_ROBE_EGG_COLOR, 0xB87333, new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> LAZULI_SCHOLAR_SPAWN_EGG = ITEMS.register(
+            "lazuli_scholar_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.LAZULI_SCHOLAR, ACADEMY_ROBE_EGG_COLOR, 0x3A6FD8, new Item.Properties())
+    );
+
+    public static final DeferredItem<Item> OLIVINUS_SCHOLAR_SPAWN_EGG = ITEMS.register(
+            "olivinus_scholar_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.OLIVINUS_SCHOLAR, ACADEMY_ROBE_EGG_COLOR, 0x7FB241, new Item.Properties())
+    );
+
     static {
         // BlockItem 与方块同 id；必须在 ModBlocks 已向总线注册之后再 register(ITEMS)
         for (ModBlocks.ColorSet set : ModBlocks.BY_COLOR.values()) {
@@ -375,10 +419,19 @@ public final class ModItems {
         }
     }
 
+    /** 魔法之境方块物品。 */
+    public static final DeferredItem<BlockItem> MAGIC_REALM = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_REALM);
+
     private ModItems() {
     }
 
-    /** 观星者 / 星辰法师共用学派护甲耐久与稀有度。 */
+    /** 注册使用独立几何和贴图的学派头盔，避免四份属性与耐久配置漂移。 */
+    private static DeferredItem<Item> registerGlintstoneCrown(String crownName) {
+        return ITEMS.register(crownName,
+                () -> new GlintstoneCrownArmorItem(crownName, schoolArmorProperties(ArmorItem.Type.HELMET)));
+    }
+
+    /** 观星者 / 星辰法师 / 学院头冠共用学派护甲耐久与稀有度。 */
     private static Item.Properties schoolArmorProperties(ArmorItem.Type armorType) {
         return new Item.Properties()
                 .stacksTo(1)

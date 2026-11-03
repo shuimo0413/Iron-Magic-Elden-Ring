@@ -47,7 +47,16 @@ public final class ModCreativeTabs {
                         output.accept(ModItems.CELESTIAL_MAGE_ROBE.get());
                         output.accept(ModItems.CELESTIAL_MAGE_LEGGINGS.get());
                         output.accept(ModItems.CELESTIAL_MAGE_BOOTS.get());
+                        output.accept(ModItems.KAROLOS_GLINTSTONE_CROWN.get());
+                        output.accept(ModItems.LAZULI_GLINTSTONE_CROWN.get());
+                        output.accept(ModItems.OLIVINUS_GLINTSTONE_CROWN.get());
+                        output.accept(ModItems.TWINSAGE_GLINTSTONE_CROWN.get());
+                        output.accept(ModItems.RAYA_LUCARIA_ROBE.get());
                         output.accept(ModItems.ASTROLOGER_SPAWN_EGG.get());
+                        output.accept(ModItems.KAROLOS_SCHOLAR_SPAWN_EGG.get());
+                        output.accept(ModItems.TWINSAGE_SCHOLAR_SPAWN_EGG.get());
+                        output.accept(ModItems.LAZULI_SCHOLAR_SPAWN_EGG.get());
+                        output.accept(ModItems.OLIVINUS_SCHOLAR_SPAWN_EGG.get());
                         output.accept(ModItems.CYAN_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.BLUE_GLINTSTONE_SHARD.get());
                         output.accept(ModItems.PURPLE_GLINTSTONE_SHARD.get());
@@ -63,6 +72,7 @@ public final class ModCreativeTabs {
                             output.accept(set.crystalBlock.get());
                             output.accept(set.cluster.get());
                         }
+                        output.accept(ModItems.MAGIC_REALM.get());
                         acceptAllScrollLevels(output, ModSpells.GLINTSTONE_PEBBLE);
                         acceptAllScrollLevels(output, ModSpells.SWIFT_GLINTSTONE_SHARD);
                         acceptAllScrollLevels(output, ModSpells.GLINTSTONE_ARC);

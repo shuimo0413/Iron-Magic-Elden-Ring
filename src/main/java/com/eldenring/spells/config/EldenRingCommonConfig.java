@@ -6,7 +6,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * 世界生成等「进游戏前就要定下来」的数值。
  * <p>
  * 文件：{@code config/iss_elden_ring-common.toml}（客户端与服务端各读各的，不联网同步）。
- * 整合包改矿洞密度、魔法之湖 Region 权重放这里；改完需新区块或新世界才看得到。
+ * 整合包改矿洞密度放这里；改完需新区块或新世界才看得到。
  * <p>
  * {@code defineInRange} 绑 toml；{@link #apply()} 写到下面这组运行时字段。逻辑读运行时字段，不读 Spec {@code .get()}。
  * 噪声盐写死在 {@code GlintstoneCaveFeature}，不开放配置。
@@ -42,14 +42,6 @@ public final class EldenRingCommonConfig {
     /** 单 chunk 水晶簇硬上限。 */
     public static int caveMaxClustersPerChunk = 64;
 
-    /**
-     * 魔法之湖 TerraBlender Region 权重（无单位，与其它模组 Region 及原版 Region 相对比较）。
-     * 分到这个 Region 的区域里，只有湿度高的团块变成湖，其余地方和原版一模一样；
-     * 所以权重只决定「多大比例的世界有可能出湖」，单片湖大小由 {@code MagicLakeRegion.LAKE_HUMIDITY_MIN} 决定。
-     * 默认 5：调大 → 湖更常见；调小 → 更稀有；0 = 不注册 Region，群系不生成。只在游戏启动时读取一次。
-     */
-    public static int magicLakeRegionWeight = 5;
-
     private static final ModConfigSpec.DoubleValue CAVE_REGION_NOISE_CELL_SIZE_CHUNKS;
     private static final ModConfigSpec.DoubleValue CAVE_CHUNK_NOISE_CELL_SIZE_CHUNKS;
     private static final ModConfigSpec.DoubleValue CAVE_REGION_PRESENCE_THRESHOLD;
@@ -63,7 +55,6 @@ public final class EldenRingCommonConfig {
     private static final ModConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_BLOCK_CHANCE;
     private static final ModConfigSpec.DoubleValue CAVE_SURFACE_CLUSTER_ON_STONE_CHANCE;
     private static final ModConfigSpec.IntValue CAVE_MAX_CLUSTERS_PER_CHUNK;
-    private static final ModConfigSpec.IntValue MAGIC_LAKE_REGION_WEIGHT;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -179,21 +170,6 @@ public final class EldenRingCommonConfig {
         );
 
         builder.pop();
-
-        builder.comment(
-                "魔法之湖群系（TerraBlender）。只在游戏启动时读取，改完需重启并进入新区块才生效。"
-        );
-        builder.push("magic_lake");
-        MAGIC_LAKE_REGION_WEIGHT = ConfigSpecHelper.integer(
-                builder,
-                "region_weight",
-                "TerraBlender Region 权重。只决定多大比例的世界有可能出湖（该区域内只有湿度高的团块是湖，其余同原版），不影响单片湖大小。默认 5；调大 → 湖更常见；0 = 不生成。",
-                magicLakeRegionWeight,
-                0,
-                100
-        );
-        builder.pop();
-
         SPEC = builder.build();
     }
 
@@ -217,6 +193,5 @@ public final class EldenRingCommonConfig {
         caveSurfaceClusterOnBlockChance = CAVE_SURFACE_CLUSTER_ON_BLOCK_CHANCE.get().floatValue();
         caveSurfaceClusterOnStoneChance = CAVE_SURFACE_CLUSTER_ON_STONE_CHANCE.get().floatValue();
         caveMaxClustersPerChunk = CAVE_MAX_CLUSTERS_PER_CHUNK.get();
-        magicLakeRegionWeight = MAGIC_LAKE_REGION_WEIGHT.get();
     }
 }

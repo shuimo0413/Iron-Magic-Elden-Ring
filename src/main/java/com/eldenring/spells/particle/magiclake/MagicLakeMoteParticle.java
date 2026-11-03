@@ -16,10 +16,9 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 魔法之湖飘浮微光：淡幽蓝的小光点，贴着湖面缓慢上浮、左右摇摆、轻轻闪烁。
+ * 魔法光带飘浮微光：淡幽蓝的小光点，缓慢上浮、左右摇摆、轻轻闪烁。
  * <p>
- * 两个来源：群系 JSON 的 {@code effects.particle}（原版在玩家周围随机刷，铺满整个群系），
- * 以及 {@code MagicLakeWisps} 光带头部偶尔掉落的光点。贴图复用 {@code frost_mote} 三帧。
+ * 来源是 {@code MagicLakeWisps} 光带头部和身上偶尔掉落的光点（只在魔法之境覆盖区内）。贴图复用 {@code frost_mote} 三帧。
  * 加法混合 + 全亮度，昼夜一致；白天因为背景亮会不明显，这是预期的。
  */
 public class MagicLakeMoteParticle extends TextureSheetParticle {

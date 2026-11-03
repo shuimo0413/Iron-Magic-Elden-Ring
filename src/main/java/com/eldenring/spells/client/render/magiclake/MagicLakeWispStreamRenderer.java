@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 魔法之湖迷幻光带的网格绘制：一条路径画成「几股相互缠绕的宽烟丝 + 一层更宽的淡雾」。
+ * 魔法光带（魔法之境方块覆盖区内）的网格绘制：一条路径画成「几股相互缠绕的宽烟丝 + 一层更宽的淡雾」。
  * <p>
  * 和辉石弹道光轨（{@code GlintstoneTrailRenderer}）的区别：没有亮芯，两端都淡出，宽度中段最粗，
  * 贴图是沿路径平铺并缓慢滚动的烟丝纹理（{@code wisp_stream.png}，由 {@code 工具链/gen_magic_lake_wisp_texture.py} 生成）。

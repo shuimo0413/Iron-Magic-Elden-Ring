@@ -2,8 +2,8 @@ package com.eldenring.spells.client.biome;
 
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.client.render.magiclake.MagicLakeWispStreamRenderer;
-import com.eldenring.spells.registry.ModBiomes;
 import com.eldenring.spells.registry.ModParticles;
+import com.eldenring.spells.world.MagicRealmCoverageIndex;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ParticleStatus;
@@ -26,15 +26,18 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 魔法之湖迷幻光带：湖区上空缓慢流淌的宽幅幽蓝烟带（参考湖之利耶尼亚 / 魔法学院前的魔力流），十几秒后淡出。
+ * 魔法光带：魔法之境方块覆盖范围内、地表上空缓慢流淌的宽幅幽蓝烟带（参考湖之利耶尼亚 / 魔法学院前的魔力流），十几秒后淡出。
  * <p>
- * 纯客户端视觉，不生成实体、不走网络。每 tick 在相机周围、落在魔法之湖群系内的位置补充少量光带，
+ * 纯客户端视觉，不生成实体、不走网络。每 tick 在相机周围随机取点，落在任意魔法之境覆盖圆内
+ * （{@link MagicRealmCoverageIndex}，水平半径 64 格）才补充光带。刷新概率、尝试次数和数量上限全局唯一，
+ * 不按方块数量叠加，所以多个方块重叠放置不会让光带变密；玩家站在覆盖区外也能看到区内的光带。
+ * <p>
  * 每条光带记录最近若干 tick 的位置（拖尾约 20–30 格），渲染时交给 {@link MagicLakeWispStreamRenderer}
  * 画成几股缠绕的宽烟丝 + 外层淡雾。两种运动：大弧线游走（大多数）和大半径螺旋上升（少数）。
  * 头部和身上偶尔掉落 {@code magic_lake_mote} 光点。
  * <p>
- * 亮度乘 {@link MagicLakeAmbientLight#getBlend}：离开湖区时随环境光一起平滑淡出。昼夜亮度一致。
- * 视频设置粒子为「最少」时不生成。
+ * 头部飘出覆盖区或覆盖源被移除时，该光带停止掉落光点并在 {@link #COVERAGE_FADE_OUT_TICKS} 内淡出，
+ * 拖尾随整体亮度一起变淡，不做硬边裁切。昼夜亮度一致。视频设置粒子为「最少」时不生成。
  */
 @EventBusSubscriber(modid = EldenRingSpellsMod.MOD_ID, value = Dist.CLIENT)
 public final class MagicLakeWisps {
@@ -43,7 +46,7 @@ public final class MagicLakeWisps {
     private static final int MAX_ACTIVE_WISPS = 7;
     /** 未满上限时每 tick 尝试补一条的概率。0.04 ≈ 平均 1.25 秒补一条。 */
     private static final float SPAWN_CHANCE_PER_TICK = 0.04f;
-    /** 每次补充最多尝试几个随机点（落在别的群系 / 未加载区块的点会被丢弃）。 */
+    /** 每次补充最多尝试几个随机点（落在覆盖区外 / 未加载区块的点会被丢弃）。 */
     private static final int SPAWN_POSITION_ATTEMPTS = 4;
     /** 出生点离相机的最小水平距离（方块）。光带很宽，太近会糊在脸上。 */
     private static final double SPAWN_DISTANCE_MIN_BLOCKS = 10.0;
@@ -64,6 +67,11 @@ public final class MagicLakeWisps {
     private static final int FADE_IN_TICKS = 50;
     /** 消亡淡出时长（tick）。 */
     private static final int FADE_OUT_TICKS = 70;
+    /**
+     * 头部离开覆盖区（或覆盖源被移除）后从满亮度淡到 0 的时长（tick）。30 ≈ 1.5 秒。
+     * 调小 → 越界消失更干脆；调大 → 拖得更远才散。回到覆盖区内会以同样速度重新亮起。
+     */
+    private static final int COVERAGE_FADE_OUT_TICKS = 30;
     /** 记录的历史点数（每 tick 一个）。× 速度 ≈ 拖尾长度：240 × 0.2 ≈ 48 格。调大 → 光带更长。 */
     private static final int HISTORY_POINT_COUNT = 240;
 
@@ -131,14 +139,15 @@ public final class MagicLakeWisps {
         while (iterator.hasNext()) {
             Wisp wisp = iterator.next();
             wisp.tick(level, random);
-            if (wisp.isExpired() || wisp.position.distanceToSqr(cameraWorld) > DESPAWN_DISTANCE_BLOCKS * DESPAWN_DISTANCE_BLOCKS) {
+            if (wisp.isExpired()
+                    || wisp.hasFadedOutOfCoverage()
+                    || wisp.position.distanceToSqr(cameraWorld) > DESPAWN_DISTANCE_BLOCKS * DESPAWN_DISTANCE_BLOCKS) {
                 iterator.remove();
             }
         }
 
         boolean particlesMinimal = minecraft.options.particles().get() == ParticleStatus.MINIMAL;
         if (particlesMinimal
-                || MagicLakeAmbientLight.getBlend(1.0f) <= 0.0f
                 || ACTIVE_WISPS.size() >= MAX_ACTIVE_WISPS
                 || random.nextFloat() >= SPAWN_CHANCE_PER_TICK) {
             return;
@@ -163,43 +172,37 @@ public final class MagicLakeWisps {
             return;
         }
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(false);
-        float ambientBlend = MagicLakeAmbientLight.getBlend(partialTick);
-        if (ambientBlend <= 0.0f) {
-            return;
-        }
-
         Vec3 cameraWorld = event.getCamera().getPosition();
         PoseStack poseStack = event.getPoseStack();
         MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
         for (Wisp wisp : ACTIVE_WISPS) {
-            wisp.render(poseStack, bufferSource, cameraWorld, partialTick, ambientBlend);
+            wisp.render(poseStack, bufferSource, cameraWorld, partialTick);
         }
         bufferSource.endBatch();
     }
 
     /**
-     * 在相机周围随机找一个落在魔法之湖、区块已加载的点，出生在地表以上一点。
+     * 在相机周围随机找一个落在魔法之境覆盖圆内、区块已加载的点，出生在地表以上一点。
+     * 每次只按固定次数采样，与有多少个覆盖源无关。
      */
     private static Wisp trySpawnWisp(ClientLevel level, RandomSource random, Vec3 cameraWorld) {
         BlockPos.MutableBlockPos candidatePos = new BlockPos.MutableBlockPos();
         for (int attempt = 0; attempt < SPAWN_POSITION_ATTEMPTS; attempt++) {
             double angleRadians = random.nextDouble() * Math.PI * 2.0;
             double distanceBlocks = Mth.lerp(random.nextDouble(), SPAWN_DISTANCE_MIN_BLOCKS, SPAWN_DISTANCE_MAX_BLOCKS);
-            int candidateX = Mth.floor(cameraWorld.x + Math.cos(angleRadians) * distanceBlocks);
-            int candidateZ = Mth.floor(cameraWorld.z + Math.sin(angleRadians) * distanceBlocks);
+            double spawnX = cameraWorld.x + Math.cos(angleRadians) * distanceBlocks;
+            double spawnZ = cameraWorld.z + Math.sin(angleRadians) * distanceBlocks;
+            int candidateX = Mth.floor(spawnX);
+            int candidateZ = Mth.floor(spawnZ);
             candidatePos.set(candidateX, Mth.floor(cameraWorld.y), candidateZ);
-            if (!level.hasChunkAt(candidatePos)) {
+            if (!level.hasChunkAt(candidatePos) || !MagicRealmCoverageIndex.isCovered(level, spawnX, spawnZ)) {
                 continue;
             }
             int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, candidateX, candidateZ);
-            candidatePos.setY(surfaceY);
-            if (!level.getBiome(candidatePos).is(ModBiomes.MAGIC_LAKE)) {
-                continue;
-            }
             double spawnY = surfaceY
                     + SPAWN_HEIGHT_ABOVE_SURFACE_MIN_BLOCKS
                     + random.nextDouble() * SPAWN_HEIGHT_ABOVE_SURFACE_RANDOM_BLOCKS;
-            return new Wisp(new Vec3(candidateX + random.nextDouble(), spawnY, candidateZ + random.nextDouble()), random);
+            return new Wisp(new Vec3(spawnX, spawnY, spawnZ), random);
         }
         return null;
     }
@@ -227,6 +230,12 @@ public final class MagicLakeWisps {
         private double spiralCenterZ;
         private double spiralAngleRadians;
         private int ageTicks;
+        /** 覆盖淡出系数（0–1）：头部在覆盖区内趋向 1，离开后按 {@link #COVERAGE_FADE_OUT_TICKS} 线性降到 0。出生点一定在区内，初值 1。 */
+        private float coverageFade = 1.0f;
+        /** 上一 tick 的覆盖淡出系数，渲染时与当前值插值，避免逐 tick 跳变。 */
+        private float previousCoverageFade = 1.0f;
+        /** 本 tick 头部是否在覆盖区内。 */
+        private boolean headInsideCoverage = true;
 
         private Wisp(Vec3 spawnPosition, RandomSource random) {
             this.position = spawnPosition;
@@ -278,7 +287,15 @@ public final class MagicLakeWisps {
                 );
             }
 
-            float currentFade = lifeFade(0.0f);
+            previousCoverageFade = coverageFade;
+            headInsideCoverage = MagicRealmCoverageIndex.isCovered(level, position.x, position.z);
+            float coverageFadeStep = 1.0f / COVERAGE_FADE_OUT_TICKS;
+            coverageFade = headInsideCoverage
+                    ? Math.min(1.0f, coverageFade + coverageFadeStep)
+                    : Math.max(0.0f, coverageFade - coverageFadeStep);
+
+            // 越界后光点几率随覆盖系数一起降到 0：淡出途中不再往区外撒光点
+            float currentFade = lifeFade(0.0f) * coverageFade;
             if (random.nextFloat() < HEAD_MOTE_CHANCE_PER_TICK * currentFade) {
                 dropMote(level, random, position);
             }
@@ -309,6 +326,11 @@ public final class MagicLakeWisps {
             return ageTicks >= lifetimeTicks;
         }
 
+        /** 已离开覆盖区且完全淡出，可以移除。 */
+        private boolean hasFadedOutOfCoverage() {
+            return !headInsideCoverage && coverageFade <= 0.0f;
+        }
+
         /** 出生淡入 × 消亡淡出（0–1）。 */
         private float lifeFade(float partialTick) {
             float smoothAge = ageTicks + partialTick;
@@ -321,13 +343,12 @@ public final class MagicLakeWisps {
                 PoseStack poseStack,
                 MultiBufferSource bufferSource,
                 Vec3 cameraWorld,
-                float partialTick,
-                float ambientBlend
+                float partialTick
         ) {
             if (historyPositions.size() < 2) {
                 return;
             }
-            float brightness = lifeFade(partialTick) * ambientBlend;
+            float brightness = lifeFade(partialTick) * Mth.lerp(partialTick, previousCoverageFade, coverageFade);
             if (brightness <= 0.01f) {
                 return;
             }
