@@ -1,0 +1,20 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "iss_elden_ring:models/armor/karolos_glintstone_crown"
+    },
+    {
+      "type": "single",
+      "resource": "iss_elden_ring:models/armor/lazuli_glintstone_crown"
+    },
+    {
+      "type": "single",
+      "resource": "iss_elden_ring:models/armor/olivinus_glintstone_crown"
+    },
+    {
+      "type": "single",
+      "resource": "iss_elden_ring:models/armor/twinsage_glintstone_crown"
+    }
+  ]
+}

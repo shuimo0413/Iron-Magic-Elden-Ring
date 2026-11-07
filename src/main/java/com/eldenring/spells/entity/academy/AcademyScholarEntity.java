@@ -36,7 +36,8 @@ import javax.annotation.Nullable;
  * <p>
  * 教室（{@link AcademyClassroom}）在实体类型注册时绑定，决定出生头冠与施法表 JSON。
  * 外观复用铁魔法通用施法者骨骼，出生时穿雷亚卢卡利亚长袍并戴对应辉石头冠。
- * 行为按普通怪物处理：和平难度移除、远离玩家时可自然消失；四种学者互为盟友，魔砾不会互伤。
+ * 学院结构守卫：和平难度不移除、出生后持久化（刷怪笼 / 结构 / 刷怪蛋均适用）；
+ * 四种学者互为盟友，魔砾不会互伤。杂兵仍用原版怪，和平会消失。
  */
 public class AcademyScholarEntity extends AbstractSpellCastingMob implements Enemy {
 
@@ -103,6 +104,8 @@ public class AcademyScholarEntity extends AbstractSpellCastingMob implements Ene
             @Nullable SpawnGroupData spawnData
     ) {
         applyConfiguredAttributes();
+        // 学者是学院结构里的不可再生守卫：笼刷、结构生成、刷怪蛋放置后都不要被距离清掉。
+        this.setPersistenceRequired();
         RandomSource random = Utils.random;
         this.populateDefaultEquipmentSlots(random, difficulty);
         return super.finalizeSpawn(level, difficulty, reason, spawnData);
@@ -138,10 +141,13 @@ public class AcademyScholarEntity extends AbstractSpellCastingMob implements Ene
         return super.isAlliedTo(otherEntity) || otherEntity instanceof AcademyScholarEntity;
     }
 
-    /** 与原版怪物一致：和平难度直接移除。 */
+    /**
+     * 和平难度保留。学者是学院结构内容，不是地表可再生野怪；
+     * 和平只清掉原版杂兵，不应把教室守卫一并删掉。
+     */
     @Override
     protected boolean shouldDespawnInPeaceful() {
-        return true;
+        return false;
     }
 
     /** 音效走「敌对生物」音量滑块。 */

@@ -1,15 +1,15 @@
 package com.eldenring.spells.item;
 
-import com.eldenring.spells.registry.ModAttributes;
+import io.redspace.ironsspellbooks.api.registry.AttributeRegistry;
 import io.redspace.ironsspellbooks.item.weapons.AttributeContainer;
 import io.redspace.ironsspellbooks.item.weapons.IronsWeaponTier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 
 /**
- * 亚兹勒的辉石杖武器档位：近战贴近铁魔法普通法杖，额外给辉石法术强度。
+ * 亚兹勒的辉石杖武器档位：近战贴近铁魔法普通法杖，额外给全学派通用法术强度。
  * <p>
- * {@code glintstone_spell_power +10%}（{@link AttributeModifier.Operation#ADD_MULTIPLIED_BASE}）
- * → 手持时辉石系伤害约提升 10%。攻击伤害 / 攻速与灰须杖、观星杖同档。
+ * 铁魔法 {@code spell_power +10%}（{@link AttributeModifier.Operation#ADD_MULTIPLIED_BASE}）
+ * → 手持时所有学派法术强度约提升 10%。攻击伤害 / 攻速与灰须杖、观星杖同档。
  */
 public final class AzurGlintstoneStaffTier implements IronsWeaponTier {
     public static final AzurGlintstoneStaffTier INSTANCE = new AzurGlintstoneStaffTier();
@@ -25,9 +25,9 @@ public final class AzurGlintstoneStaffTier implements IronsWeaponTier {
     private static final float ATTACK_SPEED_MODIFIER = -3.0F;
 
     /**
-     * 辉石法术强度乘数加成。0.10 = +10%；调大 → 辉石咒伤害更高。
+     * 通用法术强度乘数加成。0.10 = +10%；调大 → 全学派法术伤害 / 效果更强。
      */
-    private static final double GLINTSTONE_SPELL_POWER_BONUS = 0.10D;
+    private static final double SPELL_POWER_BONUS = 0.10D;
 
     private AzurGlintstoneStaffTier() {
     }
@@ -47,8 +47,8 @@ public final class AzurGlintstoneStaffTier implements IronsWeaponTier {
         // Reloadable all-school cast speed is supplied by AzurStaffBalance's item attribute event.
         return new AttributeContainer[]{
                 new AttributeContainer(
-                        ModAttributes.GLINTSTONE_SPELL_POWER,
-                        GLINTSTONE_SPELL_POWER_BONUS,
+                        AttributeRegistry.SPELL_POWER,
+                        SPELL_POWER_BONUS,
                         AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                 )
         };

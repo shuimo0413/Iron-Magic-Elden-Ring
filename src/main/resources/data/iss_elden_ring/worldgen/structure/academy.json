@@ -1,0 +1,7 @@
+{
+  "type": "iss_elden_ring:academy",
+  "biomes": "#iss_elden_ring:has_structure/academy",
+  "step": "strongholds",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}

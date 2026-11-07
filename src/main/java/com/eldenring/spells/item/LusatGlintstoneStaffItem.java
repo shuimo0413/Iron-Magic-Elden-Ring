@@ -16,7 +16,7 @@ import java.util.Locale;
  * {@link io.redspace.ironsspellbooks.registries.ComponentRegistry#CASTING_IMPLEMENT}
  * 触媒标记，主手右键施法与铁魔法魔杖相同。
  * <p>
- * 属性由 {@link LusatGlintstoneStaffTier} 提供（通用法术强度 +35%）；
+ * 属性由 {@link LusatGlintstoneStaffTier} 提供（通用法术强度 +30%）；
  * 主手持有时全学派蓝耗按 {@link LusatStaffBalance} 的倍率上调（默认 +50%）。
  */
 public class LusatGlintstoneStaffItem extends StaffItem {

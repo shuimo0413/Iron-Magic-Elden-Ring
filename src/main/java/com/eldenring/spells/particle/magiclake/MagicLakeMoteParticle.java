@@ -16,9 +16,9 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * 魔法光带飘浮微光：淡幽蓝的小光点，缓慢上浮、左右摇摆、轻轻闪烁。
+ * 魔法光带飘浮微光：粒子库冰蓝星芒，缓慢上浮、左右摇摆、轻轻闪烁。
  * <p>
- * 来源是 {@code MagicLakeWisps} 光带头部和身上偶尔掉落的光点（只在魔法之境覆盖区内）。贴图复用 {@code frost_mote} 三帧。
+ * 来源是 {@code MagicLakeWisps} 光带头部和身上偶尔掉落的光点（只在魔法之境覆盖区内）。贴图直接复用共享粒子库 {@code frost_star} 原图。
  * 加法混合 + 全亮度，昼夜一致；白天因为背景亮会不明显，这是预期的。
  */
 public class MagicLakeMoteParticle extends TextureSheetParticle {
@@ -28,9 +28,9 @@ public class MagicLakeMoteParticle extends TextureSheetParticle {
     /** 额外随机寿命上限（tick）。 */
     private static final int LIFETIME_RANDOM_TICKS = 50;
     /** 最小四边形边长（方块）。 */
-    private static final float QUAD_SIZE_MIN_BLOCKS = 0.035f;
+    private static final float QUAD_SIZE_MIN_BLOCKS = 0.09f;
     /** 额外随机边长（方块）。调大 → 光点更显眼。 */
-    private static final float QUAD_SIZE_RANDOM_BLOCKS = 0.045f;
+    private static final float QUAD_SIZE_RANDOM_BLOCKS = 0.09f;
     /** 最小上浮速度（方块 / tick）。 */
     private static final double RISE_SPEED_MIN_BLOCKS_PER_TICK = 0.003;
     /** 额外随机上浮速度（方块 / tick）。调大 → 飘得更快、更像火星而不是尘埃。 */
@@ -43,10 +43,6 @@ public class MagicLakeMoteParticle extends TextureSheetParticle {
     private static final float SWAY_FREQUENCY_RADIANS_PER_TICK = 0.09f;
     /** 闪烁角频率（弧度 / tick）。 */
     private static final float TWINKLE_FREQUENCY_RADIANS_PER_TICK = 0.35f;
-    /** 每帧贴图停留的 tick 数（三帧循环）。 */
-    private static final int TWINKLE_FRAME_TICKS = 5;
-    /** 贴图帧数（frost_mote_0..2）。 */
-    private static final int SPRITE_FRAME_COUNT = 3;
     /** 最大不透明度（0–1）。加法混合下即最大亮度，调小 → 更「淡淡的」。 */
     private static final float MAX_ALPHA = 0.85f;
 
@@ -63,7 +59,6 @@ public class MagicLakeMoteParticle extends TextureSheetParticle {
     /** 天空光低于此值（0–15）视为洞穴 / 地下，不刷。树冠下仍有 13 左右，不受影响。 */
     private static final int MIN_SKY_LIGHT = 10;
 
-    private final SpriteSet sprites;
     private final double baseXSpeed;
     private final double baseZSpeed;
     private final float swayPhaseRadians;
@@ -80,7 +75,8 @@ public class MagicLakeMoteParticle extends TextureSheetParticle {
             SpriteSet sprites
     ) {
         super(level, x, y, z, 0.0, 0.0, 0.0);
-        this.sprites = sprites;
+        // 单张星芒只在出生时选图；get(age, lifetime) 的 lifetime 不允许为 0。
+        pickSprite(sprites);
         this.baseXSpeed = xSpeed + (random.nextDouble() * 2.0 - 1.0) * DRIFT_SPEED_MAX_BLOCKS_PER_TICK;
         this.baseZSpeed = zSpeed + (random.nextDouble() * 2.0 - 1.0) * DRIFT_SPEED_MAX_BLOCKS_PER_TICK;
         this.xd = baseXSpeed;
@@ -98,7 +94,6 @@ public class MagicLakeMoteParticle extends TextureSheetParticle {
         this.gCol = GHOST_BLUE_GREEN * tintJitter;
         this.bCol = GHOST_BLUE_BLUE;
         this.alpha = 0.0f;
-        updateSpriteFrame();
     }
 
     @Override
@@ -107,17 +102,10 @@ public class MagicLakeMoteParticle extends TextureSheetParticle {
         this.xd = baseXSpeed + Mth.cos(swayAngle) * SWAY_SPEED_AMPLITUDE_BLOCKS_PER_TICK;
         this.zd = baseZSpeed + Mth.sin(swayAngle) * SWAY_SPEED_AMPLITUDE_BLOCKS_PER_TICK;
         super.tick();
-        updateSpriteFrame();
-
         float lifeProgress = (float) age / (float) lifetime;
         float lifeEnvelope = Mth.sin(Mth.clamp(lifeProgress, 0.0f, 1.0f) * Mth.PI);
         float twinkle = 0.75f + 0.25f * Mth.sin(age * TWINKLE_FREQUENCY_RADIANS_PER_TICK + twinklePhaseRadians);
         this.alpha = MAX_ALPHA * lifeEnvelope * twinkle;
-    }
-
-    private void updateSpriteFrame() {
-        int frameIndex = (age / TWINKLE_FRAME_TICKS) % SPRITE_FRAME_COUNT;
-        setSprite(sprites.get(frameIndex, SPRITE_FRAME_COUNT - 1));
     }
 
     @Override

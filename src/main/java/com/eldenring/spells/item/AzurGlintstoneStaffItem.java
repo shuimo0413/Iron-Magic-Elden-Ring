@@ -16,13 +16,13 @@ import java.util.Locale;
  * {@link io.redspace.ironsspellbooks.registries.ComponentRegistry#CASTING_IMPLEMENT}
  * 触媒标记，右键施法与原版/铁魔法魔杖相同。
  * <p>
- * 属性由 {@link AzurGlintstoneStaffTier} 提供（辉石法术强度 +10%）。
+ * 属性由 {@link AzurGlintstoneStaffTier} 提供（通用法术强度 +10%）。
  */
 public class AzurGlintstoneStaffItem extends StaffItem {
     public AzurGlintstoneStaffItem() {
         super(new Item.Properties()
                 .stacksTo(1)
-                .rarity(Rarity.RARE)
+                .rarity(Rarity.EPIC)
                 .attributes(io.redspace.ironsspellbooks.api.item.weapons.ExtendedSwordItem.createAttributes(
                         AzurGlintstoneStaffTier.INSTANCE
                 )));

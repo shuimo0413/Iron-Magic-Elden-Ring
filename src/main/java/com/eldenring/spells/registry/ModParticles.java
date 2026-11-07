@@ -527,7 +527,7 @@ public final class ModParticles {
             PARTICLE_TYPES.register("frost_mote", () -> new SimpleParticleType(false));
 
     /**
-     * 魔法光带飘浮微光（淡幽蓝）。魔法之境覆盖区内光带头部 / 身上掉落。贴图复用 {@code frost_mote} 三帧。
+     * 魔法光带飘浮星芒（冰蓝）。生成器覆盖区内光带头部 / 身上掉落；复用共享粒子库 {@code frost_star}。
      */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MAGIC_LAKE_MOTE =
             PARTICLE_TYPES.register("magic_lake_mote", () -> new SimpleParticleType(false));

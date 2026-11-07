@@ -1,7 +1,7 @@
 package com.eldenring.spells.registry;
 
 import com.eldenring.spells.EldenRingSpellsMod;
-import com.eldenring.spells.block.entity.MagicRealmBlockEntity;
+import com.eldenring.spells.block.entity.TerraMagicaGeneratorBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -15,11 +15,11 @@ public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, EldenRingSpellsMod.MOD_ID);
 
-    /** 魔法之境的位置标记方块实体：无 ticker、无数据，只做客户端覆盖源登记。 */
+    /** 魔法之境生成器的位置标记方块实体：无 ticker、无数据，只做客户端覆盖源登记。 */
     @SuppressWarnings("DataFlowIssue")
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MagicRealmBlockEntity>> MAGIC_REALM =
-            BLOCK_ENTITY_TYPES.register("magic_realm", () -> BlockEntityType.Builder
-                    .of(MagicRealmBlockEntity::new, ModBlocks.MAGIC_REALM.get())
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TerraMagicaGeneratorBlockEntity>> TERRA_MAGICA_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("terra_magica_generator", () -> BlockEntityType.Builder
+                    .of(TerraMagicaGeneratorBlockEntity::new, ModBlocks.TERRA_MAGICA_GENERATOR.get())
                     .build(null));
 
     private ModBlockEntities() {

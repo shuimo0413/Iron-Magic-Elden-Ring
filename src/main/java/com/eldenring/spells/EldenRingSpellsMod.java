@@ -18,6 +18,7 @@ import com.eldenring.spells.registry.ModParticles;
 import com.eldenring.spells.registry.ModSchools;
 import com.eldenring.spells.registry.ModSounds;
 import com.eldenring.spells.registry.ModSpells;
+import com.eldenring.spells.registry.ModStructures;
 import com.eldenring.spells.registry.ModRecipes;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
@@ -45,6 +46,7 @@ public class EldenRingSpellsMod {
         ModItems.register(modEventBus);
         ModRecipes.register(modEventBus);
         ModFeatures.register(modEventBus);
+        ModStructures.register(modEventBus);
         ModParticles.register(modEventBus);
         ModSounds.register(modEventBus);
         ModEntities.register(modEventBus);

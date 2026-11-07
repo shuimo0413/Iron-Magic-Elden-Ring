@@ -8,8 +8,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 /**
  * 卢瑟特的辉石杖武器档位：近战与亚兹勒的辉石杖同档，额外给全学派通用法术强度。
  * <p>
- * 铁魔法 {@code spell_power +35%}（{@link AttributeModifier.Operation#ADD_MULTIPLIED_BASE}）
- * → 手持时所有学派法术强度约提升 35%；代价是 {@link LusatStaffBalance} 的蓝耗倍率。
+ * 铁魔法 {@code spell_power +30%}（{@link AttributeModifier.Operation#ADD_MULTIPLIED_BASE}）
+ * → 手持时所有学派法术强度约提升 30%；代价是 {@link LusatStaffBalance} 的蓝耗倍率。
  */
 public final class LusatGlintstoneStaffTier implements IronsWeaponTier {
     public static final LusatGlintstoneStaffTier INSTANCE = new LusatGlintstoneStaffTier();
@@ -25,9 +25,9 @@ public final class LusatGlintstoneStaffTier implements IronsWeaponTier {
     private static final float ATTACK_SPEED_MODIFIER = -3.0F;
 
     /**
-     * 通用法术强度乘数加成。0.35 = +35%；调大 → 全学派法术伤害 / 效果更强。
+     * 通用法术强度乘数加成。0.30 = +30%；调大 → 全学派法术伤害 / 效果更强。
      */
-    private static final double SPELL_POWER_BONUS = 0.35D;
+    private static final double SPELL_POWER_BONUS = 0.30D;
 
     private LusatGlintstoneStaffTier() {
     }

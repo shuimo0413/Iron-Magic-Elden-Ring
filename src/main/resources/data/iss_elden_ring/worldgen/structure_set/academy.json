@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "iss_elden_ring:academy",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 391704582,
+    "spacing": 112,
+    "separation": 56
+  }
+}

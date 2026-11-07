@@ -46,7 +46,7 @@ import java.util.function.Supplier;
  * 三色辉石碎片与起源辉石是学派触媒（Focus）：放入卷轴锻造台焦点槽可抄对应辉石咒
  *（见 {@link com.eldenring.spells.recipe.GlintstoneScrollRecipes}；取出成品时消耗焦点）。
  * 星星法典 / 起源秘典是辉石学派魔法书，走铁魔法原生 {@link SpellBook}（Curios spellbook 槽）。
- * 观星杖 / 亚兹勒的辉石杖是铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒（辉石强度 +10%）。
+ * 观星杖（辉石强度 +10%）/ 亚兹勒的辉石杖（通用法术强度 +10%）是铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
  */
 public final class ModItems {
     public static final DeferredRegister.Items ITEMS =
@@ -120,7 +120,7 @@ public final class ModItems {
 
     /**
      * 亚兹勒的辉石杖：铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
-     * 主手可右键施法；辉石强度 +10%，额外吟唱属性与蓝耗由服务端配置决定。
+     * 主手可右键施法；通用法术强度 +10%，额外吟唱属性与蓝耗由服务端配置决定。
      */
     public static final DeferredItem<Item> AZUR_GLINTSTONE_STAFF = ITEMS.register(
             "azur_glintstone_staff",
@@ -129,7 +129,7 @@ public final class ModItems {
 
     /**
      * 卢瑟特的辉石杖：铁魔法 {@link io.redspace.ironsspellbooks.item.weapons.StaffItem} 触媒。
-     * 主手可右键施法；通用法术强度 +35%，主手持有时全学派蓝耗 +50%（倍率由服务端配置决定）。
+     * 主手可右键施法；通用法术强度 +30%，主手持有时全学派蓝耗 +50%（倍率由服务端配置决定）。
      */
     public static final DeferredItem<Item> LUSAT_GLINTSTONE_STAFF = ITEMS.register(
             "lusat_glintstone_staff",
@@ -419,8 +419,8 @@ public final class ModItems {
         }
     }
 
-    /** 魔法之境方块物品。 */
-    public static final DeferredItem<BlockItem> MAGIC_REALM = ITEMS.registerSimpleBlockItem(ModBlocks.MAGIC_REALM);
+    /** 魔法之境生成器物品。 */
+    public static final DeferredItem<BlockItem> TERRA_MAGICA_GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.TERRA_MAGICA_GENERATOR);
 
     private ModItems() {
     }

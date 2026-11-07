@@ -72,7 +72,7 @@ public final class ModCreativeTabs {
                             output.accept(set.crystalBlock.get());
                             output.accept(set.cluster.get());
                         }
-                        output.accept(ModItems.MAGIC_REALM.get());
+                        output.accept(ModItems.TERRA_MAGICA_GENERATOR.get());
                         acceptAllScrollLevels(output, ModSpells.GLINTSTONE_PEBBLE);
                         acceptAllScrollLevels(output, ModSpells.SWIFT_GLINTSTONE_SHARD);
                         acceptAllScrollLevels(output, ModSpells.GLINTSTONE_ARC);

@@ -3,7 +3,7 @@ package com.eldenring.spells.client.biome;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.client.render.magiclake.MagicLakeWispStreamRenderer;
 import com.eldenring.spells.registry.ModParticles;
-import com.eldenring.spells.world.MagicRealmCoverageIndex;
+import com.eldenring.spells.world.TerraMagicaGeneratorCoverageIndex;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ParticleStatus;
@@ -26,15 +26,15 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 魔法光带：魔法之境方块覆盖范围内、地表上空缓慢流淌的宽幅幽蓝烟带（参考湖之利耶尼亚 / 魔法学院前的魔力流），十几秒后淡出。
+ * 魔法光带：魔法之境生成器覆盖范围内、地表上空缓慢流淌的宽幅幽蓝烟带（参考湖之利耶尼亚 / 魔法学院前的魔力流），十几秒后淡出。
  * <p>
  * 纯客户端视觉，不生成实体、不走网络。每 tick 在相机周围随机取点，落在任意魔法之境覆盖圆内
- * （{@link MagicRealmCoverageIndex}，水平半径 64 格）才补充光带。刷新概率、尝试次数和数量上限全局唯一，
+ * （{@link TerraMagicaGeneratorCoverageIndex}，水平半径 64 格）才补充光带。刷新概率、尝试次数和数量上限全局唯一，
  * 不按方块数量叠加，所以多个方块重叠放置不会让光带变密；玩家站在覆盖区外也能看到区内的光带。
  * <p>
  * 每条光带记录最近若干 tick 的位置（拖尾约 20–30 格），渲染时交给 {@link MagicLakeWispStreamRenderer}
  * 画成几股缠绕的宽烟丝 + 外层淡雾。两种运动：大弧线游走（大多数）和大半径螺旋上升（少数）。
- * 头部和身上偶尔掉落 {@code magic_lake_mote} 光点。
+ * 头部和身上偶尔掉落 {@code magic_lake_mote} 星芒（共享粒子库 frost_star）。
  * <p>
  * 头部飘出覆盖区或覆盖源被移除时，该光带停止掉落光点并在 {@link #COVERAGE_FADE_OUT_TICKS} 内淡出，
  * 拖尾随整体亮度一起变淡，不做硬边裁切。昼夜亮度一致。视频设置粒子为「最少」时不生成。
@@ -195,7 +195,7 @@ public final class MagicLakeWisps {
             int candidateX = Mth.floor(spawnX);
             int candidateZ = Mth.floor(spawnZ);
             candidatePos.set(candidateX, Mth.floor(cameraWorld.y), candidateZ);
-            if (!level.hasChunkAt(candidatePos) || !MagicRealmCoverageIndex.isCovered(level, spawnX, spawnZ)) {
+            if (!level.hasChunkAt(candidatePos) || !TerraMagicaGeneratorCoverageIndex.isCovered(level, spawnX, spawnZ)) {
                 continue;
             }
             int surfaceY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, candidateX, candidateZ);
@@ -288,7 +288,7 @@ public final class MagicLakeWisps {
             }
 
             previousCoverageFade = coverageFade;
-            headInsideCoverage = MagicRealmCoverageIndex.isCovered(level, position.x, position.z);
+            headInsideCoverage = TerraMagicaGeneratorCoverageIndex.isCovered(level, position.x, position.z);
             float coverageFadeStep = 1.0f / COVERAGE_FADE_OUT_TICKS;
             coverageFade = headInsideCoverage
                     ? Math.min(1.0f, coverageFade + coverageFadeStep)
