@@ -15,14 +15,14 @@ public final class AcademyScholarBalance {
     /** 基础移动速度（原版属性单位，玩家约 0.1，僵尸 0.23）。调大 → 走位与追击更快。 */
     public static final double DEFAULT_MOVEMENT_SPEED = 0.25D;
 
-    /** 索敌 / 追踪范围（方块）。调大 → 更远就发现玩家。 */
-    public static final double DEFAULT_FOLLOW_RANGE_BLOCKS = 32.0D;
+    /** 索敌 / 追踪范围（方块）。调大 → 更远就发现玩家；调小 → 玩家能在教室外更安全地观察。 */
+    public static final double DEFAULT_FOLLOW_RANGE_BLOCKS = 24.0D;
 
     /** 贴脸时两次施法的间隔（tick，20 tick = 1 秒）。调小 → 近身压制更凶。 */
-    public static final int DEFAULT_ATTACK_INTERVAL_MIN_TICKS = 40;
+    public static final int DEFAULT_ATTACK_INTERVAL_MIN_TICKS = 80;
 
-    /** 施法距离边缘时两次施法的间隔（tick）。与最小值相同 → 远近都固定 2 秒一发；调小 → 远程火力更密。 */
-    public static final int DEFAULT_ATTACK_INTERVAL_MAX_TICKS = 40;
+    /** 施法距离边缘时两次施法的间隔（tick）。与最小值相同 → 远近都固定 4 秒一发；调小 → 远程火力更密。 */
+    public static final int DEFAULT_ATTACK_INTERVAL_MAX_TICKS = 80;
 
     private static volatile double maxHealth = DEFAULT_MAX_HEALTH;
     private static volatile double movementSpeed = DEFAULT_MOVEMENT_SPEED;

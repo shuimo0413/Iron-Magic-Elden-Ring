@@ -6,5 +6,5 @@
   "defense": [],
   "movement": [],
   "support": [],
-  "spell_quality": { "min": 0.35, "max": 0.70 }
+  "spell_quality": { "min": 0.0, "max": 0.0 }
 }

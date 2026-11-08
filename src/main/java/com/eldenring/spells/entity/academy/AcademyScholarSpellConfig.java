@@ -23,11 +23,11 @@ import java.util.List;
  *   "defense":  [],
  *   "movement": [],
  *   "support":  [],
- *   "spell_quality": { "min": 0.35, "max": 0.70 }
+ *   "spell_quality": { "min": 0.0, "max": 0.0 }
  * }
  * </pre>
  *
- * @param minSpellQuality 施法等级下限 = 法术最高等级 × 该比例（向下取整，至少 1 级）
+ * @param minSpellQuality 施法等级下限 = 法术最高等级 × 该比例（向下取整，至少 1 级）；0 → 固定 1 级
  * @param maxSpellQuality 施法等级上限比例；每次施法在 [min, max] 间随机
  */
 public record AcademyScholarSpellConfig(
@@ -39,11 +39,11 @@ public record AcademyScholarSpellConfig(
         float maxSpellQuality
 ) {
 
-    /** 未写 {@code spell_quality.min} 时的等级比例。调大 → 学者默认用更高等级的法术。 */
-    public static final float DEFAULT_MIN_SPELL_QUALITY = 0.35F;
+    /** 未写 {@code spell_quality.min} 时的等级比例。0 → 学者只放 1 级法术；调大 → 默认用更高等级的法术。 */
+    public static final float DEFAULT_MIN_SPELL_QUALITY = 0.0F;
 
-    /** 未写 {@code spell_quality.max} 时的等级比例。 */
-    public static final float DEFAULT_MAX_SPELL_QUALITY = 0.70F;
+    /** 未写 {@code spell_quality.max} 时的等级比例。与下限同为 0 → 固定 1 级。 */
+    public static final float DEFAULT_MAX_SPELL_QUALITY = 0.0F;
 
     private static final String ATTACK_KEY = "attack";
     private static final String DEFENSE_KEY = "defense";
