@@ -4,7 +4,7 @@
     {
       "rolls": {
         "type": "minecraft:uniform",
-        "min": 4.0,
+        "min": 3.0,
         "max": 6.0
       },
       "bonus_rolls": 0.0,
@@ -18,8 +18,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 4.0,
-                "max": 10.0
+                "min": 6.0,
+                "max": 14.0
               },
               "add": false
             }
@@ -34,8 +34,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 4.0,
-                "max": 10.0
+                "min": 6.0,
+                "max": 14.0
               },
               "add": false
             }
@@ -50,8 +50,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 4.0,
-                "max": 10.0
+                "min": 6.0,
+                "max": 14.0
               },
               "add": false
             }
@@ -60,14 +60,14 @@
         {
           "type": "minecraft:item",
           "name": "iss_elden_ring:glintstone_rune",
-          "weight": 6,
+          "weight": 8,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 2.0,
-                "max": 4.0
+                "min": 3.0,
+                "max": 6.0
               },
               "add": false
             }
@@ -76,7 +76,7 @@
         {
           "type": "minecraft:item",
           "name": "iss_elden_ring:frost_glintstone_essence",
-          "weight": 4,
+          "weight": 5,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -92,11 +92,11 @@
         {
           "type": "minecraft:item",
           "name": "iss_elden_ring:origin_crystal",
-          "weight": 2
+          "weight": 3
         },
         {
           "type": "minecraft:empty",
-          "weight": 24
+          "weight": 16
         }
       ]
     },
@@ -111,23 +111,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:diamond",
-          "weight": 10,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 3.0
-              },
-              "add": false
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:emerald",
-          "weight": 8,
+          "weight": 12,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -142,6 +126,22 @@
         },
         {
           "type": "minecraft:item",
+          "name": "minecraft:emerald",
+          "weight": 8,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 3.0,
+                "max": 6.0
+              },
+              "add": false
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:gold_ingot",
           "weight": 8,
           "functions": [
@@ -149,8 +149,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 2.0,
-                "max": 6.0
+                "min": 3.0,
+                "max": 8.0
               },
               "add": false
             }
@@ -164,16 +164,32 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:diamond_block",
-          "weight": 2
+          "weight": 3
         },
         {
           "type": "minecraft:item",
           "name": "minecraft:emerald_block",
-          "weight": 2
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:lapis_lazuli",
+          "weight": 4,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 10.0,
+                "max": 20.0
+              },
+              "add": false
+            }
+          ]
         },
         {
           "type": "minecraft:empty",
-          "weight": 4
+          "weight": 3
         }
       ]
     },
@@ -189,12 +205,16 @@
         {
           "type": "minecraft:item",
           "name": "iss_elden_ring:primal_glintstone_blade",
-          "weight": 3
+          "weight": 4
         }
       ]
     },
     {
-      "rolls": 1.0,
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1.0,
+        "max": 2.0
+      },
       "bonus_rolls": 0.0,
       "entries": [
         {
@@ -242,7 +262,7 @@
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:scroll",
-          "weight": 1,
+          "weight": 3,
           "functions": [
             {
               "function": "irons_spellbooks:randomize_spell",
@@ -262,7 +282,96 @@
         },
         {
           "type": "minecraft:empty",
-          "weight": 1
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 2.0,
+        "max": 3.0
+      },
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "iss_elden_ring:glintstone_upgrade_orb",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iss_elden_ring:astrologer_staff",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "iss_elden_ring:mage_sphere",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:fire_upgrade_orb",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:ice_upgrade_orb",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:lightning_upgrade_orb",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:holy_upgrade_orb",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:blood_upgrade_orb",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:evocation_upgrade_orb",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:ender_upgrade_orb",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:nature_upgrade_orb",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:mana_upgrade_orb",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:cooldown_upgrade_orb",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:protection_upgrade_orb",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:upgrade_orb",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 6
         }
       ]
     },
@@ -276,15 +385,89 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "iss_elden_ring:glintstone_upgrade_orb",
-          "weight": 6,
+          "name": "irons_spellbooks:fire_rune",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:ice_rune",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:lightning_rune",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:holy_rune",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:blood_rune",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:evocation_rune",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:ender_rune",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:nature_rune",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:arcane_rune",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:cooldown_rune",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:protection_rune",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:blank_rune",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 3.0,
+        "max": 4.0
+      },
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:arcane_ingot",
+          "weight": 14,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 2.0
+                "min": 5.0,
+                "max": 9.0
               },
               "add": false
             }
@@ -292,23 +475,20 @@
         },
         {
           "type": "minecraft:item",
-          "name": "iss_elden_ring:mage_sphere",
-          "weight": 3
+          "name": "irons_spellbooks:arcane_essence",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 6.0,
+                "max": 10.0
+              },
+              "add": false
+            }
+          ]
         },
-        {
-          "type": "minecraft:empty",
-          "weight": 27
-        }
-      ]
-    },
-    {
-      "rolls": {
-        "type": "minecraft:uniform",
-        "min": 2.0,
-        "max": 4.0
-      },
-      "bonus_rolls": 0.0,
-      "entries": [
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:rare_ink",
@@ -318,8 +498,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 3.0
+                "min": 4.0,
+                "max": 6.0
               },
               "add": false
             }
@@ -327,7 +507,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "irons_spellbooks:arcane_ingot",
+          "name": "irons_spellbooks:epic_ink",
           "weight": 6,
           "functions": [
             {
@@ -343,65 +523,43 @@
         },
         {
           "type": "minecraft:item",
-          "name": "irons_spellbooks:epic_ink",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 2.0
-              },
-              "add": false
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "irons_spellbooks:upgrade_orb",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 2.0
-              },
-              "add": false
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "irons_spellbooks:shriving_stone",
-          "weight": 3
-        },
-        {
-          "type": "minecraft:item",
           "name": "irons_spellbooks:mithril_ingot",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "irons_spellbooks:mana_upgrade_orb",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "irons_spellbooks:cooldown_upgrade_orb",
-          "weight": 2
+          "weight": 6,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 2.0,
+                "max": 4.0
+              },
+              "add": false
+            }
+          ]
         },
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:lesser_spell_slot_upgrade",
-          "weight": 2
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:pyrium_ingot",
+          "weight": 5
         },
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:legendary_ink",
-          "weight": 1
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:shriving_stone",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 2
         }
       ]
     },
@@ -412,31 +570,46 @@
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:mana_ring",
-          "weight": 3
+          "weight": 4
         },
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:cooldown_ring",
-          "weight": 3
+          "weight": 4
         },
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:cast_time_ring",
-          "weight": 3
+          "weight": 4
         },
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:conjurers_talisman",
-          "weight": 2
+          "weight": 3
         },
         {
           "type": "minecraft:item",
           "name": "irons_spellbooks:emerald_stoneplate_ring",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:invisibility_ring",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:fireward_ring",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:frostward_ring",
           "weight": 2
         },
         {
           "type": "minecraft:empty",
-          "weight": 5
+          "weight": 8
         }
       ]
     },
@@ -473,8 +646,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 4.0,
-                "max": 8.0
+                "min": 8.0,
+                "max": 16.0
               },
               "add": false
             }
@@ -488,7 +661,12 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:golden_apple",
-          "weight": 3
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:enchanted_golden_apple",
+          "weight": 2
         },
         {
           "type": "minecraft:item",
@@ -497,22 +675,17 @@
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:enchanted_golden_apple",
-          "weight": 1
+          "name": "irons_spellbooks:greater_invisibility_elixir",
+          "weight": 2
         },
         {
-          "type": "minecraft:item",
-          "name": "irons_spellbooks:greater_invisibility_elixir",
-          "weight": 1
+          "type": "minecraft:empty",
+          "weight": 3
         }
       ]
     },
     {
-      "rolls": {
-        "type": "minecraft:uniform",
-        "min": 1.0,
-        "max": 2.0
-      },
+      "rolls": 1.0,
       "bonus_rolls": 0.0,
       "entries": [
         {
@@ -524,8 +697,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 4.0,
-                "max": 12.0
+                "min": 6.0,
+                "max": 14.0
               },
               "add": false
             }
@@ -541,7 +714,7 @@
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2.0,
-                "max": 4.0
+                "max": 5.0
               },
               "add": false
             }
@@ -556,8 +729,8 @@
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
-                "min": 2.0,
-                "max": 6.0
+                "min": 3.0,
+                "max": 8.0
               },
               "add": false
             }
