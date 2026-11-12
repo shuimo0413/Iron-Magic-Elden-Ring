@@ -33,10 +33,11 @@ public abstract class ScrollForgeScreenMixin {
     @SuppressWarnings("unchecked")
     private void eldenRingSpells$filterSpellsByFocusRecipe(CallbackInfo callbackInfo) {
         ItemStack focusStack = ((ScrollForgeScreen) (Object) this).getMenu().getFocusSlot().getItem();
+        ItemStack inkStack = ((ScrollForgeScreen) (Object) this).getMenu().getInkSlot().getItem();
         ScreenRemoveWidgetInvoker screen = (ScreenRemoveWidgetInvoker) this;
         this.availableSpells.removeIf(cardObject -> {
             ScrollForgeSpellCardAccessor card = (ScrollForgeSpellCardAccessor) cardObject;
-            if (GlintstoneScrollRecipes.matchesFocus(card.eldenRingSpells$getSpell(), focusStack)) {
+            if (GlintstoneScrollRecipes.matchesCrafting(card.eldenRingSpells$getSpell(), focusStack, inkStack)) {
                 return false;
             }
             screen.eldenRingSpells$removeWidget(card.eldenRingSpells$getButton());

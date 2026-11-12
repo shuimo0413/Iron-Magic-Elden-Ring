@@ -23,6 +23,9 @@ public final class ModEffects {
     public static final DeferredRegister<MobEffect> MOB_EFFECTS =
             DeferredRegister.create(Registries.MOB_EFFECT, EldenRingSpellsMod.MOD_ID);
 
+    public static final DeferredHolder<MobEffect, MobEffect> MAGIC_SHIELD =
+            MOB_EFFECTS.register("magic_shield", () -> new MagicMobEffect(MobEffectCategory.BENEFICIAL, 0x39DDEB));
+
     /**
      * 属性修饰符固定 id（不是效果注册 id）。
      * 同 id 的 {@link AttributeModifier} 会替换而非相加。

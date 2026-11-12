@@ -96,6 +96,11 @@ public final class AstrologerTrades {
         addOptionalScrollOffer(offers, random, 0.30f, 0.70f);
         addOptionalScrollOffer(offers, random, 0.65f, 1.0f);
 
+        // 护盾不加入通用白名单：只偶尔卖普通档，每次库存限购一份。
+        if (random.nextFloat() < 0.35f && ModSpells.MAGIC_SHIELD.get().isEnabled()) {
+            offers.add(sellItem(ModItems.createFilledScroll(ModSpells.MAGIC_SHIELD, 1), 8, 12, 1, random));
+        }
+
         if (random.nextFloat() < 0.55f) {
             offers.add(sellItem(new ItemStack(ItemRegistry.INK_COMMON.get()), 4, 7, 8, random));
         }

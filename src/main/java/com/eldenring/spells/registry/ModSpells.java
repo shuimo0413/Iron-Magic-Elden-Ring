@@ -187,6 +187,9 @@ public final class ModSpells {
     private ModSpells() {
     }
 
+    public static final Supplier<AbstractSpell> MAGIC_SHIELD =
+            registerSpell(new com.eldenring.spells.spell.MagicShieldSpell());
+
     /**
      * 用 Spell 自己的 path 当注册名，避免字段名和 ResourceLocation 各写一份对不上。
      */

@@ -24,6 +24,7 @@ public final class SpellBookStatReloader {
         if (!(first instanceof EldenRingAbstractSpell)) {
             return;
         }
+        apply(ModSpells.MAGIC_SHIELD.get(), MagicShieldSpell.MANA_COST[0], 0, 0, 0, 0);
         apply(
                 first,
                 GlintstonePebbleSpell.SPELL_BASE_MANA_COST,

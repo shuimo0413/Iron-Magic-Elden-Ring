@@ -1,0 +1,14 @@
+allprojects {
+    afterEvaluate {
+        // Freecam is a client-only development mod and crashes a dedicated GameTest server.
+        configurations.runtimeClasspath.exclude group: 'maven.modrinth', module: 'freecam'
+        configurations.localRuntime.exclude group: 'maven.modrinth', module: 'freecam'
+        sourceSets.main.java.srcDir('src/gametest/java')
+        sourceSets.main.java.exclude('**/EquipmentProgressionTests.java', '**/AzurPaymentTests.java', '**/SpellManaCostPolicyTest.java')
+        sourceSets.main.resources.srcDir('src/gametest/resources')
+        tasks.named('jar').configure { enabled = false }
+        neoForge.runs.gameTestServer {
+            gameDirectory = file('build/shield-gametest')
+        }
+    }
+}

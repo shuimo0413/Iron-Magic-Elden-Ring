@@ -84,6 +84,7 @@ public final class ClientEntityRenderers {
         event.registerEntityRenderer(ModEntities.COMET.get(), GlintstoneProjectileRenderer::new);
         event.registerEntityRenderer(ModEntities.SPIRAL_SHARD.get(), SpiralShardRenderer::new);
         event.registerEntityRenderer(ModEntities.STARLIGHT.get(), StarlightRenderer::new);
+        event.registerEntityRenderer(ModEntities.MAGIC_SHIELD.get(), com.eldenring.spells.client.render.MagicShieldRenderer::new);
         event.registerEntityRenderer(ModEntities.TERRA_MAGICA_ZONE.get(), TerraMagicaZoneRenderer::new);
         event.registerEntityRenderer(ModEntities.COMET_AZUR_JET.get(), CometAzurJetRenderer::new);
         event.registerEntityRenderer(ModEntities.GAVEL_OF_HAIMA.get(), HaimaGavelRenderer::new);

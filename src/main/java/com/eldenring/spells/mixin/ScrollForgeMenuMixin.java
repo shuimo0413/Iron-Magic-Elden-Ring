@@ -21,6 +21,7 @@ public abstract class ScrollForgeMenuMixin {
 
     @Shadow
     public abstract Slot getFocusSlot();
+    @Shadow public abstract Slot getInkSlot();
 
     /**
      * 替换 {@code setupResultSlot} 里对 {@link AbstractSpell#allowCrafting()} 的调用，
@@ -38,6 +39,6 @@ public abstract class ScrollForgeMenuMixin {
             return false;
         }
         ItemStack focusStack = this.getFocusSlot().getItem();
-        return GlintstoneScrollRecipes.matchesFocus(spell, focusStack);
+        return GlintstoneScrollRecipes.matchesCrafting(spell, focusStack, getInkSlot().getItem());
     }
 }

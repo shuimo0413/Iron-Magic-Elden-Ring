@@ -88,6 +88,7 @@ public final class ModCreativeTabs {
                         acceptAllScrollLevels(output, ModSpells.COMET);
                         acceptAllScrollLevels(output, ModSpells.SPIRAL_SHARD);
                         acceptAllScrollLevels(output, ModSpells.STARLIGHT);
+                        acceptAllScrollLevels(output, ModSpells.MAGIC_SHIELD);
                         acceptAllScrollLevels(output, ModSpells.TERRA_MAGICA);
                         acceptAllScrollLevels(output, ModSpells.COMET_AZUR);
                         acceptAllScrollLevels(output, ModSpells.GAVEL_OF_HAIMA);

@@ -3,6 +3,8 @@ package com.eldenring.spells.recipe;
 import com.eldenring.spells.EldenRingSpellsMod;
 import com.eldenring.spells.registry.ModItems;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
+import com.eldenring.spells.spell.MagicShieldSpell;
+import io.redspace.ironsspellbooks.item.InkItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -46,6 +48,7 @@ public final class GlintstoneScrollRecipes {
         putCyan(map, "comet");
         putCyan(map, "spiral_shard");
         putCyan(map, "starlight");
+        putCyan(map, "magic_shield");
         putCyan(map, "terra_magica");
         putCyan(map, "gavel_of_haima");
         putCyan(map, "cannon_of_haima");
@@ -105,6 +108,13 @@ public final class GlintstoneScrollRecipes {
             return false;
         }
         return !focusStack.isEmpty() && focusStack.is(requiredFocus.get());
+    }
+
+    /** 魔力盾牌由五档墨水一一映射品质；其他法术仍沿用原有规则。 */
+    public static boolean matchesCrafting(AbstractSpell spell, ItemStack focusStack, ItemStack inkStack) {
+        if (!matchesFocus(spell, focusStack)) return false;
+        if (!(spell instanceof MagicShieldSpell)) return true;
+        return inkStack.getItem() instanceof InkItem ink && spell.getMinLevelForRarity(ink.getRarity()) > 0;
     }
 
     /**

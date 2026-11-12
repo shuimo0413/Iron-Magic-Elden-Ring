@@ -15,6 +15,10 @@ public final class ModAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EldenRingSpellsMod.MOD_ID);
 
+    public static final Supplier<AttachmentType<com.eldenring.spells.spell.data.MagicShieldData>> MAGIC_SHIELD =
+            ATTACHMENT_TYPES.register("magic_shield", () -> AttachmentType.builder(
+                    com.eldenring.spells.spell.data.MagicShieldData::new).build());
+
     /**
      * 玩家辉石追踪排除偏好。写入存档，死亡后保留（{@code copyOnDeath}）。
      */

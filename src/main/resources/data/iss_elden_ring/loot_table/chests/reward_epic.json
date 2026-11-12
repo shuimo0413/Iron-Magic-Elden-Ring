@@ -810,6 +810,50 @@
           "weight": 2
         }
       ]
+    },
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:scroll",
+          "weight": 8,
+          "functions": [
+            {
+              "function": "irons_spellbooks:randomize_spell",
+              "quality": 0.75,
+              "spell_filter": {
+                "force": true,
+                "spells": [
+                  "iss_elden_ring:magic_shield"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "irons_spellbooks:scroll",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "irons_spellbooks:randomize_spell",
+              "quality": 1.0,
+              "spell_filter": {
+                "force": true,
+                "spells": [
+                  "iss_elden_ring:magic_shield"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:empty",
+          "weight": 90
+        }
+      ]
     }
   ]
 }

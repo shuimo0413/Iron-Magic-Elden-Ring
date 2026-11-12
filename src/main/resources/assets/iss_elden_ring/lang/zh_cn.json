@@ -225,5 +225,10 @@
   "affix.irons_apothic:elemental/school_glintstone/mana_cost.suffix": "轻松繁星的",
   "affix.irons_apothic:elemental/school_glintstone/stargazer": "观星者的",
   "affix.irons_apothic:elemental/school_glintstone/stargazer.suffix": "太古源流的",
-  "item.apotheosis.gem.irons_apothic:external/glintstone_prism": "辉石棱晶"
+  "item.apotheosis.gem.irons_apothic:external/glintstone_prism": "辉石棱晶",
+  "spell.iss_elden_ring.magic_shield": "魔力盾牌",
+  "effect.iss_elden_ring.magic_shield": "魔力护盾",
+  "entity.iss_elden_ring.magic_shield": "魔力护盾",
+  "ui.iss_elden_ring.magic_shield_capacity": "吸收伤害：%s 点（减伤后）",
+  "ui.iss_elden_ring.magic_shield_duration": "持续：%s 秒；同级刷新，高级覆盖，低级无法覆盖"
 }

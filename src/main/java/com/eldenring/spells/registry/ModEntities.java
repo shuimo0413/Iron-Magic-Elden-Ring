@@ -49,6 +49,12 @@ public final class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES =
             DeferredRegister.create(Registries.ENTITY_TYPE, EldenRingSpellsMod.MOD_ID);
 
+    public static final DeferredHolder<EntityType<?>, EntityType<com.eldenring.spells.entity.MagicShieldEntity>> MAGIC_SHIELD =
+            ENTITIES.register("magic_shield", () -> EntityType.Builder
+                    .<com.eldenring.spells.entity.MagicShieldEntity>of(com.eldenring.spells.entity.MagicShieldEntity::new, MobCategory.MISC)
+                    .sized(2.8f, 2.5f).clientTrackingRange(64).updateInterval(1).noSave()
+                    .build(id("magic_shield")));
+
     public static final DeferredHolder<EntityType<?>, EntityType<GlintstonePebbleProjectile>> GLINTSTONE_PEBBLE =
             // 碰撞箱与铁魔法 Magic Missile（0.5×0.5）对齐，命中搜索盒不再偏小
             ENTITIES.register("glintstone_pebble", () ->

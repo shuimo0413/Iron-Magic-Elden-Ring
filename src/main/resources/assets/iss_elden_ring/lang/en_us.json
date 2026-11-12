@@ -225,5 +225,10 @@
   "affix.irons_apothic:elemental/school_glintstone/mana_cost.suffix": "of Effortless Stars",
   "affix.irons_apothic:elemental/school_glintstone/stargazer": "Stargazer's",
   "affix.irons_apothic:elemental/school_glintstone/stargazer.suffix": "of the Primeval Current",
-  "item.apotheosis.gem.irons_apothic:external/glintstone_prism": "Glintstone Prism"
+  "item.apotheosis.gem.irons_apothic:external/glintstone_prism": "Glintstone Prism",
+  "spell.iss_elden_ring.magic_shield": "Magic Shield",
+  "effect.iss_elden_ring.magic_shield": "Magic Shield",
+  "entity.iss_elden_ring.magic_shield": "Magic Shield",
+  "ui.iss_elden_ring.magic_shield_capacity": "Absorbs %s damage after mitigation",
+  "ui.iss_elden_ring.magic_shield_duration": "Duration: %s seconds; same tier refreshes, higher replaces, lower cannot overwrite"
 }

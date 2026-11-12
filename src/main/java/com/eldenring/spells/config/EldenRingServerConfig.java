@@ -56,6 +56,9 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public final class EldenRingServerConfig {
 
     public static final ModConfigSpec SPEC;
+    public static final ModConfigSpec.IntValue[] MAGIC_SHIELD_DURATION = new ModConfigSpec.IntValue[5];
+    public static final ModConfigSpec.DoubleValue[] MAGIC_SHIELD_CAPACITY = new ModConfigSpec.DoubleValue[5];
+    public static final ModConfigSpec.IntValue[] MAGIC_SHIELD_MANA = new ModConfigSpec.IntValue[5];
 
     // Book defaults are fixed at item registration; changing these requires a restart.
     public static final int STAR_CODEX_BASE_SLOTS = 10;
@@ -112,6 +115,20 @@ public final class EldenRingServerConfig {
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+        builder.push("magic_shield").push("tiers");
+        String[] shieldTiers = {"common", "uncommon", "rare", "epic", "legendary"};
+        int[] shieldMana = {20, 25, 35, 45, 60};
+        for (int i = 0; i < shieldTiers.length; i++) {
+            builder.push(shieldTiers[i]);
+            MAGIC_SHIELD_DURATION[i] = builder.comment("Shield lifetime in ticks; recasting refreshes rather than stacks.")
+                    .defineInRange("durationTicks", 400 + i * 100, 20, 72000);
+            MAGIC_SHIELD_CAPACITY[i] = builder.comment("Shared pool after armor/resistance, before absorption hearts.")
+                    .defineInRange("capacity", 4.0D + i * 2, 1.0D, 1000.0D);
+            MAGIC_SHIELD_MANA[i] = builder.defineInRange("manaCost", shieldMana[i], 0, 10000);
+            builder.pop();
+        }
+        builder.pop();
+        builder.pop();
         builder.comment(
                 "Iron's Spells 'n Spellbooks: Elden Ring 玩法数值。进世界后由服务端同步。",
                 "冷却 / 最大等级 / 启用 / 蓝耗倍率 / 法强倍率请改铁魔法 JSON：",
@@ -422,6 +439,11 @@ public final class EldenRingServerConfig {
     }
 
     private static void applySpellFields() {
+        for (int i = 0; i < 5; i++) {
+            com.eldenring.spells.spell.MagicShieldSpell.DURATION_TICKS[i] = read(MAGIC_SHIELD_DURATION[i]);
+            com.eldenring.spells.spell.MagicShieldSpell.CAPACITY[i] = read(MAGIC_SHIELD_CAPACITY[i]).floatValue();
+            com.eldenring.spells.spell.MagicShieldSpell.MANA_COST[i] = read(MAGIC_SHIELD_MANA[i]);
+        }
         applyHoming(GLINTSTONE_PEBBLE, (mana, manaPer, power, powerPer, castTime, speed, range, turn, damage, explosion, maxRange) -> {
             GlintstonePebbleSpell.SPELL_BASE_MANA_COST = mana;
             GlintstonePebbleSpell.SPELL_MANA_COST_PER_LEVEL = manaPer;
